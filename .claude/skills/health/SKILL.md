@@ -2,6 +2,7 @@
 name: health
 description: Check that the deployed app and the latest CI runs are healthy, and record any failure as a parked question and a proposed fix item. Read-only apart from the local status files and a proposal pull request. Use when the user runs /health, or on a timer with "/loop 30m /health".
 disable-model-invocation: true
+model: haiku
 ---
 
 # Health

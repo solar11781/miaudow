@@ -94,6 +94,12 @@ The `task` skill runs this loop for every task; follow it by hand only for work 
    farmer with an Android phone, little technical experience and nothing to type. The walkthrough is an
    expert-method review; never call it user testing.
 
+## Model choice
+
+Claude picks the model per job. Mechanical work (status, health, reminders, watching CI, reading logs) uses `haiku`;
+the `progress`, `health` and `checkpoints` skills set it themselves, and helper agents for such work are started with
+it. Writing code, reviews, planning, audits, submission checks and copy use the session's main model.
+
 ## Talking to the team
 
 The team are AI engineers with no farming or agriculture background. Start from ML and software ideas they know,

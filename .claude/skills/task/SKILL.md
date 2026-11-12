@@ -50,6 +50,9 @@ screens. Run the ones for the code you touched.
 
 ## 5. Review
 
+Run every review skill (`simplify`, `spec-review`, `security-review`) inside its own Agent subagent, so its report
+comes back to this task; a review never ends the task. Then continue with the next step.
+
 1. Run the `simplify` skill on the changes; run the tests again.
 2. Run the `spec-review` skill with `main` as the fixed point; fix the real findings; run the tests again.
 3. For a user-facing screen: a Playwright check at 360 x 740 and the `cognitive-walkthrough` skill as described in
@@ -78,7 +81,7 @@ review findings fixed and left open, what was skipped, risks.
    branch, run the local checks, push, watch again. After three failed rounds, stop and report the evidence.
 2. If `main` moved: `git fetch origin && git merge origin/main` on this branch (never rebase pushed work), run the
    local checks, push, and let CI run again.
-3. Run the `security-review` skill on the branch. Fix real findings (back to 1). A finding that needs a decision
+3. Run the `security-review` skill on the branch (inside an Agent subagent, as in step 5). Fix real findings (back to 1). A finding that needs a decision
    about science, rules, numbers or scope: stop and ask (under the autopilot: park it, do not merge).
 4. When CI is green, spec-review and security-review have no open issue, and no commit came after them, post the gate
    record as a pull request comment, with this exact last line:
