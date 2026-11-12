@@ -75,8 +75,8 @@ keep files identical on every laptop. `tests/test_architecture.py` enforces the 
 3. Smallest complete change: no option, wrapper, abstraction, config or "for later" code that nobody asked for.
    Name anything skipped in one line.
 4. Dependencies: shipped (runtime) packages only from the spec's allow-list; development-only quality and security
-   tools allowed (ruff, eslint, @eslint/js, typescript-eslint, prettier, gitleaks, pip-audit, npm audit). Exact pinned
-   versions. Anything else needs team approval. CI checks `frontend/package.json` against
+   tools allowed (ruff, pytest, eslint, @eslint/js, typescript-eslint, prettier, gitleaks, pip-audit, npm audit).
+   Exact pinned versions. Anything else needs team approval. CI checks `frontend/package.json` against
    `.github/scripts/dependency-allowlist.json`.
 5. No hard-coded user-visible text in components; all of it comes from the Vietnamese and English text files.
 6. Delete dead code and files you created that are no longer used. No commented-out code.
