@@ -1,0 +1,32 @@
+# Python lint and format rules for every contributor (D-123, D-125). CI: ruff check . && ruff format --check .
+target-version = "py311"
+line-length = 120
+src = ["src", "tests"]
+
+[lint]
+select = [
+  "E", "F", "W",      # pycodestyle, pyflakes
+  "I",                # import order
+  "N",                # naming
+  "UP",               # modern syntax for the target version
+  "B",                # likely bugs
+  "SIM", "C4",        # simpler code
+  "C90",              # complexity
+  "PT",               # pytest style
+  "S",                # security (bandit rules)
+  "PL",               # pylint subset
+  "T20",              # no print in library code
+  "ERA",              # no commented-out code
+  "RUF",
+]
+ignore = ["E501"]     # the formatter wraps code; long strings and comments are allowed
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "PLR2004", "S311"]   # asserts, literal expected values, non-crypto randomness in tests
+"scripts/**" = ["T20"]                     # command-line scripts print
+
+[lint.mccabe]
+max-complexity = 10
+
+[lint.pylint]
+max-args = 6

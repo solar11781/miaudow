@@ -1,0 +1,5 @@
+# LF line endings in the repository on every OS, so Windows checkouts do not show false changes (D-125).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary

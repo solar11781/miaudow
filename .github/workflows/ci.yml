@@ -1,0 +1,130 @@
+# CI gates for every pull request into main (D-123, D-124). Linux only, cached, cancelled when superseded,
+# to stay inside the free Actions minutes of a private repository. Expected layout: Python at the repository root
+# (pyproject.toml, requirements*.lock, src/, tests/), frontend in frontend/.
+name: ci
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHON_VERSION: "3.13"
+  NODE_VERSION: "22"
+  RUFF_VERSION: "0.17.4"
+  PIP_AUDIT_VERSION: "2.10.1"
+  GITLEAKS_VERSION: "8.30.1"
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      python: ${{ steps.detect.outputs.python }}
+      frontend: ${{ steps.detect.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: detect
+        run: |
+          base="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
+          files=$(git diff --name-only "$base"...HEAD || git ls-files)
+          echo "$files"
+          all=false; echo "$files" | grep -q '^\.github/' && all=true
+          py=false; echo "$files" | grep -v '^frontend/' | grep -qE '\.(py|toml|lock|cfg|ini|yaml|yml|json|csv)$' && py=true
+          fe=false; echo "$files" | grep -q '^frontend/' && fe=true
+          [ -f pyproject.toml ] || py=false
+          [ -f frontend/package.json ] || fe=false
+          [ "$all" = true ] && [ -f pyproject.toml ] && py=true
+          [ "$all" = true ] && [ -f frontend/package.json ] && fe=true
+          echo "python=$py" >> "$GITHUB_OUTPUT"
+          echo "frontend=$fe" >> "$GITHUB_OUTPUT"
+
+  tooling:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: safety hook and allow-list checker tests
+        run: node --test .claude/hooks/guard.test.mjs .github/scripts/check-deps.test.mjs
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks (whole history)
+        run: |
+          curl -sSfL -o gl.tgz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf gl.tgz gitleaks
+          ./gitleaks git --redact --no-banner --exit-code 1 .
+
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.lock
+      - run: pip install -r requirements-dev.lock "ruff==${RUFF_VERSION}" "pip-audit==${PIP_AUDIT_VERSION}"
+      - name: lint
+        run: ruff check .
+      - name: format
+        run: ruff format --check .
+      - name: tests
+        run: pytest -q
+      - name: dependency audit
+        run: pip-audit -r requirements.lock
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: dependency allow-list
+        run: node ../.github/scripts/check-deps.mjs package.json
+      - run: npm ci
+      - name: lint
+        run: npx eslint .
+      - name: format
+        run: npx prettier --check .
+      - name: type check
+        run: npx tsc --noEmit -p .
+      - name: unit tests
+        run: npx vitest run
+      - name: build
+        run: npx vite build
+      - name: dependency audit (shipped packages)
+        run: npm audit --omit=dev --audit-level=high
+      - id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ steps.pw.outputs.version }}
+      - name: browser tests (360 x 740)
+        run: npx playwright install --with-deps chromium && npx playwright test

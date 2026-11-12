@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.85",
+        "--headless",
+        "--isolated",
+        "--viewport-size",
+        "360x740",
+        "--output-dir",
+        ".playwright-mcp"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@1.13.0", "--headless", "--isolated"]
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "railway": {
+      "type": "http",
+      "url": "https://mcp.railway.com"
+    }
+  }
+}

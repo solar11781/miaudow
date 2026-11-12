@@ -1,0 +1,8 @@
+.playwright-mcp/
+.claude/settings.local.json
+.env
+.autopilot/status.md
+.autopilot/parked.md
+.autopilot/audit.md
+__pycache__/
+.pytest_cache/
