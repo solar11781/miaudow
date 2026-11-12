@@ -2,6 +2,7 @@
 name: checkpoints
 description: Schedule phone reminders for the hackathon checkpoints of the approved schedule (Sat 14 - Sun 15 Nov 2026, ICT). Run once at the start of the event in a separate session that stays open and idle with Remote Control connected. Use when the user runs /checkpoints.
 disable-model-invocation: true
+model: haiku
 ---
 
 # Checkpoints

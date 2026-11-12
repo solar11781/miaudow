@@ -1,6 +1,7 @@
 ---
 name: progress
 description: Phone-readable project status in at most ten lines - what is done, running, parked, and waiting for the team to merge. Use when the user asks "status", "progress", "what's done", "what's waiting for me" or runs /progress. Read-only.
+model: haiku
 ---
 
 # Status
