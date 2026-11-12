@@ -58,6 +58,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: .github/workflows/ci.yml
       # the python job is skipped until pyproject.toml exists; these checks must run on every pull request
       - name: tooling python tests (architecture, source trace, attribution)
         run: |
