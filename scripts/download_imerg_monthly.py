@@ -1,7 +1,7 @@
 """Download (or reuse the cache of) GPM IMERG Final monthly V07 for a box around the Nghệ An POWER cells, 2001-2024.
 
 Usage: PYTHONPATH=src python scripts/download_imerg_monthly.py
-Set FIELDSHIFT_SKIP_IMERG to skip this stage while the rain check is not built (team, 2026-11-14).
+Set FIELDSHIFT_SKIP_IMERG=1 to skip this stage while the rain check is not built (team, 2026-11-14).
 Raw OPeNDAP ASCII replies go unchanged to data/raw/imerg_monthly/ (gitignored); each new file gets a row in
 data/MANIFEST.csv. Needs the Earthdata token (network secret for urs.earthdata.nasa.gov). Failures are reported,
 never filled (D-135; 05-DATA-CONTRACTS §5c).
@@ -25,7 +25,7 @@ OUT = Path("data/raw/imerg_monthly")
 MANIFEST = Path("data/MANIFEST.csv")
 YEARS = range(2001, 2025)
 
-if os.environ.get("FIELDSHIFT_SKIP_IMERG"):
+if os.environ.get("FIELDSHIFT_SKIP_IMERG") == "1":
     print("IMERG stage skipped: FIELDSHIFT_SKIP_IMERG is set")
     sys.exit(0)
 
