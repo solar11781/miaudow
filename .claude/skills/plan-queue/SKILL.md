@@ -1,22 +1,20 @@
----
-name: plan-queue
-description: Turn the team's planning documents into a draft task queue for the autopilot - small ordered items with owners, each tied to spec lines and acceptance tests with an objective "done when". Proposes .autopilot/queue.md in a pull request; only a person approves and merges it. Use when the user runs /plan-queue.
-disable-model-invocation: true
----
+--- name: plan-queue description: Turn the team's planning documents into a draft task queue for the autopilot - small
+ordered items with owners, each tied to spec lines and acceptance tests with an objective "done when". Writes
+docs/AUTOPILOT-QUEUE.md in the planning repository as a draft; only a person approves it. Use when the user runs
+/plan-queue. disable-model-invocation: true ---
 
 # Plan queue
-
-Draft only. The queue is shared by the whole team: it lives in `.autopilot/queue.md` on `main`. Write it on a branch
-`docs/queue-<YYYYMMDD-HHMM>` from the latest `main`, with first line `status: DRAFT`, push, and open a pull request.
-Never write `APPROVED` and never merge it: a person reviews it, changes the first line to `status: APPROVED` and
-merges it on GitHub (the merge gate refuses queue changes from Claude).
+ Draft only. The queue is shared by the whole team: it lives in `docs/AUTOPILOT-QUEUE.md` in the planning repository
+(see "Specs" in `CLAUDE.md`), never in this repository (team, 2026-11-14). Pull the planning repository, write the file
+there with first line `status: DRAFT`, commit and push it on its working branch. Never write `APPROVED`: a person
+reviews the draft and changes the first line to `status: APPROVED`.
 
 ## Read
 
 The planning documents (see "Specs" in `CLAUDE.md`): the implementation plan (milestones, demo tiers, schedule, cut
 list), the requirements, the UI/UX spec with its hard rules and acceptance tests, the data contracts, the ML spec, the
 tech design and the decision log. Also the current code, `git log`, and any existing `.autopilot/status.md`, so done
-work is not queued again. If `main` already has an approved queue, the draft replaces it in the pull request; keep
+work is not queued again. If the planning repository already has an approved queue, the draft replaces it; keep
 the numbers and status of items already merged.
 
 ## Items
@@ -44,6 +42,6 @@ Mark each uncovered one `NOT COVERED` with a reason. Do not invent IDs; copy the
 
 ## Reply
 
-At most ten lines: the pull request link, number of items per owner, what the first five are, uncovered IDs, open
-team questions, and the reminder that a person approves by changing the first line to `status: APPROVED` and
-merging.
+At most ten lines: where the draft is (the planning repository's docs/AUTOPILOT-QUEUE.md and the commit), number of
+items per owner, what the first five are, uncovered IDs, open team questions, and the reminder that a person
+approves by changing the first line to `status: APPROVED`.
