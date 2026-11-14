@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="736" viewBox="0 0 960 736" role="img" aria-labelledby="rice-history-title rice-history-desc" font-family="sans-serif" font-size="14" fill="#1a1a1a">
+<title id="rice-history-title">Nghệ An rice yield against normal, per season, past years 1995-2024</title>
+<desc id="rice-history-desc">Nghệ An rice yield against normal, per season, past years 1995-2024. Past years, not a forecast. Rice, Spring season (Vụ Đông Xuân): 1995 no value, 1996 no value, 1997 no value, 1998 8%, 1999 9%, 2000 16%, 2001 14%, 2002 14%, 2003 7%, 2004 6%, 2005 1%, 2006 6%, 2007 -9%, 2008 4%, 2009 5%, 2010 3%, 2011 5%, 2012 3%, 2013 -4%, 2014 3%, 2015 -3%, 2016 4%, 2017 2%, 2018 4%, 2019 0%, 2020 0%, 2021 3%, 2022 -1%, 2023 2%, 2024 2%. Model estimates not shown for this season; the reason is on the method page. Rice, Summer-autumn season (Vụ Hè Thu): 1995 no value, 1996 no value, 1997 no value, 1998 1%, 1999 28%, 2000 10%, 2001 4%, 2002 8%, 2003 2%, 2004 11%, 2005 -11%, 2006 8%, 2007 8%, 2008 17%, 2009 -9%, 2010 -27%, 2011 7%, 2012 9%, 2013 8%, 2014 4%, 2015 8%, 2016 4%, 2017 0%, 2018 -9%, 2019 -16%, 2020 0%, 2021 19%, 2022 13%, 2023 4%, 2024 4%. This season is not modelled; no model estimates. Rice, Winter season (Vụ Mùa): 1995 no value, 1996 no value, 1997 no value, 1998 -5%, 1999 -2%, 2000 20%, 2001 17%, 2002 8%, 2003 6%, 2004 18%, 2005 6%, 2006 9%, 2007 -2%, 2008 -1%, 2009 -21%, 2010 -10%, 2011 27%, 2012 31%, 2013 14%, 2014 11%, 2015 2%, 2016 0%, 2017 -7%, 2018 5%, 2019 -6%, 2020 1%, 2021 10%, 2022 7%, 2023 11%, 2024 9%. Estimates: 2016 estimate 4% (80% range -2% to 10%), 2017 estimate 2% (80% range -4% to 9%), 2018 estimate 0% (80% range -8% to 7%), 2019 estimate -1% (80% range -8% to 6%), 2020 estimate -1% (80% range -8% to 6%), 2021 estimate 3% (80% range -4% to 10%), 2022 estimate 2% (80% range -4% to 9%), 2023 estimate 3% (80% range -3% to 9%), 2024 estimate 3% (80% range -3% to 9%). Source: artifacts/risk_table.json, Nghệ An rows: NSO yields (R-D01), past-only normal (E-010), M1 estimates and 80% ranges (E-012). Province average; mostly irrigation-served rice.</desc>
+<rect width="960" height="736" fill="#ffffff"/>
+<text x="16.0" y="28.0" font-size="18" font-weight="bold">Nghệ An rice yield against normal, per season, past years 1995-2024</text>
+<text x="16.0" y="52.0" font-size="12">Past years, not a forecast. Bar: the NSO rice yield of the year against its past-only normal, in %. n/a: no value.</text>
+<text x="16.0" y="68.0" font-size="12">Open dot: the M1 out-of-sample estimate of a test year, from a model trained on earlier years only. Line: its 80% range.</text>
+<g data-season="spring">
+<text x="16.0" y="110.0" font-weight="bold">Rice, Spring season (Vụ Đông Xuân)</text>
+<text x="944.0" y="110.0" font-size="12" text-anchor="end">Model estimates not shown for this season; the reason is on the method page.</text>
+<g data-tick-label="-0.3"><line data-tick="-0.3" x1="64" y1="262.0" x2="944" y2="262.0" stroke="#d9d9d9"/><text x="58.0" y="266.0" font-size="12" text-anchor="end">-30%</text></g>
+<g data-tick-label="-0.2"><line data-tick="-0.2" x1="64" y1="242.0" x2="944" y2="242.0" stroke="#d9d9d9"/><text x="58.0" y="246.0" font-size="12" text-anchor="end">-20%</text></g>
+<g data-tick-label="-0.1"><line data-tick="-0.1" x1="64" y1="222.0" x2="944" y2="222.0" stroke="#d9d9d9"/><text x="58.0" y="226.0" font-size="12" text-anchor="end">-10%</text></g>
+<g data-tick-label="0"><line data-tick="0" x1="64" y1="202.0" x2="944" y2="202.0" stroke="#595959"/><text x="58.0" y="206.0" font-size="12" text-anchor="end">0%</text></g>
+<g data-tick-label="0.1"><line data-tick="0.1" x1="64" y1="182.0" x2="944" y2="182.0" stroke="#d9d9d9"/><text x="58.0" y="186.0" font-size="12" text-anchor="end">10%</text></g>
+<g data-tick-label="0.2"><line data-tick="0.2" x1="64" y1="162.0" x2="944" y2="162.0" stroke="#d9d9d9"/><text x="58.0" y="166.0" font-size="12" text-anchor="end">20%</text></g>
+<g data-tick-label="0.3"><line data-tick="0.3" x1="64" y1="142.0" x2="944" y2="142.0" stroke="#d9d9d9"/><text x="58.0" y="146.0" font-size="12" text-anchor="end">30%</text></g>
+<g data-tick-label="0.4"><line data-tick="0.4" x1="64" y1="122.0" x2="944" y2="122.0" stroke="#d9d9d9"/><text x="58.0" y="126.0" font-size="12" text-anchor="end">40%</text></g>
+<text x="73.7" y="198.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<text x="103.0" y="198.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<text x="132.3" y="198.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<rect data-season="spring" data-year="1998" x="155.5" y="186.9" width="12.3" height="15.1" fill="#1f4e79"/>
+<rect data-season="spring" data-year="1999" x="184.9" y="183.8" width="12.3" height="18.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2000" x="214.2" y="170.8" width="12.3" height="31.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2001" x="243.5" y="174.2" width="12.3" height="27.8" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2002" x="272.9" y="173.8" width="12.3" height="28.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2003" x="302.2" y="188.5" width="12.3" height="13.5" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2004" x="331.5" y="189.3" width="12.3" height="12.7" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2005" x="360.9" y="199.4" width="12.3" height="2.6" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2006" x="390.2" y="189.1" width="12.3" height="12.9" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2007" x="419.5" y="202.0" width="12.3" height="17.9" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2008" x="448.9" y="194.8" width="12.3" height="7.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2009" x="478.2" y="191.7" width="12.3" height="10.3" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2010" x="507.5" y="195.1" width="12.3" height="6.9" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2011" x="536.9" y="191.5" width="12.3" height="10.5" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2012" x="566.2" y="196.2" width="12.3" height="5.8" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2013" x="595.5" y="202.0" width="12.3" height="8.8" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2014" x="624.9" y="195.2" width="12.3" height="6.8" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2015" x="654.2" y="202.0" width="12.3" height="6.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2016" x="683.5" y="193.8" width="12.3" height="8.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2017" x="712.9" y="198.0" width="12.3" height="4.0" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2018" x="742.2" y="193.2" width="12.3" height="8.8" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2019" x="771.5" y="202.0" width="12.3" height="0.4" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2020" x="800.9" y="202.0" width="12.3" height="0.0" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2021" x="830.2" y="196.0" width="12.3" height="6.0" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2022" x="859.5" y="202.0" width="12.3" height="2.2" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2023" x="888.9" y="197.2" width="12.3" height="4.8" fill="#1f4e79"/>
+<rect data-season="spring" data-year="2024" x="918.2" y="198.7" width="12.3" height="3.3" fill="#1f4e79"/>
+<text x="78.7" y="278.0" font-size="12" text-anchor="middle">1995</text>
+<text x="225.3" y="278.0" font-size="12" text-anchor="middle">2000</text>
+<text x="372.0" y="278.0" font-size="12" text-anchor="middle">2005</text>
+<text x="518.7" y="278.0" font-size="12" text-anchor="middle">2010</text>
+<text x="665.3" y="278.0" font-size="12" text-anchor="middle">2015</text>
+<text x="812.0" y="278.0" font-size="12" text-anchor="middle">2020</text>
+<text x="929.3" y="278.0" font-size="12" text-anchor="middle">2024</text>
+</g>
+<g data-season="summer_autumn">
+<text x="16.0" y="310.0" font-weight="bold">Rice, Summer-autumn season (Vụ Hè Thu)</text>
+<text x="944.0" y="310.0" font-size="12" text-anchor="end">This season is not modelled; no model estimates.</text>
+<g data-tick-label="-0.3"><line data-tick="-0.3" x1="64" y1="462.0" x2="944" y2="462.0" stroke="#d9d9d9"/><text x="58.0" y="466.0" font-size="12" text-anchor="end">-30%</text></g>
+<g data-tick-label="-0.2"><line data-tick="-0.2" x1="64" y1="442.0" x2="944" y2="442.0" stroke="#d9d9d9"/><text x="58.0" y="446.0" font-size="12" text-anchor="end">-20%</text></g>
+<g data-tick-label="-0.1"><line data-tick="-0.1" x1="64" y1="422.0" x2="944" y2="422.0" stroke="#d9d9d9"/><text x="58.0" y="426.0" font-size="12" text-anchor="end">-10%</text></g>
+<g data-tick-label="0"><line data-tick="0" x1="64" y1="402.0" x2="944" y2="402.0" stroke="#595959"/><text x="58.0" y="406.0" font-size="12" text-anchor="end">0%</text></g>
+<g data-tick-label="0.1"><line data-tick="0.1" x1="64" y1="382.0" x2="944" y2="382.0" stroke="#d9d9d9"/><text x="58.0" y="386.0" font-size="12" text-anchor="end">10%</text></g>
+<g data-tick-label="0.2"><line data-tick="0.2" x1="64" y1="362.0" x2="944" y2="362.0" stroke="#d9d9d9"/><text x="58.0" y="366.0" font-size="12" text-anchor="end">20%</text></g>
+<g data-tick-label="0.3"><line data-tick="0.3" x1="64" y1="342.0" x2="944" y2="342.0" stroke="#d9d9d9"/><text x="58.0" y="346.0" font-size="12" text-anchor="end">30%</text></g>
+<g data-tick-label="0.4"><line data-tick="0.4" x1="64" y1="322.0" x2="944" y2="322.0" stroke="#d9d9d9"/><text x="58.0" y="326.0" font-size="12" text-anchor="end">40%</text></g>
+<text x="73.7" y="398.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<text x="103.0" y="398.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<text x="132.3" y="398.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<rect data-season="summer_autumn" data-year="1998" x="155.5" y="400.8" width="12.3" height="1.2" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="1999" x="184.9" y="346.0" width="12.3" height="56.0" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2000" x="214.2" y="381.7" width="12.3" height="20.3" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2001" x="243.5" y="393.7" width="12.3" height="8.3" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2002" x="272.9" y="386.5" width="12.3" height="15.5" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2003" x="302.2" y="398.6" width="12.3" height="3.4" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2004" x="331.5" y="380.5" width="12.3" height="21.5" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2005" x="360.9" y="402.0" width="12.3" height="21.1" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2006" x="390.2" y="386.4" width="12.3" height="15.6" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2007" x="419.5" y="386.3" width="12.3" height="15.7" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2008" x="448.9" y="368.4" width="12.3" height="33.6" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2009" x="478.2" y="402.0" width="12.3" height="18.6" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2010" x="507.5" y="402.0" width="12.3" height="53.9" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2011" x="536.9" y="387.2" width="12.3" height="14.8" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2012" x="566.2" y="384.3" width="12.3" height="17.7" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2013" x="595.5" y="386.6" width="12.3" height="15.4" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2014" x="624.9" y="393.8" width="12.3" height="8.2" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2015" x="654.2" y="386.8" width="12.3" height="15.2" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2016" x="683.5" y="393.3" width="12.3" height="8.7" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2017" x="712.9" y="402.0" width="12.3" height="0.5" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2018" x="742.2" y="402.0" width="12.3" height="18.4" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2019" x="771.5" y="402.0" width="12.3" height="31.2" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2020" x="800.9" y="401.3" width="12.3" height="0.7" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2021" x="830.2" y="364.0" width="12.3" height="38.0" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2022" x="859.5" y="375.3" width="12.3" height="26.7" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2023" x="888.9" y="393.9" width="12.3" height="8.1" fill="#1f4e79"/>
+<rect data-season="summer_autumn" data-year="2024" x="918.2" y="394.5" width="12.3" height="7.5" fill="#1f4e79"/>
+<text x="78.7" y="478.0" font-size="12" text-anchor="middle">1995</text>
+<text x="225.3" y="478.0" font-size="12" text-anchor="middle">2000</text>
+<text x="372.0" y="478.0" font-size="12" text-anchor="middle">2005</text>
+<text x="518.7" y="478.0" font-size="12" text-anchor="middle">2010</text>
+<text x="665.3" y="478.0" font-size="12" text-anchor="middle">2015</text>
+<text x="812.0" y="478.0" font-size="12" text-anchor="middle">2020</text>
+<text x="929.3" y="478.0" font-size="12" text-anchor="middle">2024</text>
+</g>
+<g data-season="winter">
+<text x="16.0" y="510.0" font-weight="bold">Rice, Winter season (Vụ Mùa)</text>
+<g data-tick-label="-0.3"><line data-tick="-0.3" x1="64" y1="662.0" x2="944" y2="662.0" stroke="#d9d9d9"/><text x="58.0" y="666.0" font-size="12" text-anchor="end">-30%</text></g>
+<g data-tick-label="-0.2"><line data-tick="-0.2" x1="64" y1="642.0" x2="944" y2="642.0" stroke="#d9d9d9"/><text x="58.0" y="646.0" font-size="12" text-anchor="end">-20%</text></g>
+<g data-tick-label="-0.1"><line data-tick="-0.1" x1="64" y1="622.0" x2="944" y2="622.0" stroke="#d9d9d9"/><text x="58.0" y="626.0" font-size="12" text-anchor="end">-10%</text></g>
+<g data-tick-label="0"><line data-tick="0" x1="64" y1="602.0" x2="944" y2="602.0" stroke="#595959"/><text x="58.0" y="606.0" font-size="12" text-anchor="end">0%</text></g>
+<g data-tick-label="0.1"><line data-tick="0.1" x1="64" y1="582.0" x2="944" y2="582.0" stroke="#d9d9d9"/><text x="58.0" y="586.0" font-size="12" text-anchor="end">10%</text></g>
+<g data-tick-label="0.2"><line data-tick="0.2" x1="64" y1="562.0" x2="944" y2="562.0" stroke="#d9d9d9"/><text x="58.0" y="566.0" font-size="12" text-anchor="end">20%</text></g>
+<g data-tick-label="0.3"><line data-tick="0.3" x1="64" y1="542.0" x2="944" y2="542.0" stroke="#d9d9d9"/><text x="58.0" y="546.0" font-size="12" text-anchor="end">30%</text></g>
+<g data-tick-label="0.4"><line data-tick="0.4" x1="64" y1="522.0" x2="944" y2="522.0" stroke="#d9d9d9"/><text x="58.0" y="526.0" font-size="12" text-anchor="end">40%</text></g>
+<text x="73.7" y="598.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<text x="103.0" y="598.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<text x="132.3" y="598.0" font-size="10" text-anchor="middle" fill="#595959">n/a</text>
+<rect data-season="winter" data-year="1998" x="155.5" y="602.0" width="12.3" height="9.8" fill="#1f4e79"/>
+<rect data-season="winter" data-year="1999" x="184.9" y="602.0" width="12.3" height="4.6" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2000" x="214.2" y="561.2" width="12.3" height="40.8" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2001" x="243.5" y="567.9" width="12.3" height="34.1" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2002" x="272.9" y="585.2" width="12.3" height="16.8" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2003" x="302.2" y="590.1" width="12.3" height="11.9" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2004" x="331.5" y="566.9" width="12.3" height="35.1" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2005" x="360.9" y="590.0" width="12.3" height="12.0" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2006" x="390.2" y="583.2" width="12.3" height="18.8" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2007" x="419.5" y="602.0" width="12.3" height="4.1" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2008" x="448.9" y="602.0" width="12.3" height="2.7" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2009" x="478.2" y="602.0" width="12.3" height="42.2" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2010" x="507.5" y="602.0" width="12.3" height="19.2" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2011" x="536.9" y="548.8" width="12.3" height="53.2" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2012" x="566.2" y="540.4" width="12.3" height="61.6" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2013" x="595.5" y="575.0" width="12.3" height="27.0" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2014" x="624.9" y="580.8" width="12.3" height="21.2" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2015" x="654.2" y="598.2" width="12.3" height="3.8" fill="#1f4e79"/>
+<rect data-season="winter" data-year="2016" x="683.5" y="601.0" width="12.3" height="1.0" fill="#1f4e79"/>
+<g data-season="winter" data-year="2016" data-estimate="m1_ridge"><line x1="701.1" y1="581.2" x2="701.1" y2="606.9" stroke="#b04a00" stroke-width="2"/><circle cx="701.1" cy="594.0" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2017" x="712.9" y="602.0" width="12.3" height="13.7" fill="#1f4e79"/>
+<g data-season="winter" data-year="2017" data-estimate="m1_ridge"><line x1="730.5" y1="583.9" x2="730.5" y2="610.8" stroke="#b04a00" stroke-width="2"/><circle cx="730.5" cy="597.3" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2018" x="742.2" y="592.6" width="12.3" height="9.4" fill="#1f4e79"/>
+<g data-season="winter" data-year="2018" data-estimate="m1_ridge"><line x1="759.8" y1="588.5" x2="759.8" y2="617.1" stroke="#b04a00" stroke-width="2"/><circle cx="759.8" cy="602.8" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2019" x="771.5" y="602.0" width="12.3" height="11.5" fill="#1f4e79"/>
+<g data-season="winter" data-year="2019" data-estimate="m1_ridge"><line x1="789.1" y1="590.1" x2="789.1" y2="618.5" stroke="#b04a00" stroke-width="2"/><circle cx="789.1" cy="604.3" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2020" x="800.9" y="599.4" width="12.3" height="2.6" fill="#1f4e79"/>
+<g data-season="winter" data-year="2020" data-estimate="m1_ridge"><line x1="818.5" y1="590.7" x2="818.5" y2="618.1" stroke="#b04a00" stroke-width="2"/><circle cx="818.5" cy="604.4" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2021" x="830.2" y="581.6" width="12.3" height="20.4" fill="#1f4e79"/>
+<g data-season="winter" data-year="2021" data-estimate="m1_ridge"><line x1="847.8" y1="582.0" x2="847.8" y2="609.2" stroke="#b04a00" stroke-width="2"/><circle cx="847.8" cy="595.6" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2022" x="859.5" y="587.3" width="12.3" height="14.7" fill="#1f4e79"/>
+<g data-season="winter" data-year="2022" data-estimate="m1_ridge"><line x1="877.1" y1="584.6" x2="877.1" y2="610.6" stroke="#b04a00" stroke-width="2"/><circle cx="877.1" cy="597.6" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2023" x="888.9" y="579.3" width="12.3" height="22.7" fill="#1f4e79"/>
+<g data-season="winter" data-year="2023" data-estimate="m1_ridge"><line x1="906.5" y1="584.0" x2="906.5" y2="608.6" stroke="#b04a00" stroke-width="2"/><circle cx="906.5" cy="596.3" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<rect data-season="winter" data-year="2024" x="918.2" y="583.0" width="12.3" height="19.0" fill="#1f4e79"/>
+<g data-season="winter" data-year="2024" data-estimate="m1_ridge"><line x1="935.8" y1="583.9" x2="935.8" y2="608.2" stroke="#b04a00" stroke-width="2"/><circle cx="935.8" cy="596.0" r="3.5" fill="#ffffff" stroke="#b04a00" stroke-width="2"/></g>
+<text x="78.7" y="678.0" font-size="12" text-anchor="middle">1995</text>
+<text x="225.3" y="678.0" font-size="12" text-anchor="middle">2000</text>
+<text x="372.0" y="678.0" font-size="12" text-anchor="middle">2005</text>
+<text x="518.7" y="678.0" font-size="12" text-anchor="middle">2010</text>
+<text x="665.3" y="678.0" font-size="12" text-anchor="middle">2015</text>
+<text x="812.0" y="678.0" font-size="12" text-anchor="middle">2020</text>
+<text x="929.3" y="678.0" font-size="12" text-anchor="middle">2024</text>
+</g>
+<text x="16.0" y="704.0" font-size="12">Source: artifacts/risk_table.json, Nghệ An rows: NSO yields (R-D01), past-only normal (E-010), M1 estimates and 80% ranges (E-012).</text>
+<text x="16.0" y="720.0" font-size="12">Province average; mostly irrigation-served rice.</text>
+</svg>

@@ -35,6 +35,7 @@ DESINVENTAR=data/raw/desinventar/DI_export_vnm.zip   # R-A19, for the E-016 chec
 [ -f "$DESINVENTAR" ] || python scripts/fetch_recorded.py "$DESINVENTAR"
 python scripts/run_method_reports.py   # method page reports: E-012/E-018 winter claim, setup choices, E-014, E-016
 python scripts/build_results_chart.py   # artifacts/figures/results_chart.svg for the slides and the method page
+python scripts/build_figures.py   # docs/figures: rice yield history and farmland rule shares for the README and submission
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
 #     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.
