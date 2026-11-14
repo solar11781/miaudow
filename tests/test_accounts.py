@@ -127,8 +127,8 @@ def fetched(keys: dict[str, rsa.RSAPrivateKey], monkeypatch: pytest.MonkeyPatch)
     body = json.dumps({"google": public.decode()}).encode()
 
     class Answer:
-        status = 200
-        headers: dict[str, str] = {"content-type": "application/json"}  # noqa: RUF012
+        def __init__(self) -> None:
+            self.status, self.headers = 200, {"content-type": "application/json"}
 
         def read(self) -> bytes:
             return body
