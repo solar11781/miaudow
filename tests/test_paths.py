@@ -70,6 +70,7 @@ def test_installed_package_without_the_project_folder_fails_with_a_message(insta
 
 
 def test_dockerfile_points_the_package_at_its_workdir() -> None:
-    text = (REPO / "Dockerfile").read_text(encoding="utf-8")
+    # the served image is the last stage; an earlier stage builds the web app (D-166)
+    text = (REPO / "Dockerfile").read_text(encoding="utf-8").rsplit("\nFROM ", 1)[-1]
     workdir = re.search(r"^WORKDIR\s+(\S+)", text, re.MULTILINE).group(1)
     assert re.search(rf"^ENV\s+.*FIELDSHIFT_ROOT={re.escape(workdir)}\b", text, re.MULTILINE)

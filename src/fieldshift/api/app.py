@@ -7,8 +7,8 @@ files and artifacts are read once when the app is created, so a broken or missin
 failing a farmer's request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API
 (FR-15), is the one stated exception to NFR-01: off by default, it answers 503 until it is turned on, and also while
 its own thread limit is full (explain.py). Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
-generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
-every frontend route, so browser history routing and deep links work (D-102).
+generic 500 without internals. The same service serves the built frontend (frontend/dist): every built file, and index.html
+for any other path outside /api (D-102, D-166).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
 
@@ -20,7 +20,7 @@ import json
 import logging
 import os
 from collections.abc import Callable
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Annotated, TypeVar, get_args
 
 import anyio
@@ -30,10 +30,10 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import ClientDisconnect
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from fieldshift.api.accounts import (
     BIGINT_MAX,
@@ -55,17 +55,6 @@ from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, Hea
 from fieldshift.paths import project_root
 
 ROOT = project_root()
-FRONTEND_ROUTES = (
-    "/",
-    "/ruong",
-    "/nam",
-    "/uu-tien",
-    "/phuong-an",
-    "/khong-co-phuong-an",
-    "/phuong-phap",
-    "/gioi-thieu",
-    "/nguon",
-)  # UI-UX-SPEC §6; later-feature routes are added with them
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
 # bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. A saved set of
 # answers is the same body without the province, so the same limit holds it; an explain request is that body with a
@@ -73,6 +62,32 @@ FRONTEND_ROUTES = (
 MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 NO_STORE = {"cache-control": "no-store"}
+# the built web app: vite's content-hashed chunks in assets/, and the public folders copied as they are (D-166)
+BUILD_FOLDERS = ("assets/", "cesium/", "media/")
+FILE_METHODS = ("GET", "HEAD")
+ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
+IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
+# H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat.
+# Inline style attributes are React style props; data: and blob: images, blob: workers and eval are Cesium's.
+CSP = "; ".join(
+    (
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-eval'",  # D-170: Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
+        "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov",
+        "connect-src 'self' https://gibs.earthdata.nasa.gov",
+        "frame-src https://eyes.nasa.gov",
+        "worker-src 'self' blob:",
+        "style-src 'self' 'unsafe-inline'",
+        "font-src 'self'",
+        "frame-ancestors 'none'",
+    )
+)
+SECURITY_HEADERS = [
+    (b"x-content-type-options", b"nosniff"),
+    (b"referrer-policy", b"no-referrer"),
+    (b"content-security-policy", CSP.encode()),
+]
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
 M = TypeVar("M", bound=BaseModel)
 T = TypeVar("T")
@@ -294,6 +309,50 @@ def _read_every_year_row(compare_data: CompareData) -> None:
         compare(request, compare_data)
 
 
+def _add_frontend(app: FastAPI, frontend: Path) -> None:
+    """The built web app (D-166): each file of the build at its own path, index.html for any other path outside /api
+    (the app routes in the URL fragment, so deep links work). The file list is fixed at start, so no request can reach
+    a file outside the build. A missing file is 404, never index.html: a tab opened before a deploy that asks for an old
+    chunk must fail as a missing script, not run HTML. Every method reaches this route, so an unknown /api path is a
+    JSON 404 whatever the method; the files answer GET and HEAD only."""
+    root = frontend.resolve()
+    index = root / "index.html"
+    files = {p.relative_to(root).as_posix(): p for p in root.rglob("*") if p.is_file()}
+
+    @app.api_route("/{path:path}", methods=list(ALL_METHODS), include_in_schema=False)
+    def frontend_route(request: Request, path: str) -> Response:
+        if path == "api" or path.startswith("api/"):
+            raise HTTPException(404, "Not Found")
+        if request.method not in FILE_METHODS:
+            raise HTTPException(405, "Method Not Allowed", headers={"Allow": ", ".join(FILE_METHODS)})
+        file = files.get(path)
+        if file is None and (PurePosixPath(path).suffix or path.startswith(BUILD_FOLDERS)):
+            raise HTTPException(404, "Not Found")
+        if file is None or file == index:
+            return FileResponse(index, headers=REVALIDATE)
+        return FileResponse(file, headers=IMMUTABLE if path.startswith("assets/") else None)
+
+
+class SecurityHeaders:
+    """Adds the security headers to every response (security review 2026-11-14), as plain ASGI so request bodies
+    still stream to the size and time limits of _body."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                message["headers"] = [*message.get("headers", []), *SECURITY_HEADERS]
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
+
+
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
@@ -311,6 +370,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     app.add_exception_handler(RequestValidationError, _unprocessable)
     app.add_exception_handler(ExplainError, _bad_gateway)
     app.add_exception_handler(Exception, _internal_error)
+    app.add_middleware(SecurityHeaders)
 
     @app.get("/api/health")
     def health_route() -> Response:
@@ -343,11 +403,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     app.include_router(accounts_router)
 
     if (frontend / "index.html").exists():
-        index = frontend / "index.html"
-        for route in FRONTEND_ROUTES:
-            app.add_api_route(route, lambda: FileResponse(index), methods=["GET"], include_in_schema=False)
-        if (frontend / "assets").is_dir():
-            app.mount("/assets", StaticFiles(directory=frontend / "assets"), name="assets")
+        _add_frontend(app, frontend)  # last, so every route above wins over the fallback
     return app
 
 

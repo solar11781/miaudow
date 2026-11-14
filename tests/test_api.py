@@ -14,6 +14,7 @@ import asyncio
 import ipaddress
 import json
 import logging
+import re
 import shutil
 import socket
 from collections.abc import Iterator
@@ -25,10 +26,21 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from fieldshift.api import app as api
-from fieldshift.api.app import FRONTEND_ROUTES, MAX_BODY_BYTES, create_app
+from fieldshift.api.app import MAX_BODY_BYTES, create_app
 from fieldshift.engine.schemas import CompareResponse, HealthResponse, MethodResponse, PastYearsResponse
 
 REPO = Path(__file__).resolve().parents[1]
+FRONTEND_ROUTES = (
+    "/",
+    "/ruong",
+    "/nam",
+    "/uu-tien",
+    "/phuong-an",
+    "/khong-co-phuong-an",
+    "/phuong-phap",
+    "/gioi-thieu",
+    "/nguon",
+)  # UI-UX-SPEC §6 (built routes)
 BODY = {"province": "nghe_an", "land": "dry", "years": [1995, 2007, 2013, 2020], "priority": "income"}
 
 
@@ -358,23 +370,125 @@ def test_frontend_routes_return_index_html(tmp_path: Path) -> None:
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
     c = TestClient(create_app(root=REPO, frontend_dir=tmp_path))
-    assert set(FRONTEND_ROUTES) == {
-        "/",
-        "/ruong",
-        "/nam",
-        "/uu-tien",
-        "/phuong-an",
-        "/khong-co-phuong-an",
-        "/phuong-phap",
-        "/gioi-thieu",
-        "/nguon",
-    }  # UI-UX-SPEC §6 (built routes)
     for route in FRONTEND_ROUTES:
         r = c.get(route)
         assert r.status_code == 200
         assert "app" in r.text
     assert c.get("/assets/app.js").text == "console.log(1)"
     assert c.get("/api/nothing").status_code == 404
+
+
+def built_frontend(tmp_path: Path) -> TestClient:
+    """A built web app as vite writes it: index.html, hashed assets and the public files (D-166)."""
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "media" / "photo").mkdir(parents=True)
+    (dist / "index.html").write_text("<html>app</html>", encoding="utf-8")
+    (dist / "favicon.svg").write_text("<svg/>", encoding="utf-8")
+    (dist / "media" / "photo" / "field.webp").write_bytes(b"webp")
+    (dist / "assets" / "PlansStep-new1.js").write_text("export {}", encoding="utf-8")
+    (tmp_path / "secret.txt").write_text("outside", encoding="utf-8")
+    return TestClient(create_app(root=REPO, frontend_dir=dist))
+
+
+def test_every_built_file_is_served(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    assert c.get("/favicon.svg").text == "<svg/>"
+    assert c.get("/media/photo/field.webp").content == b"webp"
+
+
+def test_other_paths_fall_back_to_index_html(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/nong-dan", "/khoa-hoc/2010", "/phuong-phap"):
+        r = c.get(path)
+        assert r.status_code == 200, path
+        assert r.text == "<html>app</html>", path
+
+
+def test_unknown_api_paths_stay_json_404_with_the_frontend_built(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/api", "/api/nothing", "/api/figures/missing.svg"):
+        r = c.get(path)
+        assert r.status_code == 404, path
+        assert r.json() == {"detail": "Not Found"}, path
+
+
+def test_api_and_privacy_routes_win_over_the_frontend(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    assert c.get("/api/health").json()["status"] == "ok"
+    assert c.get("/api/figures/nghe_an_grid.svg").headers["content-type"].startswith("image/svg+xml")
+    assert "<html>app</html>" not in c.get("/quyen-rieng-tu").text
+
+
+def test_no_file_outside_the_build_is_served(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/../secret.txt", "/%2e%2e/secret.txt", "/..%2fsecret.txt"):
+        assert "outside" not in c.get(path).text, path
+
+
+# security review 2026-11-14: a tab left open across a deploy asks for an old chunk; HTML in its place blanks the page
+def test_a_missing_file_is_404_never_index_html(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in (
+        "/assets/PlansStep-old0.js",
+        "/media/missing.webp",
+        "/cesium/Workers/x.js",
+        "/assets/x",
+        "/robots.txt",
+    ):
+        r = c.get(path)
+        assert r.status_code == 404, path
+        assert "<html>app</html>" not in r.text, path
+
+
+def test_index_html_is_revalidated_and_hashed_assets_are_cached(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/", "/nong-dan"):
+        assert c.get(path).headers["cache-control"] == "no-cache", path
+    assert c.get("/assets/PlansStep-new1.js").headers["cache-control"] == "public, max-age=31536000, immutable"
+    assert "immutable" not in c.get("/favicon.svg").headers.get("cache-control", "")
+
+
+def test_every_method_on_an_unknown_api_path_is_json_404(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for method in ("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"):
+        r = c.request(method, "/api/nothing")
+        assert r.status_code == 404, method
+        if method != "HEAD":
+            assert r.json() == {"detail": "Not Found"}, method
+
+
+def test_frontend_files_answer_get_and_head_only(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    assert c.head("/").status_code == 200
+    assert c.head("/favicon.svg").status_code == 200
+    for method in ("POST", "PUT", "DELETE"):
+        assert c.request(method, "/").status_code == 405, method
+        assert c.request(method, "/favicon.svg").status_code == 405, method
+
+
+def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for r in (
+        c.get("/"),
+        c.get("/api/health"),
+        c.get("/api/nothing"),
+        c.get("/quyen-rieng-tu"),
+        c.post("/api/compare"),
+    ):
+        assert r.headers["x-content-type-options"] == "nosniff"
+        assert r.headers["referrer-policy"] == "no-referrer"
+        csp = r.headers["content-security-policy"]
+        assert "frame-ancestors 'none'" in csp
+        assert "default-src 'self'" in csp
+
+
+def test_the_csp_allows_only_the_d167_outside_origins(tmp_path: Path) -> None:
+    csp = built_frontend(tmp_path).get("/").headers["content-security-policy"]
+    outside = set(re.findall(r"https://[^\s;]+", csp))
+    assert outside == {"https://gibs.earthdata.nasa.gov", "https://eyes.nasa.gov"}  # D-167 exception, /dai-quan-sat
+    # Knockout, bundled in Cesium, runs (0,eval)('this') when the observatory chunk loads (security review 2026-11-14)
+    assert "script-src 'self' 'unsafe-eval';" in csp
 
 
 def test_start_command_turns_off_the_access_log() -> None:

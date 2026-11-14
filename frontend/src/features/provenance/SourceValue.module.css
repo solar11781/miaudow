@@ -1,0 +1,71 @@
+.val {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.15rem 0.35rem 0.15rem 0.55rem;
+  margin: 0 -0.35rem 0 -0.55rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
+  transition: background-color var(--d-fast) var(--ease-out);
+}
+.val:hover {
+  background: var(--bg-sunk);
+}
+.val:hover .seal {
+  transform: rotate(0deg) scale(1.06);
+}
+.text {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.figure {
+  overflow-wrap: anywhere;
+}
+.src {
+  font: 400 var(--t-micro)/1.35 var(--font-mono);
+  color: var(--fg-3);
+}
+.seal {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  background: var(--seal);
+  color: var(--on-seal);
+  transform: rotate(-5deg);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1.5px color-mix(in srgb, var(--on-seal) 25%, transparent);
+  transition: transform var(--d-fast) var(--ease-out);
+}
+.md {
+  font-size: inherit;
+}
+.lg {
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+}
+.lg .seal {
+  width: 22px;
+  height: 22px;
+}
+.xl {
+  font: 400 clamp(2.4rem, 2rem + 1.6vw, 3.4rem)/1 var(--font-display);
+  letter-spacing: -0.02em;
+}
+.xl .seal {
+  width: 24px;
+  height: 24px;
+  align-self: flex-start;
+  margin-top: 0.4rem;
+}
