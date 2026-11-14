@@ -90,6 +90,7 @@ FILE_METHODS = ("GET", "HEAD")
 ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
+WEEK = {"cache-control": "public, max-age=604800"}  # performance audit 2026-11-15: media names carry no content hash
 # H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat,
 # and Google's sign-in script, frame and style of /dang-nhap and /da-luu (UI-UX-SPEC §12c), as Google's guidance names
 # them: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#content_security_policy
@@ -411,7 +412,9 @@ def _add_frontend(app: FastAPI, frontend: Path) -> None:
             raise HTTPException(404, "Not Found")
         if file is None or file == index:
             return FileResponse(index, headers=REVALIDATE)
-        return FileResponse(file, headers=IMMUTABLE if path.startswith("assets/") else None)
+        if path.startswith("assets/"):
+            return FileResponse(file, headers=IMMUTABLE)
+        return FileResponse(file, headers=WEEK if path.startswith("media/") else None)
 
 
 class SecurityHeaders:

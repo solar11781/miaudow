@@ -462,6 +462,11 @@ def test_index_html_is_revalidated_and_hashed_assets_are_cached(tmp_path: Path) 
     assert "immutable" not in c.get("/favicon.svg").headers.get("cache-control", "")
 
 
+def test_media_files_are_cached_for_a_week(tmp_path: Path) -> None:
+    # the performance audit of 2026-11-15: a week; the media names carry no content hash, so never immutable
+    assert built_frontend(tmp_path).get("/media/photo/field.webp").headers["cache-control"] == "public, max-age=604800"
+
+
 def test_every_method_on_an_unknown_api_path_is_json_404(tmp_path: Path) -> None:
     c = built_frontend(tmp_path)
     for method in ("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"):
