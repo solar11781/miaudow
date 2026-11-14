@@ -82,6 +82,32 @@
     - {vi: "Tin báo, không phải số liệu đo.", en: "A news report, not measured data."}
   url: null
   nso_credit: false
+- id: R-B01
+  citation: {vi: "USDA ARS, GRIN-Global Taxonomy, các trang loài của 11 cây trồng (họ thực vật ghi trên từng trang)",
+             en: "USDA ARS, GRIN-Global Taxonomy, the taxon pages of the 11 crops (plant family as written on each page)"}
+  study_type: {vi: "Cơ sở dữ liệu phân loại thực vật", en: "Plant taxonomy database"}
+  place_years: {vi: "Hoa Kỳ (Bộ Nông nghiệp); đọc năm 2026", en: "United States (Department of Agriculture); read in 2026"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chỉ cho biết họ thực vật, không nói cây cố định đạm bao nhiêu trên ruộng.",
+       en: "Gives the plant family only, not how much nitrogen the crop fixes in a field."}
+  url: "https://npgsweb.ars-grin.gov/gringlobal/taxon/taxonomydetail?id=41629"
+  nso_credit: false
+- id: R-B02
+  citation: {vi: "Đỗ Tất Lợi, Những cây thuốc và vị thuốc Việt Nam, tr. 239-240 (đậu đen)",
+             en: "Đỗ Tất Lợi, Những cây thuốc và vị thuốc Việt Nam (Vietnamese medicinal plants), pp. 239-240 (black bean)"}
+  study_type: {vi: "Sách tham khảo", en: "Reference book"}
+  place_years: {vi: "Việt Nam", en: "Viet Nam"}
+  read_status: "READ (transcription)"
+  full_text_read: false
+  limitations:
+    - {vi: "Đọc qua bản chép lại trên mạng, chỉ hai trang về đậu đen.",
+       en: "Read in an online transcription, only the two pages on black bean."}
+    - {vi: "Sách ghi tên khoa học này \"hiện nay chưa được chính xác lắm\".",
+       en: "The book says this scientific name is \"not yet very exact\" (our translation)."}
+  url: "https://vnras.com/?p=21639"
+  nso_credit: false
 - id: R-C13
   citation: {vi: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (dẫn lời Phó Chủ tịch UBND tỉnh Nghệ An)",
              en: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (quotes the vice chair of the Nghệ An People's Committee)"}
@@ -286,6 +312,18 @@
     - {vi: "Lợi nhuận chỉ trừ chi phí vật chất, có thể không tính công lao động.",
        en: "Profit subtracts material costs only and may leave out labour."}
   url: "https://ngheandost.gov.vn/tap-chi-chuyen-san/tap-chi-kh-cn-nghe-an/dac-san-kh-cn-nghe-an-so-2-2023-112.html?download=1&id=0"
+  nso_credit: false
+- id: R-V05
+  citation: {vi: "Cục Thống kê, Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm",
+             en: "NSO, Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm (annex 1: sowing and harvest calendar of annual crops)"}
+  study_type: {vi: "Phụ lục điều tra của cơ quan thống kê", en: "Survey annex of the statistics office"}
+  place_years: {vi: "Các vùng của Việt Nam; năm 2019", en: "Regions of Viet Nam; 2019"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Lịch theo vùng, không theo từng tỉnh hay từng năm.",
+       en: "A calendar per region, not per province or per year."}
+  url: "https://datacollection.nso.gov.vn/Data/Sites/1/media/huyvq/files/6_%20Ph%E1%BB%A5%20l%E1%BB%A5c%201_IN.doc"
   nso_credit: false
 - id: R-W12
   citation: {vi: "NASA POWER, từ điển tham số (GWETROOT), và GMAO, Câu hỏi thường gặp về MERRA-2",
