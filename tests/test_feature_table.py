@@ -126,6 +126,35 @@ def test_risk_level_features_give_one_row_per_label_with_the_three_shares():
     assert (risk[["risk_heavy_rain", "risk_heat", "risk_cold"]] == 0.0).all(axis=None)
 
 
+def test_risk_level_features_weight_the_cells_meeting_each_rule_with_the_province_cold_wording():
+    # Source: 03-ML-SPEC section 5a rules; Art. 53 per region (team 2026-11-14): P is north_central (plains wording,
+    # 6 days at 8-13 C meet it), Q is northern_mountains (more than 10 days needed); each cell weighs 0.5
+    cells = _cells()
+    cells[CELL_A].loc["2010-03-01":"2010-03-03", "T2M_MAX"] = 36.0  # 3-day heat spell in one band (Art. 47.1 a)
+    cells[CELL_B].loc["2010-02-10":"2010-02-15", "T2M"] = 10.0  # 6 days at 10 C (Art. 53.1 a)
+    labels = _labels().assign(province_nso=["P", "Q", "M"], series_id=["P|r|s|0", "Q|r|s|0", "M|r|a|0"])
+    risk = build_risk_level_features(
+        labels, _weights(("P", "Q", "M")), cells, {"P": "north_central", "Q": "northern_mountains", "M": "mekong"}
+    ).set_index("province_nso")
+    assert risk.loc["P", "risk_heat"] == pytest.approx(0.5)
+    assert risk.loc["P", "risk_cold"] == pytest.approx(0.5)
+    assert risk.loc["Q", "risk_cold"] == 0.0  # the mountain wording needs more than 10 days at 8-13 C
+
+
+def test_centroid_weights_give_the_one_cell_values():
+    # Source: 05-DATA-CONTRACTS section 3 (centroid robustness run: one point at the unit centroid, weight 1), E-008
+    centroid = pd.DataFrame(
+        [("P", "19.0_105.625", *CELL_B, 1.0, "centroid")],
+        columns=["province_nso", "cell_id", "lat", "lon", "farmland_weight", "method"],
+    )
+    table, _ = build_feature_table(_labels()[:1], centroid, _cells(), REGIONS)
+    row = table.iloc[0]
+    assert row.n_points == 1
+    assert row.precip_sum_mm == pytest.approx(3.0 * 150)  # cell B rain 3 mm/day x 150 days (1 Feb - 30 Jun 2010)
+    rain = build_cell_month_rain(_labels()[:1], centroid, _cells(), REGIONS)
+    assert set(rain["farmland_weight"]) == {1.0}
+
+
 def test_a_window_beyond_the_daily_data_is_skipped_with_a_reason():
     # Source: the spec of this builder (rows that cannot be built are returned in a skipped list with a reason, never
     # silently dropped); the toy weather ends on 31 Dec 2020, so P spring 2020 moved 7 months later (Sep 2020 - Jan
