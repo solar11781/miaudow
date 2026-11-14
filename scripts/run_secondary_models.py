@@ -15,7 +15,7 @@ import pandas as pd
 from fieldshift.features.season_windows import nso_regions
 from fieldshift.ml import evaluation as ev
 from fieldshift.ml.fold_features import DROUGHT_COLS, FOLD_RAIN, make_fold_transform, model_columns
-from fieldshift.ml.primary_test import STORED_FEATURES, app_season, metric_row, model_rows
+from fieldshift.ml.primary_test import STORED_FEATURES, metric_row, model_rows, national_record
 from fieldshift.ml.runner import run_secondary
 
 SEED = 0  # fixed seed for the trees and the year bootstrap (python rules)
@@ -43,19 +43,7 @@ for model_id, (fit, grid, experiment) in MODELS.items():
     for season in ev.ML_SEASONS:
         part = both[both["season"] == season].rename(columns={"pred": model_id})
         row = metric_row(part, model_id, seed=SEED)
-        doc["metrics"].append(
-            {
-                "model_id": model_id,
-                "season": app_season(season),
-                "role": "secondary",
-                "scheme": "rolling_origin",
-                "sensitivity": None,
-                "detail": None,
-                "subset": "national",
-                **row,
-                "source_ids": [experiment],
-            }
-        )
+        doc["metrics"].append(national_record(row, model_id, season, {"role": "secondary", "source_ids": [experiment]}))
         print(" ", season, {k: round(v["value"], 3) for k, v in row.items() if k.startswith("skill_vs") and v})
 doc["generated_at"] = datetime.now(UTC).isoformat(timespec="seconds")
 METRICS.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")

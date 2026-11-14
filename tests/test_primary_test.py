@@ -16,9 +16,11 @@ from fieldshift.ml.primary_test import (
     app_season,
     g1_rows,
     gate_detail,
+    label_predictions,
     metric_records,
     metric_row,
     model_rows,
+    national_record,
     penalty_report,
     season_gates,
     weather_claim,
@@ -207,3 +209,33 @@ def test_metric_row_can_score_skill_by_mae():
     assert row["skill_vs_b0"]["value"] == pytest.approx(0.5)
     assert row["skill_vs_bnw"]["value"] == pytest.approx(0.5)
     assert row["skill_vs_b0"]["ci90_low"] - 1e-9 <= 0.5 <= row["skill_vs_b0"]["ci90_high"] + 1e-9
+
+
+def test_national_record_is_a_metric_row_with_the_run_labels():
+    # Source: 05-DATA-CONTRACTS metrics.json MetricRow fields; app season names of UI-UX-SPEC section 11
+    labels = {"role": "secondary", "sensitivity": "mae_skill", "detail": None, "source_ids": ["E-018"]}
+    rec = national_record({"mae": {"value": 0.1}}, "m1_ridge", "spring", labels)
+    assert rec == {
+        "model_id": "m1_ridge",
+        "season": "spring",
+        "role": "secondary",
+        "scheme": "rolling_origin",
+        "sensitivity": "mae_skill",
+        "detail": None,
+        "subset": "national",
+        "mae": {"value": 0.1},
+        "source_ids": ["E-018"],
+    }
+    assert national_record({}, "m3_rf", "autumn", {"role": "secondary", "source_ids": ["E-017"]})["season"] == (
+        "summer_autumn"
+    )
+
+
+def test_label_predictions_read_province_season_and_region_from_the_series_id():
+    pred = pd.DataFrame({"series_id": ["Nghe An|rice|spring|0"], "year": [2016]})
+    out = label_predictions(pred, {"Nghe An": "North Central and Central coastal areas"})
+    assert out.iloc[0][["province_nso", "season", "region"]].tolist() == [
+        "Nghe An",
+        "spring",
+        "North Central and Central coastal areas",
+    ]

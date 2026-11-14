@@ -130,6 +130,28 @@ def _role(col: str, season: str, scheme: str, subset: str) -> str:
     return "primary" if primary else "secondary"
 
 
+def national_record(metrics: dict, model_id: str, season: str, labels: dict) -> dict:
+    """A national rolling-origin MetricRow record: the metric values of metric_row and the run labels (role,
+    sensitivity, detail, source_ids) of a secondary or sensitivity run (05-DATA-CONTRACTS metrics.json)."""
+    return {
+        "model_id": model_id,
+        "season": app_season(season),
+        "role": labels["role"],
+        "scheme": "rolling_origin",
+        "sensitivity": labels.get("sensitivity"),
+        "detail": labels.get("detail"),
+        "subset": "national",
+        **metrics,
+        "source_ids": labels["source_ids"],
+    }
+
+
+def label_predictions(pred: pd.DataFrame, region_of: dict[str, str]) -> pd.DataFrame:
+    """Predictions with the province, NSO season and NSO region read from their series id."""
+    parts = pred["series_id"].str.split("|", expand=True)
+    return pred.assign(province_nso=parts[0], season=parts[2], region=parts[0].map(region_of))
+
+
 def metric_records(
     pred: pd.DataFrame, spatial_pred: pd.DataFrame, pilot: tuple[str, ...], seed: int, n_boot: int = ev.BOOTSTRAP_DRAWS
 ) -> list[dict]:

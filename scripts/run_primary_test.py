@@ -26,6 +26,7 @@ from fieldshift.ml.primary_test import (
     g1_detail,
     g1_rows,
     gate_detail,
+    label_predictions,
     metric_records,
     model_rows,
     penalty_report,
@@ -56,12 +57,8 @@ run = run_rolling_origin(rows, weather, context, ALPHA_GRID, fold_transform=tran
 spatial = run_spatial_holdout(rows, weather, context, ALPHA_GRID, fold_transform=transform)
 
 
-def _labelled(predictions: pd.DataFrame) -> pd.DataFrame:
-    parts = predictions["series_id"].str.split("|", expand=True)
-    return predictions.assign(province_nso=parts[0], season=parts[2], region=parts[0].map(region_of))
-
-
-pred, spatial_pred = _labelled(run["predictions"]), _labelled(spatial["predictions"])
+pred = label_predictions(run["predictions"], region_of)
+spatial_pred = label_predictions(spatial["predictions"], region_of)
 # rolling-origin predictions for the risk table export (gitignored, rebuilt by this run)
 pred.to_csv("data/processed/e012_predictions.csv", index=False)
 
