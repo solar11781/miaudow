@@ -1,0 +1,5 @@
+.offline {
+  position: sticky; top: 72px; z-index: 30; margin: 0; padding: .6rem var(--gutter-r) .6rem var(--gutter-l); text-align: center;
+  background: var(--warn-bg); color: var(--warn); font-size: var(--t-small); font-weight: 500;
+}
+.loading { min-height: 70vh; display: grid; place-items: center; color: var(--fg-3); }
