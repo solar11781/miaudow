@@ -144,5 +144,6 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
 - Other skills in `.claude/skills/`: `ste` (clear explanations), `cognitive-walkthrough` (task walkthrough as a
   first-time user), `spec-review` (two-axis review of a diff), `unslop` (anti-"AI look" audit of the finished screens,
   audit and polish mode only; the UI spec wins: no font, colour or layout change outside it, no generated image, no
-  new icon package, no motion or transition, no story video). Each third-party folder holds its licence;
-  `spec-review/NOTICE.md` and `.claude/hooks/GUARD-NOTICE.md` list the changes made.
+  new icon package, no motion outside the UI spec's H1 conditions (team decision 2026-11-14), no story video). Each
+  third-party folder holds its licence; `spec-review/NOTICE.md` and `.claude/hooks/GUARD-NOTICE.md` list the changes
+  made.
