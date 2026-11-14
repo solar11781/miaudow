@@ -1,6 +1,6 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { geo, hazards, model, YEARS, type MetricRow, type RiceSeason, type RuleCode } from '../../data';
+import { geo, hazards, model, YEARS, type RiceSeason, type RuleCode } from '../../data';
 import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
@@ -8,7 +8,6 @@ import { Reveal } from '../../design-system/Reveal';
 const Observatory3D = lazy(() => import('./Observatory3D').then((m) => ({ default: m.Observatory3D })));
 import { YearBars } from '../charts/YearBars';
 import { RiceHistoryChart } from '../charts/RiceHistoryChart';
-import { SkillChart, type SkillRow } from '../charts/SkillChart';
 import { SourceValue } from '../provenance/SourceValue';
 import { ClimateMlSection } from './ClimateMl';
 import { useRefs } from '../provenance/useRefs';
@@ -19,8 +18,6 @@ import { NdviChart } from '../charts/NdviChart';
 import s from './science.module.css';
 
 const SCIENCE_RULES: RuleCode[] = ['drought_rain_any2', 'drought_rain_consecutive', 'heat', 'heavy_rain', 'cold'];
-type Subset = 'national' | 'na_ht_th' | 'nghe_an';
-const SUBSET_KEY: Record<Subset, string> = { national: 'national', na_ht_th: 'na_ht_th', nghe_an: 'unit:Nghe An' };
 
 function GridSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
   const t = useT();
@@ -196,89 +193,14 @@ function RiceSection() {
   );
 }
 
-function SkillSection() {
+/** The model results live on the method page, read from our API (D-166), so this page shows no second copy. */
+function MethodLink() {
   const t = useT();
-  const pick = usePick();
-  const [subset, setSubset] = useState<Subset>('national');
-  const rows = (season: RiceSeason): SkillRow[] => {
-    const get = (id: MetricRow['model_id']) => model.metrics.find((m) => m.model_id === id && m.season === season && m.subset === SUBSET_KEY[subset] && m.scheme === 'rolling_origin');
-    const out: SkillRow[] = [];
-    for (const id of ['m1_ridge', 'm2_lgbm', 'm3_rf', 'bnw', 'b2'] as const) {
-      const m = get(id);
-      if (m?.skill_vs_b0) out.push({ key: `${season}-${id}`, label: t.science.models[id], sub: `MAE ${m.mae.toFixed(3)} · n=${m.n_rows}`, skill: m.skill_vs_b0, lead: id === 'm1_ridge' });
-    }
-    return out;
-  };
-  const bnwRows: SkillRow[] = (['spring', 'winter'] as RiceSeason[]).flatMap((season) => {
-    const m = model.metrics.find((x) => x.model_id === 'm1_ridge' && x.season === season && x.subset === SUBSET_KEY[subset] && x.scheme === 'rolling_origin');
-    return m?.skill_vs_bnw ? [{ key: `bnw-${season}`, label: t.science.seasons[season], sub: 'M1 vs BNW', skill: m.skill_vs_bnw, lead: true }] : [];
-  });
-  const gates = useMemo(() => model.gates, []);
   return (
-    <section className="band surface-paper" aria-labelledby="skill-title" style={{ paddingTop: 0 }}>
-      <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
-        <Reveal className={s.colHead}>
-          <h2 id="skill-title" className="h1">{t.science.skillTitle}</h2>
-          <p className="lead">{t.science.skillLead}</p>
-          <div className={s.seg} role="radiogroup" aria-label={t.science.skillTitle}>
-            {(['national', 'na_ht_th', 'nghe_an'] as Subset[]).map((x) => (
-              <button key={x} type="button" role="radio" aria-checked={subset === x} onClick={() => setSubset(x)}>{t.science.subsets[x]}</button>
-            ))}
-          </div>
-        </Reveal>
-        <div className={s.skillGrid}>
-          {(['spring', 'winter'] as RiceSeason[]).map((season) => (
-            <Reveal key={season} className={s.chartCard}>
-              <h3 className="h3">{t.science.seasons[season]}</h3>
-              <SkillChart rows={rows(season)} title={`${t.science.skillTitle} · ${t.science.seasons[season]}`} />
-            </Reveal>
-          ))}
-        </div>
-        <Reveal className={s.chartCard}>
-          <h3 className="h3">{t.science.skillVsBnw}</h3>
-          <SkillChart rows={bnwRows} title={t.science.skillVsBnw} />
-          <ul className={s.claims}>
-            {model.weather_claims.map((c) => (
-              <li key={c.season} className={c.made ? s.yes : s.no}>
-                <Icon name={c.made ? 'check' : 'close'} size={16} strokeWidth={2.4} />
-                {t.science.seasons[c.season]}: {c.made ? t.science.claimMade : t.science.claimNotMade}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-
-        <Reveal className={s.gates}>
-          <h3 className="h2">{t.science.gatesTitle}</h3>
-          <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.science.tableCaption}>
-            <table className={s.table}>
-              <thead><tr><th scope="col">{t.science.gateCol}</th><th scope="col">{t.science.seasonCol}</th><th scope="col">{t.science.resultCol}</th><th scope="col">{t.science.detailCol}</th></tr></thead>
-              <tbody>
-                {gates.map((g) => (
-                  <tr key={`${g.gate}-${g.season}`}>
-                    <th scope="row"><span className="mono">{g.gate}</span> · {t.science.gateNames[g.gate]}</th>
-                    <td>{t.science.seasons[g.season]}</td>
-                    <td>{g.passed ? <span className={s.yes}>{t.science.passed}</span> : <span className={s.no}>{t.science.failed}</span>}</td>
-                    <td className={s.detail}>{pick(g.detail)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="mono muted small">{t.science.freeze(model.freeze_commit.slice(0, 7))}</p>
-        </Reveal>
-
-        <div className={s.notes}>
-          <Reveal className={s.chartCard}>
-            <h3 className="h3">{t.science.reportsTitle}</h3>
-            <ul className={s.reports}>
-              {model.reports.map((r) => <li key={r.title.en}><strong>{pick(r.title)}</strong><span>{pick(r.text)}</span></li>)}
-            </ul>
-          </Reveal>
-          <Reveal className={s.chartCard}>
-            <h3 className="h3">{t.science.limitsTitle}</h3>
-            <ul className={s.reports}>{t.science.limits.map((l) => <li key={l}><span>{l}</span></li>)}</ul>
-          </Reveal>
-        </div>
+    <section className="band surface-paper" aria-labelledby="skill-title">
+      <div className={`container ${s.colHead}`}>
+        <h2 id="skill-title" className="h1">{t.science.skillTitle}</h2>
+        <Link to="/phuong-phap" className={s.askLink}><Icon name="arrowRight" size={18} />{t.science.toMethod}</Link>
       </div>
     </section>
   );
@@ -296,7 +218,7 @@ export function SciencePage() {
       <ClimateSection year={year} setYear={setYear} />
       <ClimateMlSection year={year} setYear={setYear} />
       <RiceSection />
-      <SkillSection />
+      <MethodLink />
     </main>
   );
 }

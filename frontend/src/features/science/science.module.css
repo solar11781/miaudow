@@ -104,3 +104,4 @@
 .mlLimits { max-width: 52rem; }
 .mlLimits ul { padding-left: 1.2rem; display: flex; flex-direction: column; gap: .4rem; margin: .4rem 0 .8rem; }
 @media (max-width: 520px) { .hitRow { grid-template-columns: minmax(0, 1fr) 6.5rem; } .hitRow .hitTrack { grid-column: 1 / -1; grid-row: 2; } }
+.gridFigure { width: 100%; max-width: 480px; height: auto; border-radius: var(--r-md); background: #fff; }

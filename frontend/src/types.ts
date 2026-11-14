@@ -1,5 +1,5 @@
 // The data contract of UI-UX-SPEC section 11, names and fields exactly as there (mirrored by
-// src/fieldshift/engine/schemas.py). `MethodResponse.datasets_not_used` is left out: the backend does not send it yet.
+// src/fieldshift/engine/schemas.py).
 
 export type Lang = 'vi' | 'en';
 export type Text = Record<Lang, string>;
@@ -159,6 +159,7 @@ export type CoverageAxis = 'money' | 'conditions' | 'rice_history' | 'model' | '
 export interface CoverageCell { row_key: string; crop: Text; axis: CoverageAxis; text: Text; source_ids: SourceId[] }
 export type ExplainKey = 'evapotranspiration' | 'soil_moisture' | 'ndvi' | 'frost' | 'water_balance' | 'data_types';
 export interface ExplainTerm { key: ExplainKey; title: Text; text: Text; source_ids: SourceId[] }
+export interface NotUsedDataset { dataset: string; reason: Text; source_ids: SourceId[] }
 export interface RainCheck {
   months: { month: string; imerg: Value; power: Value }[];
   cc: Value;
@@ -176,6 +177,7 @@ export interface MethodResponse {
   coverage: CoverageCell[];
   explain_terms: ExplainTerm[];
   limitations: Text[];
+  datasets_not_used: NotUsedDataset[];
   rain_check: RainCheck | null;
   sources: Record<SourceId, SourceFacts>;
 }

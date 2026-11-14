@@ -122,6 +122,7 @@ const methodShape = obj({
   coverage: arr(obj({ row_key: str, crop: text, axis: oneOf(COVERAGE_AXES), text, source_ids: ids })),
   explain_terms: arr(obj({ key: oneOf(EXPLAIN_KEYS), title: text, text, source_ids: ids })),
   limitations: arr(text),
+  datasets_not_used: arr(obj({ dataset: str, reason: text, source_ids: ids })),
   rain_check: nullable(obj({ months: arr(obj({ month: str, imerg: value, power: value })), cc: value, mean_imerg: value, mean_power: value, source_ids: ids })),
   sources: record(sourceFacts),
 });

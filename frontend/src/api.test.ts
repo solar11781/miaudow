@@ -44,7 +44,7 @@ const method = () => ({
   test_years: { first: 2016, last: 2024 }, freeze_commit: 'x', metrics: [], gates: [], weather_claims: [], reports: [],
   coverage: [{ row_key: 'r', crop: text, axis: 'money', text, source_ids: ['R-P02'] }],
   explain_terms: EXPLAIN_KEYS.map((key) => ({ key, title: text, text, source_ids: ['R-P02'] })),
-  limitations: [text], rain_check: null, sources,
+  limitations: [text], datasets_not_used: [{ dataset: 'x', reason: text, source_ids: ['R-P02'] }], rain_check: null, sources,
 });
 
 describe('past years check', () => {
@@ -108,6 +108,16 @@ describe('compare check', () => {
 describe('method check', () => {
   it('accepts a response of the contract', () => {
     expect(validateMethod(method()).explain_terms).toHaveLength(6);
+  });
+  it('rejects a response without the datasets not used (section 11, D-165)', () => {
+    const r: Record<string, unknown> = method();
+    delete r.datasets_not_used;
+    expect(() => validateMethod(r)).toThrow(/datasets_not_used/);
+  });
+  it('rejects a source id of a dataset not used that is not in sources', () => {
+    const r = method();
+    r.datasets_not_used = [{ dataset: 'x', reason: text, source_ids: ['R-X99'] }];
+    expect(() => validateMethod(r)).toThrow(/R-X99/);
   });
   it('rejects a coverage cell listed twice', () => {
     const r = method();

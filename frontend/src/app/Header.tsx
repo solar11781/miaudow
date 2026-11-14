@@ -28,7 +28,7 @@ function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
   );
 }
 
-/** The six areas, in the order a visitor meets them. */
+/** The areas, in the order a visitor meets them. */
 export function useAreas() {
   const t = useT();
   return [
@@ -36,6 +36,7 @@ export function useAreas() {
     { to: '/nong-dan', label: t.nav.farmer },
     { to: '/can-bo', label: t.nav.officer },
     { to: '/khoa-hoc', label: t.nav.science },
+    { to: '/phuong-phap', label: t.nav.method },
     { to: '/bang-chung', label: t.nav.evidence },
     { to: '/tro-ly', label: t.nav.assistant },
   ];
