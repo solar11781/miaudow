@@ -1,0 +1,314 @@
+# Source facts (05-DATA-CONTRACTS §8; D-59: facts about the source only, no grade). One entry per source id used by a
+# displayed value: the ids of the rules files, the land-care principle sources of §7 and the ids in artifacts/*.json.
+# `citation`, `read_status` and `url` come from the REFERENCES row of the id (a DOI as a doi.org link); `read_status`
+# exactly as written.
+# `full_text_read` is set by hand per source (D-102): false for a partial reading (chapters, file attributes).
+# EXPERIMENTS ids (our own computations) have read_status and full_text_read null. Study type, place, years and
+# limitations are drafts for the copy review.
+- id: E-010
+  citation: {vi: "Thực nghiệm E-010 của nhóm: chọn cách tính năng suất bình thường",
+             en: "Our experiment E-010: choice of the normal-yield method"}
+  study_type: {vi: "Tính toán của chúng tôi", en: "Our computation"}
+  place_years: {vi: "Các tỉnh Việt Nam (số liệu Cục Thống kê); các năm trước giai đoạn kiểm tra",
+                en: "Provinces of Viet Nam (NSO data); the years before the test period"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chọn giữa hai phương pháp đã công bố; độ nhạy với lựa chọn này được báo cáo.",
+       en: "A choice between two published methods; the sensitivity to this choice is reported."}
+  url: null
+  nso_credit: false
+- id: E-012
+  citation: {vi: "Thực nghiệm E-012 của nhóm: mô hình hồi quy ridge (M1) cho độ lệch năng suất lúa",
+             en: "Our experiment E-012: ridge regression model (M1) of rice yield anomalies"}
+  study_type: {vi: "Mô hình của chúng tôi, có kết quả các bước kiểm tra G1-G4",
+               en: "Our model, with the results of gates G1-G4"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Cho trung bình của cả tỉnh, không cho một ruộng. Năm đã qua không phải là dự báo.",
+       en: "For a province average, not for one field. Past years are not a forecast."}
+  url: null
+  nso_credit: false
+- id: E-019
+  citation: {vi: "Thực nghiệm E-019 của nhóm: tỉ lệ đất trồng trọt của Nghệ An đạt mỗi quy tắc chính thức",
+             en: "Our experiment E-019: share of Nghệ An farmland where each official rule was met"}
+  study_type: {vi: "Tính toán của chúng tôi, không phải ghi nhận chính thức",
+               en: "Our computation, not an official record"}
+  place_years: {vi: "Nghệ An; 1995-2024", en: "Nghệ An; 1995-2024"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chúng tôi áp ngưỡng chính thức vào giá trị theo ô lưới của NASA; giá trị theo ô lưới làm mờ các giá trị cực đoan.",
+       en: "We apply the official thresholds to NASA grid values; gridded values smooth extremes."}
+  url: null
+  nso_credit: false
+- id: R-A01
+  citation:
+    vi: "Quyết định 18/2021/QĐ-TTg quy định về dự báo, cảnh báo, truyền tin thiên tai và cấp độ rủi ro thiên tai"
+    en: "Quyết định 18/2021/QĐ-TTg quy định về dự báo, cảnh báo, truyền tin thiên tai và cấp độ rủi ro thiên tai
+      (Decision 18/2021/QD-TTg on forecasting, warning and communicating natural disasters and disaster risk levels)"
+  study_type: {vi: "Văn bản quy phạm pháp luật (quyết định của Thủ tướng Chính phủ)",
+               en: "Official regulation (decision of the Prime Minister)"}
+  place_years: {vi: "Việt Nam; năm 2021", en: "Viet Nam; 2021"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Các quy tắc được viết cho dự báo và cảnh báo; áp dụng chúng cho số liệu quá khứ của NASA là cách dùng của chúng tôi.",
+       en: "The rules are written for forecasts and warnings; applying them to past NASA values is our use of them."}
+  url: "https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc"
+  nso_credit: false
+- id: R-A10
+  citation:
+    vi: "Zhang, X. et al. (2011) Indices for monitoring changes in extremes based on daily temperature and precipitation data. WIREs Clim Change 2(6):851-870"
+    en: "Zhang, X. et al. (2011) Indices for monitoring changes in extremes based on daily temperature and precipitation data. WIREs Clim Change 2(6):851-870"
+  study_type: {vi: "Bài báo khoa học trên tạp chí", en: "Journal article"}
+  place_years: {vi: "Toàn cầu; xuất bản năm 2011", en: "Global; published 2011"}
+  read_status: "ABSTRACT"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc phần tóm tắt.", en: "We read the abstract only."}
+  url: "https://doi.org/10.1002/wcc.147"
+  nso_credit: false
+- id: R-A18
+  citation: {vi: "Báo Văn Hóa (16/1/2025), tin về băng giá ở Kỳ Sơn, Quế Phong",
+             en: "Báo Văn Hóa (2025-01-16), news on frost in Kỳ Sơn and Quế Phong"}
+  study_type: {vi: "Tin báo", en: "News report"}
+  place_years: {vi: "Kỳ Sơn, Quế Phong; tháng 1 năm 2025", en: "Kỳ Sơn and Quế Phong; January 2025"}
+  read_status: "READ (news)"
+  full_text_read: true
+  limitations:
+    - {vi: "Tin báo, không phải số liệu đo.", en: "A news report, not measured data."}
+  url: null
+  nso_credit: false
+- id: R-C13
+  citation: {vi: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (dẫn lời Phó Chủ tịch UBND tỉnh Nghệ An)",
+             en: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (quotes the vice chair of the Nghệ An People's Committee)"}
+  study_type: {vi: "Tin báo", en: "News report"}
+  place_years: {vi: "Nghệ An; ngày đăng chưa được ghi lại", en: "Nghệ An; publication date not recorded"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Tin báo dẫn lời một lãnh đạo tỉnh, không phải số liệu đo.",
+       en: "A news report quoting a province leader, not measured data."}
+  url: "https://vietnamnet.vn/trong-ngo-sinh-khoi-lien-ket-huong-di-moi-giup-nong-dan-lam-giau-670666.html"
+  nso_credit: false
+- id: R-D01
+  citation:
+    vi: "Cục Thống kê, cơ sở dữ liệu PX-Web E06 Nông nghiệp, lâm nghiệp và thủy sản, các bảng E06.13-E06.35"
+    en: "Cục Thống kê (General Statistics Office / NSO Vietnam), PX-Web database E06 Agriculture, Forestry and Fishing, tables E06.13-E06.35"
+  study_type: {vi: "Số liệu thống kê quốc gia", en: "National statistics"}
+  place_years: {vi: "Các tỉnh Việt Nam; 1995-2024", en: "Provinces of Viet Nam; 1995-2024"}
+  read_status: "READ (data)"
+  full_text_read: true
+  limitations:
+    - {vi: "Năng suất trung bình của cả tỉnh, phần lớn là lúa có tưới; không phải năng suất của một ruộng.",
+       en: "A province average yield, mostly irrigation-served rice; not the yield of one field."}
+  url: "https://pxweb.nso.gov.vn/pxweb/en/"
+  nso_credit: true
+- id: R-E06
+  citation: {vi: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786",
+             en: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786"}
+  study_type: {vi: "Bài báo khoa học trên tạp chí", en: "Journal article"}
+  place_years: {vi: "Nơi và năm nghiên cứu chưa được ghi lại; xuất bản năm 2022",
+                en: "Study place and years not recorded; published 2022"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Một nguyên tắc chung, không đo trên đất thử nghiệm ở Nghệ An.",
+       en: "A general principle, not measured on the Nghệ An trial land."}
+  url: "https://doi.org/10.3389/fsufs.2021.691786"
+  nso_credit: false
+- id: R-E12
+  citation: {vi: "USDA NRCS, Soil Health on Cropland", en: "USDA NRCS, Soil Health on Cropland"}
+  study_type: {vi: "Trang hướng dẫn của cơ quan nhà nước Hoa Kỳ", en: "Guidance page of a United States government agency"}
+  place_years: {vi: "Hoa Kỳ; trang web đọc năm 2026", en: "United States; web page read in 2026"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Một nguyên tắc chung, không đo trên đất thử nghiệm ở Nghệ An.",
+       en: "A general principle, not measured on the Nghệ An trial land."}
+  url: "https://www.nrcs.usda.gov/conservation-basics/soil/soil-health/soil-health-on-cropland"
+  nso_credit: false
+- id: R-E13
+  citation: {vi: "FAO, Conservation Agriculture", en: "FAO, Conservation Agriculture"}
+  study_type: {vi: "Trang hướng dẫn của FAO", en: "FAO guidance page"}
+  place_years: {vi: "Toàn cầu; trang web đọc năm 2026", en: "Global; web page read in 2026"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Nguyên tắc \"ít nhất ba loại cây khác nhau\" nói về trình tự cây trồng trong nông nghiệp bảo tồn, không phải số loại cây trong một năm.",
+       en: "The principle \"at least three different crops\" describes crop sequences in conservation agriculture, not a count per year."}
+  url: "https://www.fao.org/conservation-agriculture/en/"
+  nso_credit: false
+- id: R-G06
+  citation: {vi: "Nghị định 112/2024/NĐ-CP hướng dẫn về đất trồng lúa",
+             en: "Nghị định 112/2024/NĐ-CP hướng dẫn về đất trồng lúa (Decree 112/2024/ND-CP on rice land)"}
+  study_type: {vi: "Văn bản quy phạm pháp luật (nghị định của Chính phủ)", en: "Official regulation (Government decree)"}
+  place_years: {vi: "Việt Nam; ngày 11/9/2024", en: "Viet Nam; 11 September 2024"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Bản sao trên caselaw.vn, không phải bản đăng chính thức. Thủ tục cho ruộng của một hộ chưa được nêu ở đây.",
+       en: "A copy on caselaw.vn, not the official publication. The procedure for one household's field is not given here."}
+  url: "https://caselaw.vn/van-ban-phap-luat/411897-nghi-dinh-so-112-2024-nd-cp-ngay-11-09-2024-cua-chinh-phu-huong-dan-ve-dat-trong-lua"
+  nso_credit: false
+- id: R-G27
+  citation: {vi: "Nghị định 112/2024/NĐ-CP, Điều 7-8 (kế hoạch chuyển đổi hằng năm)",
+             en: "Nghị định 112/2024/NĐ-CP, Art. 7-8 (annual conversion plans)"}
+  study_type: {vi: "Văn bản quy phạm pháp luật (nghị định của Chính phủ)", en: "Official regulation (Government decree)"}
+  place_years: {vi: "Việt Nam; ngày 11/9/2024", en: "Viet Nam; 11 September 2024"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Bản sao trên hethongphapluat.com, không phải bản đăng chính thức.",
+       en: "A copy on hethongphapluat.com, not the official publication."}
+  url: "https://hethongphapluat.com/nghi-dinh-112-2024-nd-cp-huong-dan-ve-dat-trong-lua/dieu-7"
+  nso_credit: false
+- id: R-M01
+  citation:
+    vi: "Allen, R.G., Pereira, L.S., Raes, D., Smith, M. (1998). Crop evapotranspiration: Guidelines for computing crop water requirements. FAO Irrigation and Drainage Paper 56. Rome: FAO"
+    en: "Allen, R.G., Pereira, L.S., Raes, D., Smith, M. (1998). Crop evapotranspiration: Guidelines for computing crop water requirements. FAO Irrigation and Drainage Paper 56. Rome: FAO"
+  study_type: {vi: "Hướng dẫn kỹ thuật của FAO", en: "FAO technical guideline"}
+  place_years: {vi: "Toàn cầu; năm 1998", en: "Global; 1998"}
+  read_status: "READ (ch. 6-8)"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi đọc chương 6-8. Không con số nào trong ứng dụng dùng nguồn này.",
+       en: "We read chapters 6-8. No number in this app uses this source."}
+  url: "https://www.fao.org/4/x0490e/x0490e00.htm"
+  nso_credit: false
+- id: R-M02
+  citation:
+    vi: "Brouwer, C., Heibloem, M. (1986). Irrigation Water Management: Irrigation Water Needs. FAO Training Manual No. 3. Rome: FAO"
+    en: "Brouwer, C., Heibloem, M. (1986). Irrigation Water Management: Irrigation Water Needs. FAO Training Manual No. 3. Rome: FAO"
+  study_type: {vi: "Tài liệu tập huấn của FAO", en: "FAO training manual"}
+  place_years: {vi: "Toàn cầu; năm 1986", en: "Global; 1986"}
+  read_status: "READ (ch. 3-4)"
+  full_text_read: false
+  limitations:
+    - {vi: "Giá trị Bảng 14 chỉ là ước tính sơ bộ, không theo vùng hay giống.",
+       en: "The Table 14 values are only a rough estimate, not for a region or a variety."}
+    - {vi: "Chúng tôi đọc chương 3-4.", en: "We read chapters 3-4."}
+  url: "https://www.fao.org/4/s2022e/s2022e00.htm"
+  nso_credit: false
+- id: R-M03
+  citation:
+    vi: "Đào Anh Công, Nguyễn Văn Lượng, Lê Hữu Huấn, Phan Thị Như Xuyến, Ngô Sỹ Giai (2022). Tính toán và phân tích chỉ số bốc thoát hơi tiềm năng và chỉ số thỏa mãn nhu cầu nước của lúa và một số cây màu tại huyện Tĩnh Gia và Quan Hóa, tỉnh Thanh Hóa trong thời kỳ 1991-2020. Tạp chí Khí tượng Thủy văn 737: 26-39"
+    en: "Đào Anh Công, Nguyễn Văn Lượng, Lê Hữu Huấn, Phan Thị Như Xuyến, Ngô Sỹ Giai (2022). Tính toán và phân tích chỉ số bốc thoát hơi tiềm năng và chỉ số thỏa mãn nhu cầu nước của lúa và một số cây màu tại huyện Tĩnh Gia và Quan Hóa, tỉnh Thanh Hóa trong thời kỳ 1991-2020. Tạp chí Khí tượng Thủy văn 737: 26-39"
+  study_type: {vi: "Bài báo khoa học trên tạp chí", en: "Journal article"}
+  place_years: {vi: "Tĩnh Gia và Quan Hóa (Thanh Hóa); 1991-2020", en: "Tĩnh Gia and Quan Hóa (Thanh Hóa); 1991-2020"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chỉ số không tính lại được từ bài báo nếu chúng tôi không tự thêm các lựa chọn của mình.",
+       en: "The index cannot be rebuilt from the paper without choices of our own."}
+  url: "https://vjol.info.vn/index.php/TCKHTV/article/download/67642/57186/"
+  nso_credit: false
+- id: R-N01
+  citation:
+    vi: "NASA Langley Research Center POWER Project, Prediction Of Worldwide Energy Resources, POWER Daily API v2.10.3, community AG"
+    en: "NASA Langley Research Center POWER Project, Prediction Of Worldwide Energy Resources, POWER Daily API v2.10.3, community AG"
+  study_type: {vi: "Số liệu tái phân tích của NASA (giá trị mô hình theo ô lưới)",
+               en: "NASA reanalysis data (gridded model values)"}
+  place_years: {vi: "Các ô lưới có đất trồng trọt ở Việt Nam; số liệu ngày 1990-2024",
+                en: "Grid cells with farmland in Viet Nam; daily values 1990-2024"}
+  read_status: "READ (data)"
+  full_text_read: true
+  limitations:
+    - {vi: "Giá trị theo ô lưới lớn làm mờ các giá trị cực đoan; không phải số đo tại ruộng.",
+       en: "Values for large grid cells smooth extremes; not measured at the field."}
+  url: "https://power.larc.nasa.gov/api/temporal/daily/point"
+  nso_credit: false
+- id: R-N02
+  citation:
+    vi: "Friedl, M., Sulla-Menashe, D. (2022) MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 0.05Deg CMG V061 (MCD12C1), NASA EOSDIS Land Processes DAAC, doi:10.5067/MODIS/MCD12C1.061"
+    en: "Friedl, M., Sulla-Menashe, D. (2022) MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 0.05Deg CMG V061 (MCD12C1), NASA EOSDIS Land Processes DAAC, doi:10.5067/MODIS/MCD12C1.061"
+  study_type: {vi: "Bản đồ lớp phủ đất từ vệ tinh của NASA", en: "NASA satellite land-cover map"}
+  place_years: {vi: "Toàn cầu; dùng các năm 2001-2015", en: "Global; years 2001-2015 used"}
+  read_status: "READ (data)"
+  full_text_read: true
+  limitations:
+    - {vi: "Một bản đồ đất trồng trọt cố định, không theo kịp thay đổi sử dụng đất về sau.",
+       en: "One fixed farmland map; it misses later land-cover change."}
+  url: "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=MCD12C1&version=061"
+  nso_credit: false
+- id: R-N05
+  citation:
+    vi: "Huffman, G.J., Stocker, E.F., Bolvin, D.T., Nelkin, E.J., Tan, J. (2023) GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07 (GPM_3IMERGM), GES DISC, doi:10.5067/GPM/IMERG/3B-MONTH/07"
+    en: "Huffman, G.J., Stocker, E.F., Bolvin, D.T., Nelkin, E.J., Tan, J. (2023) GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07 (GPM_3IMERGM), GES DISC, doi:10.5067/GPM/IMERG/3B-MONTH/07"
+  study_type: {vi: "Số liệu mưa vệ tinh của NASA, kết hợp với trạm đo mưa", en: "NASA satellite rain data, merged with rain gauges"}
+  place_years: {vi: "Vùng quanh Nghệ An; các tháng 2001-2024", en: "Area around Nghệ An; months 2001-2024"}
+  read_status: "READ (file attributes)"
+  full_text_read: false
+  limitations:
+    - {vi: "Không phải số đo tại ruộng. Chúng tôi đọc thuộc tính của tệp số liệu.",
+       en: "Not measured at the field. We read the attributes of the data files."}
+  url: "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGM.07/"
+  nso_credit: false
+- id: R-P02
+  citation:
+    vi: "Trịnh Đức Toàn, Phạm Duy Trình, Đào Thị Minh Hiền, Cao Đỗ Mười, Lê Thị Thơm (2023). Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An. Tạp chí Khoa học và Công nghệ Nông nghiệp Việt Nam 04(146): 43-51"
+    en: "Trịnh Đức Toàn, Phạm Duy Trình, Đào Thị Minh Hiền, Cao Đỗ Mười, Lê Thị Thơm (2023). Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An (Testing of some crops on ineffective, frequent drought rice land in Nghe An province). Tạp chí Khoa học và Công nghệ Nông nghiệp Việt Nam 04(146): 43-51"
+  study_type: {vi: "Một thử nghiệm đồng ruộng; mỗi cây một ô 1.000 m2 mỗi vụ, không lặp lại",
+               en: "One field trial; one 1,000 m2 plot per crop and season, not replicated"}
+  place_years: {vi: "Lưu Sơn, Đô Lương, Nghệ An; tháng 6/2020 đến tháng 6/2021",
+                en: "Lưu Sơn, Đô Lương, Nghệ An; June 2020 to June 2021"}
+  read_status: "READ (full text, VJOL copy 167049)"
+  full_text_read: true
+  limitations:
+    - {vi: "Một địa điểm, một năm, không lặp lại.", en: "One site, one year, not replicated."}
+    - {vi: "Bài báo không nói mỗi cơ cấu có được trồng trên cùng một ruộng suốt năm hay không.",
+       en: "The paper does not say whether each structure stayed on one field for the whole year."}
+    - {vi: "Ngày gieo và ngày thu hoạch được báo cáo chồng nhau ở hai chỗ.",
+       en: "The reported sowing and harvest dates overlap in two places."}
+    - {vi: "Phần phương pháp liệt kê CC2-CC4 khác với các bảng kết quả.",
+       en: "The methods text lists CC2-CC4 differently from the results tables."}
+    - {vi: "Bảng 4 có dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau.",
+       en: "Table 4 has identical rows for CC1 mung bean and CC5 black bean."}
+  url: "https://vjol.info.vn/vaas/vi/article/download/167049/143292/289735"
+  nso_credit: false
+- id: R-P03
+  citation:
+    vi: "Trịnh Đức Toàn, Phạm Duy Trình, Đào Thị Minh Hiền, Cao Đỗ Mười và cs (2023). Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An. Đặc san KH&CN Nghệ An 2/2023"
+    en: "Trịnh Đức Toàn, Phạm Duy Trình, Đào Thị Minh Hiền, Cao Đỗ Mười et al. (2023). Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An. Đặc san KH&CN Nghệ An 2/2023"
+  study_type: {vi: "Một thử nghiệm đồng ruộng; mỗi cây một ô 1.000 m2, không lặp lại",
+               en: "One field trial; one 1,000 m2 plot per crop, not replicated"}
+  place_years: {vi: "Lưu Sơn, Đô Lương, Nghệ An; tháng 6/2020 đến tháng 6/2021",
+                en: "Lưu Sơn, Đô Lương, Nghệ An; June 2020 to June 2021"}
+  read_status: "READ (PDF from team)"
+  full_text_read: true
+  limitations:
+    - {vi: "Một địa điểm, một năm, không lặp lại.", en: "One site, one year, not replicated."}
+    - {vi: "Không báo cáo ngày gieo, chỉ báo cáo thời gian sinh trưởng.",
+       en: "No sowing dates are reported, only crop durations."}
+    - {vi: "Lợi nhuận chỉ trừ chi phí vật chất, có thể không tính công lao động.",
+       en: "Profit subtracts material costs only and may leave out labour."}
+  url: "https://ngheandost.gov.vn/tap-chi-chuyen-san/tap-chi-kh-cn-nghe-an/dac-san-kh-cn-nghe-an-so-2-2023-112.html?download=1&id=0"
+  nso_credit: false
+- id: R-W12
+  citation: {vi: "NASA POWER, từ điển tham số (GWETROOT), và GMAO, Câu hỏi thường gặp về MERRA-2",
+             en: "NASA POWER parameter dictionary (GWETROOT) and GMAO MERRA-2 FAQ"}
+  study_type: {vi: "Tài liệu mô tả số liệu của NASA", en: "NASA data documentation"}
+  place_years: {vi: "Toàn cầu; trang web đọc năm 2026", en: "Global; web pages read in 2026"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Định nghĩa các biến, không phải kết quả nghiên cứu.", en: "Variable definitions, not study results."}
+  url: "https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT"
+  nso_credit: false
+- id: R-W15
+  citation: {vi: "TCVN 8641:2011 Công trình thủy lợi - Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm (bản chép lại trên caselaw.vn)",
+             en: "TCVN 8641:2011 Công trình thủy lợi - Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm (Irrigation works: irrigation and drainage for food crops; third-party transcription on caselaw.vn)"}
+  study_type: {vi: "Tiêu chuẩn quốc gia", en: "National standard"}
+  place_years: {vi: "Việt Nam; năm 2011", en: "Viet Nam; 2011"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.",
+       en: "The standard does not say whether Nghệ An belongs to Trung bộ or Bắc bộ."}
+    - {vi: "Bản chép lại của bên thứ ba, không phải bản PDF chính thức.",
+       en: "A third-party transcription, not the official PDF."}
+  url: "https://caselaw.vn/van-ban-phap-luat/252217-tieu-chuan-quoc-gia-tcvn-8641-2011-ve-cong-trinh-thuy-loi-ky-thuat-tuoi-tieu-nuoc-cho-cay-luong-thuc-va-cay-thuc-pham-nam-2011"
+  nso_credit: false
