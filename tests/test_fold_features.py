@@ -113,3 +113,31 @@ def test_the_fold_transform_adds_the_drought_months_with_their_season_terms():
     assert out.loc[2, "drought_rain_months"] == pytest.approx(2.0)
     assert out.loc[2, "drought_rain_months_x_spring"] == pytest.approx(2.0)
     assert transform(df, train_idx).equals(out)  # same cutoff, same answer (cached)
+
+
+def test_the_cache_never_serves_another_frames_features():
+    # Source: python rules (unknown data fails loudly): a new frame must get its own features, even if Python reuses
+    # the id of a frame that is gone
+    transform = make_fold_transform(["tmax_mean_c"])
+    first = _rows()
+    out1 = transform(first, first.index[first["year"] < 2012])
+    second = _rows().assign(tmax_mean_c=lambda d: d["tmax_mean_c"] + 10.0)
+    out2 = transform(second, second.index[second["year"] < 2012])
+    assert out2.loc[0, "ctx_tmax_mean_c"] == pytest.approx(out1.loc[0, "ctx_tmax_mean_c"] + 10.0)
+
+
+def test_drought_normals_use_only_the_years_of_the_given_rows():
+    # Source: 05-DATA-CONTRACTS section 4a: "the same month's mean over the training years"; a year that is not a model
+    # row (here 2010) is not a training year, so its 0 mm does not lower the normal (100 mm from 2011 only)
+    df = pd.DataFrame({"province_nso": ["P", "P"], "season": ["spring", "spring"], "year": [2011, 2012]})
+    mr = _month_rain([40.0, 40.0, 100.0], [40.0, 100.0, 40.0])
+    mr.loc[mr["year"] == 2010, "rain_mm"] = 0.0
+    out = add_drought_months(df, mr, before_year=2012)
+    assert out.loc[1, "drought_rain_months"] == pytest.approx(2.0)
+
+
+def test_an_infinite_fold_feature_fails_loudly():
+    # Source: python rules: a zero rain normal gives an infinite anomaly; it must not silently drop the row
+    df = _rows().assign(precip_sum_mm=[0.0, 0.0, 10.0, 50.0, 200.0, 100.0])
+    with pytest.raises(ValueError, match="infinite"):
+        make_fold_transform(["tmax_mean_c", "precip_sum_mm"])(df, df.index[df["year"] < 2012])
