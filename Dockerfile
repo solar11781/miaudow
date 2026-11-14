@@ -15,4 +15,7 @@ COPY artifacts ./artifacts
 # frontend/dist is copied here once the frontend build exists (UI-UX-SPEC §13).
 # The installed package lives in site-packages; FIELDSHIFT_ROOT points it at /app/rules and /app/artifacts.
 ENV PORT=8000 FIELDSHIFT_ROOT=/app
+# The server runs without root rights. It only reads /app and site-packages, which stay root-owned and readable by all.
+RUN useradd --system --no-create-home app
+USER app
 CMD ["sh", "-c", "uvicorn fieldshift.api.app:app --host 0.0.0.0 --port ${PORT} --no-access-log"]
