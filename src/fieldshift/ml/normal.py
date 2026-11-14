@@ -19,7 +19,8 @@ from fieldshift.ml.evaluation import inner_test_years
 
 WINDOWS = {"mean3": 3, "trend5": 5}
 # E-010 (2026-11-14): pooled MSE on the inner years 2011-2015 before the first test year, 578 spring and winter rice
-# rows: mean3 0.0989, trend5 0.0997 (t/ha squared); per season spring favours trend5, winter mean3 (scripts/choose_normal.py)
+# rows: mean3 0.0989, trend5 0.0997 (t/ha squared); per season spring favours trend5, winter mean3
+# computed by scripts/choose_normal.py
 CHOSEN_METHOD = "mean3"
 TIE_DECIMALS = 3  # team 2026-11-14: errors equal to 3 decimals keep the 3-year mean (more rows have a normal)
 
