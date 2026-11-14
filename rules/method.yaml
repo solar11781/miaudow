@@ -123,8 +123,8 @@ limitations:
      en: "Past administrative changes (Hà Tây in 2008; the 2025 restructuring) can corrupt data joins."}
   - {vi: "Lúa của tỉnh phần lớn là lúa có tưới, nên độ nhạy của cả vùng có thể thấp hơn độ nhạy của đất thường xuyên khô hạn.",
      en: "Provincial rice is mostly irrigation-served, so regional sensitivity can understate the sensitivity of drought-prone land."}
-  - {vi: "Một đợt nắng nóng hoặc rét hại có các ngày nằm ở nhiều khoảng nhiệt độ khác nhau không được tính, vì quyết định không xếp loại các đợt như vậy.",
-     en: "A heat or cold spell whose days fall in different temperature bands is not counted, because the decision does not classify such spells."}
+  - {vi: "Quyết định không xếp loại các đợt nắng nóng hoặc rét hại có các ngày nằm ở nhiều khoảng nhiệt độ khác nhau, nên chúng tôi không tính các đợt như vậy; một chuỗi ngày đủ điều kiện nằm trong một khoảng nhiệt độ vẫn được tính, kể cả khi nó nằm trong một đợt dài hơn.",
+     en: "The decision does not classify heat or cold spells whose days fall in different temperature bands, so we do not count such spells; a run of days inside one band that meets its rule still counts, also inside a longer spell."}
 
 # stability_scope: the card scope text (03-ML-SPEC §5b; UI-UX-SPEC §11 Stability.scope), no number.
 stability_scope: {vi: "Trung bình của tỉnh; phần lớn là lúa có tưới", en: "Province average; mostly irrigation-served rice"}

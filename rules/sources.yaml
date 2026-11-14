@@ -188,8 +188,8 @@
   read_status: "READ (ch. 3-4)"
   full_text_read: false
   limitations:
-    - {vi: "Giá trị Bảng 14 chỉ là ước tính sơ bộ, không theo vùng hay giống.",
-       en: "The Table 14 values are only a rough estimate, not for a region or a variety."}
+    - {vi: "Giá trị Bảng 14 chỉ là ước tính sơ bộ; bảng không ghi tên loài cây.",
+       en: "The Table 14 values are only a rough estimate; the table names no species."}
     - {vi: "Chúng tôi đọc chương 3-4.", en: "We read chapters 3-4."}
   url: "https://www.fao.org/4/s2022e/s2022e00.htm"
   nso_credit: false
