@@ -31,6 +31,7 @@ python scripts/export_risk_table.py   # artifacts/risk_table.json for the app (0
 python scripts/export_crop_exposure.py   # E-019 hazard_labels.json and E-020 soil_wetness.json per P-02 crop and year
 python scripts/run_secondary_models.py   # E-013 M2 LightGBM, E-017 M3 random forest (secondary, method page)
 python scripts/run_sensitivity.py   # E-018 sensitivity runs a-c, E-008 windows and centroid cells
+python scripts/build_results_chart.py   # artifacts/figures/results_chart.svg for the slides and the method page
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
 #     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.
