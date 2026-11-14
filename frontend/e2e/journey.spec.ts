@@ -4,9 +4,10 @@ import { expect, test, type Page } from '@playwright/test';
 
 const PLANS_URL = '/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020&uutien=income';
 
-async function apiUp(page: Page): Promise<boolean> {
+// member B's copilot backend; our backend has no copilot route (D-166), and then its health has no copilot entry
+async function copilotUp(page: Page): Promise<boolean> {
   const res = await page.request.get('/api/health').catch(() => null);
-  return !!res && res.ok();
+  return !!res && res.ok() && 'copilot' in ((await res.json()) as Record<string, unknown>);
 }
 
 test('a farmer completes the four steps by tapping only, and nothing is stored in the browser', async ({ page }) => {
@@ -29,8 +30,8 @@ test('a farmer completes the four steps by tapping only, and nothing is stored i
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
   await expect(page).toHaveURL(/ruong=canal_end/);
   await expect(page).toHaveURL(/uutien=water/);
-  // the card relates the study land to this farmer's answer, from the decision core
-  await expect(page.locator('#the-cc1')).toContainText('ruộng ở cuối kênh');
+  // the cards come from POST /api/compare; the chosen priority highlights one row per card
+  await expect(page.locator('#the-cc1 [data-highlighted="true"]')).toHaveCount(1);
 
   // UI-UX-SPEC H14: no localStorage, sessionStorage or cookies
   const stored = await page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie.length]);
@@ -45,7 +46,7 @@ test('a farmer completes the four steps by tapping only, and nothing is stored i
 });
 
 test('links shared before the four water situations still open', async ({ page }) => {
-  await page.goto('/#/nong-dan/phuong-an?ruong=dry&nam=2010');
+  await page.goto('/#/nong-dan/phuong-an?ruong=dry&nam=2010&uutien=income');
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
 });
 
@@ -64,7 +65,8 @@ test('every sourced number opens its provenance sheet and Escape closes it', asy
   await firstValue.click();
   const sheet = page.getByRole('dialog');
   await expect(sheet).toBeVisible();
-  await expect(sheet).toContainText('Có thể không đúng khi');
+  // the source facts of the API response (UI-UX-SPEC section 10)
+  await expect(sheet).toContainText('Nơi và năm');
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();
   await expect(firstValue).toBeFocused();
@@ -103,7 +105,7 @@ test('one year flows from the science page to the copilot', async ({ page }) => 
 
 // Annual rain of one NASA POWER cell, read straight from the canonical file the app is built from.
 function canonicalRain(cell: string, year: number): number {
-  const climate = JSON.parse(readFileSync(new URL('../../data/canonical/climate.json', import.meta.url), 'utf-8'));
+  const climate = JSON.parse(readFileSync(new URL('../data/canonical/climate.json', import.meta.url), 'utf-8'));
   return climate.series.cells[cell][String(year)].annual_rain_mm;
 }
 
@@ -155,7 +157,7 @@ test('NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async
   await expect(page).toHaveURL(/canh=nghe-an/);
 });
 
-const canonical = (name: string) => JSON.parse(readFileSync(new URL(`../../data/canonical/${name}`, import.meta.url), 'utf-8'));
+const canonical = (name: string) => JSON.parse(readFileSync(new URL(`../data/canonical/${name}`, import.meta.url), 'utf-8'));
 
 test('the climate ML section shows the closest years from the canonical file and moves the year', async ({ page }) => {
   const expected: number[] = canonical('climate_ml.json').analogs.by_year['2010'].map((a: { year: number }) => a.year);
@@ -187,7 +189,7 @@ test('the copilot answers from data and abstains otherwise', async ({ page }) =>
 });
 
 test('with the API running, the farmer question returns the six plans in study order and never a ranking', async ({ page }) => {
-  test.skip(!(await apiUp(page)), 'the MIAUDOW API is not running');
+  test.skip(!(await copilotUp(page)), 'no copilot backend is running');
   await page.goto('/#/tro-ly');
   await page.getByRole('button', { name: /cuối kênh/ }).first().click();
   const answer = page.locator('ol[aria-live] > li').first();
@@ -239,4 +241,19 @@ test('no visible text is smaller than 17 px (H6)', async ({ page }) => {
     });
     expect(small, url).toEqual([]);
   }
+});
+
+// D-167: the farmer routes, the home page and the other pages make no third-party request; NASA GIBS tiles and the NASA
+// Eyes frame on /dai-quan-sat are the one allowed exception, so that page is not in this list
+test('no page outside the observatory makes a third-party request', async ({ page, baseURL }) => {
+  const own = new URL(baseURL ?? 'http://localhost:4173/').origin;
+  const outside: string[] = [];
+  // an antivirus on a team laptop injects its own script into every page; that request is not the app's
+  const local = (u: URL) => u.hostname.endsWith('.kaspersky-labs.com');
+  page.on('request', (r) => { const u = new URL(r.url()); if (/^https?:$/.test(u.protocol) && u.origin !== own && !local(u)) outside.push(r.url()); });
+  for (const url of ['/#/', '/#/nong-dan', '/#/nong-dan/ruong', '/#/nong-dan/nam?ruong=canal_end&nam=2010', '/#/nong-dan/uu-tien?ruong=canal_end&nam=2010', PLANS_URL, '/#/phuong-phap', '/#/can-bo', '/#/khoa-hoc', '/#/bang-chung', '/#/tro-ly']) {
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+  }
+  expect(outside).toEqual([]);
 });
