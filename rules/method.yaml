@@ -1,0 +1,138 @@
+# Method page content (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3 and 5). Hand-curated and cited. All text is a
+# draft for the copy review. The engine copies `stability_scope` into Stability.scope and `season_labels` into
+# Season.label (§7b).
+#
+# coverage: the UI-UX-SPEC §11b coverage table, one cell per row and axis (CoverageCell). Row keys name the crops of
+# each table row (routine naming).
+coverage:
+  - {row_key: rice_spring, crop: &rice_spring {vi: "Lúa vụ Xuân (CC5; cũng có trong đối chứng P-03)", en: "Spring rice (CC5; also in the P-03 control)"},
+     axis: money, text: {vi: "Có cho CC5; dạng chữ cho P-03", en: "Yes for CC5; as text for P-03"},
+     source_ids: [R-P02, R-P03]}
+  - {row_key: rice_spring, crop: *rice_spring, axis: conditions,
+     text: {vi: "Có cho CC5; không cho P-03 (không có ngày gieo)", en: "Yes for CC5; no for P-03 (no dates)"},
+     source_ids: [E-019, R-A01]}
+  - {row_key: rice_spring, crop: *rice_spring, axis: rice_history, text: &yes {vi: "Có", en: "Yes"}, source_ids: [R-D01]}
+  - {row_key: rice_spring, crop: *rice_spring, axis: model,
+     text: {vi: "Chỉ các năm 2016-2024, nếu vụ xuân qua được kiểm tra", en: "2016-2024 only, if the spring test passes"},
+     source_ids: [E-012]}
+  - {row_key: rice_spring, crop: *rice_spring, axis: water_tcvn,
+     text: {vi: "Có (các dòng Trung bộ và Bắc bộ)", en: "Yes (Trung bộ and Bắc bộ rows)"}, source_ids: [R-W15]}
+  - {row_key: rice_spring, crop: *rice_spring, axis: water_fao, text: *yes, source_ids: [R-M02]}
+
+  - {row_key: rice_summer_autumn, crop: &rice_sa {vi: "Lúa vụ Hè Thu (đối chứng P-03)", en: "Summer-autumn rice (P-03 control)"},
+     axis: money, text: {vi: "Dạng chữ (định nghĩa của P-03)", en: "As text (P-03 definition)"}, source_ids: [R-P03]}
+  - {row_key: rice_summer_autumn, crop: *rice_sa, axis: conditions,
+     text: {vi: "Không (P-03 không có ngày gieo)", en: "No (P-03 gives no dates)"}, source_ids: [R-P03]}
+  - {row_key: rice_summer_autumn, crop: *rice_sa, axis: rice_history, text: *yes, source_ids: [R-D01]}
+  - {row_key: rice_summer_autumn, crop: *rice_sa, axis: model,
+     text: {vi: "Không bao giờ (không qua được kiểm tra G1)", en: "Never (G1 fails)"}, source_ids: [E-012]}
+  - {row_key: rice_summer_autumn, crop: *rice_sa, axis: water_tcvn,
+     text: {vi: "Có (các dòng Trung bộ; các dòng Bắc bộ là vụ xuân và vụ mùa)",
+            en: "Yes (Trung bộ rows; the Bắc bộ rows are spring and mùa)"}, source_ids: [R-W15]}
+  - {row_key: rice_summer_autumn, crop: *rice_sa, axis: water_fao, text: *yes, source_ids: [R-M02]}
+
+  - {row_key: peanut_maize_grain_soybean, crop: &pms {vi: "Lạc, ngô thương phẩm, đậu tương", en: "Peanut, grain maize, soybean"},
+     axis: money, text: *yes, source_ids: [R-P02]}
+  - {row_key: peanut_maize_grain_soybean, crop: *pms, axis: conditions, text: *yes, source_ids: [E-019, R-A01]}
+  - {row_key: peanut_maize_grain_soybean, crop: *pms, axis: rice_history, text: &no {vi: "Không", en: "No"}, source_ids: []}
+  - {row_key: peanut_maize_grain_soybean, crop: *pms, axis: model, text: *no, source_ids: []}
+  - {row_key: peanut_maize_grain_soybean, crop: *pms, axis: water_tcvn, text: *yes, source_ids: [R-W15]}
+  - {row_key: peanut_maize_grain_soybean, crop: *pms, axis: water_fao, text: *yes, source_ids: [R-M02]}
+
+  - {row_key: sweet_potato, crop: &sp {vi: "Khoai lang", en: "Sweet potato"}, axis: money, text: *yes, source_ids: [R-P02]}
+  - {row_key: sweet_potato, crop: *sp, axis: conditions, text: *yes, source_ids: [E-019, R-A01]}
+  - {row_key: sweet_potato, crop: *sp, axis: rice_history, text: *no, source_ids: []}
+  - {row_key: sweet_potato, crop: *sp, axis: model, text: *no, source_ids: []}
+  - {row_key: sweet_potato, crop: *sp, axis: water_tcvn, text: *yes, source_ids: [R-W15]}
+  - {row_key: sweet_potato, crop: *sp, axis: water_fao,
+     text: &not_listed {vi: "Không có trong nguồn này", en: "Not listed in this source"}, source_ids: [R-M02]}
+
+  - {row_key: not_listed_crops,
+     crop: &others {vi: "Đậu xanh, đậu đen xanh lòng, vừng đen, ớt chỉ thiên, bí đỏ, ngô sinh khối",
+                    en: "Mung bean, black bean, black sesame, chili, pumpkin, biomass maize"},
+     axis: money, text: *yes, source_ids: [R-P02]}
+  - {row_key: not_listed_crops, crop: *others, axis: conditions, text: *yes, source_ids: [E-019, R-A01]}
+  - {row_key: not_listed_crops, crop: *others, axis: rice_history, text: *no, source_ids: []}
+  - {row_key: not_listed_crops, crop: *others, axis: model, text: *no, source_ids: []}
+  - {row_key: not_listed_crops, crop: *others, axis: water_tcvn, text: *not_listed, source_ids: [R-W15]}
+  - {row_key: not_listed_crops, crop: *others, axis: water_fao, text: *not_listed, source_ids: [R-M02]}
+
+# explain_terms: the six entries of UI-UX-SPEC §11b item 3, in ExplainKey order.
+explain_terms:
+  - key: evapotranspiration
+    title: {vi: "Bốc thoát hơi nước", en: "Evapotranspiration"}
+    text: {vi: "Nước rời khỏi đất và cây dưới dạng hơi. Không con số nào trong ứng dụng dùng đại lượng này.",
+           en: "Water that leaves the soil and the plants as vapour. No number in this app uses it."}
+    source_ids: [R-M01]
+  - key: soil_moisture
+    title: {vi: "Độ ẩm đất", en: "Soil moisture"}
+    text:
+      vi: "Độ ẩm vùng rễ (GWETROOT) của MERRA-2 là giá trị mô hình, không phải số đo. Mô hình dùng nó làm đầu vào; thẻ
+        phương án hiển thị nó bên cạnh trung bình 1991-2020."
+      en: "Root-zone wetness (GWETROOT) from MERRA-2 is a model value, not a measurement. The model uses it as an
+        input; the plan cards show it next to its 1991-2020 average."
+    source_ids: [R-W12, R-N01]
+  - key: ndvi
+    title: {vi: "Chỉ số thực vật (NDVI)", en: "Vegetation index (NDVI)"}
+    text: {vi: "Không dùng: tín hiệu cây trồng trong vụ sẽ làm lộ kết quả vào đầu vào của mô hình.",
+           en: "Not used: an in-season vegetation signal would leak the outcome into the model inputs."}
+    source_ids: []  # UI-UX-SPEC §11b names no source here [OPEN: question for the team]
+  - key: frost
+    title: {vi: "Sương muối", en: "Frost"}
+    text:
+      vi: "Không xét: Quyết định 18/2021/QĐ-TTg Điều 5.19 chỉ định nghĩa sương muối bằng lời; báo chí nói về sương muối
+        ở các xã vùng núi cao, không phải trên đất lúa vùng thấp mà ứng dụng nói đến."
+      en: "Not covered: Decision 18/2021/QD-TTg Art. 5.19 defines frost in words only; news reports frost in high
+        mountain communes, not on the lowland rice land this app is about."
+    source_ids: [R-A01, R-A18]
+  - key: water_balance
+    title: {vi: "Cân bằng nước", en: "Water balance"}
+    text:
+      vi: "Không tính: chỉ số nước đã công bố không thể tính lại từ bài báo nếu chúng tôi không tự thêm các lựa chọn của
+        mình."
+      en: "Not computed: the published water index could not be rebuilt from its paper without choices of our own."
+    source_ids: [R-M03]
+  - key: data_types
+    title: {vi: "Các loại số liệu", en: "Kinds of data"}
+    text:
+      vi: "Số liệu ngày của NASA POWER lấy từ tái phân tích MERRA-2. GPM IMERG Final kết hợp ước tính từ vệ tinh với
+        phân tích mưa đo ở trạm của GPCC; chỉ dùng cho phần kiểm tra mưa trên trang này. Không dùng số liệu trạm. Giá
+        trị theo ô lưới làm mờ các giá trị cực đoan."
+      en: "NASA POWER daily values come from the MERRA-2 reanalysis. GPM IMERG Final combines satellite estimates with
+        the GPCC rain-gauge analysis; it is used only for the rain check on this page. No station data is used.
+        Gridded values smooth extremes."
+    source_ids: [R-N01, R-W12, R-N05, R-A10]
+
+# limitations: one line each (UI-UX-SPEC §11b item 5): 03-ML-SPEC §9 and the spell rule of 03-ML-SPEC §5a.
+limitations:
+  - {vi: "Thời tiết của tỉnh lấy từ các ô lưới tái phân tích lớn, có trọng số theo đất trồng trọt; giá trị theo ô lưới làm mờ các giá trị cực đoan.",
+     en: "Province weather comes from large reanalysis grid cells weighted by farmland; gridded values smooth extremes."}
+  - {vi: "Trọng số đất trồng trọt lấy từ một bản đồ cố định, nên không theo kịp thay đổi sử dụng đất về sau.",
+     en: "Farmland weights come from one fixed farmland map, so they miss later land-cover change."}
+  - {vi: "Các năng suất của nhiều tỉnh gần nhau tương quan với nhau, làm cỡ mẫu trông lớn hơn thực tế; phép lấy mẫu lại theo năm xử lý điều này.",
+     en: "Yields of nearby provinces move together, which makes the sample look larger than it is; the year bootstrap handles this."}
+  - {vi: "Các lựa chọn đưa ra sau khi xem số liệu 1995-2024 (quy tắc làm sạch, bộ lọc diện tích) được nêu ra và cố định trước lần chạy mô hình đầu tiên.",
+     en: "Choices made after looking at the 1995-2024 data (cleaning rules, the area filter) are stated and fixed before the first model run."}
+  - {vi: "Năng suất bình thường ước tính gần các điểm gãy của chuỗi (tách tỉnh năm 2004, Hà Tây năm 2008) có thể tạo ra độ lệch giả.",
+     en: "The normal yield fitted near breaks in a series (the 2004 province splits, Hà Tây in 2008) can create false anomalies."}
+  - {vi: "Cửa sổ mùa vụ lấy từ một lịch thời vụ quốc gia (năm 2019) và khác nhau giữa các tỉnh.",
+     en: "Season windows come from one national crop calendar (2019) and vary by province."}
+  - {vi: "Độ nhạy của cả vùng không phải là độ nhạy của một ruộng.",
+     en: "A region's sensitivity is not a farm's sensitivity."}
+  - {vi: "Thay đổi địa giới hành chính trong quá khứ (Hà Tây năm 2008; sắp xếp năm 2025) có thể làm ghép số liệu sai.",
+     en: "Past administrative changes (Hà Tây in 2008; the 2025 restructuring) can corrupt data joins."}
+  - {vi: "Lúa của tỉnh phần lớn là lúa có tưới, nên độ nhạy của cả vùng có thể thấp hơn độ nhạy của đất thường xuyên khô hạn.",
+     en: "Provincial rice is mostly irrigation-served, so regional sensitivity can understate the sensitivity of drought-prone land."}
+  - {vi: "Một đợt nắng nóng hoặc rét hại có các ngày nằm ở nhiều khoảng nhiệt độ khác nhau không được tính, vì quyết định không xếp loại các đợt như vậy.",
+     en: "A heat or cold spell whose days fall in different temperature bands is not counted, because the decision does not classify such spells."}
+
+# stability_scope: the card scope text (03-ML-SPEC §5b; UI-UX-SPEC §11 Stability.scope), no number.
+stability_scope: {vi: "Trung bình của tỉnh; phần lớn là lúa có tưới", en: "Province average; mostly irrigation-served rice"}
+
+# season_labels: per season code (UI-UX-SPEC §11 season codes): P-02 Tables 9, 1, 5 name vụ Đông Xuân, vụ Hè Thu and
+# vụ Thu Đông (R-P02); the NSO rice seasons are spring, autumn and winter (R-D01).
+season_labels:
+  spring: {label: {vi: "Vụ Đông Xuân", en: "Spring season"}, source_ids: [R-P02, R-D01]}
+  summer_autumn: {label: {vi: "Vụ Hè Thu", en: "Summer-autumn season"}, source_ids: [R-P02, R-D01]}
+  winter: {label: {vi: "Vụ Mùa", en: "Winter season"}, source_ids: [R-D01]}
+  autumn_winter: {label: {vi: "Vụ Thu Đông", en: "Autumn-winter season"}, source_ids: [R-P02]}
