@@ -153,3 +153,34 @@ def test_inner_folds_skip_test_rows_without_fold_time_features():
     _, res = _tune(df, train_idx, ["x", "ctx", "precip_anom_pct"], ALPHAS, add_precip_anom)
     assert len(res) > 0
     assert np.isfinite(res).all()
+
+
+def test_the_decided_penalty_grid_runs():
+    # Source: D-110 (Meroni et al. 2021 grid): the runner must accept ALPHA_GRID itself, a numpy array
+    out = run_rolling_origin(
+        _synthetic(n_series=8, years=range(2006, 2025)), weather_cols=["x"], context_cols=["ctx"], alphas=ALPHA_GRID
+    )
+    assert out["predictions"]["alpha_m1"].isin(ALPHA_GRID).all()
+
+
+def test_test_row_without_a_past_rain_normal_is_not_scored():
+    # Source: 03-ML-SPEC section 3 and D-66: the rain normal comes from training rows only; a unit seen first in the
+    # test year has none, so that row is not scored; one year later it has one and is scored
+    df = _synthetic(n_series=8, years=range(2006, 2025))
+    df["precip_sum_mm"] = 100.0 + df["x"]
+    new = df[(df.series_id == "s0") & (df.year >= 2020)].assign(series_id="new", province_nso="u_new")
+    df = pd.concat([df, new], ignore_index=True)
+    out = run_rolling_origin(
+        df, weather_cols=["precip_anom_pct"], context_cols=["ctx"], alphas=ALPHAS, fold_transform=add_precip_anom
+    )
+    p = out["predictions"]
+    assert not ((p.series_id == "new") & (p.year == 2020)).any()
+    assert ((p.series_id == "new") & (p.year == 2021)).any()
+
+
+def test_duplicate_series_year_rows_fail_loudly():
+    # Source: 03-ML-SPEC section 6: one row per series and year; python rules: unknown data fails loudly
+    df = _synthetic(n_series=3, years=range(2010, 2025))
+    df = pd.concat([df, df.iloc[[0]]], ignore_index=True)
+    with pytest.raises(ValueError, match=r"s0.*2010"):
+        run_rolling_origin(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
