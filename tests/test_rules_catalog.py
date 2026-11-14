@@ -7,6 +7,7 @@ page content), §8 (sources); UI-UX-SPEC §11 (canonical ids, crop keys, season 
 from those spec lines or from the cited source, never from the files under test.
 """
 
+import json
 import re
 from pathlib import Path
 from typing import get_args
@@ -201,6 +202,25 @@ P02_ABSTRACT_PROFITS = {
     ("cc4", "cc4_summer_autumn_maize_biomass"): "19,450",
     ("cc3", "cc3_autumn_winter_pumpkin"): "30,440",
 }
+# P-02 (R-P02) per crop key: crop id, sowing date, first and last harvest date (Tables 1, 5, 9), Table 13 "Lãi thuần"
+# and Tables 4, 8, 12 "Tổng chi" (thousand VND/ha), as recorded in the research notes of the full text
+P02_CROPS = {
+    "usual_spring_rice": ("rice", "01-17", "05-17", "05-17", "5,149", "32,426"),
+    "usual_summer_autumn_black_bean": ("black_bean", "06-06", "08-25", "08-25", "16,200", "25,000"),
+    "usual_autumn_winter_sweet_potato": ("sweet_potato", "08-15", "12-10", "12-10", "9,450", "40,800"),
+    "cc1_spring_peanut": ("peanut", "01-18", "05-12", "05-12", "25,980", "83,500"),
+    "cc1_summer_autumn_mung_bean": ("mung_bean", "06-10", "08-30", "09-03", "16,200", "25,000"),
+    "cc1_autumn_winter_maize_grain": ("maize_grain", "09-01", "12-22", "12-22", "11,200", "29,900"),
+    "cc2_spring_chili": ("chili", "01-17", "06-25", "06-25", "21,100", "113,100"),
+    "cc2_summer_autumn_soybean": ("soybean", "06-10", "09-09", "09-12", "16,700", "26,500"),
+    "cc2_autumn_winter_maize_biomass": ("maize_biomass", "09-10", "11-26", "11-26", "15,865", "27,400"),
+    "cc3_spring_maize_grain": ("maize_grain", "01-17", "05-04", "05-04", "12,420", "29,100"),
+    "cc3_summer_autumn_black_sesame": ("black_sesame", "06-10", "09-04", "09-04", "12,500", "23,500"),
+    "cc3_autumn_winter_pumpkin": ("pumpkin", "09-05", "11-21", "11-21", "30,440", "48,200"),
+    "cc4_spring_maize_biomass": ("maize_biomass", "01-17", "04-05", "04-05", "18,925", "27,400"),
+    "cc4_summer_autumn_maize_biomass": ("maize_biomass", "06-10", "08-20", "08-20", "19,450", "27,300"),
+    "cc4_autumn_winter_sweet_potato": ("sweet_potato", "09-05", "12-02", "12-02", "20,390", "63,200"),
+}
 NO_RICE_PLANS = ("cc1", "cc2", "cc3", "cc4")  # UI-UX-SPEC §8 check row: plans without rice get the land-law quotes
 
 
@@ -265,6 +285,27 @@ def test_p02_money_per_crop() -> None:
     assert "usual_summer_autumn_black_bean" in plans()["usual"]["reported_economics"]["flags"]
 
 
+def test_p02_crops_dates_and_money_are_the_reported_values() -> None:
+    found = {}
+    for plan_id, plan in plans().items():
+        if plan_id == "usual_p03":
+            continue
+        money = plan["reported_economics"]
+        for span in plan["seasons"]:
+            key = span["crop_key"]
+            found[key] = (
+                span["crop_id"],
+                span["sow_from"],
+                span["harvest_from"],
+                span["harvest_to"],
+                money["profit_per_crop"][key],
+                money["cost_per_crop"][key],
+            )
+            assert span["sow_to"] == span["sow_from"]  # P-02 gives one sowing date per crop
+    assert found == P02_CROPS
+    assert [s["crop_id"] for s in plans()["usual_p03"]["seasons"]] == ["rice", "rice"]  # P-03 "Lúa - lúa - bỏ hoang"
+
+
 def test_plan_risks() -> None:
     for plan_id, plan in plans().items():
         cited = set()
@@ -277,13 +318,13 @@ def test_plan_risks() -> None:
 # ---- method.yaml (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b)
 
 COVERAGE_AXES = ("money", "conditions", "rice_history", "model", "water_tcvn", "water_fao")  # UI-UX-SPEC §11
-# UI-UX-SPEC §11b coverage table: the crops of each row
+# UI-UX-SPEC §11b coverage table: the crops of each row and, for rice, its season
 COVERAGE_ROWS = {
-    "rice_spring": ["rice"],
-    "rice_summer_autumn": ["rice"],
-    "peanut_maize_grain_soybean": ["peanut", "maize_grain", "soybean"],
-    "sweet_potato": ["sweet_potato"],
-    "not_listed_crops": ["mung_bean", "black_bean", "black_sesame", "chili", "pumpkin", "maize_biomass"],
+    "rice_spring": (["rice"], "spring"),
+    "rice_summer_autumn": (["rice"], "summer_autumn"),
+    "peanut_maize_grain_soybean": (["peanut", "maize_grain", "soybean"], None),
+    "sweet_potato": (["sweet_potato"], None),
+    "not_listed_crops": (["mung_bean", "black_bean", "black_sesame", "chili", "pumpkin", "maize_biomass"], None),
 }
 
 
@@ -324,11 +365,26 @@ def test_coverage_has_each_row_and_axis_once() -> None:
         assert is_text(cell["text"])
 
 
+def in_plans(plan_ids: set[str], crops: list[str], season: str | None) -> bool:
+    spans = [s for p in plans().values() if p["id"] in plan_ids for s in p["seasons"]]
+    return any(s["crop_id"] in crops and season in (None, s["season"]) for s in spans)
+
+
 def test_coverage_agrees_with_the_rules_files() -> None:
     water = {c["crop_id"]: {f["source_id"] for f in c["water_facts"]} for c in read("crops.yaml")}
+    gates = json.loads((REPO / "artifacts" / "gates.json").read_text(encoding="utf-8"))["gates"]
+    g1 = {g["season"]: g["passed"] for g in gates if g["gate"] == "G1"}
+    p02 = set(PLAN_IDS) - {"usual_p03"}
     for cell in method()["coverage"]:
-        crops = COVERAGE_ROWS[cell["row_key"]]
+        crops, season = COVERAGE_ROWS[cell["row_key"]]
         is_rice = crops == ["rice"]
+        if cell["axis"] == "money":
+            assert ("R-P02" in cell["source_ids"]) is in_plans(p02, crops, season), cell["row_key"]
+            assert ("R-P03" in cell["source_ids"]) is in_plans({"usual_p03"}, crops, season), cell["row_key"]
+        if cell["axis"] == "conditions":  # labels need P-02 dates (03-ML-SPEC §5a); P-03 gives none
+            assert ("E-019" in cell["source_ids"]) is in_plans(p02, crops, season), cell["row_key"]
+        if cell["axis"] == "model" and is_rice:  # G1 fails: never a model (D-66)
+            assert cell["text"]["en"].startswith("Never") is (g1[season] is False), cell["row_key"]
         if cell["axis"] in ("water_tcvn", "water_fao"):
             source = TCVN if cell["axis"] == "water_tcvn" else FAO
             listed = all(source in water[c] for c in crops)
