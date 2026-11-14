@@ -14,6 +14,20 @@ export const facts = (id: string) => ({
   nso_credit: false,
 });
 export const value = (ids = ['R-N01']) => ({ value: 'xx', unit: text, source_ids: ids });
+/** A money item with the units of rules/rotations.yaml and the given P-02 values (UI-UX-SPEC section 12d). */
+export const moneyItem = (crop_key: string, yieldT: string, price: string, profit: string, cost: string | null) => {
+  const v = (value: string, vi: string, en: string) => ({ value, unit: { vi, en }, source_ids: ['R-P02'] });
+  return {
+    crop_key,
+    crop: text,
+    season: 'spring' as const,
+    profit: v(profit, 'nghìn đồng/ha', 'thousand đ/ha'),
+    cost: cost === null ? null : v(cost, 'nghìn đồng/ha', 'thousand đ/ha'),
+    yield: v(yieldT, 'tấn/ha', 't/ha'),
+    price: v(price, 'đồng/kg', 'đ/kg'),
+    flag: null,
+  };
+};
 export const shares = () => Object.fromEntries(RULE_CODES.map((r) => [r, value()]));
 export const rule = (code: string) => ({
   code,

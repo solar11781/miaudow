@@ -144,7 +144,18 @@ const plan = obj({
   ),
   bare_periods: arr(obj({ from: str, to: str })),
   money: obj({
-    items: arr(obj({ crop_key: str, crop: text, season, profit: value, cost: nullable(value), flag: nullable(text) })),
+    items: arr(
+      obj({
+        crop_key: str,
+        crop: text,
+        season,
+        profit: value,
+        cost: nullable(value),
+        yield: value,
+        price: value,
+        flag: nullable(text),
+      }),
+    ),
     total: nullable(value),
     price_year: nullable(str),
     definition: text,

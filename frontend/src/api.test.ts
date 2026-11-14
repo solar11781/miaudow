@@ -14,7 +14,7 @@ import {
   type SavedAnswers,
 } from './api';
 import { PLAN_IDS } from './types';
-import { body, compare, facts, method, pastYears, rule, shares, text, value } from './tests/fixtures';
+import { body, compare, facts, method, moneyItem, pastYears, rule, shares, text, value } from './tests/fixtures';
 
 describe('past years check', () => {
   it('accepts a response of the contract', () => {
@@ -65,6 +65,19 @@ describe('compare check', () => {
     const row = r.plans[0]?.stability[0]?.per_year[0];
     if (row) row.oos_prediction = value() as unknown as null;
     expect(() => validateCompare(r, body)).toThrow(/test years/);
+  });
+  // UI-UX-SPEC section 12d, D-163: "your price and costs" multiplies the study's yield of each money item
+  it('rejects a money item without the study yield', () => {
+    const withItem = (item: Partial<ReturnType<typeof moneyItem>>) => {
+      const r = compare();
+      const plan = r.plans[2];
+      if (plan) plan.money = { ...plan.money, items: [item] as never[] };
+      return r;
+    };
+    const item: Partial<ReturnType<typeof moneyItem>> = moneyItem('k', '1.03', '40,000', '16,200', '25,000');
+    expect(validateCompare(withItem(item), body).plans[2]?.money.items[0]?.yield.value).toBe('1.03');
+    delete item.yield;
+    expect(() => validateCompare(withItem(item), body)).toThrow(ContractError);
   });
   it('rejects a summary with fewer than 2 real values', () => {
     const r = compare();
