@@ -33,6 +33,7 @@
 }
 /* Google draws its large button 40 px high; scaled by 1.1 its tap area is 44 px (H7) */
 .google {
+  width: fit-content;
   min-height: 48px;
   transform: scale(1.1);
   transform-origin: left top;
