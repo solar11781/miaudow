@@ -2,7 +2,7 @@
 
 Usage: PYTHONPATH=src python scripts/run_primary_test.py
 Reads data/processed/training_table.csv and cell_month_rain.csv; writes artifacts/metrics.json and artifacts/gates.json
-(05-DATA-CONTRACTS section 5b). Runs after the freeze commit only (D-83). Gate and report texts are drafts for the copy
+(05-DATA-CONTRACTS section 5b) and data/processed/e012_predictions.csv for the risk table. Runs after the freeze commit only (D-83). Gate and report texts are drafts for the copy
 review (vi and en).
 """
 
@@ -81,6 +81,8 @@ def _labelled(predictions: pd.DataFrame) -> pd.DataFrame:
 
 
 pred, spatial_pred = _labelled(run["predictions"]), _labelled(spatial["predictions"])
+# rolling-origin predictions for the risk table export (gitignored, rebuilt by this run)
+pred.to_csv("data/processed/e012_predictions.csv", index=False)
 
 metrics = metric_records(pred, spatial_pred, pilot=PILOT, seed=SEED)
 gates, claims = [], []
