@@ -132,3 +132,29 @@ describe('read-aloud button', () => {
     expect(screen.queryByText(viText.copilot.noVoice)).toBeNull();
   });
 });
+
+describe('voice loading state', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('shows no note while voices are still loading, then the note after the timeout', () => {
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useSpeech('vi', () => undefined));
+    expect(result.current.noVoice).toBe(false);
+    act(() => void vi.advanceTimersByTime(1500));
+    expect(result.current.noVoice).toBe(true);
+  });
+
+  it('ends loading when voiceschanged fires', () => {
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useSpeech('vi', () => undefined));
+    loadVoices([voice('en-US')]);
+    expect(result.current.noVoice).toBe(true);
+  });
+
+  it('clears the timer on unmount', () => {
+    vi.useFakeTimers();
+    const { unmount } = renderHook(() => useSpeech('vi', () => undefined));
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
