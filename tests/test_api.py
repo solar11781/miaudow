@@ -385,6 +385,7 @@ def built_frontend(tmp_path: Path) -> TestClient:
     (dist / "index.html").write_text("<html>app</html>", encoding="utf-8")
     (dist / "favicon.svg").write_text("<svg/>", encoding="utf-8")
     (dist / "media" / "photo" / "field.webp").write_bytes(b"webp")
+    (dist / "assets" / "PlansStep-new1.js").write_text("export {}", encoding="utf-8")
     (tmp_path / "secret.txt").write_text("outside", encoding="utf-8")
     return TestClient(create_app(root=REPO, frontend_dir=dist))
 
@@ -397,7 +398,7 @@ def test_every_built_file_is_served(tmp_path: Path) -> None:
 
 def test_other_paths_fall_back_to_index_html(tmp_path: Path) -> None:
     c = built_frontend(tmp_path)
-    for path in ("/nong-dan", "/khoa-hoc/2010", "/media/missing.webp"):
+    for path in ("/nong-dan", "/khoa-hoc/2010", "/phuong-phap"):
         r = c.get(path)
         assert r.status_code == 200, path
         assert r.text == "<html>app</html>", path
@@ -422,6 +423,29 @@ def test_no_file_outside_the_build_is_served(tmp_path: Path) -> None:
     c = built_frontend(tmp_path)
     for path in ("/../secret.txt", "/%2e%2e/secret.txt", "/..%2fsecret.txt"):
         assert "outside" not in c.get(path).text, path
+
+
+# security review 2026-11-14: a tab left open across a deploy asks for an old chunk; HTML in its place blanks the page
+def test_a_missing_file_is_404_never_index_html(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in (
+        "/assets/PlansStep-old0.js",
+        "/media/missing.webp",
+        "/cesium/Workers/x.js",
+        "/assets/x",
+        "/robots.txt",
+    ):
+        r = c.get(path)
+        assert r.status_code == 404, path
+        assert "<html>app</html>" not in r.text, path
+
+
+def test_index_html_is_revalidated_and_hashed_assets_are_cached(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/", "/nong-dan"):
+        assert c.get(path).headers["cache-control"] == "no-cache", path
+    assert c.get("/assets/PlansStep-new1.js").headers["cache-control"] == "public, max-age=31536000, immutable"
+    assert "immutable" not in c.get("/favicon.svg").headers.get("cache-control", "")
 
 
 def test_start_command_turns_off_the_access_log() -> None:
