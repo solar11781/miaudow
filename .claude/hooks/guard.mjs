@@ -3,6 +3,8 @@
 // (no jq needed) and changed to the team's rules: task branches may be pushed; pushing or merging
 // into main, force pushes, branch deletion and recursive deletes outside scratch folders are blocked.
 import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const MAIN = 'main';
@@ -48,11 +50,37 @@ function segments(tokens) {
 }
 
 const isMainRef = (ref) => ref === MAIN || ref === `refs/heads/${MAIN}`;
+// a folder whose branch cannot be read (a variable, a missing path): merges, rebases and pushes there are refused
+const UNKNOWN = Symbol('unknown branch');
+
+// The folder a path names, from the folder the command is in: Git Bash drive paths (/d/x) become D:/x on Windows.
+function folderOf(state, raw) {
+  if (/[$`*]/.test(raw)) return null;
+  let p = raw;
+  if (process.platform === 'win32' && /^\/[a-zA-Z]\//.test(p)) p = `${p[1].toUpperCase()}:${p.slice(2)}`;
+  return state.cwd ? resolve(state.cwd, p) : resolve(p);
+}
+
+// The branch checked out in a folder: a name, null (no branch: not a repository or a detached HEAD) or UNKNOWN.
+function branchIn(state, raw) {
+  const folder = folderOf(state, raw);
+  if (folder === null) return UNKNOWN;
+  const branch = state.branchAt ? state.branchAt(folder) : undefined;
+  return branch === undefined ? UNKNOWN : branch;
+}
 
 function checkGit(args, state) {
-  // skip global options before the subcommand: -C <path>, -c <k=v>, --no-pager and similar
+  // skip global options before the subcommand: -c <k=v>, --no-pager and similar; -C <path> moves the check to the
+  // branch of that folder for this command only
   let i = 0;
-  while (i < args.length && args[i].startsWith('-')) i += (args[i] === '-C' || args[i] === '-c') ? 2 : 1;
+  let branch = state.branch;
+  while (i < args.length && args[i].startsWith('-')) {
+    if (args[i] === '-C') branch = branchIn(state, args[i + 1] ?? '');
+    i += (args[i] === '-C' || args[i] === '-c') ? 2 : 1;
+  }
+  const onMain = branch === MAIN;
+  const unsure = branch === UNKNOWN;
+  const where = unsure ? ' (cannot tell the branch of that folder; use a literal path)' : '';
   const sub = args[i];
   const rest = args.slice(i + 1);
   const flags = rest.filter((a) => a.startsWith('-'));
@@ -69,15 +97,15 @@ function checkGit(args, state) {
     const refspecs = plain.slice(1); // plain[0] is the remote
     for (const r of refspecs) {
       const dest = r.includes(':') ? r.split(':').pop() : r;
-      if (isMainRef(dest) || (dest === 'HEAD' && state.branch === MAIN)) return 'pushing into main';
+      if (isMainRef(dest) || (dest === 'HEAD' && (onMain || unsure))) return `pushing into main${where}`;
     }
-    if (refspecs.length === 0 && state.branch === MAIN) return 'pushing into main (current branch is main)';
+    if (refspecs.length === 0 && (onMain || unsure)) return `pushing into main (current branch is main)${where}`;
     return null;
   }
-  if (sub === 'merge' && state.branch === MAIN && !has('--abort')) return 'merging into main';
-  if (sub === 'rebase' && state.branch === MAIN && !has('--abort')) return 'rewriting main';
-  if (sub === 'pull' && state.branch === MAIN && plain.length >= 2 && !plain.slice(1).every(isMainRef)) {
-    return 'pulling another branch into main';
+  if (sub === 'merge' && (onMain || unsure) && !has('--abort')) return `merging into main${where}`;
+  if (sub === 'rebase' && (onMain || unsure) && !has('--abort')) return `rewriting main${where}`;
+  if (sub === 'pull' && (onMain || unsure) && plain.length >= 2 && !plain.slice(1).every(isMainRef)) {
+    return `pulling another branch into main${where}`;
   }
   if (sub === 'branch' && has('-d', '-D', '--delete')) return 'deleting a branch';
   if (sub === 'reset' && has('--hard')) return 'git reset --hard';
@@ -86,7 +114,7 @@ function checkGit(args, state) {
   if (sub === 'checkout' || sub === 'switch') {
     const create = has('-b', '-B', '-c', '-C');
     const target = create ? plain[0] : plain[plain.length - 1];
-    if (target && !plain.includes('--')) state.branch = target;
+    if (target && !plain.includes('--') && branch === state.branch) state.branch = target;
   }
   return null;
 }
@@ -118,7 +146,7 @@ const MERGE_TEXT = /\bpr\s+(?:-{1,2}\S+\s+(?:[^-\s]\S*\s+)?)*merge\b|\/pulls\/[^
 const isPlainMerge = (seg) => seg[0] === 'gh' && seg[1] === 'pr' && seg[2] === 'merge';
 
 // Returns a reason string when the command must be blocked, or null when it may run.
-export function evaluate(command, { currentBranch = null, shell = 'bash' } = {}) {
+export function evaluate(command, { currentBranch = null, shell = 'bash', cwd = null, branchAt = null } = {}) {
   // only the plain command `gh pr merge ...`, alone, reaches the merge gate (mergeRequest); any other text that would
   // merge a pull request (behind a wrapper, a shell, eval, a path or the API) is blocked, whatever runs it
   const segs = segments(tokenize(command));
@@ -126,17 +154,24 @@ export function evaluate(command, { currentBranch = null, shell = 'bash' } = {})
     return 'merging a pull request in a form the merge gate cannot check; run gh pr merge <number> --merge alone ' +
       '(if this is only text, such as a commit message, pass it from a file)';
   }
-  const state = { branch: currentBranch };
+  const state = { branch: currentBranch, cwd, branchAt };
   for (const seg of segs) {
     let words = seg;
     while (words.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(words[0])) words = words.slice(1);
     if (!words.length) continue;
     const head = words[0].split(/[\\/]/).pop().toLowerCase().replace(/\.exe$/, '');
     let reason = null;
-    if ((head === 'bash' || head === 'sh' || head === 'zsh') && words[1] === '-c' && words[2]) {
-      reason = evaluate(words[2], { currentBranch: state.branch, shell: 'bash' });
+    const inner = { currentBranch: state.branch, cwd: state.cwd, branchAt: state.branchAt };
+    if (head === 'cd' || head === 'set-location' || head === 'pushd' || head === 'popd') {
+      // the following commands run in that folder, on its branch; a folder named by history (cd -, popd) or by
+      // nothing (cd = home) cannot be read here, so it counts as unknown
+      const target = head === 'popd' ? '' : (words.slice(1).find((w) => !w.startsWith('-')) ?? '');
+      state.branch = target ? branchIn(state, target) : UNKNOWN;
+      state.cwd = target ? folderOf(state, target) : null;
+    } else if ((head === 'bash' || head === 'sh' || head === 'zsh') && words[1] === '-c' && words[2]) {
+      reason = evaluate(words[2], { ...inner, shell: 'bash' });
     } else if ((head === 'powershell' || head === 'pwsh') && /^-c(ommand)?$/i.test(words[1] || '') && words[2]) {
-      reason = evaluate(words.slice(2).join(' '), { currentBranch: state.branch, shell: 'powershell' });
+      reason = evaluate(words.slice(2).join(' '), { ...inner, shell: 'powershell' });
     } else if (head === 'git') {
       reason = checkGit(words.slice(1), state);
     } else if (RM_WORDS.has(head)) {
@@ -241,7 +276,10 @@ async function main() {
     if (typeof command !== 'string') process.exit(0);
     const shell = data.tool_name === 'PowerShell' ? 'powershell' : 'bash';
     const cwd = data.cwd || process.cwd();
-    const reason = evaluate(command, { currentBranch: currentBranchOf(cwd), shell }) ?? mergeGateReason(command, cwd);
+    // a folder that does not exist has no readable branch (undefined -> UNKNOWN); an existing one may have none (null)
+    const branchAt = (folder) => (existsSync(folder) ? currentBranchOf(folder) : undefined);
+    const reason = evaluate(command, { currentBranch: currentBranchOf(cwd), shell, cwd, branchAt }) ??
+      mergeGateReason(command, cwd);
     if (reason) {
       process.stderr.write(`BLOCKED by the project safety hook: ${reason}. ` +
         'Do not retry or work around it. If it is really needed, stop and ask the team; they run it themselves.\n');
