@@ -2,7 +2,7 @@
   position: sticky; top: 0; z-index: 40; padding-top: env(safe-area-inset-top, 0px);
   transition: box-shadow var(--d-med) var(--ease-out), background-color var(--d-med) var(--ease-out);
 }
-.paper { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.2) blur(12px); -webkit-backdrop-filter: saturate(1.2) blur(12px); }
+.paper { background: var(--bg); box-shadow: 0 1px 0 var(--line); }
 .overlay:not(.scrolled) { background: linear-gradient(180deg, rgba(6, 10, 7, .55), rgba(6, 10, 7, 0)); }
 .scrolled { box-shadow: 0 1px 0 var(--line), 0 12px 30px -24px rgba(8, 20, 11, .45); }
 .bar { display: flex; align-items: center; gap: var(--s-4); min-height: 72px; }
