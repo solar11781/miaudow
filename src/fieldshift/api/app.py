@@ -122,13 +122,23 @@ async def _bad_gateway(_: Request, exc: ExplainError) -> JSONResponse:
     return JSONResponse({"detail": "Bad Gateway"}, status_code=502)
 
 
-async def _explain(request: Request, claude: Anthropic | None, limiter: anyio.CapacityLimiter) -> Response:
+async def _explain(
+    request: Request, claude: Anthropic | None, slots: anyio.CapacityLimiter, threads: anyio.CapacityLimiter
+) -> Response:
+    """A slot is taken without waiting (run_sync yields before it takes its limiter, so a burst would queue); the call
+    runs on a second limiter of the same size, since the task holding a slot cannot borrow it again."""
     if claude is None:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     body = await _read_body(request, ExplainRequest, MAX_EXPLAIN_BODY_BYTES)
-    if limiter.available_tokens < 1:  # full: answer at once rather than queue behind stalled calls
+    try:
+        slots.acquire_nowait()
+    except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
-    return _respond(_json(await anyio.to_thread.run_sync(explain, body, claude, limiter=limiter)))
+    try:
+        reply = await anyio.to_thread.run_sync(explain, body, claude, limiter=threads)
+    finally:
+        slots.release()
+    return _respond(_json(reply))
 
 
 def _read_every_year_row(compare_data: CompareData) -> None:
@@ -150,7 +160,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     compare_data = load_compare_data(base)
     _read_every_year_row(compare_data)
     claude = claude_client(os.environ)
-    explain_limiter = anyio.CapacityLimiter(EXPLAIN_LIMIT)
+    explain_slots, explain_threads = anyio.CapacityLimiter(EXPLAIN_LIMIT), anyio.CapacityLimiter(EXPLAIN_LIMIT)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
@@ -172,7 +182,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     @app.post("/api/explain")
     async def explain_route(request: Request) -> Response:
-        return await _explain(request, claude, explain_limiter)
+        return await _explain(request, claude, explain_slots, explain_threads)
 
     @app.get("/api/method")
     def method_route() -> Response:
