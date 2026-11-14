@@ -66,8 +66,8 @@
   read_status: null
   full_text_read: null
   limitations:
-    - {vi: "Tính trên lượng mưa trung bình theo đất trồng của từng tỉnh, không theo từng ô thời tiết (lựa chọn của chúng tôi).",
-       en: "Computed on each province's farmland-weighted rain, not per weather cell (our choice)."}
+    - {vi: "Mỗi cách đọc được tính cho từng ô thời tiết NASA POWER, rồi tính theo tỉ lệ đất trồng; chỉ các vụ có số liệu năng suất của Cục Thống kê.",
+       en: "Each reading is made per NASA POWER weather cell, then weighted by farmland; only the seasons with NSO yield data."}
     - {vi: "Chỉ phần lượng mưa của quy tắc hạn hán.", en: "Only the rain part of the drought rule."}
   url: null
   nso_credit: false
