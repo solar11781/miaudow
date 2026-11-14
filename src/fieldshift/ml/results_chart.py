@@ -169,21 +169,27 @@ def results_chart_svg(doc: dict) -> str:
     return svg_document("results-chart", TITLE, " ".join(desc), [LEGEND], body, y + 24)
 
 
+def svg_header(
+    key: str, title: str, desc: str, size: tuple[float, float], x: float, title_lines: list[str] | None = None
+) -> list[str]:
+    """The opening of a standalone SVG image: role="img" named by its <title> and <desc>, white background, and the
+    title in bold (in the given lines, 24 px apart, when it is wrapped)."""
+    width, height = size
+    return [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}"'
+        f' role="img" aria-labelledby="{key}-title {key}-desc" font-family="sans-serif"'
+        f' font-size="14" fill="{TEXT}">',
+        f'<title id="{key}-title">{escape(title)}</title>',
+        f'<desc id="{key}-desc">{escape(desc)}</desc>',
+        f'<rect width="{width}" height="{height}" fill="{BACKGROUND}"/>',
+        *(
+            svg_text(x, 28 + 24 * i, line, ' font-size="18" font-weight="bold"')
+            for i, line in enumerate(title_lines or [title])
+        ),
+    ]
+
+
 def svg_document(key: str, title: str, desc: str, legend: list[str], body: list[str], height: float) -> str:
-    """A standalone SVG image: role="img" named by its <title> and <desc>, white background, title and legend lines."""
+    """A standalone SVG image at the chart width: header, legend lines under the title, then the body."""
     lines = [svg_text(LABEL_X, 52 + 16 * i, line, ' font-size="12"') for i, line in enumerate(legend)]
-    return "\n".join(
-        [
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" viewBox="0 0 {WIDTH} {height}"'
-            f' role="img" aria-labelledby="{key}-title {key}-desc" font-family="sans-serif"'
-            f' font-size="14" fill="{TEXT}">',
-            f'<title id="{key}-title">{escape(title)}</title>',
-            f'<desc id="{key}-desc">{escape(desc)}</desc>',
-            f'<rect width="{WIDTH}" height="{height}" fill="{BACKGROUND}"/>',
-            svg_text(LABEL_X, 28, title, ' font-size="18" font-weight="bold"'),
-            *lines,
-            *body,
-            "</svg>",
-            "",
-        ]
-    )
+    return "\n".join([*svg_header(key, title, desc, (WIDTH, height), LABEL_X), *lines, *body, "</svg>", ""])
