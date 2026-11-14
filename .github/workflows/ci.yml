@@ -141,7 +141,7 @@ jobs:
       - name: unit tests
         run: npx vitest run
       - name: build
-        run: npx vite build
+        run: npm run build
       - name: dependency audit (shipped packages)
         run: npm audit --omit=dev --audit-level=high
       - id: pw
@@ -150,5 +150,14 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ steps.pw.outputs.version }}
+      # the browser tests run against the FastAPI server serving frontend/dist; sign-in stays off (no GOOGLE_CLIENT_ID)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.lock
+      - name: backend for the browser tests
+        working-directory: .
+        run: pip install -r requirements.lock && pip install --no-deps .
       - name: browser tests (360 x 740)
         run: npx playwright install --with-deps chromium && npx playwright test

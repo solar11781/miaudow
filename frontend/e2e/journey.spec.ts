@@ -281,7 +281,7 @@ test('no visible text is smaller than 17 px (H6)', async ({ page }) => {
 // D-167: the farmer routes, the home page and the other pages make no third-party request; NASA GIBS tiles and the NASA
 // Eyes frame on /dai-quan-sat are the one allowed exception, so that page is not in this list
 test('no page outside the observatory makes a third-party request', async ({ page, baseURL }) => {
-  const own = new URL(baseURL ?? 'http://localhost:4173/').origin;
+  const own = new URL(baseURL ?? 'http://127.0.0.1:8000/').origin;
   const outside: string[] = [];
   // an antivirus on a team laptop injects its own script into every page; that request is not the app's
   const local = (u: URL) => u.hostname.endsWith('.kaspersky-labs.com');
