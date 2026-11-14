@@ -44,6 +44,32 @@ test('a farmer completes the four steps by tapping only, and nothing is stored i
   await expect(page.getByRole('radio', { name: /Tiết kiệm nước/ })).toHaveAttribute('aria-checked', 'true');
 });
 
+test('the home page names the four AI cores, each with what it cannot do yet', async ({ page }) => {
+  await page.goto('/#/');
+  const cores = page.locator('section#cores article');
+  await expect(cores).toHaveCount(4);
+  for (const name of ['Lõi khí hậu', 'Lõi bằng chứng', 'Lõi so sánh cách trồng', 'Lõi trợ lý tiếng Việt']) {
+    await expect(page.getByRole('heading', { level: 3, name })).toBeVisible();
+  }
+  await expect(cores.getByText('Chưa làm được', { exact: true })).toHaveCount(4);
+});
+
+test('the opening photos change by themselves and can be paused (H1)', async ({ page }) => {
+  await page.goto('/#/');
+  await page.getByRole('button', { name: 'Dừng ảnh' }).click();
+  await expect(page.getByRole('button', { name: 'Chạy ảnh' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('a plan card reads bad weather in plain words, each beside its sourced share', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  const items = page.locator('#the-cc1 li[data-reach]');
+  await expect(items).toHaveCount(3);
+  for (const item of await items.all()) {
+    await expect(item).toContainText(/Không có|Ít nơi|Nhiều nơi|Gần khắp tỉnh/);
+    await expect(item.locator('[data-value]')).toHaveCount(1);
+  }
+});
+
 test('links shared before the four water situations still open', async ({ page }) => {
   await page.goto('/#/nong-dan/phuong-an?ruong=dry&nam=2010');
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
