@@ -9,10 +9,8 @@ import json
 
 import pandas as pd
 
-from fieldshift.ml.evaluation import TEST_YEARS
+from fieldshift.ml.evaluation import ML_SEASONS, TEST_YEARS
 from fieldshift.ml.normal import compare_normal_methods
-
-ML_SEASONS = ("spring", "winter")  # D-66: summer-autumn rice is history only
 
 table = pd.read_csv("data/processed/training_table.csv")
 rows = table[(table["crop"] == "rice") & table["season"].isin(ML_SEASONS)].reset_index(drop=True)
