@@ -1,0 +1,24 @@
+# NSO rice season weather windows per calendar region (05-DATA-CONTRACTS §6b; D-37, D-38).
+# Source R-V05: NSO 'Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm' (2019).
+# Window = first day of the first sowing month to the last day of the last harvest
+# month; year offset -1 = previous calendar year (statistical year = agricultural year).
+# `excluded` lists (season, region) pairs that have no window (D-37). 05-DATA-CONTRACTS §6b also names a `seasons` list
+# that is not in this file. [OPEN: question for the team, audit 2026-11-13: is `seasons` written during the event?]
+ml_windows:
+  - {nso_season: spring, calendar_region: red_river_delta, start: [2, 0], end: [6, 0], source_ids: [R-V05]}
+  - {nso_season: spring, calendar_region: northern_mountains, start: [3, 0], end: [7, 0], source_ids: [R-V05]}
+  - {nso_season: spring, calendar_region: north_central, start: [2, 0], end: [6, 0], source_ids: [R-V05]}
+  - {nso_season: spring, calendar_region: central_coast, start: [1, 0], end: [5, 0], source_ids: [R-V05]}
+  - {nso_season: spring, calendar_region: highlands_southeast, start: [12, -1], end: [6, 0], source_ids: [R-V05]}
+  - {nso_season: spring, calendar_region: mekong, start: [11, -1], end: [4, 0], source_ids: [R-V05]}
+  - {nso_season: autumn, calendar_region: north_central, start: [5, 0], end: [9, 0], source_ids: [R-V05]}
+  - {nso_season: autumn, calendar_region: central_coast, start: [5, 0], end: [9, 0], source_ids: [R-V05]}
+  - {nso_season: autumn, calendar_region: highlands_southeast, start: [5, 0], end: [9, 0], source_ids: [R-V05]}
+  - {nso_season: winter, calendar_region: red_river_delta, start: [7, 0], end: [11, 0], source_ids: [R-V05]}
+  - {nso_season: winter, calendar_region: northern_mountains, start: [8, 0], end: [12, 0], source_ids: [R-V05]}
+  - {nso_season: winter, calendar_region: north_central, start: [7, 0], end: [11, 0], source_ids: [R-V05]}
+  - {nso_season: winter, calendar_region: central_coast, start: [7, 0], end: [12, 0], source_ids: [R-V05]}
+  - {nso_season: winter, calendar_region: highlands_southeast, start: [7, 0], end: [12, 0], source_ids: [R-V05]}
+  - {nso_season: winter, calendar_region: mekong, start: [8, -1], end: [2, 0], source_ids: [R-V05]}
+excluded:
+  - {nso_season: autumn, calendar_region: mekong, reason: "Mekong 'autumn' figure adds hè thu and thu đông (D-37)"}
