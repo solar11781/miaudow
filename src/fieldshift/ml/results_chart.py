@@ -28,6 +28,8 @@ BACKGROUND = "#ffffff"
 TEXT = "#1a1a1a"
 MARK = "#1f4e79"
 ZERO = "#595959"
+# a white outline behind each number label, so the zero and interval lines never cut through it
+HALO = f' paint-order="stroke" stroke="{BACKGROUND}" stroke-width="4" stroke-linejoin="round"'
 
 # layout in px (routine choice, D-102)
 WIDTH = 960
@@ -113,7 +115,7 @@ def _mark(key: tuple[str, str, str], skill: dict, column: int, y: float, scale: 
     parts.append(f'<circle cx="{cx:.1f}" cy="{y + 14:.1f}" r="4.5" fill="{MARK}"/>')
     left = COLUMN_X + column * COLUMN_W + LABEL_HALF_W
     label_x = min(max(cx, left), left + COLUMN_W - 2 * LABEL_HALF_W)
-    parts.append(_text(label_x, y + 34, _label(skill), ' font-size="12" text-anchor="middle"'))
+    parts.append(_text(label_x, y + 34, _label(skill), f' font-size="12" text-anchor="middle"{HALO}'))
     parts.append("</g>")
     return "".join(parts)
 
