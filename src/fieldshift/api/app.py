@@ -63,6 +63,8 @@ BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.or
 NO_STORE = {"cache-control": "no-store"}
 # the built web app: vite's content-hashed chunks in assets/, and the public folders copied as they are (D-166)
 BUILD_FOLDERS = ("assets/", "cesium/", "media/")
+FILE_METHODS = ("GET", "HEAD")
+ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
@@ -290,15 +292,18 @@ def _add_frontend(app: FastAPI, frontend: Path) -> None:
     """The built web app (D-166): each file of the build at its own path, index.html for any other path outside /api
     (the app routes in the URL fragment, so deep links work). The file list is fixed at start, so no request can reach
     a file outside the build. A missing file is 404, never index.html: a tab opened before a deploy that asks for an old
-    chunk must fail as a missing script, not run HTML."""
+    chunk must fail as a missing script, not run HTML. Every method reaches this route, so an unknown /api path is a
+    JSON 404 whatever the method; the files answer GET and HEAD only."""
     root = frontend.resolve()
     index = root / "index.html"
     files = {p.relative_to(root).as_posix(): p for p in root.rglob("*") if p.is_file()}
 
-    @app.get("/{path:path}", include_in_schema=False)
-    def frontend_route(path: str) -> Response:
+    @app.api_route("/{path:path}", methods=list(ALL_METHODS), include_in_schema=False)
+    def frontend_route(request: Request, path: str) -> Response:
         if path == "api" or path.startswith("api/"):
             raise HTTPException(404, "Not Found")
+        if request.method not in FILE_METHODS:
+            raise HTTPException(405, "Method Not Allowed", headers={"Allow": ", ".join(FILE_METHODS)})
         file = files.get(path)
         if file is None and (PurePosixPath(path).suffix or path.startswith(BUILD_FOLDERS)):
             raise HTTPException(404, "Not Found")

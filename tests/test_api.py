@@ -448,6 +448,24 @@ def test_index_html_is_revalidated_and_hashed_assets_are_cached(tmp_path: Path) 
     assert "immutable" not in c.get("/favicon.svg").headers.get("cache-control", "")
 
 
+def test_every_method_on_an_unknown_api_path_is_json_404(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for method in ("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"):
+        r = c.request(method, "/api/nothing")
+        assert r.status_code == 404, method
+        if method != "HEAD":
+            assert r.json() == {"detail": "Not Found"}, method
+
+
+def test_frontend_files_answer_get_and_head_only(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    assert c.head("/").status_code == 200
+    assert c.head("/favicon.svg").status_code == 200
+    for method in ("POST", "PUT", "DELETE"):
+        assert c.request(method, "/").status_code == 405, method
+        assert c.request(method, "/favicon.svg").status_code == 405, method
+
+
 def test_start_command_turns_off_the_access_log() -> None:
     assert "--no-access-log" in (REPO / "Dockerfile").read_text(encoding="utf-8")
 
