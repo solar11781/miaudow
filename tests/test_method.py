@@ -1,0 +1,145 @@
+"""Tests for the method response (written before the code), on the real rules files and artifacts.
+
+Spec: UI-UX-SPEC §11 (MethodResponse and its sub-types; the method checks of "Validation in src/api.ts"), §11b (the
+method page); 05-DATA-CONTRACTS §5b (metrics.json, gates.json), §7b (method.yaml), §8, §10 (Method: metrics.json,
+gates.json, method.yaml, sources.yaml); D-135 (rain_check null = not run); D-160 (studies named by first author and
+year, not by our labels P-02 and P-03). Expected values are the files' own rows and the results in docs/EXPERIMENTS.md.
+"""
+
+import json
+import re
+import shutil
+from collections.abc import Callable
+from pathlib import Path
+
+import pytest
+import yaml
+
+from fieldshift.engine.method import method
+from fieldshift.engine.schemas import EXPLAIN_KEYS, source_ids_in
+from source_trace import check_response
+
+REPO = Path(__file__).resolve().parents[1]
+OUR_LABEL = re.compile(r"\bP-0\d")  # D-160: our paper labels P-02, P-03 never show on the method page
+
+
+def artifact(name: str) -> dict:
+    return json.loads((REPO / "artifacts" / name).read_text(encoding="utf-8"))
+
+
+def method_yaml() -> dict:
+    return yaml.safe_load((REPO / "rules" / "method.yaml").read_text(encoding="utf-8"))
+
+
+def edit_json(root: Path, name: str, change: Callable[[dict], object]) -> None:
+    path = root / "artifacts" / name
+    data = json.loads(path.read_text(encoding="utf-8"))
+    change(data)
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+
+@pytest.fixture(scope="module")
+def resp() -> dict:
+    return method(REPO).model_dump(by_alias=True)
+
+
+@pytest.fixture
+def root(tmp_path: Path) -> Path:
+    """A copy of the real rules files and artifacts that one test may change."""
+    for folder in ("rules", "artifacts"):
+        shutil.copytree(REPO / folder, tmp_path / "root" / folder)
+    return tmp_path / "root"
+
+
+def test_test_years_and_freeze_commit(resp: dict) -> None:
+    assert resp["test_years"] == {"first": 2016, "last": 2024}  # EXPERIMENTS E-012: 9 test years 2016-2024
+    assert resp["freeze_commit"].startswith("ea7a60c")  # EXPERIMENTS E-012: freeze commit ea7a60c (E-010)
+
+
+def test_every_metric_row_of_metrics_json_in_file_order(resp: dict) -> None:
+    assert resp["metrics"] == artifact("metrics.json")["metrics"]
+    assert len(resp["metrics"]) == 156  # EXPERIMENTS: E-012 96 rows + E-013/E-017 4 rows + E-018/E-008 56 rows
+
+
+def test_every_gate_in_file_order(resp: dict) -> None:
+    assert resp["gates"] == artifact("gates.json")["gates"]
+    verdicts = {(g["gate"], g["season"]): g["passed"] for g in resp["gates"]}
+    assert verdicts == {  # EXPERIMENTS E-012
+        ("G1", "spring"): True,
+        ("G2", "spring"): False,
+        ("G3", "spring"): True,
+        ("G4", "spring"): True,
+        ("G1", "winter"): True,
+        ("G2", "winter"): True,
+        ("G3", "winter"): True,
+        ("G4", "winter"): True,
+        ("G1", "summer_autumn"): False,
+    }
+
+
+def test_weather_claims_and_reports(resp: dict) -> None:
+    assert resp["weather_claims"] == artifact("metrics.json")["weather_claims"]
+    made = {c["season"]: c["made"] for c in resp["weather_claims"]}
+    assert made == {"spring": False, "winter": True}  # EXPERIMENTS E-012: spring claim not made, winter claim made
+    assert resp["reports"] == artifact("metrics.json")["reports"]
+
+
+def test_method_texts_come_from_method_yaml(resp: dict) -> None:
+    texts = method_yaml()
+    assert resp["coverage"] == texts["coverage"]
+    assert resp["explain_terms"] == texts["explain_terms"]
+    assert resp["limitations"] == texts["limitations"]
+
+
+def test_coverage_cells_once_and_explain_terms_in_order(resp: dict) -> None:
+    cells = [(c["row_key"], c["axis"]) for c in resp["coverage"]]
+    assert len(cells) == len(set(cells)) == 30  # UI-UX-SPEC §11b coverage table: 5 rows x 6 axes
+    assert tuple(t["key"] for t in resp["explain_terms"]) == EXPLAIN_KEYS  # UI-UX-SPEC §11b item 3
+
+
+def test_limitations_are_non_empty_lines_in_both_languages(resp: dict) -> None:
+    assert resp["limitations"]
+    for line in resp["limitations"]:
+        assert set(line) == {"vi", "en"}
+        assert line["vi"].strip()
+        assert line["en"].strip()
+
+
+def test_rain_check_is_not_run(resp: dict) -> None:
+    assert resp["rain_check"] is None  # D-135: null = not run (queue item 45 not built)
+
+
+def test_sources_hold_exactly_the_ids_used_and_every_id_traces(resp: dict) -> None:
+    used = set(source_ids_in({k: v for k, v in resp.items() if k != "sources"}))
+    assert set(resp["sources"]) == used
+    assert {"E-008", "E-010", "E-012", "E-013", "E-017", "E-018"} <= used  # experiment ids of metrics.json
+    assert check_response(resp, None) == []
+
+
+def test_no_paper_labels_in_the_method_texts(resp: dict) -> None:
+    for cell in resp["coverage"]:
+        for text in (cell["crop"], cell["text"]):
+            assert not OUR_LABEL.search(text["vi"] + text["en"]), cell["row_key"]
+    for term in resp["explain_terms"]:
+        for text in (term["title"], term["text"]):
+            assert not OUR_LABEL.search(text["vi"] + text["en"]), term["key"]
+    for line in resp["limitations"]:
+        assert not OUR_LABEL.search(line["vi"] + line["en"]), line
+
+
+def test_disagreeing_freeze_commits_fail_loudly(root: Path) -> None:
+    edit_json(root, "gates.json", lambda data: data.update(freeze_commit="0000000"))
+    with pytest.raises(ValueError, match="freeze_commit"):
+        method(root)
+
+
+def test_a_bad_metric_row_fails_naming_the_file(root: Path) -> None:
+    edit_json(root, "metrics.json", lambda data: data["metrics"][0].update(model_id="m9"))
+    with pytest.raises(ValueError, match=r"metrics\.json"):
+        method(root)
+
+
+def test_an_id_without_source_facts_fails_loudly(root: Path) -> None:
+    edit_json(root, "metrics.json", lambda data: data["reports"][0].update(source_ids=["E-999"]))
+    with pytest.raises(ValueError, match="E-999"):
+        method(root)
