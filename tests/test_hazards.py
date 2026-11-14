@@ -353,3 +353,17 @@ def test_season_drought_readings_refuse_a_partial_month_or_a_missing_day():
         hz.season_drought_readings(rain, date(2010, 1, 5), date(2010, 2, 28), clim)
     with pytest.raises(ValueError, match="rain missing"):
         hz.season_drought_readings(rain.drop(pd.Timestamp("2010-02-10")), date(2010, 1, 1), date(2010, 2, 28), clim)
+
+
+def test_season_drought_shares_read_each_cell_then_weight_the_farmland():
+    # D-72 and 05-DATA-CONTRACTS 4a: each reading per POWER cell, then the farmland-weighted share of cells meeting it.
+    # Cell a (weight 0.25): drought months 11 and 1 only -> any 2 yes, in a row no; cell b (0.75): 12 and 1 -> both yes.
+    clim = pd.Series(100.0, index=range(1, 13))
+    rain = {
+        "a": _monthly_rain({"2009-11": 40.0, "2009-12": 60.0, "2010-01": 40.0, "2010-02": 60.0}),
+        "b": _monthly_rain({"2009-11": 60.0, "2009-12": 40.0, "2010-01": 40.0, "2010-02": 60.0}),
+    }
+    shares = hz.season_drought_shares(
+        rain, {"a": clim, "b": clim}, {"a": 0.25, "b": 0.75}, date(2009, 11, 1), date(2010, 2, 28)
+    )
+    assert shares == (0.75, 1.0)

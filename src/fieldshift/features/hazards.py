@@ -146,6 +146,19 @@ def season_drought_readings(rain: pd.Series, start: date, end: date, clim: pd.Se
     return drought_consecutive(flags), drought_any2(flags)
 
 
+def season_drought_shares(
+    cell_rain: dict, cell_clim: dict, weights: dict, start: date, end: date
+) -> tuple[float, float]:
+    """Farmland-weighted shares of cells meeting each drought reading (consecutive, any 2) over one window: read per
+    POWER cell against that cell's normal, then weighted (D-72, 05-DATA-CONTRACTS section 4a)."""
+    consecutive = any2 = 0.0
+    for cell, w in weights.items():
+        c, a = season_drought_readings(cell_rain[cell], start, end, cell_clim[cell])
+        consecutive += w * c
+        any2 += w * a
+    return consecutive, any2
+
+
 def field_days(year: int, field_dates: Iterable[tuple[str, str]]) -> pd.DatetimeIndex:
     days = set()
     for start, end in field_dates:
