@@ -340,7 +340,7 @@ def test_no_google_token_is_401_without_echo_on_every_route(on: str, fetched: li
     [
         lambda keys: google_token(keys, aud="someone-else.apps.googleusercontent.com"),  # audience = our client id
         lambda keys: google_token(keys, iss="https://zz-secret.example.com"),  # issuer = Google
-        lambda keys: google_token(keys, exp=int(time.time()) - 60),  # expired
+        lambda keys: google_token(keys, exp=int(time.time()) - 400),  # expired past the 300 s clock skew allowance
         lambda keys: google_token(keys, kid="stranger"),  # not signed by Google's key
         lambda keys: google_token(keys, sub=""),  # no account id
     ],
@@ -353,6 +353,26 @@ def test_a_token_google_did_not_issue_to_us_is_401_on_every_route(
     for method, path in ROUTES:
         no_echo(getattr(c, method)(path, headers=bearer(token(keys))), 401)
     assert rows(on, "SELECT count(*) FROM account") == [(1,)]
+
+
+# D-165: 300 s, the clock skew default of Google's Node (CLOCK_SKEW_SECS_, oauth2client.ts) and Java
+# (DEFAULT_TIME_SKEW_SECONDS, IdTokenVerifier.java) ID-token verifiers; RFC 7519 4.1.4: "no more than a few minutes"
+@pytest.mark.parametrize(
+    ("iat_from_now", "exp_from_now", "status"),
+    [
+        (200, 3800, 204),  # issued 200 s in the future: within the allowance
+        (400, 4000, 401),  # issued 400 s in the future: past it
+        (-3800, -200, 204),  # expired 200 s ago: within the allowance
+        (-4000, -400, 401),  # expired 400 s ago: past it
+    ],
+)
+def test_a_token_is_accepted_within_300_s_of_clock_skew(
+    on: str, keys: dict, fetched: list, iat_from_now: int, exp_from_now: int, status: int
+) -> None:
+    now = int(time.time())
+    token = google_token(keys, iat=now + iat_from_now, exp=now + exp_from_now)
+    r = TestClient(create_app(root=REPO)).post("/api/account/sign-in", headers=bearer(token))
+    assert r.status_code == status, r.text
 
 
 def test_a_valid_token_without_a_sign_in_is_401(on: str, keys: dict, fetched: list) -> None:
@@ -621,6 +641,87 @@ def test_a_save_blocked_by_a_delete_that_then_commits_is_401(on: str, keys: dict
         save.join(timeout=20)
     no_echo(answer[0], 401)
     assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
+
+
+LOCK_WAITS = "SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock'"
+
+
+def save_twenty(c: TestClient, me: dict[str, str]) -> list[int]:
+    """Fill the account to the cap: D-165, at most 20 saved sets per account."""
+    made = [c.post("/api/account/saved", headers=me, json=ANSWERS) for _ in range(20)]
+    assert [r.status_code for r in made] == [201] * 20
+    return [r.json()["id"] for r in made]
+
+
+def test_an_account_keeps_20_sets_and_a_21st_save_is_409_without_echo(on: str, keys: dict, fetched: list) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    save_twenty(c, me)
+    r = c.post("/api/account/saved", headers=me, json={**ANSWERS, "priority": "stability"})
+    no_echo(r, 409)
+    assert r.json() == {"detail": "saved sets are full"}  # a fixed text the page turns into "full, delete one first"
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(20,)]
+    assert rows(on, "SELECT count(*) FROM saved_answers WHERE priority = 'stability'") == [(0,)]
+
+
+def test_deleting_a_set_frees_a_slot(on: str, keys: dict, fetched: list) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    first = save_twenty(c, me)[0]
+    assert c.delete(f"/api/account/saved/{first}", headers=me).status_code == 204
+    assert c.post("/api/account/saved", headers=me, json=ANSWERS).status_code == 201
+    assert c.post("/api/account/saved", headers=me, json=ANSWERS).status_code == 409
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(20,)]
+
+
+class PausedAfterFirstInsert:
+    """A database connection whose first insert of a saved set waits for `release` before the transaction goes on."""
+
+    inserted, release = threading.Event(), threading.Event()
+
+    def __init__(self, conn: psycopg.Connection) -> None:
+        self.conn = conn
+
+    def __enter__(self) -> "PausedAfterFirstInsert":
+        self.conn.__enter__()
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.conn.__exit__(*exc)
+
+    def execute(self, sql: str, *args: object) -> object:
+        done = self.conn.execute(sql, *args)
+        if sql.startswith("INSERT INTO saved_answers") and not self.inserted.is_set():
+            self.inserted.set()
+            self.release.wait(timeout=30)
+        return done
+
+
+def test_two_saves_at_19_sets_cannot_both_succeed(
+    on: str, keys: dict, fetched: list, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # the first save stops after its insert, before its commit; the second must wait for it and then count its row
+    c = TestClient(create_app(root=REPO), raise_server_exceptions=False)
+    me = sign_in(c, keys)
+    for _ in range(19):
+        assert c.post("/api/account/saved", headers=me, json=ANSWERS).status_code == 201
+    monkeypatch.setattr(PausedAfterFirstInsert, "inserted", threading.Event())
+    monkeypatch.setattr(PausedAfterFirstInsert, "release", threading.Event())
+    real_connect = psycopg.connect
+    monkeypatch.setattr(psycopg, "connect", lambda *a, **k: PausedAfterFirstInsert(real_connect(*a, **k)))
+    with ThreadPoolExecutor(2) as pool:
+        try:
+            first = pool.submit(c.post, "/api/account/saved", headers=me, json=ANSWERS)
+            assert PausedAfterFirstInsert.inserted.wait(timeout=20)
+            second = pool.submit(c.post, "/api/account/saved", headers=me, json=ANSWERS)
+            deadline = time.monotonic() + 20  # until the second save waits on a lock, or ends without waiting
+            while time.monotonic() < deadline and not second.done() and rows(on, LOCK_WAITS) == [(0,)]:
+                time.sleep(0.05)
+        finally:
+            PausedAfterFirstInsert.release.set()
+        assert first.result(timeout=20).status_code == 201
+        no_echo(second.result(timeout=20), 409)
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(20,)]
 
 
 def test_deleting_one_set_keeps_the_others(on: str, keys: dict, fetched: list) -> None:
