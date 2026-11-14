@@ -1,6 +1,6 @@
 {
  "schema_version": "0.4",
- "generated_at": "2026-11-14T05:16:20+00:00",
+ "generated_at": "2026-11-14T05:24:41+00:00",
  "freeze_commit": "ea7a60c21d1867c4096fc3b3c4822b4127b53839",
  "test_years": {
   "first": 2016,
@@ -2914,8 +2914,8 @@
     "en": "How the normal yield is computed"
    },
    "text": {
-    "vi": "Trung bình 3 năm trước được chọn, vì sai số nhỏ hơn đường xu hướng 5 năm trên các năm 2011-2015 (0,0989 so với 0,0997). Riêng vụ xuân, đường xu hướng sai số nhỏ hơn; vụ mùa thì ngược lại.",
-    "en": "The mean of the 3 previous years was chosen: its error was smaller than the 5-year trend's on 2011-2015 (0.0989 against 0.0997). For spring rice alone the trend was better; for winter rice, the mean."
+    "vi": "Trung bình 3 năm trước được chọn, vì sai số nhỏ hơn đường xu hướng 5 năm trên các năm 2011-2015 (0,0989 so với 0,0997). Theo từng vụ: vụ xuân: đường xu hướng 5 năm tốt hơn; vụ mùa: trung bình 3 năm tốt hơn.",
+    "en": "The mean of the 3 previous years was chosen: its error was smaller than the 5-year trend's on 2011-2015 (0.0989 against 0.0997). Per season: spring rice: the 5-year trend was better; winter rice: the 3-year mean was better."
    },
    "source_ids": [
     "E-010"
@@ -2942,8 +2942,8 @@
     "en": "Model penalty at an end of the grid"
    },
    "text": {
-    "vi": "Mức phạt được chọn nằm ở một đầu thang của D-110 trong 11% số năm kiểm tra với M1 và 78% với mô hình không dùng thời tiết; mô hình này có thể yếu hơn mức nó đạt được với thang rộng hơn.",
-    "en": "The chosen penalty was at an end of the D-110 grid in 11% of the test years for M1 and in 78% for the no-weather model, which may therefore be weaker than a wider grid would allow."
+    "vi": "Mức phạt được chọn nằm ở một đầu thang mức phạt của Meroni và cộng sự 2021 (đã đổi cho hồi quy ridge) trong 11% số năm kiểm tra với M1 và 78% với mô hình không dùng thời tiết; khi đó thang có thể đã giới hạn việc chọn mức phạt tốt nhất cho mô hình ấy.",
+    "en": "The chosen penalty was at an end of the Meroni et al. 2021 penalty grid (rescaled for ridge) in 11% of the test years for M1 and in 78% for the no-weather model; there, the grid may have limited the choice of that model's best penalty."
    },
    "source_ids": [
     "E-012"
