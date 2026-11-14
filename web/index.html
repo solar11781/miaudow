@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0E1E13" />
+    <meta name="description" content="Miaudow: so sánh các cách trồng trên đất lúa thiếu nước ở Nghệ An, với 30 năm thời tiết NASA và số liệu có nguồn." />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <!-- on wide screens the home hero photo is the largest element; fetch it while the scripts load.
+         On phones the lead text is the largest element and the photo is below the fold, so it is not preloaded. -->
+    <link rel="preload" as="image" type="image/webp" href="./photos/ganh-ma-768.webp" media="(min-width: 980px)"
+      imagesrcset="./photos/ganh-ma-480.webp 480w, ./photos/ganh-ma-768.webp 768w"
+      imagesizes="520px" fetchpriority="high" />
+    <title>Miaudow · Đồng lúa Nghệ An</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Miaudow cần JavaScript để chạy. / Miaudow needs JavaScript.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
