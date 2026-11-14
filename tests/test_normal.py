@@ -10,7 +10,7 @@ import math
 import pandas as pd
 import pytest
 
-from fieldshift.ml.normal import add_anomaly, compare_normal_methods, past_normal
+from fieldshift.ml.normal import add_anomaly, compare_normal_methods, past_normal, pick_normal_method
 
 
 def _s(yields, start=2000, sid="A|rice|spring|0"):
@@ -115,12 +115,20 @@ def test_normal_choice_scores_both_methods_by_squared_error_on_the_inner_years()
     assert out["choice"] == "trend5"
 
 
-def test_normal_choice_reports_each_season_and_keeps_the_3_year_mean_on_a_tie():
-    # Source: team 2026-11-14: per-season errors are reported; on a tie (3 decimals) the 3-year mean is kept
-    df = _seasons({"spring": [5.0] * 16, "winter": [4.0] * 16})
+def test_normal_choice_reports_each_season_separately():
+    # Source: team 2026-11-14: per-season errors are reported. Spring rises by 1 a year (mean3 error 2, squared 4;
+    # trend5 exact), winter is flat (both exact); pooled over the 3 + 3 inner rows: mean3 (4 * 3 + 0) / 6 = 2, trend5 0
+    df = _seasons({"spring": [float(v) for v in range(1, 17)], "winter": [4.0] * 16})
     out = compare_normal_methods(df, before_year=2016)
     assert out["mse_by_season"] == {
-        "spring": {"mean3": pytest.approx(0.0), "trend5": pytest.approx(0.0)},
+        "spring": {"mean3": pytest.approx(4.0), "trend5": pytest.approx(0.0)},
         "winter": {"mean3": pytest.approx(0.0), "trend5": pytest.approx(0.0)},
     }
-    assert out["choice"] == "mean3"
+    assert out["mse"] == {"mean3": pytest.approx(2.0), "trend5": pytest.approx(0.0)}
+
+
+def test_errors_equal_to_3_decimals_keep_the_3_year_mean():
+    # Source: team 2026-11-14: a tie at 3 decimals keeps the 3-year mean; otherwise the lower error wins
+    assert pick_normal_method({"mean3": 0.1004, "trend5": 0.0996}) == "mean3"  # both 0.100
+    assert pick_normal_method({"mean3": 0.1006, "trend5": 0.0994}) == "trend5"  # 0.101 vs 0.099
+    assert pick_normal_method({"mean3": 0.0994, "trend5": 0.1006}) == "mean3"
