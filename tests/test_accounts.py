@@ -249,6 +249,30 @@ def test_every_database_connection_gives_up_after_5_seconds(on: str, monkeypatch
     assert set(timeouts) == {5}
 
 
+def test_a_database_that_goes_down_after_start_answers_503_and_logs_one_line(
+    on: str, keys: dict, fetched: list, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+
+    def down(*_: object, **__: object) -> None:
+        raise psycopg.OperationalError('connection to server at "10.250.7.9", port 5432 failed: zz-secret')
+
+    monkeypatch.setattr(psycopg, "connect", down)
+    with caplog.at_level(logging.DEBUG):
+        for method, path in ROUTES:
+            body = {"json": ANSWERS} if method == "post" else {}
+            r = getattr(c, method)(path, headers=me, **body)
+            assert r.status_code == 503, path
+            assert r.json() == {"detail": "sign-in is not available"}, path
+    lines = [rec.getMessage() for rec in caplog.records if rec.name.startswith("fieldshift")]
+    assert lines
+    assert all(line == lines[0] for line in lines)  # the same one line per failed request
+    assert not [rec for rec in caplog.records if rec.exc_info]  # no traceback: the error text holds the host
+    assert "10.250.7.9" not in lines[0]
+    assert "zz-secret" not in lines[0]
+
+
 def test_config_names_the_client_id_when_on(on: str) -> None:
     c = TestClient(create_app(root=REPO))
     assert c.get("/api/account/config").json() == {"available": True, "client_id": CLIENT_ID}
