@@ -102,15 +102,16 @@ describe('check and why rows', () => {
 });
 
 // UI-UX-SPEC section 9: P-02 "lợi nhuận thuần (RVAC) = GR - TVC", labour included; P-03 "Lợi nhuận = GR - Tổng chi phí
-// vật chất", material costs only. The API's definition stays; one plain sentence follows it.
+// vật chất", material costs only. The API's definition stays; one plain sentence follows it, chosen by the study
+// the money cites (D-170), not by the text_only field.
 describe('money definition', () => {
   afterEach(cleanup);
-  const moneyText = (planIndex: number, textOnly: boolean) => {
+  const moneyText = (planIndex: number, study: string) => {
     const res = validateCompare(compare(), body);
     const plan = res.plans[planIndex];
     if (!plan) throw new Error('no plan');
     plan.money.definition = { vi: 'định nghĩa của bài', en: 'the paper definition' };
-    if (textOnly) plan.money.text_only = { vi: 'tiền theo bài', en: 'money as text' };
+    plan.calendar = plan.calendar.map((c) => ({ ...c, source_ids: [study] }));
     render(
       <SettingsProvider>
         <ProvenanceProvider>
@@ -121,12 +122,12 @@ describe('money definition', () => {
     return document.querySelector(`[data-testid="card-${plan.id}-row-money"]`)?.textContent ?? '';
   };
   it('explains the P-02 definition in plain words', () => {
-    const text = moneyText(2, false);
+    const text = moneyText(2, 'R-P02');
     expect(text).toContain('định nghĩa của bài');
     expect(text).toContain(vi.farmer.definitionPlain.p02);
   });
   it('explains the P-03 definition in plain words', () => {
-    const text = moneyText(1, true);
+    const text = moneyText(1, 'R-P03');
     expect(text).toContain(vi.farmer.definitionPlain.p03);
     expect(text).not.toContain(vi.farmer.definitionPlain.p02);
   });

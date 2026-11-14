@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import type { CompareResponse, Plan, Priority, Rule, RuleCode, Stability, Value } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
+import { moneyStudy } from '../../domain/moneyStudy';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
@@ -75,6 +76,7 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   const m = plan.money;
   const seasonLabel = (code: string) => res.seasons.find((x) => x.code === code);
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
+  const study = moneyStudy(plan);
   return (
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight}>
       {m.total && (
@@ -106,9 +108,9 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
         </ul>
       )}
       {m.text_only && <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} />}
-      {/* the source's definition as the API gives it, then the same in plain words: P-03 money is the text_only plan */}
+      {/* the source's definition as the API gives it, then the same in plain words for the study it cites (D-170) */}
       <p className={s.rowNote}>{pick(m.definition)}</p>
-      <p className={s.rowNote}>{m.text_only ? t.farmer.definitionPlain.p03 : t.farmer.definitionPlain.p02}</p>
+      {study && <p className={s.rowNote}>{t.farmer.definitionPlain[study]}</p>}
     </Row>
   );
 }

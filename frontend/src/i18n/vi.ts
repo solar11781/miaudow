@@ -354,7 +354,7 @@ export const vi = {
     yearHeading: (year: number) => `Năm ${year}`,
     monthAxis: 'Tháng',
     definitionPlain: {
-      p02: 'Nói cách khác: tiền bán trừ mọi khoản chi, kể cả công lao động.',
+      p02: 'Nói cách khác: tiền bán trừ các khoản chi nghiên cứu đã tính (vật tư, công lao động, năng lượng, lãi vay).',
       p03: 'Nói cách khác: tiền bán trừ chi phí vật tư.',
     },
     share: 'Gửi thẻ này',

@@ -356,7 +356,7 @@ export const en: Messages = {
     yearHeading: (year: number) => `Year ${year}`,
     monthAxis: 'Month',
     definitionPlain: {
-      p02: 'In other words: sales money minus every cost, labour included.',
+      p02: 'In other words: sales money minus the costs the study counted (materials, labour, energy, interest).',
       p03: 'In other words: sales money minus the cost of materials.',
     },
     share: 'Send this card',
