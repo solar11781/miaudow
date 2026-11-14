@@ -185,6 +185,14 @@ def test_2004_named_break_applies_to_every_crop_and_season():
         assert g.segment.nunique() == 2
 
 
+def test_area_jump_rule_still_applies_to_the_2004_units_in_other_years():
+    # Source: D-113: "the > 50% area rule applies to every unit, the four 2004 units included in other years" (D-28);
+    # 93,400 -> 40,000 ha is -57%, a break in 2010; the 2004 named break is outside these years
+    s = assign_segments(_rows("Can Tho", [93400.0, 93000.0, 92000.0, 91000.0, 90000.0, 40000.0, 41000.0], start=2005))
+    assert list(s.segment) == [0, 0, 0, 0, 0, 1, 1]
+    assert list(s.break_here) == [False, False, False, False, False, True, False]
+
+
 def test_quang_tri_winter_rice_series_is_dropped():
     # Source: team decision D-34 (2026-11-11): Quang Tri winter rice is about a quarter of normal rice yields in every
     # year, unexplained (EXPERIMENTS E-000e), so the whole series is dropped with a recorded reason.
