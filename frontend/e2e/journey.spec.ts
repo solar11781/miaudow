@@ -267,12 +267,17 @@ test('T6 no visible text is smaller than 17 px (H6)', async ({ page }) => {
       for (let n = walker.nextNode(); n; n = walker.nextNode()) {
         const el = n.parentElement;
         if (!el || !n.textContent?.trim()) continue;
-        if (el.closest('.visually-hidden, [aria-hidden="true"], svg, title, script, style, option')) continue;
+        if (el.closest('.visually-hidden, [aria-hidden="true"], title, script, style, option')) continue;
         const cs = getComputedStyle(el);
         if (cs.display === 'none' || cs.visibility === 'hidden') continue;
         const r = el.getBoundingClientRect();
         if (!r.width || !r.height) continue;
-        if (parseFloat(cs.fontSize) < 16.9) out.push(`${cs.fontSize} ${n.textContent.trim().slice(0, 30)}`);
+        // SVG text is drawn at its font size times the scale of its drawing (rendered width / viewBox width)
+        const svg = el.closest('svg');
+        const box = svg?.viewBox.baseVal;
+        const scale = svg && box && box.width ? svg.getBoundingClientRect().width / box.width : 1;
+        const px = parseFloat(cs.fontSize) * scale;
+        if (px < 16.995) out.push(`${px.toFixed(2)}px ${n.textContent.trim().slice(0, 30)}`);
       }
       return out.slice(0, 8);
     });
