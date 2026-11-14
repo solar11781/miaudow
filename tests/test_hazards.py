@@ -17,6 +17,8 @@ Expectations come from QĐ 18/2021/QĐ-TTg (R-A01):
   calendar months from the sowing month to the harvest month; share = sum of farmland weights where met (D-79).
 """
 
+from datetime import date
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -201,3 +203,27 @@ def test_drought_month_without_a_climatology_value_fails_loudly():
     clim = pd.Series([100.0], index=[5])
     with pytest.raises(ValueError, match=r"\[6\]"):
         hz.drought_months(month_rain, clim)
+
+
+def test_risk_level_shares_weight_the_cells_that_meet_each_rule_in_a_window():
+    # Source: 03-ML-SPEC section 7 sensitivity (c) with section 5a rules (team 2026-11-14: the farmland share meeting
+    # each rule over the NSO season window): cell A (weight 0.6) has a 120 mm day, cell B (0.4) 3 days at 36 C and
+    # 6 days at 12 C mean; heavy rain 0.6, heat 0.4, cold 0.4; a 100 mm day outside the window does not count
+    a, b = _cell(), _cell()
+    a.loc["2010-03-05", "PRECTOTCORR"] = 120.0
+    a.loc["2010-08-01", "PRECTOTCORR"] = 100.0  # outside the window
+    b.loc["2010-04-01":"2010-04-03", "T2M_MAX"] = 36.0
+    b.loc["2010-02-10":"2010-02-15", "T2M"] = 12.0
+    shares = hz.risk_level_shares({"A": a, "B": b}, {"A": 0.6, "B": 0.4}, date(2010, 2, 1), date(2010, 6, 30))
+    assert shares == {
+        "risk_heavy_rain": pytest.approx(0.6),
+        "risk_heat": pytest.approx(0.4),
+        "risk_cold": pytest.approx(0.4),
+    }
+
+
+def test_risk_level_shares_refuse_missing_weather_in_the_window():
+    c = _cell()
+    c.loc["2010-03-05", "T2M_MAX"] = np.nan
+    with pytest.raises(ValueError, match="missing"):
+        hz.risk_level_shares({"A": c}, {"A": 1.0}, date(2010, 2, 1), date(2010, 6, 30))
