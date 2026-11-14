@@ -68,7 +68,7 @@ export function SkillChart({ rows, title }: { rows: SkillRow[]; title: string })
                 strokeLinecap="round"
               />
               <circle cx={x(r.skill.value)} cy={cy} r={r.lead ? 6.5 : 5} fill={col} />
-              <title>{`${r.label}: ${f.n(r.skill.value, 3)} (90%: ${f.n(r.skill.ci90_low, 3)} … ${f.n(r.skill.ci90_high, 3)})`}</title>
+              <title>{`${r.label}: ${f.n(r.skill.value, 2)} (90%: ${f.n(r.skill.ci90_low, 2)} … ${f.n(r.skill.ci90_high, 2)})`}</title>
             </g>
           );
         })}
@@ -80,9 +80,9 @@ export function SkillChart({ rows, title }: { rows: SkillRow[]; title: string })
             {rows.map((r) => (
               <tr key={r.key}>
                 <th scope="row">{r.label}</th>
-                <td>{f.n(r.skill.value, 3)}</td>
+                <td>{f.n(r.skill.value, 2)}</td>
                 <td>
-                  {f.n(r.skill.ci90_low, 3)} – {f.n(r.skill.ci90_high, 3)}
+                  {f.n(r.skill.ci90_low, 2)} – {f.n(r.skill.ci90_high, 2)}
                 </td>
               </tr>
             ))}
