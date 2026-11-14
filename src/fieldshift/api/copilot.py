@@ -17,12 +17,13 @@ other data have no register row or are not served by our API.
 from __future__ import annotations
 
 import html
+import itertools
 import json
 import math
 import re
 import unicodedata
 from collections import Counter
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Annotated, Literal
@@ -30,7 +31,17 @@ from typing import Annotated, Literal
 import anthropic
 from pydantic import BaseModel, Field, StringConstraints, ValidationError
 
-from fieldshift.api.explain import BASE_URL, MAX_RETRIES, MODEL, THINKING, TIMEOUT_SECONDS, ExplainError, numbers
+from fieldshift.api.caps import ModelCallsFullError
+from fieldshift.api.explain import (
+    BASE_URL,
+    MAX_RETRIES,
+    MODEL,
+    THINKING,
+    TIMEOUT_SECONDS,
+    UNITS,
+    ExplainError,
+    numbers,
+)
 from fieldshift.engine.past_years import past_years
 from fieldshift.engine.rules import (
     CopilotAnswers,
@@ -58,19 +69,24 @@ MIN_SCORE, MIN_COVERAGE = 4.5, 0.5
 MAX_TOOLS_PER_ROUND = 3  # security review of PR #55: a prompt injection asked for about 100 tool calls in one turn
 MAX_TOOL_RESULT_BYTES = 20_000  # security review of PR #55: about 3 plan lists; more is refused, so a loop cannot grow
 # CLAUDE.md scientific boundaries (regional estimates only, never the farmer's own field, past years never a forecast,
-# no ranking): an answer whose plain text says what will happen, what is best or what to do is refused
+# no ranking): forecast questions never reach the model, so a model answer with a future marker, a ranking or advice
+# is refused. Matched on the lower-case text with its accents, so "sẽ" never matches "sẻ" (second pass of PR #55).
 FIELD_CLAIMS = re.compile(
-    r"\b(se (dat|lai|bi|thu|duoc|tang|giam|mat)|ruong (nha )?(ban|minh) se|ban nen|nen chon|tot nhat|hay nhat|"
-    r"loi nhat|chac chan|nam sau|nam toi|mua toi|vu toi|your field will|will (yield|earn|make|produce|lose|get)|"
-    r"you should|next (year|season)|best|guarantee[ds]?)\b"
+    r"(?<!\w)(sẽ|sắp|sang năm|năm sau|năm tới|vụ sau|vụ tới|mùa sau|mùa tới|tương lai|ngày mai|tối ưu|khuyên|"
+    r"lựa chọn tốt|nên trồng|nên chọn|bạn nên|bác nên|tốt nhất|hay nhất|lời nhất|lãi nhất|chắc chắn|đảm bảo|"
+    r"will|won't|going to|gonna|future|next (year|season|crop)|tomorrow|optimal|most profitable|recommend\w*|"
+    r"advise\w*|can produce|should|best|guarantee\w*)(?!\w)"
 )
-# security review of PR #55: numbers written in words escape the digit check, so each must also be in a tool result
+# security review of PR #55: numbers written in words escape the digit check, so each must also be in a tool result;
+# "năm" (five, also "year") counts only before another number word or a unit (number_words)
 NUMBER_WORDS = frozenset(
     [
         "một",
+        "mốt",
         "hai",
         "ba",
         "bốn",
+        "tư",
         "sáu",
         "bảy",
         "bẩy",
@@ -78,8 +94,11 @@ NUMBER_WORDS = frozenset(
         "chín",
         "mười",
         "mươi",
-        "mốt",
         "lăm",
+        "linh",
+        "lẻ",
+        "chục",
+        "tá",
         "trăm",
         "nghìn",
         "ngàn",
@@ -90,6 +109,8 @@ NUMBER_WORDS = frozenset(
         "nửa",
         "rưỡi",
         "gấp",
+        "phẩy",
+        "zero",
         "one",
         "two",
         "three",
@@ -102,6 +123,13 @@ NUMBER_WORDS = frozenset(
         "ten",
         "eleven",
         "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen",
         "twenty",
         "thirty",
         "forty",
@@ -111,21 +139,36 @@ NUMBER_WORDS = frozenset(
         "eighty",
         "ninety",
         "hundred",
+        "hundreds",
         "thousand",
+        "thousands",
         "million",
+        "millions",
         "billion",
+        "billions",
         "half",
+        "halves",
         "halved",
         "double",
         "doubled",
+        "doubles",
         "twice",
         "triple",
         "tripled",
         "thrice",
+        "quadruple",
         "quarter",
+        "quarters",
+        "third",
+        "thirds",
         "dozen",
+        "dozens",
+        "percent",
     ]
 )
+FIVE = "năm"
+# the unit spellings of the data (rules/crops.yaml, rules/copilot.yaml, the plan money units) as explain.UNITS spells them
+UNIT_SPELLINGS = (("m³", "m3"), ("m²", "m2"), ("tấn/ha", "t/ha"), ("°C", "°c"))
 
 Question = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=QUESTION_MAX_CHARS)]
 Water = Literal["canal_end", "high_field", "reliable", "water_short"]
@@ -554,44 +597,65 @@ PROMPT = "copilot"  # rules/prompts/copilot.md: member B's SYSTEM without its cl
 Number = tuple[str, str, str]  # (sign, digits as written, unit word), as explain.numbers reads them
 
 
-def _strings(value: object) -> list[str]:
-    if isinstance(value, str):
+def _leaves(value: object) -> list[int | str]:
+    """The strings and integers of a tool result, dict keys included (the year tool keys its shares by rule label)."""
+    if isinstance(value, bool) or value is None:
+        return []
+    if isinstance(value, int | str):
         return [value]
     if isinstance(value, dict):
-        return [t for k, v in value.items() for t in (*_strings(k), *_strings(v))]
+        return [x for k, v in value.items() for x in (*_leaves(k), *_leaves(v))]
     if isinstance(value, list):
-        return [t for v in value for t in _strings(v)]
+        return [x for v in value for x in _leaves(v)]
     return []
+
+
+def _strings(value: object) -> list[str]:
+    return [x for x in _leaves(value) if isinstance(x, str)]
+
+
+def _units_spelled(text: str) -> str:
+    for spelling, unit in UNIT_SPELLINGS:
+        text = text.replace(spelling, unit)
+    return text
 
 
 def known_numbers(value: object) -> set[Number]:
     """Every whole number token of a tool result with its unit, as written: its JSON integers and the numbers of its
     strings. A piece of a larger number or of a range is no token, so 6 is not in 6.500-7.500 (review of PR #55)."""
     found: set[Number] = set()
-    stack = [value]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, bool) or item is None:
-            continue
+    for item in _leaves(value):
         if isinstance(item, int):
             found.add(("-" if item < 0 else "", str(abs(item)), ""))
-        elif isinstance(item, str):
-            found |= set(numbers(item))
-        elif isinstance(item, dict):  # keys too: the year tool keys its shares by the rule labels
-            stack.extend([*item.keys(), *item.values()])
-        elif isinstance(item, list):
-            stack.extend(item)
+        else:
+            found |= set(numbers(_units_spelled(item)))
     return found
 
 
-def check_numbers(text: str, known: set[Number]) -> NumberCheck:
-    """A number passes only when the same digits with the same sign and unit are a token of a tool result."""
-    found = numbers(text)
-    return NumberCheck(checked=len(found), unverified=[f"{s}{d}" for s, d, u in found if (s, d, u) not in known])
+def unit_words(value: object) -> set[str]:
+    """The unit words a tool result names anywhere; a number it gives without a unit may take one of them."""
+    words = set(_keep_accents(_units_spelled(" ".join(_strings(value)))).split()) | {
+        w.lower() for w in _units_spelled(" ".join(_strings(value))).split()
+    }
+    return {u for u in UNITS if u in words or (u == "%" and "%" in " ".join(_strings(value)))}
+
+
+def check_numbers(text: str, known: set[Number], units: set[str]) -> NumberCheck:
+    """A number passes when the same digits with the same sign are a token of a tool result with the same unit, or a
+    token without a unit and the answer adds no unit or one the tool results name (second pass of PR #55)."""
+    found = numbers(_units_spelled(text))
+    unverified = [
+        f"{s}{d}" for s, d, u in found if (s, d, u) not in known and not ((s, d, "") in known and (not u or u in units))
+    ]
+    return NumberCheck(checked=len(found), unverified=unverified)
 
 
 def number_words(text: str) -> set[str]:
-    return set(_keep_accents(text).split()) & NUMBER_WORDS
+    words = _keep_accents(text).split()
+    found = set(words) & NUMBER_WORDS
+    if any(w == FIVE and (nxt in NUMBER_WORDS or nxt in UNITS) for w, nxt in itertools.pairwise([*words, ""])):
+        found.add(FIVE)
+    return found
 
 
 # ---------------------------------------------------------------- deterministic engine (member B's)
@@ -649,7 +713,7 @@ def _response(
         citations=citations or [],
         cards=cards or [],
         tool_trace=trace or [],
-        numbers=check_numbers(answer, known),
+        numbers=check_numbers(answer, known, set()),
         missing_information=[],
     )
 
@@ -798,17 +862,19 @@ def _checked(message: anthropic.types.Message, results: list[dict[str, object]])
     except ValidationError as err:
         raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
     written = "\n".join([out.answer, *out.missing_information])
-    checked = check_numbers(written, known_numbers(results))
+    checked = check_numbers(written, known_numbers(results), unit_words(results))
     if checked.unverified:
         raise CopilotError("NumbersUnverified", 200, message.stop_reason, request_id)
     if number_words(written) - number_words(" ".join(_strings(results))):
         raise CopilotError("NumberWordsUnverified", 200, message.stop_reason, request_id)
-    if FIELD_CLAIMS.search(normalize(written)):
+    if FIELD_CLAIMS.search(_keep_accents(written)):
         raise CopilotError("FieldClaim", 200, message.stop_reason, request_id)
     return out, checked
 
 
-def claude_answer(req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic) -> CopilotResponse:
+def claude_answer(
+    req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic, charge: Callable[[], bool]
+) -> CopilotResponse:
     """Member B's manual tool loop, so every tool result is ours and the number check sees all of them."""
     mode = "Simple mode." if req.mode == "simple" else "Technical mode."
     language = "Answer in Vietnamese." if req.lang == "vi" else "Answer in English."
@@ -817,6 +883,8 @@ def claude_answer(req: CopilotRequest, corpus: Corpus, client: anthropic.Anthrop
     messages: list[dict[str, object]] = [{"role": "user", "content": f"{mode} {language}{water}\n\n{question}"}]
     runs = _ToolRuns(corpus, req.lang)
     for _ in range(MAX_TOOL_ROUNDS + 1):
+        if not charge():  # each model call takes one of the shared calls (caps.py), not each answer
+            raise ModelCallsFullError
         message = _create(client, corpus.system, messages)
         request_id = getattr(message, "_request_id", None)
         if message.stop_reason != "tool_use":
@@ -845,10 +913,10 @@ def claude_answer(req: CopilotRequest, corpus: Corpus, client: anthropic.Anthrop
     )
 
 
-def answer(req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic | None) -> CopilotResponse:
-    return claude_answer(req, corpus, client) if uses_model(req, client) else deterministic(req, corpus)
-
-
-def uses_model(req: CopilotRequest, client: anthropic.Anthropic | None) -> bool:
-    """True when the answer comes from the model, so it takes one of the shared model calls (caps.py)."""
-    return client is not None and not fixed_only(req)
+def answer(
+    req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic | None, charge: Callable[[], bool]
+) -> CopilotResponse:
+    """`charge` takes one model call from the caps before each call, and False refuses it (ModelCallsFullError)."""
+    if client is None or fixed_only(req):
+        return deterministic(req, corpus)
+    return claude_answer(req, corpus, client, charge)

@@ -17,6 +17,7 @@ Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no
 from __future__ import annotations
 
 import asyncio
+import functools
 import html
 import json
 import logging
@@ -48,7 +49,7 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.api.caps import TOO_MANY, ModelCallCaps, client_of
+from fieldshift.api.caps import TOO_MANY, ModelCallCaps, ModelCallsFullError, client_of
 from fieldshift.api.copilot import (
     COPILOT_LIMIT,
     CopilotRequest,
@@ -56,7 +57,6 @@ from fieldshift.api.copilot import (
     copilot_client,
     copilot_on,
     load_corpus,
-    uses_model,
 )
 from fieldshift.api.copilot import answer as copilot_answer
 from fieldshift.api.explain import (
@@ -320,7 +320,7 @@ async def _explain(
     except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     try:
-        if not request.app.state.model_calls.take(client_of(request)):
+        if not request.app.state.model_calls.take(client_of(request), "explain"):
             return _too_many()
         answer = await anyio.to_thread.run_sync(compare, body.answers, compare_data, limiter=threads)
         reply = await anyio.to_thread.run_sync(
@@ -347,9 +347,11 @@ async def _copilot(
     except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     try:
-        if uses_model(body, claude) and not request.app.state.model_calls.take(client_of(request)):
-            return _too_many()
-        reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, limiter=threads)
+        caps, client = request.app.state.model_calls, client_of(request)
+        charge = functools.partial(caps.take, client, "copilot")
+        reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, charge, limiter=threads)
+    except ModelCallsFullError:
+        return _too_many()
     finally:
         slots.release()
     return _respond(_json(reply))

@@ -480,6 +480,25 @@ SEARCH = (lambda _: tool_use("search_evidence", {"query": "nước tưới lúa"
         "About half of the farmland was dry.",
         "Profit doubled.",
         "It needs twice the water.",
+        # second security pass of PR #55
+        "Your farm can produce fifteen tonnes per hectare",
+        "Ruộng của bác vụ sau sẽ cho chục tấn",
+        "Sang năm ruộng bác sẽ khô hạn nặng, trồng lạc là lựa chọn tối ưu",
+        "Your field is going to be dry; peanut is the most profitable choice",
+        "Lạc lãi năm triệu một ha",
+        "Lúa sẽ ổn.",
+        "Rice will be fine.",
+        "In the future the land dries.",
+        "Tương lai đất sẽ khô.",
+        "Mùa tới khô.",
+        "We recommend peanut.",
+        "Tôi khuyên trồng lạc.",
+        "Nên trồng lạc.",
+        "Peanut is optimal.",
+        "Lạc là lựa chọn tốt.",
+        "Thirteen plots were dry.",
+        "Lãi một tá.",
+        "Lãi mười lăm triệu.",
     ],
 )
 def test_a_forecast_advice_or_number_in_words_answer_is_refused(
@@ -494,16 +513,18 @@ def test_the_review_example_fails_the_number_check_on_its_own() -> None:
     corpus = copilot.load_corpus(REPO)
     texts = [p.text["vi"] for p in corpus.passages if p.id in ("water-tcvn", "plan-cc1")]
     known = copilot.known_numbers(texts)
-    out = copilot.check_numbers("Năm sau ruộng nhà bạn sẽ đạt 6 tấn/ha, lãi 26 triệu, 7 tháng.", known)
+    units = copilot.unit_words(texts)
+    out = copilot.check_numbers("Năm sau ruộng nhà bạn sẽ đạt 6 tấn/ha, lãi 26 triệu, 7 tháng.", known, units)
     assert out.unverified == ["6", "26", "7"]  # not pieces of 6.500–7.500 or 25.980  # noqa: RUF003
-    ok = copilot.check_numbers("Lạc 25.980; lúa 6.500–7.500 m³/ha.", known)  # noqa: RUF001 - as written
+    ok = copilot.check_numbers("Lạc 25.980; lúa 6.500–7.500 m³/ha.", known, units)  # noqa: RUF001 - as written
     assert ok.unverified == []
 
 
 def test_a_number_must_keep_the_unit_its_result_gives() -> None:
     known = copilot.known_numbers(["Đất trồng gặp điều kiện: 100%"])
-    assert copilot.check_numbers("100%", known).unverified == []
-    assert copilot.check_numbers("100 tháng", known).unverified == ["100"]
+    units = copilot.unit_words(["Đất trồng gặp điều kiện: 100%"])
+    assert copilot.check_numbers("100%", known, units).unverified == []
+    assert copilot.check_numbers("100 tháng", known, units).unverified == ["100"]
 
 
 def test_at_most_three_tool_calls_run_in_a_round(
@@ -559,3 +580,67 @@ def test_the_grid_cell_size_is_the_audited_wording() -> None:
     assert "55 × 66 km" in nasa.text["vi"]  # noqa: RUF001 - frontend/src/i18n/vi.ts, the D-169 audit
     assert "55 × 66 km" in nasa.text["en"]  # noqa: RUF001 - frontend/src/i18n/en.ts line 189
     assert "50 km" not in nasa.text["vi"] + nasa.text["en"]
+
+
+# ---- second security pass of PR #55: faithful answers pass, fixed answers are never filtered
+
+
+def test_five_followed_by_a_number_word_or_unit_is_a_number() -> None:
+    assert "năm" in copilot.number_words("Lạc lãi năm triệu một ha")
+    assert "năm" in copilot.number_words("năm tấn")
+    assert "năm" not in copilot.number_words("Năm 2010 là năm đã qua")
+
+
+@pytest.mark.parametrize(
+    ("replies", "lang", "answer"),
+    [
+        ((lambda _: tool_use("list_plans", {}),), "vi", "Lạc lãi 25.980 nghìn đồng/ha."),
+        (
+            (lambda _: tool_use("search_evidence", {"query": "nước tưới lúa"}),),
+            "en",
+            "Spring rice needs 6,500-7,500 m3/ha.",
+        ),
+        (
+            (lambda _: tool_use("search_evidence", {"query": "nước tưới lúa"}),),
+            "en",
+            "Spring rice needs 6,500–7,500 m³/ha.",  # noqa: RUF001 - the en dash of the passage
+        ),
+        ((lambda _: tool_use("year_conditions", {"year": 2010}),), "vi", "Năm 2010 là năm đã qua: mưa lớn 100%."),
+    ],
+)
+def test_a_faithful_answer_with_its_unit_passes(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], replies: tuple, lang: str, answer: str
+) -> None:
+    fake_api(*replies, lambda _: final(answer))
+    out = ask(app_client(monkeypatch), WATER_Q["question"], lang)
+    assert out["answer"] == answer
+    assert out["numbers"]["unverified"] == []
+
+
+@pytest.mark.parametrize(
+    ("text", "unverified"),
+    [
+        ("6.500 tấn/ha", ["6.500"]),  # a unit no tool text names is not implied
+        ("100 tháng", ["100"]),  # the tool result gives the unit %
+        ("6 tấn/ha", ["6"]),
+        ("26 triệu", ["26"]),
+    ],
+)
+def test_the_unit_rules_still_refuse_the_exploits(text: str, unverified: list[str]) -> None:
+    corpus = copilot.load_corpus(REPO)
+    results = [p.text["vi"] for p in corpus.passages if p.id in ("water-tcvn", "plan-cc1")] + ["mưa lớn: 100%"]
+    assert (
+        copilot.check_numbers(text, copilot.known_numbers(results), copilot.unit_words(results)).unverified
+        == unverified
+    )
+
+
+@pytest.mark.parametrize(
+    "question",
+    ["Năm sau có hạn không?", "Will it rain next season?", "Ruộng cuối kênh nên trồng gì?", "Năm 2010 thế nào?"],
+)
+def test_the_fixed_answers_are_never_filtered(det: TestClient, question: str) -> None:
+    out = ask(det, question)
+    assert out["engine"] == "deterministic"
+    if "sau" in question:  # the fixed forecast answer itself names the coming season ("mùa tới")
+        assert copilot.FIELD_CLAIMS.search(copilot._keep_accents(out["answer"]))
