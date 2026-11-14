@@ -22,7 +22,11 @@ def cell(text: object) -> str:
 
 def main() -> None:
     catalog = json.loads((CANON / "catalog.json").read_text(encoding="utf-8"))
-    gibs = json.loads((CANON / "gibs_layers.json").read_text(encoding="utf-8")) if (CANON / "gibs_layers.json").exists() else None
+    gibs = (
+        json.loads((CANON / "gibs_layers.json").read_text(encoding="utf-8"))
+        if (CANON / "gibs_layers.json").exists()
+        else None
+    )
     datasets = sorted(catalog["datasets"], key=lambda d: (ORDER.get(d["ingestion_status"], 9), d["dataset_id"]))
     counts: dict[str, int] = {}
     for d in datasets:
@@ -34,7 +38,9 @@ def main() -> None:
         f"Generated from `data/canonical/catalog.json` (built {catalog['generated_at']}) by `pipeline/write_data_registry.py`.",
         "Do not edit by hand: rebuild the canonical data, then rerun the script.",
         "",
-        "Ingestion state: " + ", ".join(f"**{k}** {v}" for k, v in sorted(counts.items(), key=lambda kv: ORDER.get(kv[0], 9))) + ".",
+        "Ingestion state: "
+        + ", ".join(f"**{k}** {v}" for k, v in sorted(counts.items(), key=lambda kv: ORDER.get(kv[0], 9)))
+        + ".",
         "No dataset below is a measurement on a farmer's field except the two trial studies, and those describe one",
         "unreplicated plot per crop in Lưu Sơn, Đô Lương, 2020–21.",
         "",
@@ -51,7 +57,9 @@ def main() -> None:
     for d in datasets:
         lines.append(f"### `{d['dataset_id']}` — {d['title']['en']}")
         lines.append("")
-        lines.append(f"- Source: {cell(d['source_url'])} (source id `{d['source_id']}`), revision {cell(d['source_revision'])}, retrieved {cell(d['retrieved_at'])}")
+        lines.append(
+            f"- Source: {cell(d['source_url'])} (source id `{d['source_id']}`), revision {cell(d['source_revision'])}, retrieved {cell(d['retrieved_at'])}"
+        )
         lines.append(f"- Missing values: {cell(d['missing_policy'])}")
         lines.append(f"- Allowed use: {cell(d['allowed_use']['en'])}")
         if d.get("version_sha256"):
@@ -64,7 +72,9 @@ def main() -> None:
         lines.append(f"| `{m['method_id']}` | {cell(m['description']['en'])} | {', '.join(m['source_ids'])} |")
     lines += ["", "## Displayed metrics", "", "| Metric | Unit | Method | Does not prove |", "|---|---|---|---|"]
     for mid, m in catalog["metrics"].items():
-        lines.append(f"| `{mid}` — {cell(m['title']['en'])} | {cell(m['unit'])} | `{m['method_id']}` | {cell(m['does_not_prove']['en'])} |")
+        lines.append(
+            f"| `{mid}` — {cell(m['title']['en'])} | {cell(m['unit'])} | `{m['method_id']}` | {cell(m['does_not_prove']['en'])} |"
+        )
     if gibs:
         layers = gibs.get("layers", gibs if isinstance(gibs, list) else [])
         lines += ["", "## NASA GIBS imagery layers (visual source, not evidence)", ""]
