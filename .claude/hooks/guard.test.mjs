@@ -144,6 +144,15 @@ test('flags written as --flag=value are checked like the plain flag', () => {
   assert.deepEqual(mergeRequest('gh pr merge 12 --merge=true'), { pr: '12', problem: null });
 });
 
+test('grouped short flags, a second number and another repository are refused', () => {
+  assert.match(mergeRequest('gh pr merge 12 --merge -dm').problem, /delete/);
+  assert.match(mergeRequest('gh pr merge 12 -md').problem, /delete/);
+  assert.match(mergeRequest('gh pr merge 12 -ms').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge --merge --subject 12 99').problem, /one pull request/);
+  assert.match(mergeRequest('gh pr merge 12 --merge -R other/repo').problem, /repo/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --repo=other/repo').problem, /repo/);
+});
+
 const GATE = 'review-gates: spec-review=pass security-review=pass tests=pass';
 const goodPr = () => ({
   state: 'OPEN', isDraft: false, baseRefName: 'main', headRefName: 'feat/x',
