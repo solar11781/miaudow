@@ -8,7 +8,7 @@
 - crop_id: rice
   name: {vi: "Lúa", en: "Rice"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 26077 Oryza sativa
   water_facts:
     - &tcvn_rice
       source_id: R-W15
@@ -45,7 +45,7 @@
 - crop_id: peanut
   name: {vi: "Lạc", en: "Peanut"}
   is_legume: true
-  legume_source_ids: [R-B01, R-E06]
+  legume_source_ids: [R-B01, R-E06]  # GRIN 3785 Arachis hypogaea; R-E06: groundnut as a nitrogen-fixing legume
   water_facts:
     - &tcvn
       source_id: R-W15
@@ -60,12 +60,12 @@
 - crop_id: mung_bean
   name: {vi: "Đậu xanh", en: "Mung bean"}
   is_legume: true
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 41629 Vigna radiata
   water_facts: []
 - crop_id: maize_grain
   name: {vi: "Ngô thương phẩm", en: "Grain maize"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 42207 Zea mays
   water_facts:
     - <<: *tcvn
       value_text: "2,000-2,500"
@@ -76,12 +76,12 @@
 - crop_id: maize_biomass
   name: {vi: "Ngô sinh khối", en: "Biomass maize"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 42207 Zea mays
   water_facts: []  # no source applies the grain maize values to maize harvested green (D-68)
 - crop_id: soybean
   name: {vi: "Đậu tương", en: "Soybean"}
   is_legume: true
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 17711 Glycine max
   water_facts:
     - <<: *tcvn
       value_text: "2,000"
@@ -91,7 +91,7 @@
 - crop_id: sweet_potato
   name: {vi: "Khoai lang", en: "Sweet potato"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 20142 Ipomoea batatas
   water_facts:
     - <<: *tcvn
       value_text: "1,200-1,400"
@@ -99,20 +99,20 @@
 - crop_id: black_bean
   name: {vi: "Đậu đen xanh lòng", en: "Black bean"}
   is_legume: true
-  legume_source_ids: [R-B01, R-B02]
+  legume_source_ids: [R-B01, R-B02]  # GRIN 467840 Vigna unguiculata Biflora Group; R-B02: the Vietnamese name
   water_facts: []
 - crop_id: black_sesame
   name: {vi: "Vừng đen", en: "Black sesame"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 33749 Sesamum indicum
   water_facts: []
 - crop_id: chili
   name: {vi: "Ớt chỉ thiên", en: "Chili"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 8904 Capsicum annuum, 8913 Capsicum frutescens
   water_facts: []
 - crop_id: pumpkin
   name: {vi: "Bí đỏ", en: "Pumpkin"}
   is_legume: false
-  legume_source_ids: [R-B01]
+  legume_source_ids: [R-B01]  # GRIN 12601 Cucurbita moschata
   water_facts: []

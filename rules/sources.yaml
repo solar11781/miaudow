@@ -104,8 +104,8 @@
   limitations:
     - {vi: "Đọc qua bản chép lại trên mạng, chỉ hai trang về đậu đen.",
        en: "Read in an online transcription, only the two pages on black bean."}
-    - {vi: "Sách ghi tên khoa học này \"hiện nay chưa được chính xác lắm\".",
-       en: "The book says this scientific name is \"not yet very exact\" (our translation)."}
+    - {vi: "Sách ghi tên khoa học Vigna cylindrica Skeels \"hiện nay chưa được chính xác lắm\".",
+       en: "The book says the scientific name Vigna cylindrica Skeels is \"not yet very exact\" (our translation)."}
   url: "https://vnras.com/?p=21639"
   nso_credit: false
 - id: R-C13
