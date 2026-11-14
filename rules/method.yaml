@@ -108,7 +108,7 @@ explain_terms:
     source_ids: [R-N01, R-W12, R-N05, R-A10]
 
 # datasets_not_used: UI-UX-SPEC §11b item 4b (D-165): the dataset, its official facts and why it is not used, from the
-# planning research/datasets-considered.md (dates from NASA CMR, R-N07) and the soil block of D-57 removed in D-97.
+# planning research/datasets-considered.md (dates from NASA CMR, R-N07).
 # GEDI is left out until its gedi.umd.edu quote is verified and has a REFERENCES row (team, D-165).
 datasets_not_used:
   - dataset: ECOSTRESS
@@ -175,13 +175,6 @@ datasets_not_used:
         second reanalysis next to NASA POWER's MERRA-2 is not a measured check; NASA data stays the core of this
         project."
     source_ids: [R-N09, R-N01, R-H12]
-  - dataset: ISRIC SoilGrids
-    reason:
-      vi: "Bản đồ đất toàn cầu 250 m, phiên bản 2.0. Không dùng: đã cân nhắc cho một khối thông tin về đất; khối này bị
-        bỏ vì đơn vị làm ra số liệu khuyên không dùng cho cấp địa phương, cấp ruộng hay cấp dưới quốc gia."
-      en: "Global soil maps, 250 m, version 2.0. Not used: considered for a soil information block, which was removed
-        because the data producer advises against local, farm or subnational use."
-    source_ids: [R-D02, R-K13]
 
 # limitations: one line each (UI-UX-SPEC §11b item 5): 03-ML-SPEC §9 and the spell rule of 03-ML-SPEC §5a.
 limitations:

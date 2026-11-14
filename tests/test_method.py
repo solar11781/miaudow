@@ -108,7 +108,7 @@ def test_limitations_are_non_empty_lines_in_both_languages(resp: dict) -> None:
 
 def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_sources(resp: dict) -> None:
     assert resp["datasets_not_used"] == method_yaml()["datasets_not_used"]
-    # planning research/datasets-considered.md rows with a REFERENCES source for their facts, and SoilGrids (D-97)
+    # planning research/datasets-considered.md rows whose facts have a REFERENCES source
     assert [d["dataset"] for d in resp["datasets_not_used"]] == [
         "ECOSTRESS",
         "Landsat",
@@ -118,7 +118,6 @@ def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_source
         "GRACE / GRACE-FO",
         "FAO GAEZ",
         "ERA5 (ECMWF)",
-        "ISRIC SoilGrids",
     ]
     era5 = next(d for d in resp["datasets_not_used"] if d["dataset"] == "ERA5 (ECMWF)")
     assert "R-N09" in era5["source_ids"]  # REFERENCES R-N09: the Copernicus CDS ERA5 page holds its facts
@@ -128,6 +127,13 @@ def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_source
         assert entry["reason"]["en"].strip()
         assert entry["source_ids"]
         assert set(entry["source_ids"]) <= register.keys(), entry["dataset"]
+
+
+def test_no_soilgrids_source_in_the_method_response(resp: dict) -> None:
+    # UI-UX-SPEC T27 (D-97): no API response contains the SoilGrids source ids R-D02 or R-D03
+    text = json.dumps(resp)
+    assert "R-D02" not in text
+    assert "R-D03" not in text
 
 
 def test_a_dataset_not_used_without_a_source_fails_naming_the_file(root: Path) -> None:
