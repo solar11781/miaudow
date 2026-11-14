@@ -16,6 +16,7 @@ import pytest
 import yaml
 
 from fieldshift.engine.method import method
+from fieldshift.engine.rules import load_sources
 from fieldshift.engine.schemas import EXPLAIN_KEYS, source_ids_in
 from source_trace import check_response
 
@@ -103,6 +104,56 @@ def test_limitations_are_non_empty_lines_in_both_languages(resp: dict) -> None:
         assert set(line) == {"vi", "en"}
         assert line["vi"].strip()
         assert line["en"].strip()
+
+
+def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_sources(resp: dict) -> None:
+    assert resp["datasets_not_used"] == method_yaml()["datasets_not_used"]
+    # planning research/datasets-considered.md rows whose facts have a REFERENCES source
+    assert [d["dataset"] for d in resp["datasets_not_used"]] == [
+        "ECOSTRESS",
+        "Landsat",
+        "VIIRS",
+        "Sentinel-2 (ESA)",
+        "GLDAS",
+        "GRACE / GRACE-FO",
+        "GEDI",
+        "FAO GAEZ",
+        "ERA5 (ECMWF)",
+    ]
+    era5 = next(d for d in resp["datasets_not_used"] if d["dataset"] == "ERA5 (ECMWF)")
+    assert "R-N09" in era5["source_ids"]  # REFERENCES R-N09: the Copernicus CDS ERA5 page holds its facts
+    gedi = next(d for d in resp["datasets_not_used"] if d["dataset"] == "GEDI")
+    assert gedi["source_ids"] == ["R-N07", "R-N10"]  # CMR GEDI02_A start date; GEDI mission overview page
+    register = load_sources(REPO)
+    for entry in resp["datasets_not_used"]:
+        assert entry["reason"]["vi"].strip()
+        assert entry["reason"]["en"].strip()
+        assert entry["source_ids"]
+        assert set(entry["source_ids"]) <= register.keys(), entry["dataset"]
+
+
+def test_no_soilgrids_source_in_the_method_response(resp: dict) -> None:
+    # UI-UX-SPEC T27 (D-97): no API response contains the SoilGrids source ids R-D02 or R-D03
+    text = json.dumps(resp)
+    assert "R-D02" not in text
+    assert "R-D03" not in text
+
+
+def test_a_dataset_not_used_without_a_source_fails_naming_the_file(root: Path) -> None:
+    path = root / "rules" / "method.yaml"
+    texts = yaml.safe_load(path.read_text(encoding="utf-8"))
+    texts["datasets_not_used"][0]["source_ids"] = []
+    path.write_text(yaml.safe_dump(texts, allow_unicode=True), encoding="utf-8")
+    with pytest.raises(ValueError, match=r"method\.yaml"):
+        method(root)
+
+
+def test_the_ndvi_term_cites_nasas_ndvi_page(resp: dict) -> None:
+    ndvi = next(t for t in resp["explain_terms"] if t["key"] == "ndvi")
+    assert ndvi["source_ids"] == ["R-N08"]  # D-165: NASA Earth Observatory, Measuring Vegetation (NDVI & EVI)
+    # earthobservatory.nasa.gov/features/MeasuringVegetation redirects (301) to this address (read 2026-11-14)
+    url = "https://science.nasa.gov/earth/earth-observatory/measuring-vegetation-ndvi-evi"
+    assert resp["sources"]["R-N08"]["url"] == url
 
 
 def test_rain_check_is_not_run(resp: dict) -> None:

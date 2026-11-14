@@ -20,6 +20,7 @@ BOUNDARIES=data/raw/boundaries/geoBoundaries-VNM-ADM1_simplified.geojson
 pip install pyhdf==0.11.7
 python scripts/modis_landcover.py 2001 2015
 python scripts/build_cell_weights.py
+python scripts/build_grid_figure.py   # artifacts/figures/nghe_an_grid.svg for the method page (D-135)
 
 # 3. NASA POWER daily data for every weighted cell (cached files are reused), then the training feature table.
 python scripts/download_power.py
@@ -35,6 +36,7 @@ DESINVENTAR=data/raw/desinventar/DI_export_vnm.zip   # R-A19, for the E-016 chec
 [ -f "$DESINVENTAR" ] || python scripts/fetch_recorded.py "$DESINVENTAR"
 python scripts/run_method_reports.py   # method page reports: E-012/E-018 winter claim, setup choices, E-014, E-016
 python scripts/build_results_chart.py   # artifacts/figures/results_chart.svg for the slides and the method page
+python scripts/build_figures.py   # docs/figures: rice yield history and farmland rule shares for the README and submission
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
 #     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.

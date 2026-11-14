@@ -325,6 +325,30 @@
        en: "A copy on hethongphapluat.com, not the official publication."}
   url: "https://hethongphapluat.com/nghi-dinh-112-2024-nd-cp-huong-dan-ve-dat-trong-lua/dieu-7"
   nso_credit: false
+- id: R-H12
+  citation: {vi: "NASA Space Apps 2026, Hướng dẫn chấm điểm và giải thưởng (trang ngày 12/11/2026)",
+             en: "NASA Space Apps 2026 Judging & Awards Guide (page dated 2026-11-12)"}
+  study_type: {vi: "Trang web của cuộc thi NASA Space Apps", en: "NASA Space Apps challenge web page"}
+  place_years: {vi: "Toàn cầu; năm 2026", en: "Global; 2026"}
+  read_status: "READ (2026-11-13)"
+  full_text_read: true
+  limitations:
+    - {vi: "Tiêu chí chấm điểm của cuộc thi, không phải kết quả nghiên cứu.",
+       en: "The challenge's judging criteria, not study results."}
+  url: "https://www.spaceappschallenge.org/resources/judging-awards-guide/"
+  nso_credit: false
+- id: R-H16
+  citation: {vi: "Trang thử thách Field Shift, thẻ Resources (đăng ngày 13/11/2026)",
+             en: "Field Shift challenge page, Resources tab (published 2026-11-13)"}
+  study_type: {vi: "Trang web của cuộc thi NASA Space Apps", en: "NASA Space Apps challenge web page"}
+  place_years: {vi: "Toàn cầu; đăng năm 2026", en: "Global; published 2026"}
+  read_status: "READ (2026-11-13)"
+  full_text_read: true
+  limitations:
+    - {vi: "Danh sách các bộ số liệu gợi ý, không phải kết quả nghiên cứu.",
+       en: "A list of suggested datasets, not study results."}
+  url: "https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/?tab=resources"
+  nso_credit: false
 - id: R-M01
   citation:
     vi: "Allen, R.G., Pereira, L.S., Raes, D., Smith, M. (1998). Crop evapotranspiration: Guidelines for computing crop water requirements. FAO Irrigation and Drainage Paper 56. Rome: FAO"
@@ -455,6 +479,51 @@
     - {vi: "Không phải số đo tại ruộng. Chúng tôi đọc thuộc tính của tệp số liệu.",
        en: "Not measured at the field. We read the attributes of the data files."}
   url: "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGM.07/"
+  nso_credit: false
+- id: R-N07
+  citation: {vi: "NASA Common Metadata Repository (CMR), siêu dữ liệu của các bộ số liệu (time_start, title)",
+             en: "NASA Common Metadata Repository (CMR), collection metadata (time_start, title)"}
+  study_type: {vi: "Danh mục siêu dữ liệu của NASA", en: "NASA metadata catalogue"}
+  place_years: {vi: "Toàn cầu; đọc ngày 13/11/2026", en: "Global; read 2026-11-13"}
+  read_status: "READ"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc ngày bắt đầu và tên của từng bộ số liệu.",
+       en: "We read only the start date and title of each dataset."}
+  url: "https://cmr.earthdata.nasa.gov/search/collections.json"
+  nso_credit: false
+- id: R-N08
+  citation: {vi: "Weier, J., Herring, D. (2000). Measuring Vegetation (NDVI & EVI). NASA Earth Observatory",
+             en: "Weier, J., Herring, D. (2000). Measuring Vegetation (NDVI & EVI). NASA Earth Observatory"}
+  study_type: {vi: "Bài giải thích của NASA", en: "NASA explainer article"}
+  place_years: {vi: "Toàn cầu; đăng ngày 30/8/2000, cập nhật ngày 14/11/2025", en: "Global; published 30 August 2000, updated 14 November 2025"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Định nghĩa của chỉ số, không phải kết quả nghiên cứu.", en: "A definition of the index, not study results."}
+  url: "https://science.nasa.gov/earth/earth-observatory/measuring-vegetation-ndvi-evi"
+  nso_credit: false
+- id: R-N09
+  citation: {vi: "Copernicus Climate Data Store, ERA5 hourly data on single levels from 1940 to present",
+             en: "Copernicus Climate Data Store, ERA5 hourly data on single levels from 1940 to present"}
+  study_type: {vi: "Trang mô tả bộ số liệu tái phân tích", en: "Reanalysis dataset page"}
+  place_years: {vi: "Toàn cầu; từ năm 1940; đọc ngày 14/11/2026", en: "Global; from 1940; read 2026-11-14"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc trang mô tả, không tải số liệu.", en: "We read only the dataset page, not the data."}
+  url: "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
+  nso_credit: false
+- id: R-N10
+  citation: {vi: "GEDI (Global Ecosystem Dynamics Investigation), Mission Overview, University of Maryland",
+             en: "GEDI (Global Ecosystem Dynamics Investigation), Mission Overview, University of Maryland"}
+  study_type: {vi: "Trang mô tả sứ mệnh vệ tinh", en: "Satellite mission page"}
+  place_years: {vi: "Toàn cầu; đọc ngày 14/11/2026", en: "Global; read 2026-11-14"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc trang mô tả, không tải số liệu.", en: "We read only the mission page, not the data."}
+  url: "https://gedi.umd.edu/mission/mission-overview/"
   nso_credit: false
 - id: R-P02
   citation:

@@ -1,0 +1,277 @@
+{
+ "generated_at": "2026-11-14T10:32:18Z",
+ "frameable": {
+  "solar_system": true,
+  "earth": true,
+  "evidence": {
+   "solar_system": {
+    "url": "https://eyes.nasa.gov/apps/solar-system/",
+    "status": 200,
+    "x_frame_options": null,
+    "csp_frame_ancestors": null,
+    "csp_present": false,
+    "frameable_by_headers": true,
+    "server": "AmazonS3",
+    "meta_csp_in_html": false,
+    "frame_busting_code_found": false,
+    "official_embed_feature": true,
+    "router_pattern": "/:spaceObject"
+   },
+   "earth": {
+    "url": "https://eyes.nasa.gov/apps/earth/",
+    "status": 200,
+    "x_frame_options": null,
+    "csp_frame_ancestors": null,
+    "csp_present": false,
+    "frameable_by_headers": true,
+    "server": "AmazonS3",
+    "meta_csp_in_html": false,
+    "frame_busting_code_found": false,
+    "official_embed_feature": false
+   }
+  },
+  "not_frameable": {
+   "https://science.nasa.gov/eyes/": "X-Frame-Options: SAMEORIGIN (landing page, link only)"
+  }
+ },
+ "links": [
+  {
+   "id": "earth",
+   "app": "solar_system",
+   "label_vi": "Trái Đất",
+   "label_en": "Earth",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/earth",
+   "verified_by": "entity 'earth' (label 'Earth') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "moon",
+   "app": "solar_system",
+   "label_vi": "Mặt Trăng",
+   "label_en": "Moon",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/moon",
+   "verified_by": "entity 'moon' (label 'Moon') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "mars",
+   "app": "solar_system",
+   "label_vi": "Sao Hỏa",
+   "label_en": "Mars",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/mars",
+   "verified_by": "entity 'mars' (label 'Mars') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "jupiter",
+   "app": "solar_system",
+   "label_vi": "Sao Mộc",
+   "label_en": "Jupiter",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/jupiter",
+   "verified_by": "entity 'jupiter' (label 'Jupiter') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "saturn",
+   "app": "solar_system",
+   "label_vi": "Sao Thổ",
+   "label_en": "Saturn",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/saturn",
+   "verified_by": "entity 'saturn' (label 'Saturn') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_landsat_9",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh Landsat 9 (ảnh mặt đất 30 m)",
+   "label_en": "Landsat 9 (30 m land imaging)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_landsat_9",
+   "verified_by": "entity 'sc_landsat_9' (label 'Landsat 9') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_landsat_8",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh Landsat 8",
+   "label_en": "Landsat 8",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_landsat_8",
+   "verified_by": "entity 'sc_landsat_8' (label 'Landsat 8') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_smap",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh SMAP (độ ẩm đất)",
+   "label_en": "SMAP (soil moisture)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_smap",
+   "verified_by": "entity 'sc_smap' (label 'SMAP') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_gpm",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh GPM (đo mưa)",
+   "label_en": "GPM (precipitation)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_gpm",
+   "verified_by": "entity 'sc_gpm' (label 'GPM') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_terra",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh Terra (MODIS)",
+   "label_en": "Terra (MODIS)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_terra",
+   "verified_by": "entity 'sc_terra' (label 'Terra') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_aqua",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh Aqua (MODIS)",
+   "label_en": "Aqua (MODIS)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_aqua",
+   "verified_by": "entity 'sc_aqua' (label 'Aqua') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_suomi_npp",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh Suomi NPP (VIIRS)",
+   "label_en": "Suomi NPP (VIIRS)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_suomi_npp",
+   "verified_by": "entity 'sc_suomi_npp' (label 'Suomi NPP') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_iss_ecostress",
+   "app": "solar_system",
+   "label_vi": "ECOSTRESS trên Trạm ISS (nhiệt độ bề mặt)",
+   "label_en": "ECOSTRESS on the ISS (surface temperature)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_iss_ecostress",
+   "verified_by": "entity 'sc_iss_ecostress' (label 'ECOSTRESS') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_iss",
+   "app": "solar_system",
+   "label_vi": "Trạm Vũ trụ Quốc tế ISS",
+   "label_en": "International Space Station",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_iss",
+   "verified_by": "entity 'sc_iss' (label 'ISS') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_swot",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh SWOT (nước mặt)",
+   "label_en": "SWOT (surface water)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_swot",
+   "verified_by": "entity 'sc_swot' (label 'SWOT') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "sc_nisar",
+   "app": "solar_system",
+   "label_vi": "Vệ tinh NISAR (radar)",
+   "label_en": "NISAR (radar)",
+   "url": "https://eyes.nasa.gov/apps/solar-system/#/sc_nisar",
+   "verified_by": "entity 'sc_nisar' (label 'NISAR') defined in https://eyes.nasa.gov/apps/solar-system/app.js/vendors.js; route '/:spaceObject'; hash pattern confirmed by NASA links on science.nasa.gov/eyes (e.g. #/sc_new_horizons/...)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_soil_moisture",
+   "app": "earth",
+   "label_vi": "Độ ẩm đất toàn cầu (Eyes on the Earth)",
+   "label_en": "Global soil moisture (Eyes on the Earth)",
+   "url": "https://eyes.nasa.gov/apps/earth/#/vital-signs/soil-moisture",
+   "verified_by": "vital sign value 'soil-moisture' listed in https://eyes.nasa.gov/apps/earth/index.js; routes '/vital-signs/:vitalSignParam'",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_precipitation",
+   "app": "earth",
+   "label_vi": "Lượng mưa toàn cầu (Eyes on the Earth)",
+   "label_en": "Global precipitation (Eyes on the Earth)",
+   "url": "https://eyes.nasa.gov/apps/earth/#/vital-signs/precipitation",
+   "verified_by": "vital sign value 'precipitation' listed in https://eyes.nasa.gov/apps/earth/index.js; routes '/vital-signs/:vitalSignParam'",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_air_temperature",
+   "app": "earth",
+   "label_vi": "Nhiệt độ không khí (Eyes on the Earth)",
+   "label_en": "Air temperature (Eyes on the Earth)",
+   "url": "https://eyes.nasa.gov/apps/earth/#/vital-signs/air-temperature",
+   "verified_by": "vital sign value 'air-temperature' listed in https://eyes.nasa.gov/apps/earth/index.js; routes '/vital-signs/:vitalSignParam'",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_satellites",
+   "app": "earth",
+   "label_vi": "Vệ tinh đang bay quanh Trái Đất",
+   "label_en": "Satellites now",
+   "url": "https://eyes.nasa.gov/apps/earth/#/satellites",
+   "verified_by": "route '/satellites' defined in index.js",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_sat_smap",
+   "app": "earth",
+   "label_vi": "SMAP trong Eyes on the Earth",
+   "label_en": "SMAP in Eyes on the Earth",
+   "url": "https://eyes.nasa.gov/apps/earth/#/satellites/smap",
+   "verified_by": "entity 'sc_smap' (label 'SMAP') in index.js; satellite route slug = id without 'sc_' and '_'->'-' (navigateToSpacecraft)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_sat_gpm",
+   "app": "earth",
+   "label_vi": "GPM trong Eyes on the Earth",
+   "label_en": "GPM in Eyes on the Earth",
+   "url": "https://eyes.nasa.gov/apps/earth/#/satellites/gpm",
+   "verified_by": "entity 'sc_gpm' (label 'GPM') in index.js; satellite route slug = id without 'sc_' and '_'->'-' (navigateToSpacecraft)",
+   "checked_at": "2026-11-14"
+  },
+  {
+   "id": "earth_sat_landsat_9",
+   "app": "earth",
+   "label_vi": "Landsat 9 trong Eyes on the Earth",
+   "label_en": "Landsat 9 in Eyes on the Earth",
+   "url": "https://eyes.nasa.gov/apps/earth/#/satellites/landsat-9",
+   "verified_by": "entity 'sc_landsat_9' (label 'Landsat 9') in index.js; satellite route slug = id without 'sc_' and '_'->'-' (navigateToSpacecraft)",
+   "checked_at": "2026-11-14"
+  }
+ ],
+ "nasa_links_seen_on_science_nasa_gov": [
+  "https://eyes.nasa.gov/apps/asteroids/#/watch",
+  "https://eyes.nasa.gov/apps/earth/#/events/2025/oceans",
+  "https://eyes.nasa.gov/apps/earth/#/events/2025/storms",
+  "https://eyes.nasa.gov/apps/earth/#/events/2025/storms/hurricane-erin",
+  "https://eyes.nasa.gov/apps/earth/#/events/2025/storms/hurricane-imelda",
+  "https://eyes.nasa.gov/apps/earth/#/events/2025/water",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/bigevents",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/oceans",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/storms",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/storms/gravity-waves-from-super-typhoon-sinlaku",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/storms/hurricane-polo-approaches-baja-california",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/storms/rare-widespread-snow-atacama-desert",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/storms/super-typhoon-sinlaku",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/storms/tropical-storm-arthur",
+  "https://eyes.nasa.gov/apps/earth/#/events/2026/water",
+  "https://eyes.nasa.gov/apps/mars2020/#/home",
+  "https://eyes.nasa.gov/apps/solar-system/#/home",
+  "https://eyes.nasa.gov/apps/solar-system/#/sc_cassini/events/grand_finale?rate=60&#038;time=2017-04-26T08:15:00.000+00:00",
+  "https://eyes.nasa.gov/apps/solar-system/#/sc_new_horizons/events/pluto_flyby?rate=90&#038;time=2015-07-14T10:50:00.000+00:00"
+ ],
+ "branding_note": {
+  "vi": "NASA's Eyes là ứng dụng của NASA/JPL. Khi nhúng, giữ nguyên giao diện và logo của NASA bên trong khung, ghi rõ 'Eyes on the Solar System / Eyes on the Earth — NASA/JPL-Caltech' và có liên kết mở trang gốc. Không dùng logo NASA cho MIAUDOW và không ngụ ý NASA bảo trợ hay xác nhận MIAUDOW.",
+  "en": "NASA's Eyes is a NASA/JPL application. When framed, keep NASA's interface and insignia inside the frame unchanged, credit 'Eyes on the Solar System / Eyes on the Earth — NASA/JPL-Caltech' with a link to the original, never use the NASA insignia for MIAUDOW, and never imply NASA endorsement."
+ },
+ "usage_notes": [
+  "The Solar System app ships an official Share > Embed generator that outputs <iframe src=... allowfullscreen>; its embed options include tracking=false.",
+  "Deep links were verified against the apps' public JavaScript bundles and NASA's own links, not by rendering them in a browser.",
+  "Both apps load WebGL scenes of tens of MB: load them only on demand (click to open), never on farmer routes, with reduced motion respected."
+ ],
+ "script": "pipeline/check_gibs.py --eyes"
+}

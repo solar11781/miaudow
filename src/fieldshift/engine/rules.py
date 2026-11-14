@@ -24,6 +24,7 @@ from fieldshift.engine.schemas import (
     MetricRow,
     ModelStatus,
     MonthDay,
+    NotUsedDataset,
     PlanId,
     ReportItem,
     RiskItem,
@@ -359,13 +360,22 @@ class CardTexts(BaseModel):
     season_labels: dict[SeasonCode, SeasonLabel]
 
 
+class PrivacyTexts(Entry):
+    """The privacy notice of the optional sign-in in rules/privacy.yaml (UI-UX-SPEC §12c)."""
+
+    title: Text
+    draft_note: Text
+    paragraphs: list[Text] = Field(min_length=1)
+
+
 class MethodTexts(BaseModel):
-    """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3, 5)."""
+    """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2-5)."""
 
     model_config = ConfigDict(extra="ignore")
 
     coverage: list[CoverageCell]
     explain_terms: list[ExplainTerm]
+    datasets_not_used: list[NotUsedDataset] = Field(min_length=1)
     limitations: list[Text] = Field(min_length=1)
 
 
@@ -422,6 +432,10 @@ def load_card_texts(root: Path) -> CardTexts:
 
 def load_method_texts(root: Path) -> MethodTexts:
     return _checked("method.yaml", MethodTexts, _read_mapping(root, "method.yaml"))
+
+
+def load_privacy_texts(root: Path) -> PrivacyTexts:
+    return _checked("privacy.yaml", PrivacyTexts, _read_mapping(root, "privacy.yaml"))
 
 
 def load_calendar(root: Path) -> CalendarFile:
