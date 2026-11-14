@@ -52,7 +52,10 @@ export function Confirm({
             <strong>{question}</strong>
           </p>
           <div className="cluster">
-            <Button onClick={onYes}>{yes}</Button>
+            {/* deleting is never the main action of the page, so it does not take the main button style */}
+            <Button variant="secondary" leadingIcon="alert" onClick={onYes}>
+              {yes}
+            </Button>
             <Button
               variant="secondary"
               onClick={() => {
