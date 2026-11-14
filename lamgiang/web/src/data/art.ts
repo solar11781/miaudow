@@ -11,6 +11,7 @@ interface ArtDirection {
   problem: Shot;
   cores: [Shot, Shot, Shot, Shot];
   climate: Shot;
+  verse: Shot;
   steps: [Shot, Shot, Shot, Shot];
   observatory: Shot;
   invite: Shot;
@@ -29,10 +30,11 @@ const MOOD: ArtDirection = {
   cores: [
     { slug: 'mood-terraces-sunbeams' },
     { slug: 'mood-grain-jars' },
-    { slug: 'mood-terraces-road' },
+    { slug: 'mood-river-terraces' },
     { slug: 'mood-buffalo-child' },
   ],
   climate: { slug: 'mood-river-terraces' },
+  verse: { slug: 'mood-terraces-road' },
   steps: [
     { slug: 'mood-field-ditch-workers' },
     { slug: 'mood-tea-hills-mist' },
@@ -45,8 +47,8 @@ const MOOD: ArtDirection = {
   officer: { slug: 'mood-village-tree' },
   pageHead: {
     science: { slug: 'mood-flower-hill-pickers' },
-    evidence: { slug: 'mood-tea-rows' },
-    assistant: { slug: 'mood-lotus-boat' },
+    evidence: { slug: 'mood-karst-valley' },
+    assistant: { slug: 'mood-valley-village' },
   },
 };
 
@@ -59,6 +61,7 @@ const LICENSED: ArtDirection = {
   problem: { slug: 'con-cuong-chau-khe-rice-field' },
   cores: [{ slug: 'c1-horizon' }, { slug: 'a3-rice' }, { slug: 'd2-fields' }, { slug: 'b4-river' }],
   climate: { slug: 'lam-river-vinh-ben-thuy' },
+  verse: { slug: 'thanh-chuong-tea-hills' },
   steps: [{ slug: 'c2-fields' }, { slug: 'b1-horizon' }, { slug: 'a3-rice' }, { slug: 'd2-fields' }],
   observatory: { slug: 'lam-river-vinh-ben-thuy' },
   invite: { slug: 'd1-horizon' },

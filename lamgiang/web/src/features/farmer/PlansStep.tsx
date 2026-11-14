@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { planLabel } from '../../domain/plans';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
@@ -6,7 +7,7 @@ import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { CROPS, PLANS, type Plan } from '../../domain/plans';
 import { serializeFarmerState } from '../../domain/farmerState';
-import { usePick, useT } from '../../app/settings';
+import { usePick, useSettings, useT } from '../../app/settings';
 import s from './farmer.module.css';
 
 /** Builds the absolute link that opens exactly this card with the current answers. */
@@ -17,6 +18,7 @@ function cardUrl(search: URLSearchParams) {
 
 export function PlansStep() {
   const t = useT();
+  const { lang } = useSettings();
   const pick = usePick();
   const { state, update, search } = useFarmer();
   const [focused, setFocused] = useState(state.plan);
@@ -61,7 +63,7 @@ export function PlansStep() {
       <nav className={s.jump} aria-label={t.farmer.jumpTo}>
         {PLANS.map((p) => (
           <a key={p.id} href={`#the-${p.id}`} onClick={(e) => { e.preventDefault(); document.getElementById(`the-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); update({ plan: p.id }); }}>
-            {p.current ? t.farmer.current : p.id.toUpperCase()}
+            {planLabel(p, lang, false)}
             <span className="muted"> · {p.textOnly ? pick(p.textOnly.sequence).split(' – ')[1] : pick(CROPS[p.crops[0]?.crop ?? 'rice'].name)}</span>
           </a>
         ))}

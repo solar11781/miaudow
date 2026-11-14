@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
+import { useCountUp } from '../../motion/cinema';
 import type { SourceRef } from '../../domain/provenance';
 import { useT } from '../../app/settings';
 import { useProvenance } from './ProvenanceProvider';
@@ -9,6 +10,13 @@ interface Props extends SourceRef {
   size?: 'md' | 'lg' | 'xl';
   /** Show the short source name under the value (officer mode). */
   showSource?: string;
+}
+
+/** A figure that counts up from zero the first time it is seen (motion allowed only); ends on the exact text. */
+export function CountUp({ text }: { text: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useCountUp(ref, text);
+  return <span ref={ref}>{text}</span>;
 }
 
 /** A sourced number: the number itself is the button (H5). A dotted underline says "tap for the source". */
@@ -23,7 +31,7 @@ export function SourceValue({ children, size = 'md', showSource, ...ref }: Props
       data-value={ref.value}
     >
       <span className={s.text}>
-        <span className={s.figure}>{children ?? ref.value}</span>
+        <span className={s.figure}>{size !== 'md' && (children === undefined || typeof children === 'string') ? <CountUp text={children ?? ref.value} /> : (children ?? ref.value)}</span>
         {showSource && <span className={s.src}>{showSource}</span>}
       </span>
       {/* the accessible name starts with the visible text, then says what it is and that it opens the source */}

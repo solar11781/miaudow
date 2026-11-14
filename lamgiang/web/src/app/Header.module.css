@@ -8,8 +8,22 @@
 .bar { display: flex; align-items: center; gap: var(--s-4); min-height: 72px; }
 .brand { display: inline-flex; align-items: center; gap: .7rem; text-decoration: none; color: var(--fg); margin-right: auto; min-height: 48px; }
 .word { display: flex; flex-direction: column; line-height: 1.05; }
-.name { font: 750 1.6rem/1 var(--font-display); letter-spacing: -.015em; }
-.tag { font-size: var(--t-micro); color: var(--fg-3); margin-top: 3px; letter-spacing: .02em; }
+.name { font: 800 1.6rem/1 var(--font-display); }
+.wordmark { margin-bottom: 4px; }
+:global(:root[data-theme='light']) .wordmark { filter: brightness(.12); }
+/* the simple-mode switch: a real on/off control, not an icon */
+.switch {
+  min-height: 44px; display: inline-flex; align-items: center; gap: .55rem; padding: 0 .75rem 0 .55rem;
+  border-radius: var(--r-sm); border: 1px solid var(--line-2); background: transparent; color: var(--fg-2); font-size: var(--t-small); font-weight: 550;
+}
+.switch:hover { color: var(--fg); border-color: var(--fg-3); }
+.track { position: relative; width: 38px; height: 22px; border-radius: 11px; background: color-mix(in srgb, var(--fg) 22%, transparent); transition: background-color var(--d-med) var(--ease-out); flex: none; }
+.thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--fg); transition: transform var(--d-med) var(--ease-out); }
+.switch[aria-checked='true'] { color: var(--fg); border-color: var(--c-gold-500); }
+.switch[aria-checked='true'] .track { background: var(--c-gold-500); }
+.switch[aria-checked='true'] .thumb { transform: translateX(16px); background: var(--on-accent); }
+.switch > span:last-child { white-space: nowrap; }
+.tag { font-size: var(--t-micro); color: var(--fg-3); margin-top: 3px; white-space: nowrap; }
 .nav { display: none; gap: .25rem; }
 .link {
   position: relative; min-height: 44px; padding: 0 .8rem; display: inline-flex; align-items: center;
@@ -64,3 +78,16 @@
 }
 .menuLink.active { color: var(--c-gold-500); background: transparent; }
 .settingsMenu { display: flex; flex-wrap: wrap; gap: 8px; }
+/* the wordmark never shrinks; on narrow phones the simple-mode switch keeps its name for screen readers only */
+.wordmark { flex-shrink: 0; min-width: max-content; }
+.brand { flex-shrink: 0; }
+@media (max-width: 480px) {
+  .switch { padding-inline: .55rem; }
+  .switch > span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+/* very narrow phones: the icon alone carries the brand, the controls tighten */
+@media (max-width: 374px) {
+  .word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .settingsFarmer { gap: 4px; }
+  .chip { padding: 0 .5rem; }
+}

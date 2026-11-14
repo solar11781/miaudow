@@ -1,16 +1,25 @@
-/** Miaudow mark: a rice ear under two leaf "ears" (meow + meadow), pressed like a seal. */
+// The Miaudow logo (designed by member B, assets/brand/miaudow-logo-sheet.png; files built by
+// web/pipeline/build_brand.mjs): the rounded app icon, the emblem and the light wordmark.
+
+/** The app icon: rice ear, terraces, river and satellite on deep green. */
 export function BrandMark({ size = 36 }: { size?: number }) {
+  return <img src="brand/icon-96.png" width={size} height={size} alt="" aria-hidden="true" style={{ borderRadius: size * 0.22, flex: 'none' }} />;
+}
+
+/** The emblem on a transparent background, for large places (footer, copilot). */
+export function BrandEmblem({ width = 180, className }: { width?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-      <rect x="1" y="1" width="38" height="38" rx="12" fill="var(--c-forest-900)" />
-      <rect x="1.5" y="1.5" width="37" height="37" rx="11.5" fill="none" stroke="var(--c-gold-500)" strokeOpacity=".35" />
-      <path d="M10.5 15.5c0-4.8 1.6-7.8 3.6-8.8 1 2.7 1.5 5.6 1.2 8.8Z" fill="var(--c-paddy-300)" />
-      <path d="M29.5 15.5c0-4.8-1.6-7.8-3.6-8.8-1 2.7-1.5 5.6-1.2 8.8Z" fill="var(--c-paddy-300)" />
-      <path d="M20 33c0-6 .7-11 4-15" stroke="var(--c-gold-500)" strokeWidth="1.7" fill="none" strokeLinecap="round" />
-      <ellipse cx="24.6" cy="16.4" rx="1.7" ry="3" transform="rotate(32 24.6 16.4)" fill="var(--c-gold-500)" />
-      <ellipse cx="21.9" cy="21" rx="1.6" ry="2.8" transform="rotate(-28 21.9 21)" fill="var(--c-gold-500)" />
-      <ellipse cx="23.6" cy="25.4" rx="1.5" ry="2.6" transform="rotate(30 23.6 25.4)" fill="var(--c-gold-500)" />
-      <path d="M12 33h16" stroke="var(--c-paddy-500)" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
+    <picture className={className}>
+      <source type="image/webp" srcSet="brand/emblem-360.webp 360w, brand/emblem-720.webp 720w" sizes={`${width}px`} />
+      <img src="brand/emblem-360.webp" width={width} height={Math.round(width * 0.79)} alt="" aria-hidden="true" style={{ display: 'block', width, height: 'auto' }} />
+    </picture>
+  );
+}
+
+/** The wordmark MIAUDOW in ivory with its orange accent; `label` is the accessible name. */
+export function BrandWordmark({ height = 22, label = 'Miaudow', className }: { height?: number; label?: string; className?: string }) {
+  return (
+    <img className={className} src="brand/wordmark-light-360.webp" srcSet="brand/wordmark-light-360.webp 1x, brand/wordmark-light-720.webp 2x"
+      height={height} width={Math.round(height * 6)} alt={label} style={{ display: 'block', height, width: 'auto' }} />
   );
 }

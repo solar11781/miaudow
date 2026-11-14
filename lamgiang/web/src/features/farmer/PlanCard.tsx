@@ -230,7 +230,7 @@ function LandRow({ plan, highlight }: { plan: Plan; highlight: boolean }) {
 function CardHead({ plan }: { plan: Plan }) {
   const t = useT();
   const pick = usePick();
-  const kicker = plan.current ? (plan.source === 'p03' ? t.farmer.describedByP03 : t.farmer.describedByP02) : t.farmer.trialPlan(plan.id.toUpperCase());
+  const kicker = plan.current ? (plan.source === 'p03' ? t.farmer.describedByP03 : t.farmer.describedByP02) : t.farmer.trialPlan(plan.id.replace(/\D/g, ''), plan.id.toUpperCase());
   return (
     <header className={`${s.head} surface-forest`}>
       <p className={s.kicker}>

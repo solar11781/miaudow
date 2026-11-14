@@ -1,15 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Brocade } from '../../design-system/Brocade';
+import { Accent } from '../../design-system/Accent';
+import { SatelliteScan } from '../cinema/SatelliteScan';
+import { usePageReveals } from '../../motion/cinema';
 import { Link, useLocation } from 'react-router-dom';
-import { geo, hazards, YEARS } from '../../data';
+import { hazards, YEARS } from '../../data';
 import { ART } from '../../data/art';
 import { RULES } from '../../domain/hazards';
 import { PLANS } from '../../domain/plans';
 import { ButtonLink } from '../../design-system/Button';
-import { Icon } from '../../design-system/Icon';
+import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
 import { EASE, gsap, riseLines, useCinema } from '../../motion/cinema';
 import { YearBars } from '../charts/YearBars';
-import { SourceValue } from '../provenance/SourceValue';
+import { CountUp, SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import s from './HomePage.module.css';
@@ -35,8 +39,10 @@ function Hero() {
 
   useCinema(root, () => {
     const title = root.current?.querySelector('[data-rise]');
-    if (title) riseLines(title, 0.2);
-    gsap.from('[data-hero-stage]', { scale: 1.14, duration: 2.6, ease: EASE.heavy });
+    if (title) riseLines(title, 0.45);
+    gsap.from('[data-letterbox]', { scaleY: 1, duration: 1.7, ease: EASE.calm, delay: 0.15 });
+    gsap.from('[data-hero-stage]', { scale: 1.16, duration: 2.8, ease: EASE.heavy });
+    gsap.to('[data-hero-stage]', { yPercent: 14, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } });
     gsap.from('[data-hero-after]', { autoAlpha: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
   }, [t.home.titleA]);
 
@@ -50,6 +56,8 @@ function Hero() {
         ))}
       </div>
       <div className={s.heroScrim} aria-hidden="true" />
+      <span className={`${s.letterbox} ${s.letterTop}`} data-letterbox aria-hidden="true" />
+      <span className={`${s.letterbox} ${s.letterBottom}`} data-letterbox aria-hidden="true" />
       <div className={`container ${s.heroInner}`}>
         <h1 key={t.home.titleA} id="hero-title" className={`display ${s.heroTitle}`} data-rise>
           {t.home.titleA}<br /><em>{t.home.titleB}</em>
@@ -102,13 +110,13 @@ function Problem() {
         <div className={s.pair}>
           {rice && (
             <div className={s.pairItem}>
-              <SourceValue size="xl" {...refs.cropProfit(rice)}>{f.million(rice.profit)}<span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
+              <SourceValue size="xl" {...refs.cropProfit(rice)}><CountUp text={f.million(rice.profit)} /><span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
               <span>{t.home.riceSpring}</span>
             </div>
           )}
           <div className={s.pairItem}>
             <SourceValue size="xl" sourceId="p03" kind="study" value={`${f.n(1.16, 2)} ${t.common.millionPerHa}`} label={t.home.riceSummer}
-              detail={t.home.riceSummerDetail}>{f.n(1.16, 2)}<span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
+              detail={t.home.riceSummerDetail}><CountUp text={f.n(1.16, 2)} /><span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
             <span>{t.home.riceSummer}</span>
           </div>
         </div>
@@ -118,9 +126,41 @@ function Problem() {
   );
 }
 
+/** The folk verse of xứ Nghệ, in brush lettering between two brocade bands, over the winding road. */
+function Verse() {
+  const t = useT();
+  const root = useRef<HTMLElement>(null);
+  useCinema(root, () => {
+    const st = { trigger: root.current, start: 'top 72%', once: true };
+    root.current?.querySelectorAll('[data-verse-line]').forEach((line, i) => {
+      gsap.from(line, { clipPath: 'inset(0% 100% 0% 0%)', duration: 1.6, ease: EASE.calm, delay: 0.3 + i * 0.55, scrollTrigger: st, clearProps: 'clipPath' });
+    });
+    gsap.from('[data-brocade]', { scaleX: 0, duration: 1.4, ease: EASE.heavy, stagger: 0.2, scrollTrigger: st });
+    gsap.fromTo('[data-verse-photo]', { yPercent: -10 }, { yPercent: 10, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+  return (
+    <section ref={root} className={`${s.verse} surface-forest`} aria-labelledby="verse-title">
+      <div className={s.versePhoto} data-verse-photo><Media slug={ART.verse.slug} narrow={ART.verse.narrow} sizes="100vw" decorative /></div>
+      <div className={`container ${s.verseInner}`}>
+        <h2 id="verse-title" className="visually-hidden">{t.home.verseTitle}</h2>
+        <Brocade className={s.verseBand} data-brocade />
+        <blockquote className={s.verseText} lang="vi">
+          {t.home.verse.map((line) => <span key={line} className={s.verseLine} data-verse-line>{line}</span>)}
+        </blockquote>
+        <p className={s.verseBy}>{t.home.verseBy}</p>
+        <p className={s.verseNote}>{t.home.verseNote}</p>
+        <Brocade className={s.verseBand} data-brocade />
+      </div>
+    </section>
+  );
+}
+
 /** The four AI cores: the photograph holds while each core's text passes (sticky, so it works without motion too). */
+const CORE_ICONS: IconName[] = ['sun', 'book', 'sprout', 'mic'];
+
 function Cores() {
   const t = useT();
+  const { calm } = useSettings();
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
   const cores = t.home.cores;
@@ -147,9 +187,22 @@ function Cores() {
   return (
     <section ref={root} id="cores" className={`${s.cores} surface-forest`} aria-labelledby="cores-title">
       <div className={`container ${s.coresHead}`}>
-        <h2 id="cores-title" className="h1">{t.home.coresTitle}</h2>
-        <p className="lead">{t.home.coresLead}</p>
+        <div className={s.coresIntro}>
+          <h2 id="cores-title" className="h1"><Accent text={t.home.coresTitle} /></h2>
+          <p className="lead">{t.home.coresLead}</p>
+        </div>
+        <ol className={s.coreIndex}>
+          {cores.map((c, n) => (
+            <li key={c.name} className={n === active ? s.coreIndexOn : undefined}>
+              <a href={`#core-${n}`} onClick={(e) => { e.preventDefault(); document.getElementById(`core-${n}`)?.closest('article')?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' }); }}>
+                <span className={s.coreIcon}><Icon name={CORE_ICONS[n] ?? 'spark'} size={24} /></span>
+                <span className={s.coreIndexText}><strong>{c.name}</strong><span>{c.gives}</span></span>
+              </a>
+            </li>
+          ))}
+        </ol>
       </div>
+      <Brocade className={s.coresBand} />
       <div className={s.coresBody}>
         <div className={s.coresStage} aria-hidden="true">
           <div className={s.coresStageInner} data-core-stage>
@@ -215,8 +268,8 @@ function Steps() {
   return (
     <section className={`band surface-forest grain ${s.steps}`} aria-labelledby="steps-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
-        <h2 id="steps-title" className="h1">{t.home.stepsTitle}</h2>
-        <ol className={s.strip}>
+        <h2 id="steps-title" className="h1"><Accent text={t.home.stepsTitle} /></h2>
+        <ol className={s.strip} data-stagger>
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
               <Link to={STEP_LINKS[i] ?? '/nong-dan'} className={s.step} viewTransition>
@@ -235,41 +288,16 @@ function Steps() {
   );
 }
 
-/** The photograph dims and the real province border and NASA grid draw over it. */
+/** The two satellites scanning the real province and its NASA grid (drawn, light, pausable), then the way in. */
 function Observatory() {
   const t = useT();
-  const root = useRef<HTMLElement>(null);
-  const shape = useMemo(() => {
-    const [minLon, minLat, maxLon, maxLat] = geo.bounds;
-    const k = Math.cos((19.3 * Math.PI) / 180);
-    const W = (maxLon - minLon) * k * 100 + 20, H = (maxLat - minLat) * 100 + 20;
-    const x = (lon: number) => (lon - minLon) * k * 100 + 10;
-    const y = (lat: number) => (maxLat - lat) * 100 + 10;
-    const outline = geo.outline.map((r) => r.map(([lo, la]) => `${x(lo).toFixed(1)},${y(la).toFixed(1)}`).join(' '));
-    const cells = geo.grid.map((c) => ({ id: c.id, w: c.weight, x: x(c.lon - 0.3125), y: y(c.lat + 0.25), cw: 0.625 * k * 100, ch: 50 }));
-    return { W, H, outline, cells };
-  }, []);
-
-  useCinema(root, () => {
-    const st = { trigger: root.current, start: 'top 70%' };
-    gsap.from('[data-draw-line]', { strokeDashoffset: 1, duration: 2.4, ease: EASE.calm, scrollTrigger: st });
-    gsap.from('[data-draw-cell]', { strokeDashoffset: 1, fillOpacity: 0, duration: 1.2, ease: EASE.calm, stagger: 0.12, delay: 0.6, scrollTrigger: st });
-  });
-
   return (
-    <section ref={root} className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
+    <section className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
       <div className={s.obsStage}>
-        <span className={s.obsPhoto}><Media slug={ART.observatory.slug} sizes="100vw" decorative /></span>
-        <svg className={s.obsSvg} viewBox={`0 0 ${shape.W} ${shape.H}`} aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-          {shape.cells.map((c) => (
-            <rect key={c.id} x={c.x} y={c.y} width={c.cw} height={c.ch} className={s.drawCell} pathLength={1} data-draw-cell
-              style={{ fillOpacity: c.w > 0 ? 0.08 + c.w * 0.5 : 0 }} />
-          ))}
-          {shape.outline.map((pts, i) => <polygon key={i} points={pts} className={s.drawLine} pathLength={1} data-draw-line />)}
-        </svg>
+        <SatelliteScan labels={t.earth.scan} />
       </div>
       <div className={`container ${s.obsText}`}>
-        <h2 id="obs-title" className="h1">{t.home.obsTitle}</h2>
+        <h2 id="obs-title" className="h1"><Accent text={t.home.obsTitle} /></h2>
         <p className="lead">{t.home.obsLead}</p>
         <ButtonLink to="/dai-quan-sat" size="lg" icon="arrowRight">{t.home.obsCta}</ButtonLink>
       </div>
@@ -279,11 +307,15 @@ function Observatory() {
 
 function Invite() {
   const t = useT();
+  const root = useRef<HTMLElement>(null);
+  useCinema(root, () => {
+    gsap.fromTo('[data-invite-art]', { scale: 1.18 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom bottom', scrub: true } });
+  });
   return (
-    <section className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
-      <span className={s.inviteArt}><Media slug={ART.invite.slug} sizes="100vw" decorative /></span>
+    <section ref={root} className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
+      <span className={s.inviteArt} data-invite-art><Media slug={ART.invite.slug} sizes="100vw" decorative /></span>
       <div className={`container ${s.inviteInner}`}>
-        <h2 id="invite-title" className={`display ${s.inviteTitle}`}>{t.home.inviteTitle}</h2>
+        <h2 id="invite-title" className={`display ${s.inviteTitle}`}><Accent text={t.home.inviteTitle} /></h2>
         <p className="lead">{t.home.inviteLead}</p>
         <div className={s.ctas}>
           <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">{t.home.ctaFarmer}</ButtonLink>
@@ -295,6 +327,8 @@ function Invite() {
 }
 
 export function HomePage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
   const { state } = useLocation();
   const { calm } = useSettings();
   // A core tag elsewhere links here with { to: 'cores' }: land on the four cores once the page has laid out.
@@ -304,9 +338,10 @@ export function HomePage() {
     return () => window.cancelAnimationFrame(id);
   }, [state, calm]);
   return (
-    <main id="main">
+    <main ref={pageRef} id="main">
       <Hero />
       <Problem />
+      <Verse />
       <Cores />
       <Climate />
       <Steps />

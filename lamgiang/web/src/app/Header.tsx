@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ButtonLink } from '../design-system/Button';
 import { Icon, type IconName } from '../design-system/Icon';
-import { BrandMark } from './Brand';
+import { BrandMark, BrandWordmark } from './Brand';
 import { useSettings, useT, type Theme } from './settings';
 import s from './Header.module.css';
 
@@ -15,8 +15,9 @@ function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
   const themeLabel = { auto: t.nav.themeAuto, light: t.nav.themeLight, dark: t.nav.themeDark }[theme];
   return (
     <div className={inMenu ? s.settingsMenu : farmer ? s.settingsFarmer : s.settings}>
-      <button type="button" className={s.chip} aria-pressed={lite} onClick={() => setLite(!lite)} title={t.nav.liteHelp}>
-        <Icon name="feather" size={17} /> <span>{t.nav.lite}</span>
+      <button type="button" role="switch" aria-checked={lite} className={s.switch} onClick={() => setLite(!lite)} title={t.nav.liteHelp}>
+        <span className={s.track} aria-hidden="true"><span className={s.thumb} /></span>
+        <span>{t.nav.lite}</span>
       </button>
       <button type="button" className={s.chip} onClick={() => setTheme(NEXT_THEME[theme])} aria-label={`${t.nav.theme}: ${themeLabel}`} title={`${t.nav.theme}: ${themeLabel}`}>
         <Icon name={THEME_ICON[theme]} size={17} /> {inMenu && <span>{themeLabel}</span>}
@@ -49,7 +50,7 @@ function FarmerHeader() {
       <div className={`container ${s.bar}`}>
         <Link to="/" className={s.brand} viewTransition>
           <BrandMark />
-          <span className={s.word}><span className={s.name}>Miaudow</span><span className={s.tag}>{t.nav.farmer}</span></span>
+          <span className={s.word}><BrandWordmark height={18} className={s.wordmark} /><span className={s.tag}>{t.nav.farmer}</span></span>
         </Link>
         <Settings farmer />
       </div>
@@ -85,7 +86,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
         <Link to="/" className={s.brand} viewTransition>
           <BrandMark />
           <span className={s.word}>
-            <span className={s.name}>Miaudow</span>
+            <BrandWordmark height={18} className={s.wordmark} />
             <span className={s.tag}>Đồng lúa Nghệ An</span>
           </span>
         </Link>
@@ -106,7 +107,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
       <dialog ref={menu} className={`${s.menu} surface-forest`} aria-label={t.nav.main} onClick={(e) => { if (e.target === e.currentTarget) menu.current?.close(); }}>
         <div className={s.menuInner}>
           <div className={s.menuHead}>
-            <span className={s.brand}><BrandMark /><span className={s.name}>Miaudow</span></span>
+            <span className={s.brand}><BrandMark /><BrandWordmark height={18} className={s.wordmark} /></span>
             <button type="button" className={s.menuClose} onClick={() => menu.current?.close()} aria-label={t.nav.closeMenu}>
               <Icon name="close" size={22} />
             </button>

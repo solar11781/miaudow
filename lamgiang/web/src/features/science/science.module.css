@@ -66,8 +66,8 @@
 .reports li { display: flex; flex-direction: column; gap: .2rem; padding-left: var(--s-3); border-left: 1px solid var(--line-2); }
 .reports strong { color: var(--fg); font-weight: 600; }
 
-.askLink { display: inline-flex; align-items: center; gap: .45rem; align-self: flex-start; min-height: 44px; padding: 0 1rem; border-radius: var(--r-pill); background: var(--c-forest-900); color: var(--c-paper-100); text-decoration: none; font-weight: 600; }
-.askLink:hover { background: var(--c-forest-700); }
+.askLink { display: inline-flex; align-items: center; gap: .45rem; align-self: flex-start; min-height: 44px; padding: 0 1rem; border-radius: var(--r-md); background: var(--c-gold-500); color: var(--on-accent); text-decoration: none; font-weight: 600; }
+.askLink:hover { background: var(--c-gold-300); }
 
 .stagePlaceholder { height: clamp(420px, 62vh, 680px); border-radius: var(--r-lg); background: var(--g-forest-depth); display: grid; place-items: center; color: var(--fg-2); }
 .globeLink {

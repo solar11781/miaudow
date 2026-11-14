@@ -1,4 +1,5 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { usePageReveals } from '../../motion/cinema';
 import { ART } from '../../data/art';
 import { PhotoHead } from '../../design-system/PhotoHead';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -288,13 +289,15 @@ function ScienceHead({ year }: { year: number }) {
 }
 
 export function SciencePage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
   const [params, setParams] = useSearchParams();
   const fromUrl = Number(params.get('nam'));
   const year = YEARS.includes(fromUrl) ? fromUrl : 2010;
   // The year lives in the URL: shareable, survives reload, and the copilot and evidence links can carry it.
   const setYear = useCallback((y: number) => setParams((p) => { const n = new URLSearchParams(p); n.set('nam', String(y)); return n; }, { replace: true, preventScrollReset: true }), [setParams]);
   return (
-    <main id="main">
+    <main ref={pageRef} id="main">
       <ScienceHead year={year} />
       <GridSection year={year} setYear={setYear} />
       <ClimateSection year={year} setYear={setYear} />

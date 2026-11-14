@@ -21,7 +21,8 @@
   font-size: var(--t-hero); line-height: .94; max-width: 17ch; color: #f7f8f3; text-wrap: wrap;
   font-kerning: none; text-shadow: 0 2px 30px rgba(6, 10, 7, .35);
 }
-.heroTitle em { color: var(--c-gold-300); }
+.heroTitle em { color: var(--c-gold-300); font-size: .86em; }
+@media (min-width: 900px) { .heroTitle { max-width: none; } .heroTitle em { white-space: nowrap; } }
 .heroLead { font-size: var(--t-lead); line-height: 1.5; max-width: 36rem; color: #e3e6dc; }
 .ctas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-6); }
 .textLink {
@@ -48,6 +49,22 @@
   .heroTitle { line-height: .98; }
 }
 
+/* letterbox: two bars that open like the start of a film (final state: closed to nothing) */
+.letterbox { position: absolute; left: 0; right: 0; z-index: 4; height: 13vh; background: #030604; transform: scaleY(0); pointer-events: none; }
+.letterTop { top: 0; transform-origin: 50% 0; }
+.letterBottom { bottom: 0; transform-origin: 50% 100%; }
+
+/* ---- the folk verse of xứ Nghệ ---- */
+.verse { position: relative; overflow: hidden; isolation: isolate; min-height: 88svh; display: flex; align-items: center; }
+.versePhoto { position: absolute; inset: -12% 0; z-index: -1; }
+.versePhoto::after { content: ''; position: absolute; inset: 0; background: radial-gradient(80% 70% at 50% 50%, rgba(6, 13, 9, .55) 0%, rgba(6, 13, 9, .86) 100%); }
+.verseInner { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); text-align: center; padding-block: var(--s-16); }
+.verseBand { max-width: 520px; }
+.verseText { margin: 0; display: flex; flex-direction: column; gap: .1em; font: 700 clamp(2.2rem, 1.2rem + 4.2vw, 5.2rem)/1.25 var(--font-script); color: var(--c-gold-300); text-shadow: 0 4px 40px rgba(0, 0, 0, .55); }
+.verseLine { display: block; padding-inline: .1em; }
+.verseBy { color: #e7eadf; font-weight: 600; letter-spacing: .02em; }
+.verseNote { max-width: 40rem; color: #d6ddd0; }
+
 /* ---- the problem: photograph half, statement half ---- */
 .problem { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 92svh; }
 .problemPhoto { position: relative; min-height: 420px; }
@@ -69,8 +86,22 @@
 @media (max-width: 480px) { .pair { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---- the four AI cores: a held photograph with a film title, the text passing beside it ---- */
-.cores { padding-top: clamp(4.5rem, 3rem + 5vw, 8.5rem); background: var(--c-forest-950); }
-.coresHead { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--s-6) var(--s-12); align-items: end; padding-bottom: var(--s-12); }
+.cores { padding-top: clamp(4.5rem, 3rem + 5vw, 8rem); }
+.coresHead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-8) clamp(2rem, 1rem + 4vw, 6rem); align-items: center; padding-bottom: var(--s-10); }
+.coresIntro { display: flex; flex-direction: column; gap: var(--s-5); }
+.coresBand { margin-bottom: 0; }
+/* the four cores as an index: icon, name, what it gives; the one in view is lit */
+.coreIndex { list-style: none; display: grid; gap: var(--s-2); }
+.coreIndex a {
+  display: flex; align-items: center; gap: var(--s-4); padding: var(--s-4) var(--s-5); border-radius: var(--r-lg); text-decoration: none; color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 4%, transparent); border: 1px solid var(--line); transition: border-color var(--d-med) var(--ease-out), background-color var(--d-med) var(--ease-out);
+}
+.coreIndex a:hover { border-color: var(--line-2); }
+.coreIndexOn a { border-color: var(--c-gold-500); background: color-mix(in srgb, var(--c-gold-500) 10%, transparent); }
+.coreIcon { flex: none; width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--c-gold-500) 16%, transparent); color: var(--c-gold-300); }
+.coreIndexText { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.coreIndexText strong { font: 750 1.45rem/1.2 var(--font-display); }
+.coreIndexText span { color: var(--fg-2); font-size: var(--t-small); line-height: 1.45; }
 .coresBody { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .coresStage { position: sticky; top: 72px; height: calc(100svh - 72px); overflow: hidden; }
 .coresStageInner { position: absolute; inset: 0; }
@@ -86,18 +117,18 @@
 .coreTicks .coreTickOn { background: var(--c-gold-500); }
 .coreList { display: flex; flex-direction: column; }
 .core {
-  min-height: 84svh; display: flex; flex-direction: column; justify-content: center; gap: var(--s-5);
+  min-height: 72svh; display: flex; flex-direction: column; justify-content: center; gap: var(--s-6);
   padding: var(--s-16) max(var(--gutter-r), 5vw) var(--s-16) clamp(1.5rem, 1rem + 3vw, 5rem);
   border-top: 1px solid var(--line);
 }
 .corePhoto { display: none; }
-.coreName { font: var(--w-head) var(--t-h2)/1 var(--font-display); letter-spacing: -.014em; color: var(--fg); }
-.coreDoes { font-size: var(--t-lead); line-height: 1.5; color: var(--fg); max-width: 34ch; }
-.coreFacts { display: grid; gap: 0; max-width: 40rem; border-top: 1px solid var(--line); }
-.coreFacts > div { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: var(--s-4); padding-block: var(--s-4); border-bottom: 1px solid var(--line); }
-.coreFacts dt { color: var(--fg-3); font-weight: 550; }
-.coreFacts dd { color: var(--fg-2); }
-.coreLimit dd { color: var(--c-gold-300); }
+.coreName { font: var(--w-display) clamp(2.4rem, 1.7rem + 2.4vw, 3.8rem)/1.05 var(--font-display); color: var(--fg); }
+.coreDoes { font-size: clamp(1.3rem, 1.15rem + .55vw, 1.6rem); font-weight: 500; line-height: 1.45; color: var(--fg); max-width: 32ch; }
+.coreFacts { display: grid; gap: 0; max-width: 42rem; border-top: 1px solid var(--line-2); }
+.coreFacts > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: var(--s-4); padding-block: var(--s-4); border-bottom: 1px solid var(--line-2); }
+.coreFacts dt { color: var(--c-gold-300); font-weight: 650; font-size: var(--t-body); }
+.coreFacts dd { color: var(--fg); font-size: var(--t-body); line-height: 1.55; }
+.coreLimit dd { color: #f6c9a8; }
 .coreLink {
   align-self: flex-start; display: inline-flex; align-items: center; gap: .5rem; min-height: 48px; color: var(--fg); font-weight: 600;
   text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: .3em;
@@ -105,6 +136,7 @@
 .coreLink:hover { text-decoration-color: var(--c-gold-500); }
 @media (max-width: 899.98px) {
   .coresHead { grid-template-columns: minmax(0, 1fr); padding-bottom: var(--s-8); }
+  .coreIndex { display: none; }
   .coresBody { grid-template-columns: minmax(0, 1fr); }
   .coresStage { display: none; }
   .core { min-height: 0; padding: 0 var(--gutter-r) var(--s-12) var(--gutter-l); border-top: 0; gap: var(--s-4); }
@@ -145,16 +177,11 @@
   .strip li { scroll-snap-align: start; }
 }
 
-/* ---- observatory: photograph dims, real geometry draws ---- */
-.obs { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; min-height: 760px; background: var(--c-forest-950); }
-.obsStage { position: relative; height: 100%; min-height: 440px; }
-.obsPhoto { position: absolute; inset: 0; opacity: .55; }
-.obsPhoto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 10, 7, .1), var(--c-forest-950) 96%), linear-gradient(0deg, var(--c-forest-950), transparent 35%); }
-.obsSvg { position: absolute; inset: 8% 6%; width: 88%; height: 84%; overflow: visible; }
-.drawLine { fill: rgba(107, 154, 58, .14); stroke: var(--c-gold-300); stroke-width: 2.2; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
-.drawCell { fill: var(--c-gold-500); stroke: rgba(243, 244, 238, .55); stroke-width: 1.2; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
-.obsText { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-6); padding-block: var(--s-16); }
-@media (max-width: 960px) { .obs { grid-template-columns: minmax(0, 1fr); } .obsText { padding-top: 0; } }
+/* ---- observatory: the satellite scene, then the way into the 3D globe ---- */
+.obs { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; gap: var(--s-8); padding-block: var(--s-16); }
+.obsStage { min-width: 0; padding-left: max(var(--gutter-l), calc((100vw - var(--content)) / 2)); }
+.obsText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-6); }
+@media (max-width: 960px) { .obs { grid-template-columns: minmax(0, 1fr); } .obsStage { padding-inline: var(--gutter-l) var(--gutter-r); } }
 
 /* ---- invitation ---- */
 .invite { position: relative; overflow: hidden; min-height: 86svh; display: flex; align-items: flex-end; }
