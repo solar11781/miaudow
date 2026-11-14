@@ -164,6 +164,8 @@ def test_the_ndvi_texts_say_what_the_app_shows(resp: dict) -> None:
     assert "Không dùng trong mô hình năng suất" in ndvi["vi"]
     assert "science page" in ndvi["en"]
     assert "Khoa học" in ndvi["vi"]
+    assert "as a chart of greenness" in ndvi["en"]  # /khoa-hoc NdviChart: a chart with numbers, not a picture
+    assert "dưới dạng biểu đồ độ xanh" in ndvi["vi"]
     reasons = {d["dataset"]: d["reason"] for d in resp["datasets_not_used"]}
     sentinel = reasons["Sentinel-2 (ESA)"]
     assert "Not used in the model" in sentinel["en"]

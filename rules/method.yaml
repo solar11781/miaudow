@@ -78,10 +78,10 @@ explain_terms:
     text:
       vi: "NDVI được tính từ ánh sáng nhìn thấy và ánh sáng cận hồng ngoại mà cây phản xạ. Không dùng trong mô hình năng
         suất: tín hiệu cây trồng trong vụ sẽ làm lộ kết quả vào đầu vào của mô hình. Trang Khoa học chỉ hiện NDVI MODIS
-        quanh Lưu Sơn như một hình ảnh về độ xanh."
+        quanh Lưu Sơn dưới dạng biểu đồ độ xanh."
       en: "NDVI is calculated from the visible and near-infrared light reflected by vegetation. Not used in the yield
         model: an in-season vegetation signal would leak the outcome into the model inputs. The science page shows MODIS
-        NDVI around Lưu Sơn only as a picture of greenness."
+        NDVI around Lưu Sơn only as a chart of greenness."
     source_ids: [R-N08]  # D-165: NASA's NDVI definition page
   - key: frost
     title: {vi: "Sương muối", en: "Frost"}
