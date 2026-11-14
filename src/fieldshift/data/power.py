@@ -144,3 +144,25 @@ def fetch_daily(
         tmp.write_text(json.dumps(payload))
         tmp.replace(cache_file)
     return parse_daily(payload), payload
+
+
+def load_cells(main_dir: Path | str, t2m_dir: Path | str, pattern: str) -> tuple[dict, list]:
+    """Cached POWER cells {(lat, lon): daily frame}, with daily mean T2M joined from its own cache (D-72).
+
+    Returns the cells and the T2M cells that have no main cell (reported by the caller, not used).
+    """
+    cells: dict = {}
+    for f in sorted(Path(main_dir).glob(pattern)):
+        payload = json.loads(f.read_text(encoding="utf-8"))
+        lon, lat = payload["geometry"]["coordinates"][:2]
+        cells[(round(lat, 6), round(lon, 6))] = parse_daily(payload)
+    unmatched = []
+    for f in sorted(Path(t2m_dir).glob(pattern)):
+        payload = json.loads(f.read_text(encoding="utf-8"))
+        lon, lat = payload["geometry"]["coordinates"][:2]
+        key = (round(lat, 6), round(lon, 6))
+        if key in cells:
+            cells[key] = cells[key].join(parse_daily(payload)[["T2M"]], how="left")
+        else:
+            unmatched.append(key)
+    return cells, unmatched
