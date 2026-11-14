@@ -44,7 +44,7 @@ def installed(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     return site, app
 
 
-def _run(site: Path, cwd: Path, env_extra: dict) -> subprocess.CompletedProcess:
+def _run(site: Path, cwd: Path, env_extra: dict[str, str]) -> subprocess.CompletedProcess[str]:
     env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "FIELDSHIFT_ROOT")}
     env.update({"PYTHONPATH": str(site), **env_extra})
     return subprocess.run(
