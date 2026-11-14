@@ -142,3 +142,20 @@ def test_a_null_value_or_null_skill_gives_no_mark() -> None:
 def test_committed_svg_matches_the_committed_metrics() -> None:
     committed = (REPO / "artifacts" / "figures" / "results_chart.svg").read_text(encoding="utf-8")
     assert committed == results_chart_svg(METRICS)
+
+
+def _luminance(hex_colour: str) -> float:
+    """WCAG 2.1 relative luminance of an sRGB colour #rrggbb."""
+    channels = [int(hex_colour[i : i + 2], 16) / 255 for i in (1, 3, 5)]
+    linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def test_text_contrast_is_at_least_4_5_to_1_on_the_background() -> None:
+    root = _parse(results_chart_svg(METRICS))
+    background = root.find(f"{SVG_NS}rect").get("fill")
+    for text in root.iter(f"{SVG_NS}text"):
+        fill = text.get("fill") or root.get("fill")
+        lighter, darker = sorted((_luminance(fill), _luminance(background)), reverse=True)
+        # WCAG 2.1 success criterion 1.4.3: contrast (L1 + 0.05) / (L2 + 0.05) at least 4.5:1 (UI-UX-SPEC H8)
+        assert (lighter + 0.05) / (darker + 0.05) >= 4.5, text.text
