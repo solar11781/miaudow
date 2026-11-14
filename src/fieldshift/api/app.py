@@ -26,7 +26,7 @@ from starlette.requests import ClientDisconnect
 from fieldshift.engine.compare import compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
-from fieldshift.engine.schemas import CompareRequest, HealthResponse, Province
+from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, HealthResponse, Land, Priority, Province
 from fieldshift.paths import project_root
 
 ROOT = project_root()
@@ -107,6 +107,12 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     past_body = {province: _json(past_years(province, base)) for province in get_args(Province)}
     method_body = _json(method(base))
     compare_data = load_compare_data(base)
+    every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
+    for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
+        request = CompareRequest(
+            province=province, land=get_args(Land)[0], years=every_year, priority=get_args(Priority)[0]
+        )
+        compare(request, compare_data)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
