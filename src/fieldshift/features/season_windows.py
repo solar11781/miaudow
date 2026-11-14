@@ -20,6 +20,27 @@ from fieldshift.data.nso import REGION_ROWS, canonical_province
 from fieldshift.paths import project_root
 
 CALENDAR_FILE = project_root() / "rules" / "calendar.yaml"
+# 05-DATA-CONTRACTS section 6b: the calendar regions of rules/calendar.yaml
+CALENDAR_REGIONS = {
+    "red_river_delta",
+    "northern_mountains",
+    "north_central",
+    "central_coast",
+    "highlands_southeast",
+    "mekong",
+}
+
+
+def _pairs(entries: list[dict], part: str) -> list[tuple[str, str]]:
+    """(season, region) of each entry; an unknown region or a repeated pair fails (one entry per pair, section 6b)."""
+    pairs = [(e["nso_season"], e["calendar_region"]) for e in entries]
+    unknown = sorted({region for _, region in pairs} - CALENDAR_REGIONS)
+    if unknown:
+        raise ValueError(f"calendar {part}: unknown calendar_region {unknown}; known: {sorted(CALENDAR_REGIONS)}")
+    repeated = sorted({pair for pair in pairs if pairs.count(pair) > 1})
+    if repeated:
+        raise ValueError(f"calendar {part}: more than one entry for (season, region) {repeated}")
+    return pairs
 
 
 class Calendar:
@@ -27,11 +48,12 @@ class Calendar:
 
     def __init__(self, raw: dict) -> None:
         self.raw = raw
+        windows, excluded = raw.get("ml_windows", []), raw.get("excluded", [])
         self.windows = {
-            (w["nso_season"], w["calendar_region"]): (tuple(w["start"]), tuple(w["end"]))
-            for w in raw.get("ml_windows", [])
+            pair: (tuple(w["start"]), tuple(w["end"]))
+            for pair, w in zip(_pairs(windows, "ml_windows"), windows, strict=True)
         }
-        self.excluded = {(e["nso_season"], e["calendar_region"]): e["reason"] for e in raw.get("excluded", [])}
+        self.excluded = {pair: e["reason"] for pair, e in zip(_pairs(excluded, "excluded"), excluded, strict=True)}
 
 
 @lru_cache(maxsize=8)
