@@ -7,6 +7,7 @@ lines and from hand-made weather series, never from the module.
 """
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -145,3 +146,17 @@ def test_rows_pass_the_engine_artifact_check(tmp_path) -> None:
     (tmp_path / "artifacts").mkdir()
     (tmp_path / "artifacts" / "hazard_labels.json").write_text(json.dumps({"rows": rows}), encoding="utf-8")
     assert len(hazard_rows(tmp_path)) == len(rows)
+
+
+REPO = Path(__file__).resolve().parents[1]
+
+
+def test_the_exported_artifact_has_every_p02_crop_year_and_rule() -> None:
+    rows = hazard_rows(REPO)  # the engine's artifact check
+    crop_rows = [r for r in rows if r.level == "crop"]
+    assert len({r.crop_key for r in crop_rows}) == 15  # P-02: plans usual and cc1..cc4, three crops each (§4b)
+    assert {r.year for r in rows} == set(range(1995, 2025))  # §4b: 1995..2024
+    assert len(rows) == (15 + 1) * 30 * len(RULES)  # (crops + the year row) x years x rules
+    assert all(r.share_farmland is not None for r in rows)
+    doc = json.loads((REPO / "artifacts" / "hazard_labels.json").read_text(encoding="utf-8"))
+    assert set(doc) == {"schema_version", "generated_at", "freeze_commit", "rows"}  # §4b
