@@ -146,11 +146,20 @@ export function mergeRequest(command) {
   const args = segs[idx].slice(3);
   const numbers = args.filter((a) => /^\d+$/.test(a));
   const pr = numbers[0] ?? null;
-  // a flag counts by its name (--squash=true is --squash), and grouped short flags count one by one (-dm is -d -m)
-  const flags = args.flatMap((a) => (/^-[a-zA-Z]{2,}$/.test(a) ? [...a.slice(1)].map((c) => `-${c}`) : [a.split('=')[0]]));
+  // a flag counts by its name: --squash=true is --squash, grouped short flags count one by one (-dm is -d -m),
+  // and a short flag with its value attached counts as that flag (-Rother/repo is -R)
+  const flagName = (a) => {
+    if (a.startsWith('--')) return [a.split('=')[0]];
+    if (/^-[a-zA-Z]{2,}$/.test(a)) return [...a.slice(1)].map((c) => `-${c}`);
+    return a.startsWith('-') ? [a.slice(0, 2)] : [];
+  };
+  const flags = args.flatMap(flagName);
   const has = (...f) => flags.some((a) => f.includes(a));
+  // the one shape the task skill uses; anything else on the line is refused (an allow-list, not a block-list)
+  const extra = args.filter((a) => a !== pr && !['--merge', '--merge=true', '-m'].includes(a));
   let problem = null;
   if (segs.length > 1) problem = 'run the merge command alone, not chained with other commands';
+  else if (/[$`#()<>]/.test(command)) problem = 'no shell syntax ($, backtick, #, brackets, redirects) in a merge command';
   else if (!pr) problem = 'name the pull request number';
   else if (numbers.length > 1) problem = 'name exactly one pull request number and nothing else that is a bare number';
   else if (has('-R', '--repo')) problem = 'no -R or --repo (merge only in this repository)';
@@ -159,6 +168,7 @@ export function mergeRequest(command) {
   else if (has('--auto')) problem = 'no --auto (merge only after the gate passes now)';
   // normal merges only (team decision D-152, 2026-11-14): main keeps every branch commit; squash and rebase rewrite them
   else if (!has('--merge', '-m') || has('--squash', '-s', '--rebase', '-r')) problem = 'use --merge (or -m) only';
+  else if (extra.length > 0) problem = `only gh pr merge <number> --merge is allowed, not: ${extra.join(' ')}`;
   return { pr, problem };
 }
 
