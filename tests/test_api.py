@@ -15,7 +15,7 @@ from fieldshift.api.app import FRONTEND_ROUTES, create_app
 FIX = Path("tests/fixtures/artifacts")
 
 
-def test_health_lists_each_artifact_with_version_and_time():
+def test_health_lists_each_artifact_with_version_and_time() -> None:
     r = TestClient(create_app(artifacts_dir=FIX)).get("/api/health")
     assert r.status_code == 200
     assert r.json() == {
@@ -24,12 +24,12 @@ def test_health_lists_each_artifact_with_version_and_time():
     }
 
 
-def test_health_without_artifacts_is_still_ok(tmp_path):
+def test_health_without_artifacts_is_still_ok(tmp_path: Path) -> None:
     r = TestClient(create_app(artifacts_dir=tmp_path / "none")).get("/api/health")
     assert r.json() == {"status": "ok", "artifacts": {}}
 
 
-def test_frontend_routes_return_index_html(tmp_path):
+def test_frontend_routes_return_index_html(tmp_path: Path) -> None:
     (tmp_path / "index.html").write_text("<html>app</html>", encoding="utf-8")
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
@@ -53,5 +53,5 @@ def test_frontend_routes_return_index_html(tmp_path):
     assert c.get("/api/nothing").status_code == 404
 
 
-def test_start_command_turns_off_the_access_log():
+def test_start_command_turns_off_the_access_log() -> None:
     assert "--no-access-log" in Path("Dockerfile").read_text(encoding="utf-8")

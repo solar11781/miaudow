@@ -30,7 +30,7 @@ print(json.dumps({"calendar": str(season_windows.CALENDAR_FILE),
 
 
 @pytest.fixture(scope="module")
-def installed(tmp_path_factory):
+def installed(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     """The package as `pip install .` lays it out: a copy of src/fieldshift in a folder outside the repository.
 
     A copy instead of a real pip build keeps the test offline and leaves no build/ folder in the repository.
@@ -52,7 +52,7 @@ def _run(site: Path, cwd: Path, env_extra: dict) -> subprocess.CompletedProcess:
     )
 
 
-def test_installed_package_reads_rules_and_artifacts_from_the_project_folder(installed):
+def test_installed_package_reads_rules_and_artifacts_from_the_project_folder(installed: tuple[Path, Path]) -> None:
     site, app = installed
     r = _run(site, app.parent, {"FIELDSHIFT_ROOT": str(app)})
     assert r.returncode == 0, r.stderr
@@ -65,14 +65,14 @@ def test_installed_package_reads_rules_and_artifacts_from_the_project_folder(ins
     }
 
 
-def test_installed_package_without_the_project_folder_fails_with_a_message(installed):
+def test_installed_package_without_the_project_folder_fails_with_a_message(installed: tuple[Path, Path]) -> None:
     site, app = installed
     r = _run(site, app.parent, {})
     assert r.returncode != 0
     assert "FIELDSHIFT_ROOT" in r.stderr
 
 
-def test_dockerfile_points_the_package_at_its_workdir():
+def test_dockerfile_points_the_package_at_its_workdir() -> None:
     text = (REPO / "Dockerfile").read_text(encoding="utf-8")
     workdir = re.search(r"^WORKDIR\s+(\S+)", text, re.MULTILINE).group(1)
     assert re.search(rf"^ENV\s+.*FIELDSHIFT_ROOT={re.escape(workdir)}\b", text, re.MULTILINE)
