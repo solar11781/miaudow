@@ -23,7 +23,9 @@ def test_health_reports_cores_and_datasets_without_secrets(client, monkeypatch):
     assert "secret-value-123" not in r.text
     ids = {d["dataset_id"]: d["ingestion_status"] for d in body["datasets"]}
     assert ids["nasa_power_daily"] == "INGESTED"
-    assert ids["sentinel2_l2a"] == "CONTRACT_ONLY"
+    assert ids["sentinel2_l2a_do_luong_vi"] == "INGESTED"
+    # products that need an Earthdata login are listed as blocked, never as available
+    assert ids["nasa_hlss30"] == "BLOCKED"
     monkeypatch.setenv("ANTHROPIC_MODEL", "some-model")
     assert client.get("/api/health").json()["cores"]["copilot"]["engine"] == "claude"
 

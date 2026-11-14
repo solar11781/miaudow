@@ -572,6 +572,76 @@ def file_sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def full_manifest(path: Path) -> Dataset | None:
+    """A fetch step's manifest that already follows the Dataset contract (Sentinel-2, Đô Lương boundary)."""
+    if not path.exists():
+        return None
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    fields = set(Dataset.model_fields)
+    return Dataset(**{k: v for k, v in raw.items() if k in fields})
+
+
+MISSION_TITLES = {
+    "HLSS30": ("NASA HLS Sentinel-2 30 m (HLSS30 v2.0)", "NASA HLS Sentinel-2 30 m (HLSS30 v2.0)"),
+    "HLSL30": ("NASA HLS Landsat 30 m (HLSL30 v2.0)", "NASA HLS Landsat 30 m (HLSL30 v2.0)"),
+    "SPL3SMP_E": ("NASA SMAP độ ẩm đất mặt 9 km (SPL3SMP_E)", "NASA SMAP surface soil moisture 9 km (SPL3SMP_E)"),
+    "SPL4SMGP": ("NASA SMAP L4 độ ẩm đất (SPL4SMGP)", "NASA SMAP L4 soil moisture (SPL4SMGP)"),
+    "GPM_3IMERGDF": ("NASA GPM IMERG mưa ngày (GPM_3IMERGDF)", "NASA GPM IMERG daily rain (GPM_3IMERGDF)"),
+    "GPM_3IMERGM": ("NASA GPM IMERG mưa tháng (GPM_3IMERGM)", "NASA GPM IMERG monthly rain (GPM_3IMERGM)"),
+    "ECO_L2T_LSTE": (
+        "NASA ECOSTRESS nhiệt độ bề mặt (ECO_L2T_LSTE)",
+        "NASA ECOSTRESS land surface temperature (ECO_L2T_LSTE)",
+    ),
+    "ECO_L3T_JET": ("NASA ECOSTRESS bốc thoát hơi (ECO_L3T_JET)", "NASA ECOSTRESS evapotranspiration (ECO_L3T_JET)"),
+}
+
+
+def phase2_datasets() -> list[Dataset]:
+    """Datasets of the Phase-2 acquisition: what was ingested, and what only discovery reached (Earthdata login)."""
+    out: list[Dataset] = []
+    for path in (DATA / "raw" / "sentinel2" / "MANIFEST.json", DATA / "raw" / "boundaries" / "do_luong_MANIFEST.json"):
+        ds = full_manifest(path)
+        if ds:
+            out.append(ds)
+    status_file = DATA / "raw" / "nasa_missions" / "STATUS.json"
+    if status_file.exists():
+        status = json.loads(status_file.read_text(encoding="utf-8"))
+        for prod in status.get("products", []):
+            name = prod["short_name"]
+            vi, en = MISSION_TITLES.get(name, (name, name))
+            blocked = str(prod.get("access_status", "")).startswith("BLOCKED")
+            out.append(
+                Dataset(
+                    dataset_id=f"nasa_{name.lower()}",
+                    title=t(vi, en),
+                    provider=prod.get("daac", "NASA"),
+                    source_id="X-NASA-EARTHDATA",
+                    source_url=prod.get("cmr_collection_url"),
+                    license="NASA open data (Earthdata Login required to download)",
+                    source_revision=prod.get("version"),
+                    retrieved_at=status.get("generated_at"),
+                    temporal_coverage=prod.get("temporal_coverage", ""),
+                    spatial_resolution=prod.get("native_resolution", ""),
+                    geometry_crs=None,
+                    variables=[],
+                    missing_policy="Not downloaded; nothing is shown from it.",
+                    allowed_use=t(prod.get("use_in_miaudow", ""), prod.get("use_in_miaudow", "")),
+                    version_sha256=None,
+                    ingestion_status="BLOCKED" if blocked else "PARTIAL",
+                    is_field_measurement=False,
+                    notes=[
+                        t(
+                            f"Tìm thấy {prod.get('granules_found_2020_2021')} tệp phủ Đô Lương năm 2020–2021 qua NASA CMR, "
+                            "nhưng tải về cần tài khoản Earthdata miễn phí; chưa có tài khoản nên chưa dùng.",
+                            f"{prod.get('granules_found_2020_2021')} granules over Đô Lương for 2020–2021 found through NASA "
+                            "CMR, but downloading needs a free Earthdata Login; none is configured, so nothing is used.",
+                        )
+                    ],
+                )
+            )
+    return out
+
+
 def build_datasets(power_meta) -> list[Dataset]:
     na = "Không phải số đo tại ruộng."
     common_power = {
@@ -856,57 +926,8 @@ def build_datasets(power_meta) -> list[Dataset]:
                 "is_field_measurement": False,
             },
         ),
-        Dataset(
-            dataset_id="sentinel2_l2a",
-            title=t("Sentinel-2 L2A, phản xạ bề mặt", "Sentinel-2 L2A surface reflectance"),
-            provider="ESA Copernicus",
-            source_id="X-SENTINEL2-L2A",
-            source_url="https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Data/S2L2A.html",
-            license="Copernicus open data licence",
-            source_revision=None,
-            retrieved_at=None,
-            temporal_coverage="2017/near present",
-            spatial_resolution="10/20/60 m",
-            geometry_crs="UTM",
-            variables=["B02", "B03", "B04", "B08", "SCL"],
-            missing_policy="Not loaded.",
-            allowed_use=t("Chưa dùng.", "Not used yet."),
-            version_sha256=None,
-            ingestion_status="CONTRACT_ONLY",
-            is_field_measurement=False,
-            notes=[
-                t(
-                    "Chưa tải ảnh nào. Không ghép ô lưới NASA POWER 0,5° với ảnh 10 m mà không ghi rõ sự khác nhau về độ phân giải.",
-                    "No scene fetched. NASA POWER 0.5° cells must never be joined to 10 m pixels without recording the resolution mismatch.",
-                )
-            ],
-        ),
-        Dataset(
-            dataset_id="nasa_hls",
-            title=t("NASA HLS v2 (Landsat và Sentinel-2 hài hòa)", "NASA HLS v2 (harmonized Landsat and Sentinel-2)"),
-            provider="NASA LP DAAC",
-            source_id="X-NASA-HLS",
-            source_url="https://hls.gsfc.nasa.gov/data-products/",
-            license="NASA open data",
-            source_revision=None,
-            retrieved_at=None,
-            temporal_coverage="2013/near present",
-            spatial_resolution="30 m",
-            geometry_crs="UTM",
-            variables=["surface reflectance"],
-            missing_policy="Not loaded.",
-            allowed_use=t("Chưa dùng.", "Not used yet."),
-            version_sha256=None,
-            ingestion_status="CONTRACT_ONLY",
-            is_field_measurement=False,
-            notes=[
-                t(
-                    "Chưa tải. Không đo trực tiếp độ ẩm của ruộng.",
-                    "Not fetched. It does not measure field moisture directly.",
-                )
-            ],
-        ),
     ]
+    datasets += phase2_datasets()
     return datasets
 
 
