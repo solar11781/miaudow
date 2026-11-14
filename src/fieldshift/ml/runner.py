@@ -32,17 +32,13 @@ def add_precip_anom(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
     return out
 
 
-def _ridge(x: np.ndarray, y: np.ndarray, alpha: float) -> object:
-    return ev.fit_ridge(x, y, alpha=alpha)
-
-
 def _tune(
     df: pd.DataFrame,
     train_idx: pd.Index,
     cols: list[str],
     alphas: Sequence,
     fold_transform: FoldTransform | None = None,
-    fit: Callable[[np.ndarray, np.ndarray, object], object] = _ridge,
+    fit: Callable[[np.ndarray, np.ndarray, object], object] = ev.fit_ridge,
 ) -> tuple[object, np.ndarray]:
     """Grid value (ridge penalty by default) with the lowest inner-fold MSE (first on ties), and its inner residuals.
 
@@ -73,7 +69,7 @@ def _tune(
 def _checked(df: pd.DataFrame, alphas: Sequence[float] | np.ndarray, m1_cols: list[str]) -> pd.DataFrame:
     """The run's rows with a fresh index, after the input checks (python rules: unknown data fails loudly)."""
     if len(alphas) == 0:
-        raise ValueError("a penalty grid is required (no default without a decision)")
+        raise ValueError("a tuning grid is required (no default without a decision)")
     dup = df.duplicated(["series_id", "year"], keep=False)
     if dup.any():
         bad = df.loc[dup, ["series_id", "year"]].drop_duplicates().to_dict("records")
