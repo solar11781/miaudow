@@ -16,10 +16,13 @@ def whole_percent(fraction: float) -> str:
 
 def share_value(row: dict) -> Value | None:
     """One hazard_labels.json row as its share Value (05-DATA-CONTRACTS §4b API conversion); null stays null."""
-    if row["share_farmland"] is None:
+    share = row["share_farmland"]
+    if share is None:
         return None
+    if not 0 <= share <= 1:
+        raise ValueError(f"share_farmland {share} is not a fraction 0..1 (year {row['year']}, rule {row['rule']})")
     return Value(
-        value=whole_percent(row["share_farmland"]),
+        value=whole_percent(share),
         unit=PERCENT,
         source_ids=[row["threshold_source_id"], *row["values_source_ids"], row["computed_by"]],
     )

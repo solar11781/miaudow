@@ -7,10 +7,11 @@ return a response the frontend rejects.
 
 from __future__ import annotations
 
+from datetime import datetime
 from itertools import pairwise
 from typing import Annotated, Literal, Self, TypedDict, get_args
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator, with_config
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, with_config
 
 Province = Literal["nghe_an"]
 Land = Literal["dry", "unsure"]
@@ -24,9 +25,20 @@ Sensitivity = Literal["no_fao_flagged", "mae_skill", "risk_level_features", "win
 CoverageAxis = Literal["money", "conditions", "rice_history", "model", "water_tcvn", "water_fao"]
 ExplainKey = Literal["evapotranspiration", "soil_moisture", "ndvi", "frost", "water_balance", "data_types"]
 SourceId = str
-MonthDay = Annotated[str, Field(pattern=r"^\d{2}-\d{2}$")]  # "MM-DD" (§11), so dates compare as strings
 
 SUMMARY_MIN_YEARS = 2  # min / median / max needs 2 real values (D-95; 03-ML-SPEC §5b)
+FIRST_YEAR, LAST_YEAR = 1995, 2024  # past years offered (UI-UX-SPEC §11 YearRow; 04-TECH-DESIGN §3: else HTTP 422)
+REFERENCE_YEAR = 2001  # any non-leap year: "MM-DD" days are counted in a 365-day year (D-103, D-104)
+ID_LISTS = ("source_ids", "values_source_ids", "principle_source_ids")  # the id fields of §11
+ID_SINGLES = ("threshold_source_id", "computed_by")
+
+
+def _real_day(mmdd: str) -> str:
+    datetime.strptime(f"{REFERENCE_YEAR}-{mmdd}", "%Y-%m-%d")  # raises ValueError for a day that does not exist
+    return mmdd
+
+
+MonthDay = Annotated[str, Field(pattern=r"^\d{2}-\d{2}$"), AfterValidator(_real_day)]  # "MM-DD" (§11)
 
 RULE_CODES: tuple[RuleCode, ...] = get_args(RuleCode)
 PLAN_IDS: tuple[PlanId, ...] = get_args(PlanId)
@@ -109,9 +121,8 @@ class PastYearsResponse(Contract):
         codes = tuple(rule.code for rule in self.rules)
         if codes != RULE_CODES:
             raise ValueError(f"rules must be {RULE_CODES} in this order, got {codes}")
-        years = [row.year for row in self.years]
-        if any(a >= b for a, b in pairwise(years)):
-            raise ValueError(f"years must be strictly ascending: {years}")
+        _check_ascending([row.year for row in self.years])
+        _check_sources(self)
         return self
 
 
@@ -284,6 +295,13 @@ class CompareRequest(Contract):
     years: list[int]
     priority: Priority
 
+    @model_validator(mode="after")
+    def _years_ascending_in_range(self) -> Self:
+        _check_ascending(self.years)
+        if any(not FIRST_YEAR <= y <= LAST_YEAR for y in self.years):
+            raise ValueError(f"years must be inside {FIRST_YEAR}-{LAST_YEAR}: {self.years}")
+        return self
+
 
 class Interval(Contract):
     value: float
@@ -330,6 +348,7 @@ class CompareResponse(Contract):
                     predicted = row.oos_prediction is not None or row.range_80 is not None
                     if predicted and not first <= row.year <= last:
                         raise ValueError(f"{block.crop_key} {row.year}: prediction outside test years")
+        _check_sources(self)
         return self
 
 
@@ -417,6 +436,7 @@ class MethodResponse(Contract):
         keys = tuple(t.key for t in self.explain_terms)
         if keys != EXPLAIN_KEYS:
             raise ValueError(f"explain_terms must be {EXPLAIN_KEYS} in this order, got {keys}")
+        _check_sources(self)
         return self
 
 
@@ -428,3 +448,35 @@ class ArtifactInfo(Contract):
 class HealthResponse(Contract):
     status: Literal["ok"]
     artifacts: dict[str, ArtifactInfo]
+
+
+def source_ids_in(node: object) -> list[SourceId]:
+    """Every source id that the id fields of §11 hold inside a dumped model, in reading order."""
+    if isinstance(node, list):
+        return [sid for item in node for sid in source_ids_in(item)]
+    if not isinstance(node, dict):
+        return []
+    found: list[SourceId] = []
+    for key, child in node.items():
+        if key in ID_LISTS:
+            found += child
+        elif key in ID_SINGLES:
+            found.append(child)
+        elif key != "sources":
+            found += source_ids_in(child)
+    return found
+
+
+def _check_sources(response: PastYearsResponse | CompareResponse | MethodResponse) -> None:
+    """§11 validation: every id used is a key of the response's `sources`, whose facts carry that id (H5)."""
+    missing = sorted(set(source_ids_in(response.model_dump())) - response.sources.keys())
+    if missing:
+        raise ValueError(f"source ids not in sources: {missing}")
+    wrong = [key for key, facts in response.sources.items() if facts.id != key]
+    if wrong:
+        raise ValueError(f"sources listed under another id: {wrong}")
+
+
+def _check_ascending(years: list[int]) -> None:
+    if any(a >= b for a, b in pairwise(years)):
+        raise ValueError(f"years must be strictly ascending: {years}")

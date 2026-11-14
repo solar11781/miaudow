@@ -9,14 +9,19 @@ from __future__ import annotations
 from pathlib import Path
 
 from fieldshift.engine.rules import load_rules, load_sources, pick_sources, read_artifact
-from fieldshift.engine.schemas import RULE_CODES, PastYearsResponse, Province, Value, YearRow
+from fieldshift.engine.schemas import RULE_CODES, PastYearsResponse, Province, Value, YearRow, source_ids_in
 from fieldshift.engine.values import share_value
 
 HAZARD_LABELS = "hazard_labels.json"
+LEVELS = {"crop", "year"}  # 05-DATA-CONTRACTS §4b
 
 
 def past_years(province: Province, root: Path) -> PastYearsResponse:
-    rows = [row for row in read_artifact(root, HAZARD_LABELS)["rows"] if row["level"] == "year"]
+    all_rows = read_artifact(root, HAZARD_LABELS)["rows"]
+    levels = {row["level"] for row in all_rows} - LEVELS
+    if levels:
+        raise ValueError(f"artifacts/{HAZARD_LABELS}: unknown level {sorted(levels)}")
+    rows = [row for row in all_rows if row["level"] == "year"]
     if not rows:
         raise ValueError(f"artifacts/{HAZARD_LABELS}: no level year rows")
     cells = {row["n_cells"] for row in rows}
@@ -33,12 +38,12 @@ def past_years(province: Province, root: Path) -> PastYearsResponse:
         if missing:
             raise ValueError(f"artifacts/{HAZARD_LABELS}: year {year} has no row for {missing}")
     rules = load_rules(root)
-    used = [sid for r in rules for sid in (r.threshold_source_id, *r.values_source_ids, r.computed_by)]
-    used += [sid for s in shares.values() for v in s.values() if v is not None for sid in v.source_ids]
+    years = [YearRow.model_validate({"year": y, "shares": shares[y]}) for y in sorted(shares)]
+    used = source_ids_in([item.model_dump() for item in (*rules, *years)])
     return PastYearsResponse(
         province=province,
         rules=rules,
-        years=[YearRow.model_validate({"year": y, "shares": shares[y]}) for y in sorted(shares)],
+        years=years,
         sources=pick_sources(load_sources(root), used),
         n_cells=cells.pop(),
     )
