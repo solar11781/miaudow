@@ -20,6 +20,7 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable, Iterator
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -355,6 +356,47 @@ def test_google_keys_are_downloaded_once_while_google_says_they_are_fresh(on: st
     c.post("/api/account/saved", headers=me, json=ANSWERS)
     c.get("/api/account/saved", headers=me)
     assert urls(fetched) == [GOOGLE_CERTS]  # the max-age of Google's Cache-Control header has not run out
+
+
+# ---- account requests never hold the farmer routes
+
+
+def test_farmer_routes_answer_promptly_while_the_key_download_is_slow(
+    on: str, keys: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # security review of the pull request: 80 junk tokens, each starting its own slow key download in the shared
+    # worker threads, held GET /api/past-years for 5.6 s
+    calls: list[str] = []
+
+    def slow_urlopen(request: urllib.request.Request, **_: object) -> Answer:
+        calls.append(request.full_url)
+        time.sleep(3)
+        return Answer(public_keys(keys))
+
+    monkeypatch.setattr(urllib.request, "urlopen", slow_urlopen)
+    with TestClient(create_app(root=REPO)) as c, ThreadPoolExecutor(80) as pool:
+        junk = [pool.submit(c.get, "/api/account/saved", headers=bearer("zz-secret")) for _ in range(80)]
+        time.sleep(0.5)  # the junk requests are now waiting on the download
+        started = time.monotonic()
+        assert c.get("/api/past-years", params={"province": "nghe_an"}).status_code == 200
+        waited = time.monotonic() - started
+        assert all(f.result().status_code == 401 for f in junk)
+    assert waited < 1.0, waited
+    assert calls == [GOOGLE_CERTS]  # one download at a time; the waiting requests use its result
+
+
+def test_a_failed_key_download_is_not_retried_at_once(on: str, keys: dict, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
+    def unreachable(request: urllib.request.Request, **_: object) -> None:
+        calls.append(request.full_url)
+        raise urllib.error.URLError("no route")
+
+    monkeypatch.setattr(urllib.request, "urlopen", unreachable)
+    c = TestClient(create_app(root=REPO))
+    for _ in range(5):
+        assert c.post("/api/account/sign-in", headers=bearer(google_token(keys))).status_code == 503
+    assert calls == [GOOGLE_CERTS]  # the later requests fail fast during the pause after the failure
 
 
 # ---- the download of Google's keys (standard-library transport)
