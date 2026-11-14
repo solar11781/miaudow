@@ -378,6 +378,36 @@ def test_start_command_turns_off_the_server_header() -> None:
     assert "--no-server-header" in (REPO / "Dockerfile").read_text(encoding="utf-8")
 
 
+# ---- privacy notice of the optional sign-in (UI-UX-SPEC §12c)
+
+
+def test_privacy_notice_states_what_is_stored_where_how_long_and_who_hosts(client: TestClient) -> None:
+    # §12c: what is stored (only Google's account id and the saved answers), where and who hosts it (a database on
+    # Railway, §12c; the Singapore region, §11 privacy settings), for how long; Google's branding page links this path
+    r = client.get("/quyen-rieng-tu")
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/html")
+    assert "set-cookie" not in r.headers
+    text = r.text
+    for fact in ("Google account id", "no name, email or picture", "Railway", "Singapore", "until you delete"):
+        assert fact in text, fact
+    assert '<html lang="vi">' in text
+    assert 'lang="en"' in text  # both languages on the one page Google links (H15)
+    assert "http" not in text  # no third-party resource on this page (H14)
+
+
+def test_privacy_notice_is_served_with_sign_in_off(tmp_path: Path) -> None:
+    # the link is registered with Google, so it answers whatever the server's sign-in settings are
+    assert TestClient(create_app(root=copy_root(tmp_path))).get("/quyen-rieng-tu").status_code == 200
+
+
+def test_the_english_privacy_path_redirects_permanently(client: TestClient) -> None:
+    # D-164: /privacy is a permanent redirect (308) to /quyen-rieng-tu
+    r = client.get("/privacy", follow_redirects=False)
+    assert r.status_code == 308
+    assert r.headers["location"] == "/quyen-rieng-tu"
+
+
 def test_no_response_sets_a_cookie(tmp_path: Path) -> None:
     # UI-UX-SPEC T14 (server side): no cookies set
     (tmp_path / "index.html").write_text("<html>app</html>", encoding="utf-8")
