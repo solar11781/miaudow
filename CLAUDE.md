@@ -133,11 +133,13 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   (whole-project audit when features are done, proposes fixes), `/submission-check` (pre-submission audit).
   `/checkpoints` (phone reminders for the schedule; run in a separate idle session), `/vi-copy` (glossary-consistent
   Vietnamese and English text; glossary in `frontend/src/i18n/GLOSSARY.md`).
-  `/plan-queue`, `/autopilot`, `/health`, `/final-audit`, `/submission-check` and `/checkpoints` run only when a
-  person types them.
+  `/plan-queue`, `/autopilot`, `/health`, `/final-audit`, `/submission-check`, `/checkpoints` and `/unslop` run only
+  when a person types them.
 - Checks as tests: `tests/test_source_trace.py` (every displayed value has a source that is in the response and in
   the registers; hard rule H5), `tests/test_architecture.py` (layers). `scripts/attribution.py` prints the Python
   licence table for the README from the lock file.
 - Other skills in `.claude/skills/`: `ste` (clear explanations), `cognitive-walkthrough` (task walkthrough as a
-  first-time user), `spec-review` (two-axis review of a diff). Each third-party folder holds its licence;
+  first-time user), `spec-review` (two-axis review of a diff), `unslop` (anti-"AI look" audit of the finished screens,
+  audit and polish mode only; the UI spec wins: no font, colour or layout change outside it, no generated image, no
+  new icon package, no motion or transition, no story video). Each third-party folder holds its licence;
   `spec-review/NOTICE.md` and `.claude/hooks/GUARD-NOTICE.md` list the changes made.
