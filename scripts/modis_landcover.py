@@ -5,16 +5,16 @@ harvest year. Each global file is about 1.24 GB; we keep only a box around Vietn
 whole 2001-2024 series fits in a few MB. Provenance (granule id, URL, sha256 of the original file) is appended to
 data/MANIFEST.csv so anyone can re-download and verify.
 
-Auth: Earthdata Login. In the Claude cloud environment the token is injected by the network proxy for
-urs.earthdata.nasa.gov; elsewhere, set up ~/.netrc or an Earthdata token as usual.
+Auth: Earthdata Login. Set EARTHDATA_TOKEN to an Earthdata user token (fieldshift.data.earthdata sends it only to NASA
+Earthdata hosts over https); without it, only a network that adds the login itself works.
 
 Usage: python -I scripts/modis_landcover.py 2001 2024
 """
 
 from __future__ import annotations
 
+import csv
 import hashlib
-import http.cookiejar
 import json
 import sys
 import urllib.parse
@@ -24,6 +24,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fieldshift.data.earthdata import earthdata_opener
 from fieldshift.data.manifest import append_rows
 
 try:
@@ -43,7 +44,13 @@ OUT_DIR = Path("data/interim/modis_vn")
 MANIFEST = Path("data/MANIFEST.csv")
 
 
-def subset_indices(lat_min=LAT_MIN, lat_max=LAT_MAX, lon_min=LON_MIN, lon_max=LON_MAX, cell=CELL):
+def subset_indices(
+    lat_min: float = LAT_MIN,
+    lat_max: float = LAT_MAX,
+    lon_min: float = LON_MIN,
+    lon_max: float = LON_MAX,
+    cell: float = CELL,
+) -> tuple[int, int, int, int]:
     """Row/column slice bounds of the global 0.05 deg grid covering the box (row 0 = 90 N, col 0 = 180 W)."""
     r0 = round((90 - lat_max) / cell)
     r1 = round((90 - lat_min) / cell)
@@ -84,19 +91,41 @@ def granule_url(year: int) -> tuple[str, str]:
 
 
 def download(url: str, dest: Path) -> str:
-    """Download through the Earthdata Login redirect (cookies kept), return sha256 of the file."""
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    """Download through the Earthdata Login redirect (cookies kept), return sha256 of the file.
+
+    A reply that ends before its Content-Length is refused and leaves no file (data are never guessed).
+    """
+    opener = earthdata_opener()
     opener.addheaders = [("User-Agent", "fieldshift-research/0.1")]
     h = hashlib.sha256()
     tmp = dest.with_suffix(".part")
-    with opener.open(url, timeout=600) as resp, open(tmp, "wb") as fh:
-        if "html" in resp.headers.get("Content-Type", ""):
-            raise RuntimeError(f"got an HTML page instead of data from {resp.geturl()} (login failed?)")
-        while chunk := resp.read(1 << 20):
-            h.update(chunk)
-            fh.write(chunk)
+    try:
+        with opener.open(url, timeout=600) as resp, open(tmp, "wb") as fh:
+            host = urllib.parse.urlparse(resp.geturl()).hostname  # the full URL may carry a one-time login code
+            if "html" in resp.headers.get("Content-Type", ""):
+                raise RuntimeError(f"got an HTML page instead of data from {host} (login failed?)")
+            expected, size = resp.headers.get("Content-Length"), 0
+            while chunk := resp.read(1 << 20):
+                h.update(chunk)
+                fh.write(chunk)
+                size += len(chunk)
+        if expected is not None and size != int(expected):
+            raise RuntimeError(f"download cut off: {size} of {expected} bytes from {host}")
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
     tmp.replace(dest)
     return h.hexdigest()
+
+
+def reused_sha256(raw: Path, manifest: Path = MANIFEST) -> str:
+    """sha256 of a raw file already on disk; it must match a data/MANIFEST.csv row for its path (CR-07)."""
+    sha = hashlib.sha256(raw.read_bytes()).hexdigest()
+    with open(manifest, encoding="utf-8", newline="") as f:
+        recorded = {r["sha256"] for r in csv.DictReader(f) if r["path"] == raw.as_posix()}
+    if sha not in recorded:
+        raise ValueError(f"{raw.as_posix()}: sha256 {sha[:12]} is not in {manifest} (re-download it)")
+    return sha
 
 
 def extract_vietnam(hdf_path: Path) -> tuple[np.ndarray, dict]:
@@ -119,11 +148,12 @@ def process_year(year: int, keep_raw: bool = False) -> None:
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     raw = RAW_DIR / Path(url).name
-    sha = download(url, raw) if not raw.exists() else hashlib.sha256(raw.read_bytes()).hexdigest()
+    sha = download(url, raw) if not raw.exists() else reused_sha256(raw)
     data, layers = extract_vietnam(raw)
     r0, r1, c0, c1 = subset_indices()
+    part = out.with_name(out.stem + ".part.npz")  # written in full first, so a stop never leaves a half subset
     np.savez_compressed(
-        out,
+        part,
         percent=data,
         layer_names=np.array([layers[i] for i in sorted(layers)]),
         lat_max=LAT_MAX,
@@ -135,11 +165,12 @@ def process_year(year: int, keep_raw: bool = False) -> None:
         source_sha256=sha,
         granule=granule,
     )
+    part.replace(out)
     row = [
         raw.as_posix(),
         "modis_mcd12c1",
         granule,
-        f"MCD12C1 v061 {year} (global; Vietnam subset in {out})",
+        f"MCD12C1 v061 {year} (global; Vietnam subset in {out.as_posix()})",
         url,
         date.today().isoformat(),
         "scripts/modis_landcover.py",
