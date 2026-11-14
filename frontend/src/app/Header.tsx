@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ButtonLink } from '../design-system/Button';
 import { Icon, type IconName } from '../design-system/Icon';
 import { BrandMark } from './Brand';
+import { SavedLink } from '../features/account/SavedLink';
 import { useSettings, useT, type Theme } from './settings';
 import s from './Header.module.css';
 
@@ -178,6 +179,9 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
                 <Icon name="arrowRight" size={20} />
               </NavLink>
             ))}
+            <SavedLink className={s.menuLink}>
+              <Icon name="arrowRight" size={20} />
+            </SavedLink>
           </nav>
           <Settings inMenu />
         </div>

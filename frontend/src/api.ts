@@ -2,6 +2,7 @@
 // the farmer's answers go to our own server only, in the POST body (D-92). Every response is checked before a screen
 // uses it ("Validation in src/api.ts"); a response that fails the check is an error, never shown.
 import type { Bilingual } from './domain/provenance';
+import type { Land } from './domain/farmerState';
 import {
   COVERAGE_AXES,
   EXPLAIN_KEYS,
@@ -357,6 +358,32 @@ export function validateMethod(raw: unknown): MethodResponse {
   return res;
 }
 
+// ---------------------------------------------------------------- optional google sign-in (UI-UX-SPEC §12c)
+
+/** Whether sign-in is on, and the public Google client id the sign-in page starts Google's button with. */
+export type SignInConfig = { available: true; client_id: string } | { available: false; client_id: null };
+/** One saved set: the answers of steps 1-3 (accounts.py SavedAnswers), the field as the farmer answered it; an
+ * irrigated field gets no plans, so it is never saved. */
+export type SavedAnswers = Pick<CompareRequest, 'years' | 'priority'> & { land: SavedLand };
+export type SavedLand = Exclude<Land, 'reliable'>;
+export interface SavedSet extends SavedAnswers {
+  id: number;
+}
+
+const savedSet = obj({
+  id: num,
+  land: oneOf(['high_field', 'canal_end', 'water_short', 'ask']),
+  years: arr(num),
+  priority: oneOf(['income', 'stability', 'water', 'land']),
+});
+
+export function validateSignInConfig(raw: unknown): SignInConfig {
+  obj({ available: bool, client_id: nullable(str) })(raw, 'account config');
+  const res = raw as SignInConfig;
+  if (res.available !== (res.client_id !== null)) fail('account config', 'client_id must be set exactly when on');
+  return res;
+}
+
 // ---------------------------------------------------------------- requests
 
 // No app-level timeout on our calls (UI-UX-SPEC section 11): only member B's health and copilot calls pass one.
@@ -377,7 +404,7 @@ async function call(path: string, init: RequestInit & { timeoutMs?: number } = {
       const body: unknown = await res.json().catch(() => ({}));
       throw new ApiError(res.status, isObj(body) && typeof body.detail === 'string' ? body.detail : res.statusText);
     }
-    return await res.json();
+    return res.status === 204 ? null : await res.json();
   } finally {
     window.clearTimeout(timer);
   }
@@ -451,6 +478,10 @@ export const GRID_FIGURE_URL = SNAPSHOT_MODE
 
 // the past-years response is kept in memory for the life of the page (section 11), never stored in the browser
 let pastYearsOnce: Promise<PastYearsResponse> | null = null;
+let configOnce: Promise<SignInConfig> | null = null;
+
+// the Google ID token goes only in this header, never in an address or the browser's storage (H14)
+const bearer = (token: string) => ({ Authorization: `Bearer ${token}` });
 
 export const api = {
   /** Shared by every screen of the page, so one screen leaving does not cancel it; callers ignore a late answer. */
@@ -483,6 +514,38 @@ export const api = {
       signal,
       timeoutMs: 90000,
     }) as Promise<CopilotResponse>,
+  account: {
+    config(): Promise<SignInConfig> {
+      configOnce ??= call('/account/config').then(validateSignInConfig);
+      configOnce.catch(() => {
+        configOnce = null;
+      });
+      return configOnce;
+    },
+    signIn: async (token: string): Promise<void> => {
+      await call('/account/sign-in', { method: 'POST', headers: bearer(token) });
+    },
+    saved: async (token: string, signal?: AbortSignal): Promise<SavedSet[]> => {
+      const raw = await call('/account/saved', { headers: bearer(token), signal });
+      obj({ saved: arr(savedSet) })(raw, 'saved');
+      return (raw as { saved: SavedSet[] }).saved;
+    },
+    save: async (token: string, answers: SavedAnswers): Promise<SavedSet> => {
+      const raw = await call('/account/saved', {
+        method: 'POST',
+        body: JSON.stringify(answers),
+        headers: bearer(token),
+      });
+      savedSet(raw, 'saved set');
+      return raw as SavedSet;
+    },
+    remove: async (token: string, id: number): Promise<void> => {
+      await call(`/account/saved/${id}`, { method: 'DELETE', headers: bearer(token) });
+    },
+    deleteAccount: async (token: string): Promise<void> => {
+      await call('/account', { method: 'DELETE', headers: bearer(token) });
+    },
+  },
 };
 
 // ---------------------------------------------------------------- explain simply (FR-15, D-165, D-172)
