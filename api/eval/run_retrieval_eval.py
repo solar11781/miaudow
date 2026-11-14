@@ -75,11 +75,13 @@ def precompute(rows: list[dict], index) -> list[dict]:
     return out
 
 
-def abstention_metrics(rows: list[dict], min_bm25: float, min_cov: float, guard: bool) -> dict:
+def abstention_metrics(
+    rows: list[dict], min_bm25: float, min_cov: float, guard: bool, min_idf: float | None = None
+) -> dict:
     tp = fp = fn = tn = 0
     wrong = []
     for r in rows:
-        reason = evidence.decide(r["_top"], r["_guard"] if guard else None, min_bm25, min_cov)
+        reason = evidence.decide(r["_top"], r["_guard"] if guard else None, min_bm25, min_cov, min_idf)
         abstained = reason is not None
         if abstained and not r["answerable"]:
             tp += 1
@@ -102,20 +104,23 @@ def abstention_metrics(rows: list[dict], min_bm25: float, min_cov: float, guard:
     }
 
 
-def tune(rows: list[dict]) -> tuple[float, float, float]:
-    """Grid search on DEV: maximise balanced accuracy of the answer/abstain decision (guard on); ties keep the
+def tune(rows: list[dict]) -> tuple[float, float, float, float]:
+    """Grid search on DEV: maximise balanced accuracy of the thresholds alone (guard off, so they must stand on their
+    own); ties keep the
     lowest thresholds (answer more)."""
-    best = (-1.0, 0.0, 0.0)
-    for s10 in range(0, 301, 5):
+    best = (-1.0, 0.0, 0.0, 0.0)
+    for s10 in range(0, 301, 10):
         s = s10 / 10
         for c20 in range(0, 21):
             c = c20 / 20
-            m = abstention_metrics(rows, s, c, guard=True)
-            ans = m["answered_answerable"] / max(1, m["answered_answerable"] + m["abstained_answerable"])
-            una = m["abstained_unanswerable"] / max(1, m["abstained_unanswerable"] + m["answered_unanswerable"])
-            score = (ans + una) / 2
-            if score > best[0] + 1e-9:
-                best = (score, s, c)
+            for i20 in range(0, 21):
+                i = i20 / 20
+                m = abstention_metrics(rows, s, c, guard=False, min_idf=i)
+                ans = m["answered_answerable"] / max(1, m["answered_answerable"] + m["abstained_answerable"])
+                una = m["abstained_unanswerable"] / max(1, m["abstained_unanswerable"] + m["answered_unanswerable"])
+                score = (ans + una) / 2
+                if score > best[0] + 1e-9:
+                    best = (score, s, c, i)
     return best
 
 
@@ -133,7 +138,11 @@ def main() -> None:
         "method": "BM25 (two indexes, diacritics kept or stripped) + character 3-gram TF-IDF cosine, reciprocal rank "
         "fusion k=60; abstain below MIN_BM25 or MIN_COVERAGE on the top fused hit; scope guard for forecasts, "
         "current prices and plan ranking. No neural embeddings.",
-        "thresholds_in_use": {"min_bm25": evidence.MIN_BM25, "min_coverage": evidence.MIN_COVERAGE},
+        "thresholds_in_use": {
+            "min_bm25": evidence.MIN_BM25,
+            "min_coverage": evidence.MIN_COVERAGE,
+            "min_idf_coverage": evidence.MIN_IDF_COVERAGE,
+        },
         "rrf_weights_in_use": list(evidence.RRF_WEIGHTS),
     }
     if args.tune:
@@ -145,8 +154,13 @@ def main() -> None:
         index.weights = evidence.RRF_WEIGHTS
         report["dev_weight_scan"] = scan
         sys.stdout.write(f"DEV 3-gram weight scan: {scan}\n")
-        score, s, c = tune(dev)
-        report["dev_tuning"] = {"balanced_accuracy": round(score, 3), "min_bm25": s, "min_coverage": c}
+        score, s, c, i = tune(dev)
+        report["dev_tuning"] = {
+            "balanced_accuracy": round(score, 3),
+            "min_bm25": s,
+            "min_coverage": c,
+            "min_idf_coverage": i,
+        }
         sys.stdout.write(f"DEV tuning: balanced accuracy {score:.3f} at MIN_BM25={s} MIN_COVERAGE={c}\n")
     s, c = evidence.MIN_BM25, evidence.MIN_COVERAGE
     report["dev"] = {

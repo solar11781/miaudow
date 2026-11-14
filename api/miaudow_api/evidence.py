@@ -41,6 +41,9 @@ RRF_WEIGHTS = (1.0, 0.1, 1.0)
 # api/eval/results/retrieval_2026-11-14.json.
 MIN_BM25 = 0.0  # DEV tuning put no extra weight on the raw BM25 score; coverage decides
 MIN_COVERAGE = 0.45
+# Share of the query's information (IDF-weighted; a word the library never uses weighs most) that the top passage
+# matches. Stops a question whose rare words are all unknown ("công thức nấu phở") from riding on common words.
+MIN_IDF_COVERAGE = 0.3  # DEV: the largest floor below every answerable DEV question (lowest 0.31); no TEST data used
 
 
 # ---------------------------------------------------------------- text normalisation (port of normalize.ts)
@@ -280,6 +283,8 @@ class EvidenceIndex:
         if not q:
             return []
         bm25 = bm.score(q)
+        idf = {t: math.log(1 + (bm.n - bm.df.get(t, 0) + 0.5) / (bm.df.get(t, 0) + 0.5)) for t in q}
+        idf_total = sum(idf.values()) or 1.0
         qv = self._vec(trigrams(query))
         cos = [sum(w * dv.get(g, 0.0) for g, w in qv.items()) for dv in self.doc_vecs]
         lists = [
@@ -304,6 +309,7 @@ class EvidenceIndex:
                     "fused": fused[i],
                     "bm25": bm25[i][0],
                     "coverage": bm25[i][1] / len(q),
+                    "idf_coverage": sum(idf[t] for t in matched_terms) / idf_total,
                     "cosine": cos[i],
                     "matched_terms": matched_terms,
                 }
@@ -337,14 +343,19 @@ class EvidenceIndex:
 
 
 def decide(
-    top: dict | None, guard_reason: str | None, min_bm25: float = MIN_BM25, min_coverage: float = MIN_COVERAGE
+    top: dict | None,
+    guard_reason: str | None,
+    min_bm25: float = MIN_BM25,
+    min_coverage: float = MIN_COVERAGE,
+    min_idf_coverage: float | None = None,
 ) -> str | None:
     """The abstention reason for a ranked top hit, or None to answer."""
     if guard_reason is not None:
         return guard_reason
     if top is None:
         return "no_matching_evidence"
-    if top["bm25"] < min_bm25 or top["coverage"] < min_coverage:
+    floor = MIN_IDF_COVERAGE if min_idf_coverage is None else min_idf_coverage
+    if top["bm25"] < min_bm25 or top["coverage"] < min_coverage or top.get("idf_coverage", 1.0) < floor:
         return "below_threshold"
     return None
 

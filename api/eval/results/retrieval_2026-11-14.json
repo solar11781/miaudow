@@ -9,45 +9,14 @@
  "method": "BM25 (two indexes, diacritics kept or stripped) + character 3-gram TF-IDF cosine, reciprocal rank fusion k=60; abstain below MIN_BM25 or MIN_COVERAGE on the top fused hit; scope guard for forecasts, current prices and plan ranking. No neural embeddings.",
  "thresholds_in_use": {
   "min_bm25": 0.0,
-  "min_coverage": 0.45
+  "min_coverage": 0.45,
+  "min_idf_coverage": 0.3
  },
  "rrf_weights_in_use": [
   1.0,
   0.1,
   1.0
  ],
- "dev_weight_scan": [
-  {
-   "trigram_weight": 0.0,
-   "dev_mrr": 0.808,
-   "dev_recall@1": 0.75
-  },
-  {
-   "trigram_weight": 0.1,
-   "dev_mrr": 0.749,
-   "dev_recall@1": 0.643
-  },
-  {
-   "trigram_weight": 0.25,
-   "dev_mrr": 0.702,
-   "dev_recall@1": 0.607
-  },
-  {
-   "trigram_weight": 0.5,
-   "dev_mrr": 0.662,
-   "dev_recall@1": 0.571
-  },
-  {
-   "trigram_weight": 1.0,
-   "dev_mrr": 0.613,
-   "dev_recall@1": 0.536
-  }
- ],
- "dev_tuning": {
-  "balanced_accuracy": 0.982,
-  "min_bm25": 0.0,
-  "min_coverage": 0.45
- },
  "dev": {
   "ranking": {
    "n_answerable": 28,
