@@ -89,7 +89,7 @@ def test_the_interval_needs_g4():
 
 def test_no_prediction_outside_the_test_years_or_without_g3():
     # Source: 05-DATA-CONTRACTS section 5: anom_oos "filled only for the test years 2016-2024" and only where the
-    # season's own test (G2 and G3) passed; a 2010 prediction in the input must never reach the artifact
+    # season's own test (G2 and G3) passed; a 2011 prediction in the input must never reach the artifact
     history = pd.concat(
         [_history(), pd.DataFrame({"province_nso": ["Nghe An"], "season": ["winter"], "year": [2011], "anom": [0.01]})]
     )
@@ -120,3 +120,6 @@ def test_a_modeled_season_without_its_gate_rows_fails_loudly():
     gates = [g for g in _gates() if (g["gate"], g["season"]) != ("G3", "winter")]
     with pytest.raises(ValueError, match=r"winter.*G3"):
         risk_table(_history(), _pred(), gates, freeze_commit="f", data_versions={})
+    no_g1 = [g for g in _gates() if (g["gate"], g["season"]) != ("G1", "spring")]
+    with pytest.raises(ValueError, match=r"G1.*spring"):
+        risk_table(_history(), _pred(), no_g1, freeze_commit="f", data_versions={})
