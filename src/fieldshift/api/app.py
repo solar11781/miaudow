@@ -116,6 +116,8 @@ SECURITY_HEADERS = [
     # and the answers live after "#", which is never sent
     (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"content-security-policy", CSP.encode()),
+    # one year (MDN's example); no includeSubDomains or preload, since the parent domain's other subdomains are not ours
+    (b"strict-transport-security", b"max-age=31536000"),
 ]
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
 M = TypeVar("M", bound=BaseModel)

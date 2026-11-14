@@ -480,6 +480,9 @@ def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
         # Google's guide for the sign-in script: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
         # (origin only to other sites; the answers live after "#", which is never sent)
         assert r.headers["referrer-policy"] == "strict-origin-when-cross-origin"
+        # one year, as MDN's example (developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security);
+        # no includeSubDomains or preload: the parent domain's other subdomains are not ours (security audit 2026-11-15)
+        assert r.headers["strict-transport-security"] == "max-age=31536000"
         csp = r.headers["content-security-policy"]
         assert "frame-ancestors 'none'" in csp
         assert "default-src 'self'" in csp
