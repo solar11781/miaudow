@@ -364,12 +364,13 @@ async def _copilot(
     return _respond(_json(reply))
 
 
-def _health_body(health: HealthResponse, corpus: Corpus | None, claude: Anthropic | None) -> bytes:
-    """The health answer; while the copilot is on it names its engine, which member B's page reads to call it."""
-    if corpus is None:
-        return _json(health)
-    engine = {"engine": "deterministic" if claude is None else "claude", "configured": claude is not None}
-    return json.dumps({**health.model_dump(mode="json"), "copilot": engine}).encode()
+def _health_body(health: HealthResponse, corpus: Corpus | None, claude: Anthropic | None, explain_on: bool) -> bytes:
+    """The health answer; it says whether "explain simply" is on, and while the copilot is on it names its engine,
+    which member B's page reads to call it."""
+    body = {**health.model_dump(mode="json"), "explain": explain_on}
+    if corpus is not None:
+        body["copilot"] = {"engine": "deterministic" if claude is None else "claude", "configured": claude is not None}
+    return json.dumps(body).encode()
 
 
 def _read_every_year_row(compare_data: CompareData) -> None:
@@ -441,7 +442,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     corpus = load_corpus(base) if copilot_on(os.environ) else None
     copilot_claude = copilot_client(os.environ)
     copilot_slots, copilot_threads = anyio.CapacityLimiter(COPILOT_LIMIT), anyio.CapacityLimiter(COPILOT_LIMIT)
-    health_body = _health_body(_artifact_versions(base / "artifacts"), corpus, copilot_claude)
+    health_body = _health_body(_artifact_versions(base / "artifacts"), corpus, copilot_claude, claude is not None)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
