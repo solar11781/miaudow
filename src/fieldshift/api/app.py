@@ -37,6 +37,7 @@ from fieldshift.api.accounts import (
     GoogleUnreachableError,
     NotSignedInError,
     SavedAnswers,
+    SavedSetsFullError,
     SignInConfig,
     accounts_from,
 )
@@ -163,12 +164,14 @@ def _bearer(request: Request) -> str:
 
 
 async def _account_work(request: Request, work: Callable[..., T], *args: object) -> T:
-    """`work` on the account worker threads, never the farmer routes' ones: 401 without a valid Google token, 503
-    when Google's keys cannot be fetched or the database does not answer."""
+    """`work` on the account worker threads, never the farmer routes' ones: 401 without a valid Google token, 409 when
+    the saved sets are full, 503 when Google's keys cannot be fetched or the database does not answer."""
     try:
         return await anyio.to_thread.run_sync(work, *args, limiter=request.app.state.account_limiter)
     except NotSignedInError as err:
         raise _not_signed_in() from err
+    except SavedSetsFullError as err:
+        raise HTTPException(409, "saved sets are full") from err  # D-165: the page shows "full, delete one first"
     except GoogleUnreachableError as err:
         raise HTTPException(503, "google sign-in check is not reachable") from err
     except DatabaseDownError as err:
