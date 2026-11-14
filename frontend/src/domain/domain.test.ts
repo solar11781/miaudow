@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { hazards, model, YEARS } from '../data';
-import { bareMonths, dateRange, dayOfYear, livingDays, periodPieces, segments, spanSegments } from './calendar';
+import { bareMonths, dateRange, dayOfYear, periodPieces, segments, spanSegments } from './calendar';
 import { cropShare, cropShareRange, RULES, soilReading, yearShare } from './hazards';
 import { compareRequest, parseFarmerState, serializeFarmerState, toggleYear, MAX_YEARS } from './farmerState';
 import { planById, planProfitMillion, PLANS } from './plans';
@@ -25,8 +25,7 @@ describe('calendar', () => {
     expect(Math.max(...segments(plan('cc5')).map((s) => s.lane))).toBe(1); // black bean to 25/8, sweet potato from 15/8
     expect(Math.max(...segments(plan('cc4')).map((s) => s.lane))).toBe(0);
   });
-  it('counts living days and bare months from the trial dates', () => {
-    expect(livingDays(plan('cc4'))).toBe(79 + 72 + 89);
+  it('counts bare months from the trial dates', () => {
     expect(bareMonths(plan('cc4'))).toEqual([5]);
     expect(bareMonths(plan('p03'))).toEqual([]);
   });

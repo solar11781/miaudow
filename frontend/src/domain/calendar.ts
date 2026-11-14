@@ -32,13 +32,6 @@ export function segments(plan: Plan): Segment[] {
   });
 }
 
-/** Days with a living crop out of 365: the union of field days, both ends included. */
-export function livingDays(plan: Plan): number {
-  const days = new Set<number>();
-  for (const c of plan.crops) for (let d = dayOfYear(c.sow); d <= dayOfYear(c.harvest); d++) days.add(d);
-  return days.size;
-}
-
 /** Calendar months (1..12) without any field day. */
 export function bareMonths(plan: Plan): number[] {
   if (!plan.crops.length) return [];
