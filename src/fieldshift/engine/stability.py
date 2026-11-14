@@ -27,7 +27,7 @@ from fieldshift.engine.schemas import (
 from fieldshift.engine.values import ENGINE_ID, percent, percent_value
 
 RICE = "rice"  # crop id of rules/crops.yaml and `crop` of risk_table.json rows (05-DATA-CONTRACTS §5, §6)
-RISK_UNITS: dict[Province, str] = {"nghe_an": "Nghe An"}  # the province's `unit_id` in artifacts/risk_table.json
+RISK_UNITS: dict[Province, str] = {"nghe_an": "Nghe An"}  # risk_table.json `unit_id`: province_nso until the crosswalk (05 §1)
 
 
 @dataclass(frozen=True)
