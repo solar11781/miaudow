@@ -82,6 +82,14 @@ def test_method_answers(client: TestClient) -> None:
     MethodResponse.model_validate(r.json())
 
 
+def test_the_grid_figure_is_served_as_svg(client: TestClient) -> None:
+    # UI-UX-SPEC §11b item 4: the image artifacts/figures/nghe_an_grid.svg served by the backend (D-135)
+    r = client.get("/api/figures/nghe_an_grid.svg")
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "image/svg+xml"
+    assert r.content == (REPO / "artifacts" / "figures" / "nghe_an_grid.svg").read_bytes()
+
+
 def test_health_lists_each_artifact_with_version_and_time(client: TestClient) -> None:
     r = client.get("/api/health")
     assert r.status_code == 200
@@ -270,6 +278,7 @@ def test_endpoints_read_no_file_after_startup(tmp_path: Path) -> None:
     assert c.post("/api/compare", json=BODY).status_code == 200
     assert c.get("/api/method").status_code == 200
     assert c.get("/api/health").status_code == 200
+    assert c.get("/api/figures/nghe_an_grid.svg").status_code == 200
 
 
 def test_an_artifact_without_schema_version_stops_the_start_naming_the_file(tmp_path: Path) -> None:
@@ -284,6 +293,13 @@ def test_a_missing_artifact_stops_the_start_naming_the_file(tmp_path: Path) -> N
     root = copy_root(tmp_path)
     (root / "artifacts" / "hazard_labels.json").unlink()
     with pytest.raises(FileNotFoundError, match=r"hazard_labels\.json"):
+        create_app(root=root)
+
+
+def test_a_missing_figure_stops_the_start_naming_the_file(tmp_path: Path) -> None:
+    root = copy_root(tmp_path)
+    (root / "artifacts" / "figures" / "nghe_an_grid.svg").unlink()
+    with pytest.raises(FileNotFoundError, match=r"nghe_an_grid\.svg"):
         create_app(root=root)
 
 

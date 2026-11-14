@@ -1,6 +1,7 @@
 """FastAPI service (D-25, D-76, D-80; UI-UX-SPEC §11; 04-TECH-DESIGN §3). Reads precomputed artifacts only (NFR-01).
 
-It serves GET /api/past-years, POST /api/compare, GET /api/method and GET /api/health. The rules files and artifacts
+It serves GET /api/past-years, POST /api/compare, GET /api/method, GET /api/health and the method page's grid figure
+GET /api/figures/nghe_an_grid.svg (UI-UX-SPEC §11b item 4). The rules files and artifacts
 are read once when the app is created, so a broken or missing file stops the start instead of failing a farmer's
 request, and no request reads a file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
 generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
@@ -106,6 +107,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     health_body = _json(_artifact_versions(base / "artifacts"))
     past_body = {province: _json(past_years(province, base)) for province in get_args(Province)}
     method_body = _json(method(base))
+    grid_figure = (base / "artifacts" / "figures" / "nghe_an_grid.svg").read_bytes()
     compare_data = load_compare_data(base)
     every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
     for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
@@ -134,6 +136,10 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     @app.get("/api/method")
     def method_route() -> Response:
         return _respond(method_body)
+
+    @app.get("/api/figures/nghe_an_grid.svg")
+    def grid_figure_route() -> Response:
+        return Response(grid_figure, media_type="image/svg+xml")
 
     if (frontend / "index.html").exists():
         index = frontend / "index.html"
