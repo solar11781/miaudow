@@ -29,6 +29,20 @@ DROUGHT_DEFICIT = 0.5  # Art. 48.1 "thiếu hụt tổng lượng mưa tháng tr
 DROUGHT_MONTHS = 2  # D-58 second reading: any 2 drought months in the season
 CLIM_YEARS = (1991, 2020)  # "trung bình nhiều năm": NCHMF rainfall TBNN period 1991-2020 (R-K15, D-118; WMO R-A15)
 RULES = ("heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold")
+# Art. 53 level 1 or higher in "vùng núi, trung du Bắc Bộ": (lowest, lowest included, highest, highest included, days)
+MOUNTAIN_COLD_BANDS = (
+    (8.0, False, 13.0, True, 11),  # 53.1 a "từ trên 8°c đến 13°c, ... kéo dài trên 10 ngày"
+    (4.0, False, 8.0, True, 6),  # 53.1 b "từ trên 4°c đến 8°c, kéo dài từ trên 5 ngày"
+    (0.0, True, 4.0, True, 3),  # 53.1 c "từ 0°c đến 4°c, kéo dài từ 3 ngày"
+    (-np.inf, False, 0.0, False, 3),  # 53.2 đ "dưới 0°c, kéo dài từ 3 ngày"
+    (-np.inf, False, 4.0, True, 11),  # 53.3 b "từ 4°c trở xuống, kéo dài trên 10 ngày"
+)
+# Art. 53 regions per province (team 2026-11-14): the NSO calendar regions of the north, and for the central coast the
+# QĐ 18/2021 Phụ lục II headings "Khu vực Bắc Trung Bộ" and "Khu vực Trung Trung Bộ"; Art. 53 has no wording for Nam
+# Trung Bộ, Tây Nguyên or Nam Bộ. "vùng núi, trung du Bắc Bộ" = NSO "Northern midlands and mountain areas" (our reading)
+COLD_MOUNTAIN_REGIONS = {"northern_mountains"}
+COLD_PLAINS_REGIONS = {"red_river_delta", "north_central"}  # north_central = Thanh Hoa .. Thua Thien-Hue (D-38)
+COLD_PLAINS_CENTRAL_COAST = {"Da Nang", "Quang Nam", "Quang Ngai"}  # Phụ lục II "Khu vực Trung Trung Bộ"
 
 
 def longest_run(mask: np.ndarray | pd.Series) -> int:
@@ -58,6 +72,25 @@ def cold(tmean: pd.Series) -> bool:
     cold spell that touches the other band."""
     band_a = (tmean > SEVERE_COLD_C) & (tmean <= COLD_C)
     return longest_run(band_a) >= COLD_DAYS or longest_run(tmean <= SEVERE_COLD_C) >= SEVERE_COLD_DAYS
+
+
+def cold_mountains(tmean: pd.Series) -> bool:
+    """Art. 53 wording for "vùng núi, trung du Bắc Bộ", level 1 or higher; a spell is a run inside one band (D-120)."""
+    for lo, lo_in, hi, hi_in, days in MOUNTAIN_COLD_BANDS:
+        above = tmean >= lo if lo_in else tmean > lo
+        below = tmean <= hi if hi_in else tmean < hi
+        if longest_run(above & below) >= days:
+            return True
+    return False
+
+
+def cold_rule_of(province: str, calendar_region: str) -> Callable[[pd.Series], bool] | None:
+    """The Art. 53 cold wording of a province's region: plains, mountains, or None where Art. 53 names no rule."""
+    if calendar_region in COLD_MOUNTAIN_REGIONS:
+        return cold_mountains
+    if calendar_region in COLD_PLAINS_REGIONS or province in COLD_PLAINS_CENTRAL_COAST:
+        return cold
+    return None
 
 
 def monthly_climatology(rain: pd.Series) -> pd.Series:
@@ -142,18 +175,22 @@ def farmland_share(met: dict, weights: dict) -> float:
     return float(sum(w for c, w in weights.items() if met[c]))
 
 
-def risk_level_shares(cell_frames: dict, weights: dict, start: date, end: date) -> dict[str, float]:
+def risk_level_shares(
+    cell_frames: dict, weights: dict, start: date, end: date, cold_rule: Callable[[pd.Series], bool] | None
+) -> dict[str, float]:
     """Farmland share of cells meeting the heavy-rain, heat and cold rules over [start, end] (sensitivity run c).
 
-    The same risk-level rules as the displayed labels (03-ML-SPEC section 5a), over one NSO season window; the drought
+    The same risk-level rules as the displayed labels (03-ML-SPEC section 5a), over one NSO season window, with the cold
+    rule of the province's region (None: Art. 53 names none, so no farmland meets it); the drought
     readings stay the model's per-fold features, because their normal must come from the training years (D-66).
     """
     out = {"risk_heavy_rain": 0.0, "risk_heat": 0.0, "risk_cold": 0.0}
     for cell, w in weights.items():
-        win = cell_frames[cell].loc[pd.Timestamp(start) : pd.Timestamp(end), ["PRECTOTCORR", "T2M_MAX", "T2M"]]
+        days = pd.date_range(start, end, freq="D")
+        win = cell_frames[cell].reindex(days)[["PRECTOTCORR", "T2M_MAX", "T2M"]]
         if win.isna().any().any():
             raise ValueError(f"weather missing in cell {cell} between {start} and {end}")
         out["risk_heavy_rain"] += w * heavy_rain(win["PRECTOTCORR"])
         out["risk_heat"] += w * heat(win["T2M_MAX"])
-        out["risk_cold"] += w * cold(win["T2M"])
+        out["risk_cold"] += w * (cold_rule is not None and cold_rule(win["T2M"]))
     return out

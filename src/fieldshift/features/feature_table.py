@@ -14,7 +14,7 @@ from datetime import date
 import pandas as pd
 
 from fieldshift.features.climate import official_counts, province_daily_weather, season_features
-from fieldshift.features.hazards import risk_level_shares
+from fieldshift.features.hazards import cold_rule_of, risk_level_shares
 from fieldshift.features.season_windows import season_window
 
 RICE_SEASONS = ("spring", "autumn", "winter")
@@ -119,7 +119,8 @@ def build_risk_level_features(
     labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict
 ) -> pd.DataFrame:
     """Per rice row, the farmland shares meeting the heavy-rain, heat and cold risk-level rules over its season window
-    (sensitivity run c of 03-ML-SPEC section 7; team 2026-11-14). Rows without a window (D-37) are left out."""
+    (sensitivity run c of 03-ML-SPEC section 7; team 2026-11-14), the cold rule in the wording of the province's Art. 53
+    region. Rows without a window (D-37) are left out."""
     w = weights[weights["method"].isin(WEIGHT_METHODS)]
     rows = []
     lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
@@ -130,6 +131,7 @@ def build_risk_level_features(
             continue
         g = w[w["province_nso"] == rec.province_nso]
         wts = {(la, lo): wt for la, lo, wt in zip(g["lat"], g["lon"], g["farmland_weight"], strict=True)}
-        shares = risk_level_shares(cell_frames, wts, start, end)
+        cold_rule = cold_rule_of(rec.province_nso, regions[rec.province_nso])
+        shares = risk_level_shares(cell_frames, wts, start, end, cold_rule)
         rows.append({"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, **shares})
     return pd.DataFrame(rows)
