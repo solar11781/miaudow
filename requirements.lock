@@ -6,3 +6,4 @@ numpy==2.5.3
 pandas==3.0.5
 PyYAML==6.0.3
 shapely==2.2.0
+anthropic==2.8.0  # D-159: the FR-15 "explain simply" call to the Claude API (Apache-2.0 since 2.0.0)
