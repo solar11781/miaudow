@@ -39,7 +39,7 @@ def test_metric_row_scores_the_model_against_each_reference():
     assert row["r2_oos"] == pytest.approx(0.99)
     assert row["skill_vs_b0"]["value"] == pytest.approx(0.75)
     assert row["skill_vs_bnw"]["value"] == pytest.approx(0.75)
-    assert row["skill_vs_b0"]["ci90_low"] <= 0.75 <= row["skill_vs_b0"]["ci90_high"]
+    assert row["skill_vs_b0"]["ci90_low"] - 1e-9 <= 0.75 <= row["skill_vs_b0"]["ci90_high"] + 1e-9  # float sums
     assert row["coverage_80"] == pytest.approx(0.5)
     assert row["n_rows"] == 4
     assert row["n_test_years"] == 2
