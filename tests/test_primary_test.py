@@ -198,3 +198,12 @@ def test_model_rows_keep_the_model_seasons_with_an_anomaly_and_need_a_region():
     assert set(rows["region"]) == {"Region"}
     with pytest.raises(ValueError, match="P"):
         model_rows(table, {})
+
+
+def test_metric_row_can_score_skill_by_mae():
+    # Source: 03-ML-SPEC section 7 sensitivity (b): "skill computed from MAE instead of MSE (1 - MAE_model /
+    # MAE_reference)"; m1 misses by 0.1, the references by 0.2: 1 - 0.1 / 0.2 = 0.5
+    row = metric_row(_pred(), "m1", seed=0, n_boot=200, stat="mae_skill")
+    assert row["skill_vs_b0"]["value"] == pytest.approx(0.5)
+    assert row["skill_vs_bnw"]["value"] == pytest.approx(0.5)
+    assert row["skill_vs_b0"]["ci90_low"] - 1e-9 <= 0.5 <= row["skill_vs_b0"]["ci90_high"] + 1e-9
