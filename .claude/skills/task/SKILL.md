@@ -28,6 +28,8 @@ Structure based on Matt Pocock's `implement` skill (mattpocock/skills, MIT), cha
 
 - Type: one of the commit types in `CLAUDE.md`. Name: `<type>/<short-name>`, lowercase with hyphens.
 - `git fetch origin`, then `git checkout -b <branch> origin/main` (use local `main` if `origin/main` does not exist yet).
+- A task from the queue: add `- in progress: <who>, branch <name>` under the item in the planning repository's queue
+  draft and push it there (replaced by the done line of step 8.6); without the planning repository, tell the team.
 - If the task needs another task branch that is not merged yet, branch from that branch instead and say so in the
   pull request ("based on <branch>; merge that first").
 
@@ -92,8 +94,8 @@ example `chore: switch the gate to normal merges (queue item 0)`.
 2. If `main` moved: `git fetch origin && git merge origin/main` on this branch (never rebase pushed work), run the
    local checks, push, and let CI run again.
 3. Run the `security-review` skill on the branch (inside an Agent subagent, as in step 5), double-checked as in step
-   5 (a fix goes back to 1). A finding that needs a decision
-   about science, rules, numbers or scope: stop and ask (under the autopilot: park it, do not merge).
+   5 (a fix goes back to 1). A finding that needs a decision about science, rules, numbers or scope: stop and ask
+   (under the autopilot: park it, do not merge).
 4. When CI is green, the second passes of spec-review and security-review have no open issue, and no commit came
    after them, post the gate record as a pull request comment, with this exact last line:
    `review-gates: spec-review=pass security-review=pass tests=pass`
