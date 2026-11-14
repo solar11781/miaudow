@@ -65,3 +65,11 @@ def test_a_windows_path_of_a_recorded_file_is_not_recorded_twice(tmp_path):
     added = append_rows(m, [[r"data\raw\a.csv", "s", "A", "t", "u", "2026-11-14", "m", "abc"]])
     assert added == 0
     assert [r["retrieved_on"] for r in _read(m)] == ["2026-11-10"]
+
+
+def test_committed_manifest_has_one_row_per_file_version():
+    # Source: the rule above (one row per path and sha256), applied to the committed data/MANIFEST.csv itself
+    with open("data/MANIFEST.csv", encoding="utf-8", newline="") as f:
+        pairs = [(r["path"], r["sha256"]) for r in csv.DictReader(f)]
+    repeated = sorted({p for p in pairs if pairs.count(p) > 1})
+    assert repeated == []
