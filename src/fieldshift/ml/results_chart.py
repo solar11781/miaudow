@@ -28,8 +28,6 @@ BACKGROUND = "#ffffff"
 TEXT = "#1a1a1a"
 MARK = "#1f4e79"
 ZERO = "#595959"
-# a white outline behind each number label, so the zero and interval lines never cut through it
-HALO = f' paint-order="stroke" stroke="{BACKGROUND}" stroke-width="4" stroke-linejoin="round"'
 
 # layout in px (routine choice, D-102)
 WIDTH = 960
@@ -37,7 +35,11 @@ LABEL_X = 16
 COLUMN_X = 184
 COLUMN_W = 256
 PAD = 12
-LABEL_HALF_W = 64  # about half a "-0.52 [-1.98, -0.05]" label at 12 px, so a label stays inside its column
+# a white box behind each number label, so no line shows between its characters
+CHAR_W = 7.7  # 12 px DejaVu Sans digits advance 7.63 px (0.636 em), the widest common sans-serif (Arial 6.7 px)
+LABEL_PAD = 3  # white margin left and right of the label
+LABEL_HALF_W = (len("-0.52 [-1.98, -0.05]") * CHAR_W + 2 * LABEL_PAD) / 2  # a widest label's box stays in its column
+LABEL_RISE, LABEL_DROP = 12, 4  # box from one font size above the baseline to below the brackets' 2.5 px drop
 ROW_H = 44
 TOP = 76
 
@@ -115,7 +117,13 @@ def _mark(key: tuple[str, str, str], skill: dict, column: int, y: float, scale: 
     parts.append(f'<circle cx="{cx:.1f}" cy="{y + 14:.1f}" r="4.5" fill="{MARK}"/>')
     left = COLUMN_X + column * COLUMN_W + LABEL_HALF_W
     label_x = min(max(cx, left), left + COLUMN_W - 2 * LABEL_HALF_W)
-    parts.append(svg_text(label_x, y + 34, _label(skill), f' font-size="12" text-anchor="middle"{HALO}'))
+    label = _label(skill)
+    box_w = len(label) * CHAR_W + 2 * LABEL_PAD
+    parts.append(
+        f'<rect x="{label_x - box_w / 2:.1f}" y="{y + 34 - LABEL_RISE:.1f}" width="{box_w:.1f}"'
+        f' height="{LABEL_RISE + LABEL_DROP}" fill="{BACKGROUND}"/>'
+    )
+    parts.append(svg_text(label_x, y + 34, label, ' font-size="12" text-anchor="middle"'))
     parts.append("</g>")
     return "".join(parts)
 
@@ -158,19 +166,30 @@ def results_chart_svg(doc: dict) -> str:
         desc.append(text)
         y += 52 + len(rows[season]) * ROW_H + 16
     body.append(svg_text(LABEL_X, y + 12, CAPTION, ' font-size="12"'))
-    height = y + 24
-    return "\n".join(
-        [
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" viewBox="0 0 {WIDTH} {height}"'
-            f' role="img" aria-labelledby="results-chart-title results-chart-desc" font-family="sans-serif"'
-            f' font-size="14" fill="{TEXT}">',
-            f'<title id="results-chart-title">{escape(TITLE)}</title>',
-            f'<desc id="results-chart-desc">{escape(" ".join(desc))}</desc>',
-            f'<rect width="{WIDTH}" height="{height}" fill="{BACKGROUND}"/>',
-            svg_text(LABEL_X, 28, TITLE, ' font-size="18" font-weight="bold"'),
-            svg_text(LABEL_X, 52, LEGEND, ' font-size="12"'),
-            *body,
-            "</svg>",
-            "",
-        ]
-    )
+    return svg_document("results-chart", TITLE, " ".join(desc), [LEGEND], body, y + 24)
+
+
+def svg_header(
+    key: str, title: str, desc: str, size: tuple[float, float], x: float, title_lines: list[str] | None = None
+) -> list[str]:
+    """The opening of a standalone SVG image: role="img" named by its <title> and <desc>, white background, and the
+    title in bold (in the given lines, 24 px apart, when it is wrapped)."""
+    width, height = size
+    return [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}"'
+        f' role="img" aria-labelledby="{key}-title {key}-desc" font-family="sans-serif"'
+        f' font-size="14" fill="{TEXT}">',
+        f'<title id="{key}-title">{escape(title)}</title>',
+        f'<desc id="{key}-desc">{escape(desc)}</desc>',
+        f'<rect width="{width}" height="{height}" fill="{BACKGROUND}"/>',
+        *(
+            svg_text(x, 28 + 24 * i, line, ' font-size="18" font-weight="bold"')
+            for i, line in enumerate(title_lines or [title])
+        ),
+    ]
+
+
+def svg_document(key: str, title: str, desc: str, legend: list[str], body: list[str], height: float) -> str:
+    """A standalone SVG image at the chart width: header, legend lines under the title, then the body."""
+    lines = [svg_text(LABEL_X, 52 + 16 * i, line, ' font-size="12"') for i, line in enumerate(legend)]
+    return "\n".join([*svg_header(key, title, desc, (WIDTH, height), LABEL_X), *lines, *body, "</svg>", ""])

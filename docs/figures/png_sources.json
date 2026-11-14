@@ -1,0 +1,14 @@
+{
+  "rice_anomaly_history.png": {
+    "svg": "docs/figures/rice_anomaly_history.svg",
+    "sha256": "51ebf25a522b93fd08e5033db391e9bffd0b3b27289da6b198eb503cf409a615"
+  },
+  "farmland_rule_shares.png": {
+    "svg": "docs/figures/farmland_rule_shares.svg",
+    "sha256": "7ad529d6ce09a53b78d0ec5f40e88451b86208861353b081ae7fb2a0cdec5b40"
+  },
+  "results_chart.png": {
+    "svg": "artifacts/figures/results_chart.svg",
+    "sha256": "691de278217d9c1e9edbb93ef82fb8f12bdbb1117cc0b8f153434eefa96c566e"
+  }
+}
