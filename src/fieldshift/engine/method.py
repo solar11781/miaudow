@@ -1,7 +1,7 @@
 """GET /api/method content (UI-UX-SPEC §11 MethodResponse, §11b; 05-DATA-CONTRACTS §10).
 
 Test years, freeze commit, metric rows, weather claims and reports from artifacts/metrics.json, gate verdicts from
-artifacts/gates.json (§5b), coverage, explain terms and limitations from rules/method.yaml (§7b), source facts from
+artifacts/gates.json (§5b), coverage, explain terms, datasets not used (D-165) and limitations from rules/method.yaml (§7b), source facts from
 rules/sources.yaml for every id used. Metric numbers stay numbers: the schema types them `number` and the page formats
 them (D-160). `rain_check` is null until the satellite rain check is built (D-135: null = not run).
 """
@@ -32,7 +32,15 @@ def method(root: Path) -> MethodResponse:
         )
     gates = gates_doc.gates
     texts = load_method_texts(root)
-    parts = (*metrics.metrics, *gates, *metrics.weather_claims, *metrics.reports, *texts.coverage, *texts.explain_terms)
+    parts = (
+        *metrics.metrics,
+        *gates,
+        *metrics.weather_claims,
+        *metrics.reports,
+        *texts.coverage,
+        *texts.explain_terms,
+        *texts.datasets_not_used,
+    )
     return MethodResponse(
         test_years=metrics.test_years,
         freeze_commit=metrics.freeze_commit,
@@ -42,6 +50,7 @@ def method(root: Path) -> MethodResponse:
         reports=metrics.reports,
         coverage=texts.coverage,
         explain_terms=texts.explain_terms,
+        datasets_not_used=texts.datasets_not_used,
         limitations=texts.limitations,
         rain_check=None,
         sources=pick_sources(load_sources(root), source_ids_in([item.model_dump() for item in parts])),

@@ -1,5 +1,5 @@
-# Method page content (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3 and 5). Hand-curated and cited. All text is a
-# draft for the copy review. The engine copies `stability_scope` into Stability.scope and `season_labels` into
+# Method page content (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3, 4b and 5). Hand-curated and cited. All text
+# is a draft for the copy review. The engine copies `stability_scope` into Stability.scope and `season_labels` into
 # Season.label (§7b).
 #
 # coverage: the UI-UX-SPEC §11b coverage table, one cell per row and axis (CoverageCell). Row keys name the crops of
@@ -103,6 +103,73 @@ explain_terms:
         the GPCC rain-gauge analysis; it is used only for the rain check on this page. No station data is used.
         Gridded values smooth extremes."
     source_ids: [R-N01, R-W12, R-N05, R-A10]
+
+# datasets_not_used: UI-UX-SPEC §11b item 4b (D-165): the dataset, its official facts and why it is not used, from the
+# planning research/datasets-considered.md (dates from NASA CMR, R-N07) and the soil block of D-57 removed in D-97.
+# Left out until their facts have a REFERENCES row: GEDI (gedi.umd.edu) and ERA5 (Copernicus CDS page).
+datasets_not_used:
+  - dataset: ECOSTRESS
+    reason:
+      vi: "Nhiệt độ và độ phát xạ bề mặt đất, toàn cầu 70 m, số liệu từ ngày 9/7/2018. Không dùng: bắt đầu từ năm 2018,
+        quá ngắn cho các năm đã qua 1995-2024 và cho các năm huấn luyện trước 2016."
+      en: "Land surface temperature and emissivity, global 70 m, data from 9 July 2018. Not used: it starts in 2018, too
+        short for the past years 1995-2024 and for the training years before 2016."
+    source_ids: [R-N07]
+  - dataset: Landsat
+    reason:
+      vi: "Phản xạ bề mặt Level-2 Collection 2 từ ngày 22/8/1982; HLS Landsat 30 m từ ngày 11/4/2013. Không dùng: phản
+        xạ của cây và NDVI là tín hiệu cây trồng trong vụ, sẽ làm lộ kết quả vào đầu vào của mô hình; không con số nào
+        trong ứng dụng cần đến chúng."
+      en: "Level-2 surface reflectance Collection 2 from 22 August 1982; HLS Landsat 30 m from 11 April 2013. Not used:
+        vegetation reflectance and NDVI are in-season crop signals that would leak the outcome into the model inputs;
+        no number in this app needs them."
+    source_ids: [R-N07]
+  - dataset: VIIRS
+    reason:
+      vi: "Chỉ số thực vật VIIRS/NPP 16 ngày, toàn cầu 500 m, từ ngày 17/1/2012. Không dùng: tín hiệu cây trồng trong vụ
+        sẽ làm lộ kết quả vào đầu vào của mô hình; bắt đầu từ năm 2012."
+      en: "VIIRS/NPP vegetation indices, 16-day, global 500 m, from 17 January 2012. Not used: an in-season crop signal
+        would leak the outcome into the model inputs; it starts in 2012."
+    source_ids: [R-N07]
+  - dataset: Sentinel-2 (ESA)
+    reason:
+      vi: "Có trong NASA HLS Sentinel-2 30 m từ ngày 28/11/2015. Không dùng: tín hiệu cây trồng trong vụ sẽ làm lộ kết
+        quả vào đầu vào của mô hình; bắt đầu từ năm 2015."
+      en: "Available as NASA HLS Sentinel-2 30 m from 28 November 2015. Not used: an in-season crop signal would leak the
+        outcome into the model inputs; it starts in 2015."
+    source_ids: [R-N07]
+  - dataset: GLDAS
+    reason:
+      vi: "Mô hình bề mặt đất Noah 0,25 độ: phiên bản 2.0 từ 1/1/1948 đến 31/12/2014, phiên bản 2.1 từ 1/1/2000. Không
+        dùng: đây là một mô hình giống MERRA-2 mà NASA POWER đã cho chúng tôi; mô hình thứ hai không phải là phép kiểm
+        tra bằng số đo, và cần hai phiên bản mới phủ được 1995-2024."
+      en: "Noah land-surface model, 0.25 degree: version 2.0 from 1 January 1948 to 31 December 2014, version 2.1 from 1
+        January 2000. Not used: it is a model like MERRA-2, which NASA POWER already gives us; a second model is not a
+        measured check, and two versions would be needed to cover 1995-2024."
+    source_ids: [R-N07, R-N01]
+  - dataset: GRACE / GRACE-FO
+    reason:
+      vi: "Các khối mascon trên lưới diện tích bằng nhau 3 độ, từ ngày 4/4/2002. Không dùng: một khối 3 độ lớn hơn cả
+        vùng của năm ô lưới NASA POWER ở Nghệ An; bắt đầu từ năm 2002."
+      en: "Mascons on an equal-area 3-degree grid, from 4 April 2002. Not used: one 3-degree mascon is larger than the
+        area of the five NASA POWER cells of Nghệ An; it starts in 2002."
+    source_ids: [R-N07, R-N01]
+  - dataset: FAO GAEZ
+    reason:
+      vi: "Các lớp bản đồ thích nghi nông nghiệp - khí hậu toàn cầu, có trong thẻ Resources của thử thách. Không dùng:
+        các phương án của chúng tôi lấy từ một thử nghiệm đồng ruộng trên đúng loại đất này; một mô hình thích nghi toàn
+        cầu không phải bằng chứng tại chỗ; điều khoản sử dụng chưa được kiểm tra."
+      en: "Global agro-climatic suitability layers, listed on the challenge Resources tab. Not used: our plans come from
+        a field trial on this land type; a global suitability model is not local evidence; its terms of use were not
+        checked."
+    source_ids: [R-H16, R-P02]
+  - dataset: ISRIC SoilGrids
+    reason:
+      vi: "Bản đồ đất toàn cầu 250 m, phiên bản 2.0. Không dùng: đã cân nhắc cho một khối thông tin về đất; khối này bị
+        bỏ vì đơn vị làm ra số liệu khuyên không dùng cho cấp địa phương, cấp ruộng hay cấp dưới quốc gia."
+      en: "Global soil maps, 250 m, version 2.0. Not used: considered for a soil information block, which was removed
+        because the data producer advises against local, farm or subnational use."
+    source_ids: [R-D02, R-K13]
 
 # limitations: one line each (UI-UX-SPEC §11b item 5): 03-ML-SPEC §9 and the spell rule of 03-ML-SPEC §5a.
 limitations:

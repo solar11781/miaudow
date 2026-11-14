@@ -266,6 +266,19 @@
        en: "A province average yield, mostly irrigation-served rice; not the yield of one field."}
   url: "https://pxweb.nso.gov.vn/pxweb/en/"
   nso_credit: true
+- id: R-D02
+  citation:
+    vi: "Poggio, L., de Sousa, L.M. et al. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7: 217-240 (số liệu: ISRIC SoilGrids 250 m v2.0)"
+    en: "Poggio, L., de Sousa, L.M. et al. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7: 217-240 (data: ISRIC SoilGrids 250 m v2.0)"
+  study_type: {vi: "Bản đồ đất toàn cầu (giá trị mô hình)", en: "Global soil maps (model values)"}
+  place_years: {vi: "Toàn cầu; phiên bản 2.0 năm 2021", en: "Global; version 2.0 of 2021"}
+  read_status: "READ (access)"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi chỉ thử truy cập số liệu; không dùng cho con số nào trong ứng dụng.",
+       en: "We only tested access to the data; no number in this app uses it."}
+  url: "https://rest.isric.org/soilgrids/v2.0/"
+  nso_credit: false
 - id: R-E06
   citation: {vi: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786",
              en: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786"}
@@ -324,6 +337,30 @@
     - {vi: "Bản sao trên hethongphapluat.com, không phải bản đăng chính thức.",
        en: "A copy on hethongphapluat.com, not the official publication."}
   url: "https://hethongphapluat.com/nghi-dinh-112-2024-nd-cp-huong-dan-ve-dat-trong-lua/dieu-7"
+  nso_credit: false
+- id: R-H16
+  citation: {vi: "Trang thử thách Field Shift, thẻ Resources (đăng ngày 13/11/2026)",
+             en: "Field Shift challenge page, Resources tab (published 2026-11-13)"}
+  study_type: {vi: "Trang web của cuộc thi NASA Space Apps", en: "NASA Space Apps challenge web page"}
+  place_years: {vi: "Toàn cầu; đăng năm 2026", en: "Global; published 2026"}
+  read_status: "READ (2026-11-13)"
+  full_text_read: true
+  limitations:
+    - {vi: "Danh sách các bộ số liệu gợi ý, không phải kết quả nghiên cứu.",
+       en: "A list of suggested datasets, not study results."}
+  url: "https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/?tab=resources"
+  nso_credit: false
+- id: R-K13
+  citation: {vi: "ISRIC, Câu hỏi thường gặp về SoilGrids (trang 03, 04); Poggio, L. et al. (2021) SOIL 7: 217-240",
+             en: "ISRIC SoilGrids FAQ (pages 03, 04); Poggio, L. et al. (2021) SOIL 7: 217-240"}
+  study_type: {vi: "Hướng dẫn của đơn vị làm ra số liệu", en: "Advice of the data producer"}
+  place_years: {vi: "Toàn cầu; trang web đọc năm 2026", en: "Global; web pages read in 2026"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Lời khuyên chung về cách dùng số liệu, không phải kết quả nghiên cứu.",
+       en: "General advice on using the data, not study results."}
+  url: "https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_03.html"
   nso_credit: false
 - id: R-M01
   citation:
@@ -455,6 +492,18 @@
     - {vi: "Không phải số đo tại ruộng. Chúng tôi đọc thuộc tính của tệp số liệu.",
        en: "Not measured at the field. We read the attributes of the data files."}
   url: "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGM.07/"
+  nso_credit: false
+- id: R-N07
+  citation: {vi: "NASA Common Metadata Repository (CMR), siêu dữ liệu của các bộ số liệu (time_start, title)",
+             en: "NASA Common Metadata Repository (CMR), collection metadata (time_start, title)"}
+  study_type: {vi: "Danh mục siêu dữ liệu của NASA", en: "NASA metadata catalogue"}
+  place_years: {vi: "Toàn cầu; đọc ngày 13/11/2026", en: "Global; read 2026-11-13"}
+  read_status: "READ"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc ngày bắt đầu và tên của từng bộ số liệu.",
+       en: "We read only the start date and title of each dataset."}
+  url: "https://cmr.earthdata.nasa.gov/search/collections.json"
   nso_credit: false
 - id: R-P02
   citation:

@@ -415,6 +415,14 @@ class ExplainTerm(Contract):
     source_ids: list[SourceId]
 
 
+class NotUsedDataset(Contract):
+    """A dataset considered and not used (UI-UX-SPEC §11b item 4b; D-165): its official facts and the reason."""
+
+    dataset: str
+    reason: Text
+    source_ids: list[SourceId] = Field(min_length=1)
+
+
 class RainMonth(Contract):
     month: str
     imerg: Value
@@ -438,6 +446,7 @@ class MethodResponse(Contract):
     reports: list[ReportItem]
     coverage: list[CoverageCell]
     explain_terms: list[ExplainTerm]
+    datasets_not_used: list[NotUsedDataset]
     limitations: list[Text]
     rain_check: RainCheck | None
     sources: dict[SourceId, SourceFacts]

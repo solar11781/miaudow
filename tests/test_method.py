@@ -16,6 +16,7 @@ import pytest
 import yaml
 
 from fieldshift.engine.method import method
+from fieldshift.engine.rules import load_sources
 from fieldshift.engine.schemas import EXPLAIN_KEYS, source_ids_in
 from source_trace import check_response
 
@@ -103,6 +104,36 @@ def test_limitations_are_non_empty_lines_in_both_languages(resp: dict) -> None:
         assert set(line) == {"vi", "en"}
         assert line["vi"].strip()
         assert line["en"].strip()
+
+
+def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_sources(resp: dict) -> None:
+    assert resp["datasets_not_used"] == method_yaml()["datasets_not_used"]
+    # planning research/datasets-considered.md rows with a REFERENCES source for their facts, and SoilGrids (D-97)
+    assert [d["dataset"] for d in resp["datasets_not_used"]] == [
+        "ECOSTRESS",
+        "Landsat",
+        "VIIRS",
+        "Sentinel-2 (ESA)",
+        "GLDAS",
+        "GRACE / GRACE-FO",
+        "FAO GAEZ",
+        "ISRIC SoilGrids",
+    ]
+    register = load_sources(REPO)
+    for entry in resp["datasets_not_used"]:
+        assert entry["reason"]["vi"].strip()
+        assert entry["reason"]["en"].strip()
+        assert entry["source_ids"]
+        assert set(entry["source_ids"]) <= register.keys(), entry["dataset"]
+
+
+def test_a_dataset_not_used_without_a_source_fails_naming_the_file(root: Path) -> None:
+    path = root / "rules" / "method.yaml"
+    texts = yaml.safe_load(path.read_text(encoding="utf-8"))
+    texts["datasets_not_used"][0]["source_ids"] = []
+    path.write_text(yaml.safe_dump(texts, allow_unicode=True), encoding="utf-8")
+    with pytest.raises(ValueError, match=r"method\.yaml"):
+        method(root)
 
 
 def test_rain_check_is_not_run(resp: dict) -> None:
