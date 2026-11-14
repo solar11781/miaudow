@@ -466,3 +466,14 @@ def test_compare_request_takes_years_only_as_json_integers(years: str) -> None:
     body = f'{{"province": "nghe_an", "land": "dry", "years": {years}, "priority": "income"}}'
     with pytest.raises(ValidationError):
         s.CompareRequest.model_validate_json(body)
+
+
+@pytest.mark.parametrize("status", ["not_shown", "not_modeled"])
+def test_no_prediction_unless_the_model_is_shown(status: str) -> None:
+    # §11 StabilityYear: oos_prediction "only if model_status is 'shown'" (D-82, D-83)
+    block = stability([None], None, [], 0)
+    block["model_status"] = status
+    block["per_year"][0]["oos_prediction"] = val()
+    with pytest.raises(ValidationError):
+        s.Stability.model_validate(block)
+    s.Stability.model_validate({**block, "model_status": "shown"})

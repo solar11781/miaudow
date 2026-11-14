@@ -135,3 +135,19 @@ def test_a_bad_entry_fails_naming_the_file(root: Path, name: str, load: Callable
     )
     with pytest.raises(ValueError, match=name.replace(".", r"\.")):
         load(root)
+
+
+@pytest.mark.parametrize(
+    ("path", "text", "load"),
+    [
+        ("artifacts/hazard_labels.json", "{rows", hazard_rows),
+        ("rules/conditions.yaml", "- [unclosed", load_rules),
+        ("rules/sources.yaml", "- {unclosed", load_sources),
+    ],
+)
+def test_a_file_with_broken_syntax_fails_naming_the_file(
+    root: Path, path: str, text: str, load: Callable[[Path], object]
+) -> None:
+    (root / path).write_text(text, encoding="utf-8")
+    with pytest.raises(ValueError, match=path.split("/")[1].replace(".", r"\.")):
+        load(root)
