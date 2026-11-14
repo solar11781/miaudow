@@ -1,7 +1,8 @@
 # Backend service for Railway (D-25, D-76). Railway builds this Dockerfile when it finds one (docs.railway.com,
 # config-as-code, read 2026-11-12). Region (Singapore, asia-southeast1-eqsg3a, D-92) and plan are set in the service
 # settings. The server listens on $PORT when it is set, otherwise on 8000; point the Railway domain at that port.
-FROM python:3.13-slim
+# Exact patch version and digest of python:3.13-slim (Docker Hub tag list, read 2026-11-14), so every build gets the same image.
+FROM python:3.13.18-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90
 WORKDIR /app
 COPY pyproject.toml requirements.lock ./
 COPY src ./src
