@@ -23,10 +23,7 @@ test('T4 T14 your price and costs: worked out in the browser, never in a request
     sent.push([r.method(), r.url(), r.postData() ?? '', JSON.stringify(r.headers())].join(' '));
   });
   const storage = () =>
-    page.evaluate(() => ({
-      counts: [localStorage.length, sessionStorage.length, document.cookie.length],
-      text: JSON.stringify([{ ...localStorage }, { ...sessionStorage }, document.cookie]),
-    }));
+    page.evaluate(() => ({ counts: [localStorage.length, sessionStorage.length, document.cookie.length] }));
   await page.goto(PLANS_URL);
   const card = await typeNumbers(page);
   // 3.91 t/ha (P-02 Table 12, peanut) x 31,357 đ/kg = 122,605.87 thousand đ/ha; minus 24,689 = 97,916.87
@@ -49,10 +46,8 @@ test('T4 T14 your price and costs: worked out in the browser, never in a request
   await expect(page).toHaveURL(new RegExp(`#.*yp[.]cc1_spring_peanut=${PRICE}`));
   await page.reload();
   await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('122.606 nghìn đồng/ha');
-  // on a reload the router's scroll restoration keeps scroll positions under random keys; never the typed numbers
-  const after = (await storage()).text;
-  expect(after).not.toContain(PRICE);
-  expect(after).not.toContain(COST);
+  // and still nothing after the reload (PR #68 removed the router's scroll restoration, which wrote sessionStorage)
+  expect((await storage()).counts).toEqual([0, 0, 0]);
 
   // H14: no request (URL, body or headers such as Referer) carried them
   expect(sent.length).toBeGreaterThan(0);
