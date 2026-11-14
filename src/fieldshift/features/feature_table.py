@@ -18,6 +18,7 @@ from fieldshift.features.hazards import risk_level_shares
 from fieldshift.features.season_windows import season_window
 
 RICE_SEASONS = ("spring", "autumn", "winter")
+WEIGHT_METHODS = ("farmland_weighted", "centroid")  # D-106 fixed mask; E-008 centroid cells (one table per run)
 
 
 def _window(season: str, region: str, year: int, shift: tuple[int, int]) -> tuple[date, date]:
@@ -33,7 +34,7 @@ def build_feature_table(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     # D-106: one fixed farmland mask for all years (cell_weights.csv, 05-DATA-CONTRACTS §3)
     # iter(): a GroupBy has a non-callable .keys attribute, so dict() alone would treat it as a mapping
-    w_index = dict(iter(weights[weights["method"] == "farmland_weighted"].groupby("province_nso")))
+    w_index = dict(iter(weights[weights["method"].isin(WEIGHT_METHODS)].groupby("province_nso")))
     daily_cache: dict = {}
 
     def daily(province: str) -> pd.DataFrame:
@@ -84,7 +85,7 @@ def build_cell_month_rain(
     The ML drought months compare these totals with the same month's mean over the training years of each fold, so
     the comparison itself happens in the fold (D-66); rows without a window (D-37) are left out, as in the table.
     """
-    w = weights[weights["method"] == "farmland_weighted"]
+    w = weights[weights["method"].isin(WEIGHT_METHODS)]
     rows = []
     lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
     for rec in lab.itertuples(index=False):
@@ -107,7 +108,7 @@ def build_risk_level_features(
 ) -> pd.DataFrame:
     """Per rice row, the farmland shares meeting the heavy-rain, heat and cold risk-level rules over its season window
     (sensitivity run c of 03-ML-SPEC section 7; team 2026-11-14). Rows without a window (D-37) are left out."""
-    w = weights[weights["method"] == "farmland_weighted"]
+    w = weights[weights["method"].isin(WEIGHT_METHODS)]
     rows = []
     lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
     for rec in lab.itertuples(index=False):
