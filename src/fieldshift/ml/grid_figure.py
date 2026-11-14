@@ -20,7 +20,7 @@ from shapely.geometry import Polygon, box
 from shapely.geometry.base import BaseGeometry
 
 from fieldshift.features.farmland_weights import POWER_DLAT, POWER_DLON
-from fieldshift.ml.results_chart import BACKGROUND, HALO, MARK, TEXT, ZERO, svg_text
+from fieldshift.ml.results_chart import BACKGROUND, MARK, TEXT, ZERO, svg_text
 
 PROVINCE = "Nghe An"  # NSO unit name in cell_weights.csv (05-DATA-CONTRACTS section 3)
 METHOD = "farmland_weighted"  # the main weights, not the E-008 centroid rows (05-DATA-CONTRACTS section 3)
@@ -29,12 +29,13 @@ WEIGHT_SUM_TOLERANCE = 1e-9  # the weights of a unit sum to 1 (05-DATA-CONTRACTS
 # English, like the results chart (slides and method page); the page adds method.gridAlt and method.gridCaption
 TITLE = "NASA POWER weather cells over Nghệ An, shaded by farmland weight"
 LEGEND_WEIGHTED = "Farmland weight, printed in the cell; darker is larger"
-LEGEND_ZERO = "Cell that overlaps Nghệ An with farmland weight 0"
+LEGEND_ZERO = "Cell with Nghệ An land pixels but farmland weight 0"
 LEGEND_BOUNDARY = "Nghệ An boundary"
 CAPTION = (
     f"Sources: NASA POWER cells of {POWER_DLAT} x {POWER_DLON} degrees (R-N01). Farmland weights from NASA MODIS land"
     " cover MCD12C1 with the fixed farmland mask (R-N02; D-106, D-146), data/processed/cell_weights.csv. Boundary:"
-    " geoBoundaries gbOpen VNM ADM1 (R-D04). Drawn as plain longitude and latitude, longitude scaled by cos(latitude)"
+    " geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020), CC BY 4.0 (R-D04). Drawn as plain longitude and latitude,"
+    " longitude scaled by cos(latitude)"
     " at the middle latitude; no base map. Weights rounded to 2 decimals, so the printed values may not sum to"
     " exactly 1."
 )
@@ -45,7 +46,8 @@ SIDE = 16
 DEGREE = 150  # px per degree of latitude
 TITLE_CHARS = 38
 CAPTION_CHARS = 56
-SHADE_MAX = 0.85  # fill opacity of the largest weight; the label halo keeps the number readable on it
+SHADE_MAX = 0.85  # fill opacity of the largest weight; the white label box keeps the number readable on it
+LABEL_BOX = (44, 21)  # px around a 17 px bold "0.47"
 
 
 def _weights(table: pd.DataFrame) -> dict[tuple[float, float], float]:
@@ -122,12 +124,22 @@ def grid_figure_svg(table: pd.DataFrame, zero_table: pd.DataFrame, boundary: Bas
             return (
                 f'<g data-cell="{_cell_id(lat, lon)}">{rect} fill="none" stroke="{ZERO}" stroke-dasharray="5 4"/></g>'
             )
-        cx, cy = xy(lon, lat)
         shade = SHADE_MAX * weight / max(weights.values())
-        label = svg_text(cx, cy + 6, f"{weight:.2f}", f' font-size="17" font-weight="bold" text-anchor="middle"{HALO}')
         return (
-            f'<g data-cell="{_cell_id(lat, lon)}" data-weight="{weight!r}">{rect} fill="{MARK}"'
-            f' fill-opacity="{shade:.3f}" stroke="{ZERO}"/>{label}</g>'
+            f'<g data-cell="{_cell_id(lat, lon)}">{rect} fill="{MARK}" fill-opacity="{shade:.3f}" stroke="{ZERO}"/></g>'
+        )
+
+    def label(lat: float, lon: float) -> str:
+        """The printed weight on a white box, drawn after the boundary so the line never crosses it."""
+        cx, cy = xy(lon, lat)
+        w, h = LABEL_BOX
+        return (
+            f'<g data-label="{_cell_id(lat, lon)}"><rect x="{cx - w / 2:.1f}" y="{cy - h / 2:.1f}" width="{w}"'
+            f' height="{h}" rx="3" fill="{BACKGROUND}"/>'
+            + svg_text(
+                cx, cy + 6, f"{weights[lat, lon]:.2f}", ' font-size="17" font-weight="bold" text-anchor="middle"'
+            )
+            + "</g>"
         )
 
     path = " ".join(
@@ -141,8 +153,8 @@ def grid_figure_svg(table: pd.DataFrame, zero_table: pd.DataFrame, boundary: Bas
     zero = [f"{lat} N, {lon} E;" for lat, lon in cells if (lat, lon) not in weights]
     desc = " ".join(
         [
-            f"The {LEGEND_BOUNDARY} drawn over the {len(cells)} NASA POWER cells of {POWER_DLAT} by {POWER_DLON}"
-            " degrees that it overlaps. Farmland weight of each cell, by its centre:",
+            f"The {LEGEND_BOUNDARY} drawn over the {len(cells)} NASA POWER cells that hold the province's MODIS land"
+            " pixels. Farmland weight of each cell, by its centre:",
             *weighted,
             "cells with farmland weight 0:",
             *zero,
@@ -161,6 +173,7 @@ def grid_figure_svg(table: pd.DataFrame, zero_table: pd.DataFrame, boundary: Bas
             # outlines first, so the solid edges of the weighted cells are drawn over the shared dashed edges
             *(cell(*c) for c in sorted(cells, key=lambda c: c in weights)),
             f'<path d="{path}" fill="none" stroke="{TEXT}" stroke-width="2" stroke-linejoin="round"/>',
+            *(label(*c) for c in cells if c in weights),
             *_legend(legend_y),
             *(svg_text(SIDE, legend_y + 72 + 17 * i, t, ' font-size="12"') for i, t in enumerate(caption_lines)),
             "</svg>",

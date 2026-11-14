@@ -11,8 +11,8 @@ import pandas as pd
 from fieldshift.data.boundaries import province_geometries
 from fieldshift.ml.grid_figure import PROVINCE, grid_figure_svg
 
-table = pd.read_csv("data/processed/cell_weights.csv")
-zero_table = pd.read_csv("data/processed/cell_weights_zero.csv")
+table = pd.read_csv("data/processed/cell_weights.csv", float_precision="round_trip")
+zero_table = pd.read_csv("data/processed/cell_weights_zero.csv", float_precision="round_trip")
 boundary = province_geometries(
     "data/raw/boundaries/geoBoundaries-VNM-ADM1_simplified.geojson", "data/reference/admin_units.csv"
 )[PROVINCE]
