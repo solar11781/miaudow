@@ -567,7 +567,29 @@ OWN_FIELD = [
     ("vi", "ruộng nhà mình cần bao nhiêu nước"),
     ("en", "Is my farm too dry for rice?"),
     ("en", "What can my plot earn?"),
+    ("vi", "Nhà tôi trồng lạc thì lãi bao nhiêu?"),  # the second review's two questions
+    ("en", "If I plant peanut, how much will I earn?"),
+    ("vi", "Nha toi trong lac thi lai bao nhieu?"),
+    ("vi", "Em trồng lúa có lãi không?"),
+    ("en", "Will I get more if I grow maize?"),
 ]
+
+
+@pytest.mark.parametrize(
+    "question",
+    [  # honest questions about the data still reach retrieval
+        "Cây lạc cần tưới bao nhiêu nước?",
+        "Năm 2010 ở Nghệ An có hạn không?",
+        "How much water does peanut need?",
+        "Lúa cần bao nhiêu nước tưới?",
+        "Ruộng cuối kênh nên trồng gì?",
+        "Thử nghiệm P-02 được làm thế nào?",
+        "What is the NASA POWER data?",
+    ],
+)
+def test_an_honest_question_is_not_an_own_field_question(question: str) -> None:
+    req = copilot.CopilotRequest(question=question, mode="simple", lang="vi")
+    assert not copilot.fixed_only(req)
 
 
 @pytest.mark.parametrize(("lang", "question"), OWN_FIELD)

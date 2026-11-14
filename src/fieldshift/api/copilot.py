@@ -599,7 +599,10 @@ PLAN_WORDS = (
 )  # fmt: skip
 YEAR = re.compile(r"\b(19\d\d|20\d\d)\b")  # member B's YEAR_RE
 # CLAUDE.md: regional estimates only, never the asker's own field (last pass of PR #55), matched without accents
-OWN_FIELD = re.compile(r"\b(ruong (nha |cua )?(toi|minh|em|tao)|my (own )?(field|farm|plot|land|paddy))s?\b")
+OWN_FIELD = re.compile(
+    r"\b(ruong (nha |cua )?(toi|minh|em|tao)|nha (toi|minh|em)|(toi|em|minh) trong|"
+    r"my (own )?(field|farm|plot|land|paddy)s?|if i|will i|i (plant|grow|earn))\b"
+)
 
 
 def intent(question: str) -> str:
