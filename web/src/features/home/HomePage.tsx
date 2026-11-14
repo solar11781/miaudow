@@ -251,7 +251,7 @@ function Observatory() {
           <div><dt className="num">{CLIMATE_YEARS.length}</dt><dd>{t.home.obsYears}</dd></div>
           <div><dt className="num">{f.n(days)}</dt><dd>{t.home.obsDays}</dd></div>
         </dl>
-        <ButtonLink to="/khoa-hoc" size="lg" icon="layers">{t.home.obsCta}</ButtonLink>
+        <ButtonLink to="/dai-quan-sat" size="lg" icon="globe">{t.home.obsCta}</ButtonLink>
         <p className={s.obsCredit}>{pick(media('lam-river-vinh-ben-thuy').caption)} · {pick(media('lam-river-vinh-ben-thuy').credit ?? { vi: '', en: '' })}</p>
       </div>
     </section>

@@ -10,6 +10,7 @@ import { YearBars } from '../charts/YearBars';
 import { RiceHistoryChart } from '../charts/RiceHistoryChart';
 import { SkillChart, type SkillRow } from '../charts/SkillChart';
 import { SourceValue } from '../provenance/SourceValue';
+import { ClimateMlSection } from './ClimateMl';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { RainStrip } from '../charts/RainStrip';
@@ -48,6 +49,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
           <p className="eyebrow">{t.science.eyebrow}</p>
           <h1 className={`display ${s.pageTitle}`}>{t.science.title}</h1>
           <p className="lead">{t.science.lead}</p>
+          <Link to={`/dai-quan-sat?canh=analysis&nam=${year}`} className={s.globeLink}><Icon name="globe" size={20} />{t.science.globeCta}<Icon name="arrowRight" size={18} /></Link>
         </header>
 
         <div className={s.rules} role="radiogroup" aria-label={t.science.rule}>
@@ -292,6 +294,7 @@ export function SciencePage() {
     <main id="main">
       <GridSection year={year} setYear={setYear} />
       <ClimateSection year={year} setYear={setYear} />
+      <ClimateMlSection year={year} setYear={setYear} />
       <RiceSection />
       <SkillSection />
     </main>

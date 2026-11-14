@@ -8,6 +8,7 @@ import { KindBadge } from '../provenance/KindBadge';
 import { usePick, useT } from '../../app/settings';
 import { CONFLICTS, STATUSES, TOPICS, useClaims, type Claim, type Status, type Topic } from './claims';
 import { Datasets } from './Datasets';
+import { Quality } from './Quality';
 import s from './evidence.module.css';
 
 export function StatusTag({ status }: { status: Status }) {
@@ -118,6 +119,8 @@ export function EvidencePage() {
       </section>
 
       <Datasets />
+
+      <Quality />
 
       <section className="band surface-paper" aria-labelledby="ev-sources">
         <div className="container stack" style={{ ['--gap' as string]: 'var(--s-6)' }}>

@@ -4,7 +4,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'playwright-report', 'test-results', 'pipeline/**/*.py'] },
+  { ignores: ['dist', 'coverage', 'playwright-report', 'test-results', 'pipeline/**/*.py', 'public/cesium'] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

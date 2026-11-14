@@ -5,3 +5,4 @@ playwright-report
 test-results
 *.local
 review-shots
+public/cesium/
