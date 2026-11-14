@@ -22,6 +22,8 @@ from fieldshift.engine.rules import (
     CropEntry,
     HazardRow,
     PlanEntry,
+    RiskRow,
+    RiskSeason,
     SeasonLabel,
     SoilRow,
     gate_rows,
@@ -46,6 +48,7 @@ from fieldshift.engine.schemas import (
     CropExposure,
     CropSpan,
     ExposureYear,
+    GateRow,
     LandCare,
     LandCheck,
     Legume,
@@ -53,14 +56,17 @@ from fieldshift.engine.schemas import (
     MoneyItem,
     Plan,
     Province,
+    Rule,
     Season,
     SeasonCode,
     SoilWetness,
+    SourceFacts,
     SourceId,
     Text,
     Value,
     WaterFact,
     Why,
+    YearSpan,
     source_ids_in,
 )
 from fieldshift.engine.stability import RICE, RiceHistory, rice_history, stability
@@ -93,41 +99,61 @@ CropRows = dict[tuple[str | None, int], dict[str, Value | None]]  # (crop key, y
 
 
 @dataclass(frozen=True)
-class Inputs:
-    """What every plan card is built from: the rules files and artifacts read once, and the picked years."""
+class CompareData:
+    """Every rules file and artifact compare() reads, loaded once, so the API reads no file per request."""
 
-    crops: dict[str, CropEntry]
     texts: CardTexts
-    years: list[int]
+    gates: list[GateRow]
+    test_years: YearSpan
+    n_cells: int
     shares: CropRows
     soil: dict[tuple[str, int], SoilRow]
-    history: RiceHistory
+    risk_rows: list[RiskRow]
+    risk_seasons: dict[SeasonCode, RiskSeason]
+    crops: dict[str, CropEntry]
+    plans: list[PlanEntry]
+    calendar: CalendarFile
+    rules: list[Rule]
+    sources: dict[SourceId, SourceFacts]
 
 
-def compare(request: CompareRequest, root: Path) -> CompareResponse:
-    texts = load_card_texts(root)
-    gates = gate_rows(root)
-    years = metrics_file(root).test_years
+def load_compare_data(root: Path) -> CompareData:
     crop_rows = [row for row in hazard_rows(root) if row.level == "crop"]
-    history = rice_history(request.province, risk_rows(root), risk_seasons(root), gates, years, texts.stability_scope)
-    inputs = Inputs(load_crops(root), texts, request.years, _shares(crop_rows), _soil(soil_rows(root)), history)
-    built = [_plan(plan, inputs) for plan in load_plans(root)]
+    return CompareData(
+        texts=load_card_texts(root),
+        gates=gate_rows(root),
+        test_years=metrics_file(root).test_years,
+        n_cells=_n_cells(crop_rows),
+        shares=_shares(crop_rows),
+        soil=_soil(soil_rows(root)),
+        risk_rows=risk_rows(root),
+        risk_seasons=risk_seasons(root),
+        crops=load_crops(root),
+        plans=load_plans(root),
+        calendar=load_calendar(root),
+        rules=load_rules(root),
+        sources=load_sources(root),
+    )
+
+
+def compare(request: CompareRequest, data: CompareData) -> CompareResponse:
+    texts, gates, years = data.texts, data.gates, data.test_years
+    history = rice_history(request.province, data.risk_rows, data.risk_seasons, gates, years, texts.stability_scope)
+    built = [_plan(plan, data, request.years, history) for plan in data.plans]
     used = sorted({span.season for p in built for span in p.calendar}, key=SEASON_CODES.index)
-    calendar = load_calendar(root)
-    seasons = [_season(code, texts, calendar, request.province) for code in used]
-    rules = load_rules(root)
+    seasons = [_season(code, texts, data.calendar, request.province) for code in used]
     stability_seasons = {block.season for p in built for block in p.stability or []}
     shown_gates = [g for g in gates if g.season in stability_seasons]
-    ids = source_ids_in([item.model_dump() for item in (*seasons, *rules, *shown_gates, *built)])
+    ids = source_ids_in([item.model_dump() for item in (*seasons, *data.rules, *shown_gates, *built)])
     return CompareResponse(
         request=request,
         test_years=years,
-        n_cells=_n_cells(crop_rows),
+        n_cells=data.n_cells,
         seasons=seasons,
-        rules=rules,
+        rules=data.rules,
         gates=shown_gates,
         plans=built,
-        sources=pick_sources(load_sources(root), ids),
+        sources=pick_sources(data.sources, ids),
     )
 
 
@@ -196,13 +222,12 @@ def _crop(crops: dict[str, CropEntry], crop_id: str) -> CropEntry:
     return crops[crop_id]
 
 
-def _plan(plan: PlanEntry, inputs: Inputs) -> Plan:
+def _plan(plan: PlanEntry, data: CompareData, years: list[int], history: RiceHistory) -> Plan:
     calendar = [
-        CropSpan(**span.model_dump(), crop=_crop(inputs.crops, span.crop_id).name, source_ids=plan.source_ids)
+        CropSpan(**span.model_dump(), crop=_crop(data.crops, span.crop_id).name, source_ids=plan.source_ids)
         for span in plan.seasons
     ]
     rice = [span for span in calendar if span.crop_id == RICE]
-    years = inputs.years
     return Plan(
         id=plan.id,
         name=plan.name,
@@ -210,10 +235,10 @@ def _plan(plan: PlanEntry, inputs: Inputs) -> Plan:
         calendar=calendar,
         bare_periods=bare_periods(calendar),
         money=_money(plan, calendar),
-        exposure=_exposure(calendar, years, inputs.shares, inputs.soil),
-        stability=[stability(s, _stability_label(s, inputs.texts), years, inputs.history) for s in rice] or None,
-        water=_water(calendar, inputs.crops),
-        land=_land(plan, calendar, inputs.crops),
+        exposure=_exposure(calendar, years, data.shares, data.soil),
+        stability=[stability(s, _stability_label(s, data.texts), years, history) for s in rice] or None,
+        water=_water(calendar, data.crops),
+        land=_land(plan, calendar, data.crops),
         why=Why(**plan.why.model_dump(), risks=plan.risks),
     )
 
