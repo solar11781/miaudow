@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fieldshift"
+version = "0.1.0"
+description = "Field Shift: source-labelled crop-sequence comparison for drought-prone rice land in Nghe An (NASA Space Apps 2026)"
+requires-python = ">=3.12"  # numpy 2.5.3 in requirements.lock needs 3.12 or newer
+license = { text = "Apache-2.0" }
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyyaml>=6",
+    "shapely>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+ml = ["scikit-learn>=1.4", "scipy>=1.11", "lightgbm>=4.3"]
+app = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "pydantic>=2.6"]  # D-25; frontend tooling in frontend/package.json (D-24)
+modis = ["pyhdf==0.11.7"]  # scripts/modis_landcover.py only
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["live: calls real external APIs (run with FIELDSHIFT_LIVE=1)"]

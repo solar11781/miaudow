@@ -1,0 +1,8 @@
+# Backend service, exact versions (CR-07; checked 2026-11-12). Transitive packages are resolved by pip.
+fastapi==0.162.5
+uvicorn[standard]==0.54.0
+pydantic==2.13.5
+numpy==2.5.3
+pandas==3.0.5
+PyYAML==6.0.3
+shapely==2.2.0

@@ -1,0 +1,6 @@
+# Pipeline, ML and tests, exact versions (CR-07; checked 2026-11-12). Install with: pip install -r requirements-dev.lock
+-r requirements.lock
+scikit-learn==1.9.1
+scipy==1.18.1
+pytest==9.2.0
+httpx==0.28.1

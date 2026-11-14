@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from source_trace import check_response, known_ids_from
 
 REPO = Path(__file__).resolve().parents[1]
