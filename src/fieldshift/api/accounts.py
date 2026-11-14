@@ -18,7 +18,8 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from http import HTTPStatus
 
 import psycopg
@@ -48,6 +49,10 @@ NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
 
 class NotSignedInError(Exception):
     """No valid Google token, or no account for it (the farmer has not signed in or deleted everything)."""
+
+
+class DatabaseDownError(Exception):
+    """The database stopped answering after start; sign-in answers 503 until it is back."""
 
 
 class GoogleUnreachableError(Exception):
@@ -172,6 +177,16 @@ class Accounts:
     def _connect(self) -> psycopg.Connection:
         return psycopg.connect(self._url, connect_timeout=DB_CONNECT_TIMEOUT_SECONDS)
 
+    @contextmanager
+    def _db(self) -> Iterator[psycopg.Connection]:
+        """A connection for one request; a database that went down after start becomes DatabaseDownError."""
+        try:
+            with self._connect() as conn:
+                yield conn
+        except psycopg.OperationalError as err:
+            LOG.warning("sign-in answered 503: the database did not answer")  # the error text holds the host
+            raise DatabaseDownError from err
+
     # ---- the Google token
 
     def _google_id(self, google_token: str) -> str:
@@ -190,13 +205,13 @@ class Accounts:
     def sign_in(self, google_token: str) -> None:
         """Create the account of a valid token, or keep the one that exists."""
         sub = self._google_id(google_token)
-        with self._connect() as conn:
+        with self._db() as conn:
             conn.execute("INSERT INTO account (google_sub) VALUES (%s) ON CONFLICT (google_sub) DO NOTHING", (sub,))
 
     def account(self, google_token: str) -> int:
         """The account of a valid token; NotSignedInError when it never signed in or deleted everything."""
         sub = self._google_id(google_token)
-        with self._connect() as conn:
+        with self._db() as conn:
             row = conn.execute("SELECT id FROM account WHERE google_sub = %s", (sub,)).fetchone()
         if row is None:
             raise NotSignedInError
@@ -205,14 +220,14 @@ class Accounts:
     # ---- saved sets
 
     def saved(self, account: int) -> SavedList:
-        with self._connect() as conn:
+        with self._db() as conn:
             found = conn.execute(
                 "SELECT id, land, years, priority FROM saved_answers WHERE account_id = %s ORDER BY id", (account,)
             ).fetchall()
         return SavedList(saved=[SavedSet(id=i, land=land, years=y, priority=p) for i, land, y, p in found])
 
     def save(self, account: int, answers: SavedAnswers) -> SavedSet:
-        with self._connect() as conn:
+        with self._db() as conn:
             row = conn.execute(
                 "INSERT INTO saved_answers (account_id, land, years, priority) VALUES (%s, %s, %s, %s) RETURNING id",
                 (account, answers.land, answers.years, answers.priority),
@@ -221,13 +236,13 @@ class Accounts:
 
     def delete(self, account: int, set_id: int) -> bool:
         """Delete one of the account's sets; False when the account has no set with that id."""
-        with self._connect() as conn:
+        with self._db() as conn:
             gone = conn.execute("DELETE FROM saved_answers WHERE id = %s AND account_id = %s", (set_id, account))
             return gone.rowcount == 1
 
     def delete_account(self, account: int) -> None:
         """Delete the account and, through ON DELETE CASCADE, every saved set of it, in one statement."""
-        with self._connect() as conn:
+        with self._db() as conn:
             conn.execute("DELETE FROM account WHERE id = %s", (account,))
 
 
