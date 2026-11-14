@@ -65,19 +65,8 @@ def _tune(
     return best[0], best[2]
 
 
-def run_rolling_origin(
-    df: pd.DataFrame,
-    weather_cols: Sequence[str],
-    context_cols: Sequence[str],
-    alphas: Sequence[float] | np.ndarray,
-    test_years: Iterable[int] = ev.TEST_YEARS,
-    fold_transform: FoldTransform | None = None,
-) -> dict:
-    """Run the outer rolling origin. df: one row per series and year with `anom` (non-null), features, series_id.
-
-    fold_transform(df, train_idx) -> df adds fold-time features (e.g. add_precip_anom) from training rows only.
-    Returns {"predictions": DataFrame (same rows only), "metrics": dict}.
-    """
+def _checked(df: pd.DataFrame, alphas: Sequence[float] | np.ndarray, m1_cols: list[str]) -> pd.DataFrame:
+    """The run's rows with a fresh index, after the input checks (python rules: unknown data fails loudly)."""
     if len(alphas) == 0:
         raise ValueError("a penalty grid is required (no default without a decision)")
     dup = df.duplicated(["series_id", "year"], keep=False)
@@ -87,47 +76,54 @@ def run_rolling_origin(
     if df["anom"].isna().any():
         raise ValueError("rows without an anomaly (no normal) must be dropped before the run (03-ML-SPEC §3)")
     data = df.reset_index(drop=True)
-    m1_cols = list(context_cols) + list(weather_cols)
     given = [c for c in m1_cols if c in data.columns]  # fold-time features are added later by fold_transform
     missing = sorted(c for c in given if data[c].isna().any())
     if missing:
         raise ValueError(f"input feature columns with missing values: {missing}")
-    parts = []
-    for t in test_years:
-        train_idx = data.index[data["year"] < t]
-        test_idx = data.index[data["year"] == t]
-        if len(test_idx) == 0:
-            continue
-        d = fold_transform(data, train_idx) if fold_transform else data
-        # a test row without fold-time features (no past normal) is not scored (03-ML-SPEC section 3)
-        test_idx = test_idx[d.loc[test_idx, m1_cols].notna().all(axis=1).to_numpy()]
-        if len(test_idx) == 0:
-            continue
-        a_m1, res_m1 = _tune(data, train_idx, m1_cols, alphas, fold_transform)
-        a_bnw, _ = _tune(data, train_idx, list(context_cols), alphas, fold_transform)
-        m1 = ev.fit_ridge(d.loc[train_idx, m1_cols].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), alpha=a_m1)
-        bnw = ev.fit_ridge(
-            d.loc[train_idx, list(context_cols)].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), alpha=a_bnw
-        )
-        q = ev.conformal_halfwidth(np.abs(res_m1), alpha=ev.INTERVAL_ALPHA)
-        p_m1 = m1.predict(d.loc[test_idx, m1_cols].to_numpy())
-        part = pd.DataFrame(
-            {
-                "series_id": d.loc[test_idx, "series_id"],
-                "year": t,
-                "y": d.loc[test_idx, "anom"],
-                "m1": p_m1,
-                "lo80": p_m1 - q,
-                "hi80": p_m1 + q,
-                "bnw": bnw.predict(d.loc[test_idx, list(context_cols)].to_numpy()),
-                "b0": ev.predict_b0(d, train_idx, test_idx),
-                "b2": ev.predict_b2(d, test_idx),
-                "alpha_m1": a_m1,
-                "alpha_bnw": a_bnw,
-            },
-            index=test_idx,
-        )
-        parts.append(part)
+    return data
+
+
+def _fold(
+    data: pd.DataFrame,
+    idx: tuple[pd.Index, pd.Index],
+    cols: tuple[list[str], list[str]],
+    alphas: Sequence[float] | np.ndarray,
+    fold_transform: FoldTransform | None,
+    b0: Callable[[pd.DataFrame, pd.Index, pd.Index], pd.Series],
+) -> pd.DataFrame | None:
+    """Tune, fit and predict one outer fold (training and test row indexes); None when no test row can be scored."""
+    (train_idx, test_idx), (m1_cols, context_cols) = idx, cols
+    d = fold_transform(data, train_idx) if fold_transform else data
+    # a test row without fold-time features (no past normal) is not scored (03-ML-SPEC section 3)
+    test_idx = test_idx[d.loc[test_idx, m1_cols].notna().all(axis=1).to_numpy()]
+    if len(test_idx) == 0:
+        return None
+    a_m1, res_m1 = _tune(data, train_idx, m1_cols, alphas, fold_transform)
+    a_bnw, _ = _tune(data, train_idx, context_cols, alphas, fold_transform)
+    m1 = ev.fit_ridge(d.loc[train_idx, m1_cols].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), alpha=a_m1)
+    bnw = ev.fit_ridge(d.loc[train_idx, context_cols].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), alpha=a_bnw)
+    q = ev.conformal_halfwidth(np.abs(res_m1), alpha=ev.INTERVAL_ALPHA)
+    p_m1 = m1.predict(d.loc[test_idx, m1_cols].to_numpy())
+    return pd.DataFrame(
+        {
+            "series_id": d.loc[test_idx, "series_id"],
+            "year": d.loc[test_idx, "year"],
+            "y": d.loc[test_idx, "anom"],
+            "m1": p_m1,
+            "lo80": p_m1 - q,
+            "hi80": p_m1 + q,
+            "bnw": bnw.predict(d.loc[test_idx, context_cols].to_numpy()),
+            "b0": b0(d, train_idx, test_idx),
+            "b2": ev.predict_b2(d, test_idx),
+            "alpha_m1": a_m1,
+            "alpha_bnw": a_bnw,
+        },
+        index=test_idx,
+    )
+
+
+def _summary(parts: list[pd.DataFrame], alphas: Sequence[float] | np.ndarray) -> dict:
+    """Predictions on the rows every model and reference can predict (same rows), and M1's metrics on them."""
     pred = pd.concat(parts)
     lo_a, hi_a = min(alphas), max(alphas)
     per_year = pred.drop_duplicates("year")
@@ -148,3 +144,62 @@ def run_rolling_origin(
         "alpha_at_edge": edge,  # share of test years whose chosen penalty is an end of the grid (D-110)
     }
     return {"predictions": pred, "metrics": metrics}
+
+
+def run_rolling_origin(
+    df: pd.DataFrame,
+    weather_cols: Sequence[str],
+    context_cols: Sequence[str],
+    alphas: Sequence[float] | np.ndarray,
+    test_years: Iterable[int] = ev.TEST_YEARS,
+    fold_transform: FoldTransform | None = None,
+) -> dict:
+    """Run the outer rolling origin. df: one row per series and year with `anom` (non-null), features, series_id.
+
+    fold_transform(df, train_idx) -> df adds fold-time features (e.g. add_precip_anom) from training rows only.
+    Returns {"predictions": DataFrame (same rows only), "metrics": dict}.
+    """
+    m1_cols = list(context_cols) + list(weather_cols)
+    data = _checked(df, alphas, m1_cols)
+    parts = []
+    for t in test_years:
+        train_idx, test_idx = data.index[data["year"] < t], data.index[data["year"] == t]
+        if len(test_idx) == 0:
+            continue
+        part = _fold(data, (train_idx, test_idx), (m1_cols, list(context_cols)), alphas, fold_transform, ev.predict_b0)
+        if part is not None:
+            parts.append(part)
+    return _summary(parts, alphas)
+
+
+def run_spatial_holdout(
+    df: pd.DataFrame,
+    weather_cols: Sequence[str],
+    context_cols: Sequence[str],
+    alphas: Sequence[float] | np.ndarray,
+    test_years: Iterable[int] = ev.TEST_YEARS,
+    fold_transform: FoldTransform | None = None,
+) -> dict:
+    """Spatial holdout (03-ML-SPEC section 7.2): for each test year and region, train on the other regions' years < t.
+
+    df also needs a `region` column: the block of each row. B0 is each held-out series' own earlier mean (D-146).
+    """
+    m1_cols = list(context_cols) + list(weather_cols)
+    data = _checked(df, alphas, m1_cols)
+    block = data["region"]
+    parts = []
+    for t in test_years:
+        for r in sorted(block[data["year"] == t].unique()):
+            train_idx = data.index[(data["year"] < t) & (block != r)]
+            test_idx = data.index[(data["year"] == t) & (block == r)]
+            part = _fold(
+                data,
+                (train_idx, test_idx),
+                (m1_cols, list(context_cols)),
+                alphas,
+                fold_transform,
+                lambda d, _train, test: ev.predict_b0_holdout(d, test),
+            )
+            if part is not None:
+                parts.append(part.assign(region=r))
+    return _summary(parts, alphas)
