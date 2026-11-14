@@ -1001,7 +1001,7 @@ export const vi = {
     signInTitle: 'Đăng nhập để lưu câu trả lời',
     signInLead: 'Không bắt buộc. Mọi trang vẫn dùng được khi không đăng nhập.',
     noticeTitle: 'Đọc trước khi đăng nhập',
-    noticeLead: 'Chỉ lưu câu trả lời của bạn, xóa được bất cứ lúc nào.',
+    noticeLead: 'Chỉ lưu mã tài khoản Google và câu trả lời của bạn; xóa được bất cứ lúc nào.',
     notice: [
       'Đăng nhập chỉ để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất), để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào.',
       'Chúng tôi chỉ lưu mã tài khoản Google của bạn (một mã do Google cấp) và các câu trả lời bạn lưu. Không lưu tên, email hay ảnh.',

@@ -100,7 +100,10 @@ describe('sign-in page', () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     show('/dang-nhap');
     const heading = await screen.findByRole('heading', { name: t.noticeTitle });
-    expect(heading.nextElementSibling?.textContent).toBe(t.noticeLead);
+    // spec review of PR #53: the plain line names everything the server stores, the Google account id included
+    expect(heading.nextElementSibling?.textContent).toBe(
+      'Chỉ lưu mã tài khoản Google và câu trả lời của bạn; xóa được bất cứ lúc nào.',
+    );
     for (const line of t.notice) expect(screen.getByText(line)).toBeTruthy();
     expect(screen.getByRole('link', { name: t.noticeFull }).getAttribute('href')).toBe('/quyen-rieng-tu');
     expect(loadGoogle).not.toHaveBeenCalled();
