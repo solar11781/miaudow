@@ -144,33 +144,72 @@ describe('calendar axis', () => {
   });
 });
 
-// walkthrough 2026-11-14 and D-68: a note shared by several TCVN rows of one crop is said once, above those rows
+// D-68, D-64, UI-UX-SPEC section 9: a note every TCVN row of a crop carries (the region note) is said once above those
+// rows; any other note stays on its own row, and the two sources' caveats are never mixed. Facts from /api/compare
+// (2026-11-14): spring rice of the usual plan and peanut of cc1.
+const tcvnNote = {
+  vi: 'Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
+  en: 'Maintenance irrigation only, land preparation not included. The standard does not say whether Nghệ An belongs to Trung bộ or Bắc bộ.',
+};
+const faoNote = { vi: 'Chỉ là ước tính sơ bộ', en: 'Only a rough estimate' };
+const fact = (
+  measure: 'to_apply' | 'crop_uses',
+  value: string,
+  unit: string,
+  ids: string[],
+  scope: string,
+  note: typeof faoNote | null,
+) => ({
+  measure,
+  value: { value, unit: { vi: unit, en: unit }, source_ids: ids },
+  scope: { vi: scope, en: scope },
+  note,
+});
+const RICE = [
+  fact('to_apply', '6,500-7,500', 'm3/ha', ['R-W15'], 'Trung bộ, lúa cấy, vụ xuân', tcvnNote),
+  fact('to_apply', '6,500-7,500', 'm3/ha', ['R-W15'], 'Trung bộ, lúa gieo thẳng, vụ xuân', tcvnNote),
+  fact('to_apply', '6,000-7,000', 'm3/ha', ['R-W15'], 'Bắc bộ, vụ xuân', tcvnNote),
+  fact('crop_uses', '450-700', 'mm', ['R-M02'], 'Lúa nước, cả thời gian sinh trưởng', faoNote),
+];
+const PEANUT = [
+  fact('to_apply', '2,000', 'm3/ha', ['R-W15'], 'Trung bình', null),
+  fact('crop_uses', '500-700', 'mm', ['R-M02'], 'Cả thời gian sinh trưởng', faoNote),
+];
+
+function waterText(facts: typeof RICE): string {
+  const res = validateCompare(compare(), body);
+  const plan = res.plans[2];
+  const key = plan?.calendar[0]?.crop_key;
+  if (!plan || !key) throw new Error('no plan');
+  res.sources = {
+    ...res.sources,
+    'R-W15': { ...res.sources['R-P02'], id: 'R-W15' },
+    'R-M02': { ...res.sources['R-P02'], id: 'R-M02' },
+  } as typeof res.sources;
+  plan.water = facts.map((w) => ({ ...w, crop_key: key }));
+  render(
+    <SettingsProvider>
+      <ProvenanceProvider>
+        <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+      </ProvenanceProvider>
+    </SettingsProvider>,
+  );
+  return document.querySelector(`[data-testid="card-${plan.id}-row-water"]`)?.textContent ?? '';
+}
+
 describe('water notes', () => {
   afterEach(cleanup);
-  it('say a shared note once per crop', () => {
-    const res = validateCompare(compare(), body);
-    const plan = res.plans[2];
-    const key = plan?.calendar[0]?.crop_key;
-    if (!plan || !key) throw new Error('no plan');
-    const note = { vi: 'Tiêu chuẩn không nói Nghệ An thuộc vùng nào.', en: 'The standard does not place Nghệ An.' };
-    const value = { value: '6,500-7,500', unit: { vi: 'm3/ha', en: 'm3/ha' }, source_ids: ['R-P02'] };
-    plan.water = ['Trung bộ, cấy', 'Trung bộ, gieo thẳng', 'Bắc bộ'].map((region) => ({
-      crop_key: key,
-      measure: 'to_apply' as const,
-      value,
-      scope: { vi: region, en: region },
-      note,
-    }));
-    render(
-      <SettingsProvider>
-        <ProvenanceProvider>
-          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
-        </ProvenanceProvider>
-      </SettingsProvider>,
-    );
-    const water = document.querySelector(`[data-testid="card-${plan.id}-row-water"]`)?.textContent ?? '';
-    expect(water.split(note.vi)).toHaveLength(2);
-    expect(water.indexOf(note.vi)).toBeLessThan(water.indexOf('Trung bộ, cấy'));
+  it('say the TCVN region note once above the TCVN rows and keep the FAO note on the FAO row', () => {
+    const text = waterText(RICE);
+    expect(text.split(tcvnNote.vi)).toHaveLength(2);
+    expect(text.indexOf(tcvnNote.vi)).toBeLessThan(text.indexOf('Trung bộ, lúa cấy, vụ xuân'));
+    expect(text.split(faoNote.vi)).toHaveLength(2);
+    expect(text.indexOf(faoNote.vi)).toBeGreaterThan(text.indexOf('Lúa nước, cả thời gian sinh trưởng'));
+  });
+  it('never puts the FAO caveat above a TCVN row', () => {
+    const text = waterText(PEANUT);
+    expect(text.indexOf(faoNote.vi)).toBeGreaterThan(text.indexOf('Cả thời gian sinh trưởng'));
+    expect(text.indexOf(faoNote.vi)).toBeGreaterThan(text.indexOf('Trung bình'));
   });
 });
 

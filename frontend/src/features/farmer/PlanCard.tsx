@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import type { CompareResponse, Plan, Priority, Rule, RuleCode, Stability, Value } from '../../types';
+import type { CompareResponse, Plan, Priority, Rule, RuleCode, Stability, Value, WaterFact } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
 import { moneyStudy } from '../../domain/moneyStudy';
@@ -113,6 +113,15 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
       {study && <p className={s.rowNote}>{t.farmer.definitionPlain[study]}</p>}
     </Row>
   );
+}
+
+/** The note every TCVN row of a crop carries (the region note, D-68), said once above those rows; null when the crop
+ * has fewer than two TCVN rows or their notes differ. Other notes stay on their own row, so the TCVN and FAO caveats
+ * never mix (D-64). */
+function tcvnSharedNote(facts: WaterFact[]): WaterFact['note'] {
+  const tcvn = facts.filter((w) => w.measure === 'to_apply');
+  const first = tcvn[0]?.note;
+  return tcvn.length > 1 && first && tcvn.every((w) => w.note?.en === first.en) ? first : null;
 }
 
 /** The per-year tables of a row behind one button (D-170). The content stays in the page and is hidden by screen-only
@@ -289,14 +298,13 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
       <ul className={s.kv}>
         {plan.calendar.map((c) => {
           const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
-          // a note shared by the crop's rows (e.g. the standard does not place Nghệ An, D-68) is said once, above them
-          const notes = [...new Map(facts.flatMap((w) => (w.note ? [[w.note.en, w.note] as const] : []))).values()];
+          const lifted = tcvnSharedNote(facts);
           return [
-            ...notes.map((n) => (
-              <li key={`${c.crop_key}-note-${n.en}`} className={s.waterNote}>
-                {pick(c.crop)}: {pick(n)}
+            lifted && (
+              <li key={`${c.crop_key}-note`} className={s.waterNote}>
+                {pick(c.crop)}: {pick(lifted)}
               </li>
-            )),
+            ),
             ...facts.map((w, i) => (
               <li key={`${c.crop_key}-${i}`}>
                 <span>
@@ -312,6 +320,9 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
                     />
                   )}
                   {w.scope && <span className="muted small">{pick(w.scope)}</span>}
+                  {w.note && !(lifted && w.measure === 'to_apply') && (
+                    <span className="muted small">{pick(w.note)}</span>
+                  )}
                 </span>
               </li>
             )),
