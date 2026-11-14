@@ -12,7 +12,16 @@ hand-computed toy predictions:
 import pandas as pd
 import pytest
 
-from fieldshift.ml.primary_test import g1_rows, metric_row, season_gates, weather_claim
+from fieldshift.ml.primary_test import (
+    app_season,
+    g1_rows,
+    gate_detail,
+    metric_records,
+    metric_row,
+    penalty_report,
+    season_gates,
+    weather_claim,
+)
 
 
 def _pred() -> pd.DataFrame:
@@ -100,3 +109,53 @@ def test_g1_counts_usable_years_and_provinces_per_season():
     )
     out = {r["season"]: r["passed"] for r in g1_rows(rows)}
     assert out == {"spring": True, "autumn": False}  # 24 summer-autumn provinces < 25
+
+
+def _labelled() -> pd.DataFrame:
+    pred = pd.concat([_pred().assign(season=s) for s in ("spring", "winter")], ignore_index=True)
+    return pred.assign(province_nso="Nghe An", region="North Central and Central coastal areas")
+
+
+METRIC_KEYS = {  # UI-UX-SPEC section 11 MetricRow, 05-DATA-CONTRACTS section 5b
+    "model_id", "season", "role", "scheme", "sensitivity", "detail", "subset", "rmse", "mae", "r2_oos",
+    "skill_vs_b0", "skill_vs_b2", "skill_vs_bnw", "coverage_80", "n_rows", "n_test_years", "source_ids",
+}  # fmt: skip
+
+
+def test_metric_records_follow_the_contract_and_have_one_primary_row():
+    # Source: D-83 and 03-ML-SPEC section 7: the one primary test is M1 on spring rice, rolling origin, national
+    rows = metric_records(_labelled(), _labelled(), pilot=("Nghe An",), seed=0, n_boot=50)
+    assert all(set(r) == METRIC_KEYS for r in rows)
+    primary = [r for r in rows if r["role"] == "primary"]
+    assert [(r["model_id"], r["season"], r["scheme"], r["subset"]) for r in primary] == [
+        ("m1_ridge", "spring", "rolling_origin", "national")
+    ]
+    assert {r["role"] for r in rows if r["model_id"] in ("b0", "b2", "bnw")} == {"reference"}
+    assert {r["scheme"] for r in rows} == {"rolling_origin", "spatial_holdout"}
+    assert "region:north_central_and_central_coastal_areas" in {r["subset"] for r in rows}
+
+
+def test_season_codes_are_the_app_codes():
+    # Source: UI-UX-SPEC section 11 SeasonCode: spring | summer_autumn | winter | autumn_winter (NSO "autumn" rice is
+    # the summer-autumn crop, 05-DATA-CONTRACTS section 2)
+    assert app_season("autumn") == "summer_autumn"
+    assert app_season("spring") == "spring"
+    with pytest.raises(ValueError, match="unknown"):
+        app_season("dry")
+
+
+def test_gate_text_shows_three_decimals_and_vietnamese_decimal_commas():
+    # Source: review 2026-11-14: a CI low of 0.0011 must not read as 0.00 next to a pass; Vietnamese writes 0,001
+    skill = {"value": 0.0681, "ci90_low": 0.0011, "ci90_high": 0.1372}
+    text = gate_detail("G2", {"skill_vs_b0": skill, "skill_vs_bnw": skill, "coverage_80": 0.76}, {})
+    assert "0.001" in text["en"]
+    assert "0,001" in text["vi"]
+    assert "0.001" not in text["vi"]
+
+
+def test_penalty_report_gives_the_share_of_test_years_at_a_grid_end():
+    # Source: D-110: the chosen penalty is reported in grid units with the share of test years at an end of the grid
+    item = penalty_report({"m1": 1 / 9, "bnw": 7 / 9})
+    assert "11%" in item["text"]["en"]
+    assert "78%" in item["text"]["en"]
+    assert item["id"] == "E-012"
