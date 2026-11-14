@@ -287,6 +287,17 @@ def test_a_missing_artifact_stops_the_start_naming_the_file(tmp_path: Path) -> N
         create_app(root=root)
 
 
+def test_a_missing_year_row_stops_the_start_naming_the_file(tmp_path: Path) -> None:
+    # a row that only a compare request with that year reads must fail at start, not at a farmer's request
+    root = copy_root(tmp_path)
+    path = root / "artifacts" / "soil_wetness.json"
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    doc["rows"] = [r for r in doc["rows"] if (r["crop_key"], r["year"]) != ("usual_spring_rice", 2010)]
+    path.write_text(json.dumps(doc), encoding="utf-8")
+    with pytest.raises(ValueError, match=r"soil_wetness\.json.*usual_spring_rice 2010"):
+        create_app(root=root)
+
+
 # ---- no outbound network (NFR-01)
 
 
