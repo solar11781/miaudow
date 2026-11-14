@@ -18,10 +18,14 @@ from fieldshift.engine.schemas import (
     LAST_YEAR,
     PLAN_IDS,
     RULE_CODES,
+    CoverageCell,
+    ExplainTerm,
     GateRow,
+    MetricRow,
     ModelStatus,
     MonthDay,
     PlanId,
+    ReportItem,
     RiskItem,
     Rule,
     RuleCode,
@@ -29,12 +33,15 @@ from fieldshift.engine.schemas import (
     SourceFacts,
     SourceId,
     Text,
+    WeatherClaim,
     YearSpan,
 )
 
 HAZARD_LABELS = "hazard_labels.json"
 SOIL_WETNESS = "soil_wetness.json"
 RISK_TABLE = "risk_table.json"
+METRICS = "metrics.json"
+GATES = "gates.json"
 M = TypeVar("M", bound=BaseModel)
 CROP_ROW_PLANS = ("usual", "cc1", "cc2", "cc3", "cc4")  # §4b: no usual_p03 (P-03 reports no dates)
 CROP_ROW_SEASONS = ("spring", "summer_autumn", "autumn_winter")  # §4b: the P-02 crop seasons
@@ -166,15 +173,45 @@ def risk_seasons(root: Path) -> dict[SeasonCode, RiskSeason]:
 
 def gate_rows(root: Path) -> list[GateRow]:
     """The gate verdicts of artifacts/gates.json (05-DATA-CONTRACTS §5b), in file order."""
-    return _artifact_list(root, "gates.json", "gates", GateRow)
+    return _artifact_list(root, GATES, "gates", GateRow)
+
+
+class MetricsFile(BaseModel):
+    """artifacts/metrics.json (05-DATA-CONTRACTS §5b): the scored runs, weather claims and one-off reports."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: str
+    generated_at: str
+    freeze_commit: str
+    test_years: YearSpan
+    metrics: list[MetricRow]
+    weather_claims: list[WeatherClaim]
+    reports: list[ReportItem]
+
+
+def metrics_file(root: Path) -> MetricsFile:
+    """The checked content of artifacts/metrics.json; a bad entry fails naming the file and the field."""
+    try:
+        return MetricsFile.model_validate(_artifact(root, METRICS))
+    except ValidationError as err:
+        raise ValueError(f"artifacts/{METRICS}: {err}") from err
+
+
+def freeze_commit(root: Path, name: str) -> str:
+    """The `freeze_commit` of one method artifact (05-DATA-CONTRACTS §5b)."""
+    commit = _artifact(root, name).get("freeze_commit")
+    if not isinstance(commit, str) or not commit:
+        raise ValueError(f"artifacts/{name}: freeze_commit must be a non-empty string")
+    return commit
 
 
 def load_test_years(root: Path) -> YearSpan:
     """The out-of-sample test years of artifacts/metrics.json (05-DATA-CONTRACTS §5b)."""
     try:
-        return YearSpan.model_validate(_artifact(root, "metrics.json").get("test_years"))
+        return YearSpan.model_validate(_artifact(root, METRICS).get("test_years"))
     except ValidationError as err:
-        raise ValueError(f"artifacts/metrics.json: test_years: {err}") from err
+        raise ValueError(f"artifacts/{METRICS}: test_years: {err}") from err
 
 
 def _read_yaml(root: Path, name: str) -> object:
@@ -318,6 +355,16 @@ class CardTexts(BaseModel):
     season_labels: dict[SeasonCode, SeasonLabel]
 
 
+class MethodTexts(BaseModel):
+    """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3, 5)."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    coverage: list[CoverageCell]
+    explain_terms: list[ExplainTerm]
+    limitations: list[Text] = Field(min_length=1)
+
+
 class MlWindow(Entry):
     """One NSO season window of rules/calendar.yaml (05-DATA-CONTRACTS §6b): (month, year offset) at each end."""
 
@@ -367,6 +414,10 @@ def load_crops(root: Path) -> dict[str, CropEntry]:
 
 def load_card_texts(root: Path) -> CardTexts:
     return _checked("method.yaml", CardTexts, _read_mapping(root, "method.yaml"))
+
+
+def load_method_texts(root: Path) -> MethodTexts:
+    return _checked("method.yaml", MethodTexts, _read_mapping(root, "method.yaml"))
 
 
 def load_calendar(root: Path) -> CalendarFile:
