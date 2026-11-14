@@ -80,3 +80,21 @@ def test_worst_years_are_every_year_equal_to_the_minimum() -> None:
     block = stability(span, T, [2001, 2002, 2003], history)
     assert block.worst_years == [2001, 2003]  # -10.4 and -9.6 both show "-10"
     assert block.years_count == 3
+
+
+def test_the_median_of_two_years_is_their_mean_not_one_of_them() -> None:
+    # real artifacts/risk_table.json values, Nghe An spring 2016 and 2024: the mean 0.0289 rounds to 3 (D-156); the
+    # lower middle would give 2 and the upper middle 4
+    found = summary([row(2016, 0.04120443740095059), row(2024, 0.016674840608141173)])
+    assert found is not None
+    assert (found.min.value, found.median.value, found.max.value) == ("2", "3", "4")
+
+
+def test_the_last_test_year_keeps_its_prediction() -> None:
+    # UI-UX-SPEC section 11: predictions inside test_years, both ends included (2016-2024)
+    last = stability_year(row(2024, 0.01, 0.02), shown=True, g4_passed=True, test_years=TEST_YEARS)
+    assert last.oos_prediction is not None
+    assert last.oos_prediction.value == "2"
+    shorter = YearSpan(first=2016, last=2023)
+    after = stability_year(row(2024, 0.01, 0.02), shown=True, g4_passed=True, test_years=shorter)
+    assert after.oos_prediction is None
