@@ -122,7 +122,8 @@ class PastYearsResponse(Contract):
         codes = tuple(rule.code for rule in self.rules)
         if codes != RULE_CODES:
             raise ValueError(f"rules must be {RULE_CODES} in this order, got {codes}")
-        _check_ascending([row.year for row in self.years])
+        if any(a.year >= b.year for a, b in pairwise(self.years)):
+            raise ValueError("years must be strictly ascending")
         _check_sources(self)
         return self
 
@@ -295,14 +296,15 @@ class Plan(Contract):
 class CompareRequest(Contract):
     province: Province
     land: Land
-    years: list[StrictInt]  # the request body is a trust boundary: no text or fractions
+    # the body is a trust boundary: whole numbers only, at most the 30 years of 1995-2024 (UI-UX-SPEC §11 YearRow)
+    years: list[StrictInt] = Field(max_length=LAST_YEAR - FIRST_YEAR + 1)
     priority: Priority
 
     @model_validator(mode="after")
     def _years_ascending_in_range(self) -> Self:
-        _check_ascending(self.years)
-        if any(not FIRST_YEAR <= y <= LAST_YEAR for y in self.years):
-            raise ValueError(f"years must be inside {FIRST_YEAR}-{LAST_YEAR}: {self.years}")
+        ascending = all(a < b for a, b in pairwise(self.years))
+        if not ascending or any(not FIRST_YEAR <= y <= LAST_YEAR for y in self.years):
+            raise ValueError(f"years must be strictly ascending within {FIRST_YEAR}-{LAST_YEAR}")
         return self
 
 
@@ -478,8 +480,3 @@ def _check_sources(response: PastYearsResponse | CompareResponse | MethodRespons
     wrong = [key for key, facts in response.sources.items() if facts.id != key]
     if wrong:
         raise ValueError(f"sources listed under another id: {wrong}")
-
-
-def _check_ascending(years: list[int]) -> None:
-    if any(a >= b for a, b in pairwise(years)):
-        raise ValueError(f"years must be strictly ascending: {years}")
