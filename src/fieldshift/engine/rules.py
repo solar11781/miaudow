@@ -359,6 +359,14 @@ class CardTexts(BaseModel):
     season_labels: dict[SeasonCode, SeasonLabel]
 
 
+class PrivacyTexts(Entry):
+    """The privacy notice of the optional sign-in in rules/privacy.yaml (UI-UX-SPEC §12c)."""
+
+    title: Text
+    draft_note: Text
+    paragraphs: list[Text] = Field(min_length=1)
+
+
 class MethodTexts(BaseModel):
     """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3, 5)."""
 
@@ -422,6 +430,10 @@ def load_card_texts(root: Path) -> CardTexts:
 
 def load_method_texts(root: Path) -> MethodTexts:
     return _checked("method.yaml", MethodTexts, _read_mapping(root, "method.yaml"))
+
+
+def load_privacy_texts(root: Path) -> PrivacyTexts:
+    return _checked("privacy.yaml", PrivacyTexts, _read_mapping(root, "privacy.yaml"))
 
 
 def load_calendar(root: Path) -> CalendarFile:

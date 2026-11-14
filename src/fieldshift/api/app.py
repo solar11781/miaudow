@@ -1,8 +1,9 @@
 """FastAPI service (D-25, D-76, D-80; UI-UX-SPEC §11; 04-TECH-DESIGN §3). Reads precomputed artifacts only (NFR-01).
 
-It serves GET /api/past-years, POST /api/compare, GET /api/method and GET /api/health. The rules files and artifacts
-are read once when the app is created, so a broken or missing file stops the start instead of failing a farmer's
-request, and no request reads a file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
+It serves GET /api/past-years, POST /api/compare, GET /api/method and GET /api/health, and the privacy notice of the
+optional sign-in at /quyen-rieng-tu (UI-UX-SPEC §12c). The rules files and artifacts are read once when the app is
+created, so a broken or missing file stops the start instead of failing a farmer's request, and no request reads a
+file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
 generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
 every frontend route, so browser history routing and deep links work (D-102).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
@@ -11,13 +12,14 @@ Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no
 from __future__ import annotations
 
 import asyncio
+import html
 import json
 from pathlib import Path
 from typing import get_args
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
@@ -26,6 +28,7 @@ from starlette.requests import ClientDisconnect
 from fieldshift.engine.compare import compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
+from fieldshift.engine.rules import PrivacyTexts, load_privacy_texts
 from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, HealthResponse, Land, Priority, Province
 from fieldshift.paths import project_root
 
@@ -96,8 +99,36 @@ async def _unprocessable(_: Request, exc: RequestValidationError) -> JSONRespons
     return JSONResponse({"detail": detail}, status_code=422)
 
 
+def _privacy_page(texts: PrivacyTexts) -> bytes:
+    """The privacy notice as one page in both languages, with no script, style or third-party resource (H14)."""
+    parts = [
+        '<!doctype html><html lang="vi"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        f"<title>{html.escape(texts.title['vi'])}</title></head><body><main>",
+    ]
+    for lang, heading in (("vi", "h1"), ("en", "h2")):
+        parts.append(f'<section lang="{lang}"><{heading}>{html.escape(texts.title[lang])}</{heading}>')
+        parts.append(f"<p><em>{html.escape(texts.draft_note[lang])}</em></p>")
+        parts += [f"<p>{html.escape(p[lang])}</p>" for p in texts.paragraphs]
+        parts.append("</section>")
+    parts.append("</main></body></html>")
+    return "".join(parts).encode()
+
+
 async def _internal_error(_: Request, __: Exception) -> JSONResponse:
     return JSONResponse({"detail": "Internal Server Error"}, status_code=500)
+
+
+def _add_privacy_routes(app: FastAPI, page: bytes) -> None:
+    """The notice at the path registered with Google, and /privacy as a permanent redirect to it (team, 2026-11-14)."""
+
+    @app.get("/quyen-rieng-tu")
+    def privacy_route() -> Response:
+        return HTMLResponse(page)
+
+    @app.get("/privacy")
+    def privacy_redirect() -> Response:
+        return RedirectResponse("/quyen-rieng-tu", status_code=308)
 
 
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
@@ -106,6 +137,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     health_body = _json(_artifact_versions(base / "artifacts"))
     past_body = {province: _json(past_years(province, base)) for province in get_args(Province)}
     method_body = _json(method(base))
+    privacy_body = _privacy_page(load_privacy_texts(base))
     compare_data = load_compare_data(base)
     every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
     for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
@@ -134,6 +166,8 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     @app.get("/api/method")
     def method_route() -> Response:
         return _respond(method_body)
+
+    _add_privacy_routes(app, privacy_body)
 
     if (frontend / "index.html").exists():
         index = frontend / "index.html"
