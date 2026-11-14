@@ -7,6 +7,7 @@ refit inside every inner split too (03-ML-SPEC §4 "fitted on the training years
 Unit key: `province_nso` until the unit_id crosswalk exists (05-DATA-CONTRACTS §2, §4c).
 """
 
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -236,12 +237,12 @@ def test_secondary_models_use_the_same_folds_and_never_the_test_years_outcomes(f
     # Source: 03-ML-SPEC sections 6-7 and queue item 31: M2 and M3 on the same rows and folds as M1, tuned on earlier
     # years only (inner folds, D-107); outcomes of a test year never change its predictions
     df = _synthetic(n_series=6, years=range(2004, 2025))
-    a = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=0)
+    a = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=0), grid))
     assert sorted(a["year"].unique()) == list(range(2016, 2025))
     assert set(a["param"]) <= set(range(len(grid)))
     changed = df.copy()
     changed.loc[changed.year == 2020, "anom"] += 5.0
-    b = run_secondary(changed, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=0)
+    b = run_secondary(changed, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=0), grid))
     pa = a[a.year == 2020].set_index("series_id")["pred"]
     pb = b[b.year == 2020].set_index("series_id")["pred"]
     assert np.allclose(pa, pb)
@@ -251,6 +252,6 @@ def test_secondary_models_are_reproducible_with_a_fixed_seed():
     # Source: python rules: randomness only with a fixed seed passed in
     df = _synthetic(n_series=4, years=range(2008, 2025))
     for fit, grid in ((ev.fit_lgbm, ev.M2_GRID[:1]), (ev.fit_rf, ev.M3_GRID[:1])):
-        one = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=7)
-        two = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=7)
+        one = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=7), grid))
+        two = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=7), grid))
         assert np.allclose(one["pred"], two["pred"])
