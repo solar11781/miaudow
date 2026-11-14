@@ -151,7 +151,7 @@ export const en: Messages = {
       },
     ],
     problemEyebrow: '02 · The season worry',
-    problemTitle: 'On high fields at the canal end, summer rice makes almost no profit',
+    problemTitle: 'On high fields at the canal end, summer-autumn rice makes almost no profit',
     problemLead:
       'Two studies in Lưu Sơn commune, Đô Lương recorded what many families already know: when the water does not arrive in time, little is left of a season’s work.',
     studyLand: 'đất lúa kém hiệu quả, thường xuyên khô hạn',
@@ -505,7 +505,7 @@ export const en: Messages = {
     riceTitle: 'Nghệ An rice yield against normal',
     riceLead:
       'Real NSO values, 1995–2024. For winter rice, the model’s out-of-sample predictions are shown next to the real values for 2016–2024, with their 80% range.',
-    seasons: { spring: 'Spring rice', summer_autumn: 'Summer rice', winter: 'Winter rice' },
+    seasons: { spring: 'Spring rice', summer_autumn: 'Summer-autumn rice', winter: 'Winter rice' },
     actual: 'Real value',
     predicted: 'Out-of-sample prediction',
     interval: '80% range',
@@ -848,12 +848,12 @@ export const en: Messages = {
     kindVisual: 'For viewing only',
     season: 'Season',
     composites: {
-      'summer_autumn-2020': 'Summer–autumn 2020',
-      'autumn_winter-2020': 'Autumn–winter 2020',
+      'summer_autumn-2020': 'Summer-autumn 2020',
+      'autumn_winter-2020': 'Autumn-winter 2020',
       'spring-2021': 'Spring 2021',
       'spring-2024': 'Spring 2024',
-      'summer_autumn-2024': 'Summer–autumn 2024',
-      'autumn_winter-2024': 'Autumn–winter 2024',
+      'summer_autumn-2024': 'Summer-autumn 2024',
+      'autumn_winter-2024': 'Autumn-winter 2024',
     },
     gibsCredit:
       'The base image and the “for viewing only” layers come from NASA GIBS (Global Imagery Browse Services), part of NASA’s ESDIS.',

@@ -137,7 +137,7 @@ export const vi = {
     regions: [
       {
         name: 'Đồng bằng',
-        body: 'Ruộng phẳng, gần kênh. Vụ xuân và vụ hè thu nối nhau, nước về theo lịch của trạm bơm.',
+        body: 'Ruộng phẳng, gần kênh. Vụ Đông Xuân và vụ Hè Thu nối nhau, nước về theo lịch của trạm bơm.',
       },
       {
         name: 'Trung du',
@@ -149,15 +149,15 @@ export const vi = {
       },
     ],
     problemEyebrow: '02 · Nỗi lo mùa vụ',
-    problemTitle: 'Trên ruộng cao, cuối kênh, lúa hè thu gần như không có lãi',
+    problemTitle: 'Trên ruộng cao, cuối kênh, lúa vụ Hè Thu gần như không có lãi',
     problemLead:
       'Hai nghiên cứu ở xã Lưu Sơn, Đô Lương ghi lại điều nhiều gia đình đã biết: khi nước không về kịp, công sức một vụ lúa có thể chẳng còn lại bao nhiêu.',
     studyLand: 'đất lúa kém hiệu quả, thường xuyên khô hạn',
     studyLandBy: 'Cách bài báo của Trịnh Đức Toàn và cộng sự (2023) gọi đất thử nghiệm',
     quote: 'gần như không có lợi nhuận',
-    quoteBy: 'Trịnh Đức Toàn và cs. (2023), về lúa hè thu năm 2020 ở Lưu Sơn',
-    riceSpring: 'lãi lúa xuân 2021 trên ô thử nghiệm',
-    riceSummer: 'lãi lúa hè thu 2020 trên ô đối chứng',
+    quoteBy: 'Trịnh Đức Toàn và cs. (2023), về lúa vụ Hè Thu năm 2020 ở Lưu Sơn',
+    riceSpring: 'lãi lúa vụ Đông Xuân 2021 trên ô thử nghiệm',
+    riceSummer: 'lãi lúa vụ Hè Thu 2020 trên ô đối chứng',
     riceSummerDetail:
       'Bài báo ghi: “gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha”. Lợi nhuận ở bài này chỉ trừ chi phí vật chất.',
     trialNote:
@@ -197,9 +197,9 @@ export const vi = {
     honestyTitle: 'Chúng tôi nói rõ cả khi mô hình không thắng',
     honestyLead:
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
-    honestySpring: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa xuân không được hiện.',
+    honestySpring: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
     honestyWinter:
-      'Mô hình có thời tiết NASA đoán tốt hơn, với mức hơn nhỏ. Dự đoán lúa mùa được hiện cạnh số liệu thật.',
+      'Mô hình có thời tiết NASA đoán tốt hơn, với mức hơn nhỏ. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
     // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
     honestyWinterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     vsBnw: 'so với BNW',
@@ -502,8 +502,8 @@ export const vi = {
     tableCaption: 'Bảng số liệu các ô lưới cho năm và luật đang chọn',
     riceTitle: 'Năng suất lúa Nghệ An so với bình thường',
     riceLead:
-      'Số liệu thật của Cục Thống kê, 1995–2024. Với lúa mùa, dự đoán ngoài mẫu của mô hình được hiện cạnh số thật cho 2016–2024, kèm khoảng 80%.',
-    seasons: { spring: 'Lúa xuân', summer_autumn: 'Lúa hè thu', winter: 'Lúa mùa' },
+      'Số liệu thật của Cục Thống kê, 1995–2024. Với lúa vụ Mùa, dự đoán ngoài mẫu của mô hình được hiện cạnh số thật cho 2016–2024, kèm khoảng 80%.',
+    seasons: { spring: 'Lúa vụ Đông Xuân', summer_autumn: 'Lúa vụ Hè Thu', winter: 'Lúa vụ Mùa' },
     actual: 'Số liệu thật',
     predicted: 'Dự đoán ngoài mẫu',
     interval: 'Khoảng 80%',
@@ -853,8 +853,8 @@ export const vi = {
     composites: {
       'summer_autumn-2020': 'Hè Thu 2020',
       'autumn_winter-2020': 'Thu Đông 2020',
-      'spring-2021': 'Xuân 2021',
-      'spring-2024': 'Xuân 2024',
+      'spring-2021': 'Đông Xuân 2021',
+      'spring-2024': 'Đông Xuân 2024',
       'summer_autumn-2024': 'Hè Thu 2024',
       'autumn_winter-2024': 'Thu Đông 2024',
     },
@@ -972,9 +972,9 @@ export const vi = {
     cellDetail: (unit: string, share: string) =>
       `Lượng đo của mỗi ô NASA POWER trong năm (${unit}); trọng số là phần đất trồng của ô theo bản đồ MODIS. ${share}`,
     riceSeriesLabel: (span: string) => `Năng suất lúa Nghệ An so với bình thường, ${span}`,
-    riceSeason: { spring: 'xuân', summer_autumn: 'hè thu', winter: 'mùa' },
+    riceSeason: { spring: 'Đông Xuân', summer_autumn: 'Hè Thu', winter: 'Mùa' },
     riceDetail: (season: string) => `Năng suất thật ÷ trung bình 3 năm trước − 1 (vụ ${season}).`,
-    predictionsLabel: 'Dự đoán ngoài mẫu lúa mùa, 2016–2024',
+    predictionsLabel: 'Dự đoán ngoài mẫu lúa vụ Mùa, 2016–2024',
     predictionsDetail:
       'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
     ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
