@@ -25,7 +25,7 @@ function YearRow({ row, res }: { row: Row; res: PastYearsResponse }) {
     <article id={`year-card-${row.year}`} className={s.yearCard} aria-labelledby={`y-${row.year}`}>
       <header className={s.yearHead}>
         <h2 id={`y-${row.year}`} className={s.yearNum}>
-          {row.year}
+          {t.farmer.yearHeading(row.year)}
         </h2>
         <p className={s.yearSub}>{t.farmer.yearRowLabel}</p>
       </header>

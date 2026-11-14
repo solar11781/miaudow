@@ -351,6 +351,7 @@ export const vi = {
     localReview: 'Hãy hỏi nông dân hoặc cán bộ nông nghiệp nơi bạn sống về những điều này trước khi thay đổi.',
     whyParts: { why: 'Vì sao', evidence: 'Bằng chứng', benefits: 'Lợi ích', gaps: 'Điều chưa biết' },
     needAnswers: 'Còn thiếu câu trả lời ở bước trước.',
+    yearHeading: (year: number) => `Năm ${year}`,
     monthAxis: 'Tháng',
     definitionPlain: {
       p02: 'Nói cách khác: tiền bán trừ mọi khoản chi, kể cả công lao động.',

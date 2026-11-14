@@ -353,6 +353,7 @@ export const en: Messages = {
     localReview: 'Check these with farmers or agricultural experts where you live before you change.',
     whyParts: { why: 'Why', evidence: 'Evidence', benefits: 'Benefits', gaps: 'Gaps' },
     needAnswers: 'An answer from an earlier step is missing.',
+    yearHeading: (year: number) => `Year ${year}`,
     monthAxis: 'Month',
     definitionPlain: {
       p02: 'In other words: sales money minus every cost, labour included.',
