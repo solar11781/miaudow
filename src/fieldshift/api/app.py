@@ -68,17 +68,21 @@ FILE_METHODS = ("GET", "HEAD")
 ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
-# H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat.
+# H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat,
+# and Google's sign-in script, frame and style of /dang-nhap and /da-luu (UI-UX-SPEC §12c), as Google's guidance names
+# them: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#content_security_policy
 # Inline style attributes are React style props; data: and blob: images, blob: workers and eval are Cesium's.
+GSI = "https://accounts.google.com/gsi/"
 CSP = "; ".join(
     (
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval'",  # D-170: Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
+        # D-170: Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
+        f"script-src 'self' 'unsafe-eval' {GSI}client",
         "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov",
-        "connect-src 'self' https://gibs.earthdata.nasa.gov",
-        "frame-src https://eyes.nasa.gov",
+        f"connect-src 'self' https://gibs.earthdata.nasa.gov {GSI}",
+        f"frame-src https://eyes.nasa.gov {GSI}",
         "worker-src 'self' blob:",
-        "style-src 'self' 'unsafe-inline'",
+        f"style-src 'self' 'unsafe-inline' {GSI}style",
         "font-src 'self'",
         "frame-ancestors 'none'",
     )
