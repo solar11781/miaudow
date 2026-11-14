@@ -269,6 +269,17 @@ describe('save these answers', () => {
     await userEvent.click(await screen.findByRole('button', { name: t.save }));
     expect(save).toHaveBeenCalledWith('tok', { land: 'canal_end', years: [2010], priority: 'income' });
     expect(await screen.findByText(t.saved)).toBeTruthy();
+    // walkthrough recheck: a second tap cannot store the same set twice
+    const done = screen.getByRole('button', { name: t.savedDone });
+    expect(done.hasAttribute('disabled')).toBe(true);
+    expect(screen.queryByRole('button', { name: t.save })).toBeNull();
+  });
+
+  it('is done, not offered again, after the automatic save', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
+    vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, land: 'canal_end', years: [2010], priority: 'income' });
+    show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1', 'tok');
+    expect((await screen.findByRole('button', { name: t.savedDone })).hasAttribute('disabled')).toBe(true);
   });
 
   it.each([

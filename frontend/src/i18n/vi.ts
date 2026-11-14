@@ -1032,6 +1032,7 @@ export const vi = {
     saveSignIn: 'Đăng nhập để lưu các câu trả lời này',
     saving: 'Đang lưu…',
     saved: 'Đã lưu các câu trả lời này.',
+    savedDone: 'Đã lưu ✓',
     full: 'Chỗ lưu đã đầy. Hãy xóa một bộ câu trả lời cũ trước.',
     expired: 'Phiên đăng nhập đã hết. Hãy đăng nhập lại.',
     signInAgain: 'Đăng nhập lại',

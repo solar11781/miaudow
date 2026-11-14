@@ -65,8 +65,14 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
   return (
     <div className={s.save}>
       {token ? (
-        <Button variant="secondary" leadingIcon="check" disabled={status === 'saving'} onClick={() => save(token)}>
-          {t.account.save}
+        // once saved, the same answers cannot be stored twice; new answers mount a new control (PlansStep key)
+        <Button
+          variant="secondary"
+          leadingIcon="check"
+          disabled={status === 'saving' || status === 'saved'}
+          onClick={() => save(token)}
+        >
+          {status === 'saved' ? t.account.savedDone : t.account.save}
         </Button>
       ) : (
         <ButtonLink to={signInLink(`${pathname}?${again.toString()}`)} variant="secondary" leadingIcon="check">

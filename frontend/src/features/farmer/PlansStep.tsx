@@ -153,7 +153,7 @@ export function PlansStep() {
           </p>
         )}
         {/* next to the answers, not after the six cards (walkthrough of PR #53) */}
-        {saved && <SaveAnswers answers={saved} />}
+        {saved && <SaveAnswers key={JSON.stringify(saved)} answers={saved} />}
       </div>
       {/* one notice box instead of four (walkthrough 2026-11-14); each card repeats its warnings (H17) */}
       <div className={s.note}>

@@ -1028,6 +1028,7 @@ export const en: Messages = {
     saveSignIn: 'Sign in to save these answers',
     saving: 'Saving…',
     saved: 'These answers are saved.',
+    savedDone: 'Saved ✓',
     full: 'Your saved answers are full. Please delete an old set first.',
     expired: 'Your sign-in has ended. Please sign in again.',
     signInAgain: 'Sign in again',
