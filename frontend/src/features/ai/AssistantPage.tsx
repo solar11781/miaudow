@@ -154,6 +154,7 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
             {speech.speaking ? t.copilot.stopReading : t.copilot.readAloud}
           </button>
         )}
+        {speech.noVoice && <p className={s.small}>{t.copilot.noVoice}</p>}
         <details className={s.trace}>
           <summary>{t.copilot.howFound}</summary>
           <ol>

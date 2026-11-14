@@ -744,6 +744,8 @@ export const vi = {
     missing: 'Ứng dụng chưa biết những điều này về ruộng của bạn:',
     readAloud: 'Đọc to',
     stopReading: 'Dừng đọc',
+    noVoice:
+      'Máy này chưa có giọng đọc tiếng Việt. Trên Android: Cài đặt → Chuyển văn bản thành giọng nói → cài tiếng Việt. Trên Windows: Cài đặt → Thời gian và ngôn ngữ → Giọng nói.',
     howFound: 'Trợ lý đã tìm câu trả lời thế nào',
     numbersChecked: (n: number, bad: number) =>
       bad
