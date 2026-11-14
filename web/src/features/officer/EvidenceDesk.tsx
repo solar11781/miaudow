@@ -17,14 +17,9 @@ import s from './officer.module.css';
 export function EvidenceDesk() {
   const t = useT();
   const pick = usePick();
-  const refs = useRefs();
   const [planId, setPlanId] = useState<Plan['id']>('cc1');
   const [land, setLand] = useState<Land>('canal_end');
   const plan = PLANS.find((p) => p.id === planId) ?? (PLANS[0] as Plan);
-  const rb = rulebookPlan(plan.id);
-  const dp = decisionPlan(plan.id);
-  const total = planProfitMillion(plan);
-  const seq = plan.textOnly ? pick(plan.textOnly.sequence) : plan.crops.map((c) => pick(CROPS[c.crop].name)).join(' → ');
 
   return (
     <div className={s.desk}>
@@ -39,6 +34,21 @@ export function EvidenceDesk() {
       </div>
 
       <article id="desk-panel" role="tabpanel" aria-labelledby={`desk-tab-${plan.id}`} className={s.deskPanel}>
+        <Ladder plan={plan} />
+        <DeskSide plan={plan} land={land} setLand={setLand} />
+      </article>
+    </div>
+  );
+}
+
+function Ladder({ plan }: { plan: Plan }) {
+  const t = useT();
+  const pick = usePick();
+  const refs = useRefs();
+  const rb = rulebookPlan(plan.id);
+  const total = planProfitMillion(plan);
+  const seq = plan.textOnly ? pick(plan.textOnly.sequence) : plan.crops.map((c) => pick(CROPS[c.crop].name)).join(' → ');
+  return (
         <ol className={s.ladder}>
           <li>
             <span className={s.step}>{t.officer.ladder[0]}</span>
@@ -72,7 +82,15 @@ export function EvidenceDesk() {
             <ul className={s.limits}>{(rb?.limitations ?? []).map((l) => <li key={l.vi}>{pick(l)}</li>)}</ul>
           </li>
         </ol>
+  );
+}
 
+function DeskSide({ plan, land, setLand }: { plan: Plan; land: Land; setLand: (l: Land) => void }) {
+  const t = useT();
+  const pick = usePick();
+  const rb = rulebookPlan(plan.id);
+  const dp = decisionPlan(plan.id);
+  return (
         <aside className={s.deskSide}>
           <div className={s.fitBox}>
             <h3 className="h3">{t.officer.fitTitle}</h3>
@@ -97,7 +115,5 @@ export function EvidenceDesk() {
             </div>
           )}
         </aside>
-      </article>
-    </div>
   );
 }

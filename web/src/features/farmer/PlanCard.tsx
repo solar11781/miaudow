@@ -209,42 +209,63 @@ function CardHead({ plan }: { plan: Plan }) {
  * the API's decision core (src/data/rulebook.ts), never written in the web app. */
 function GovernedRows({ plan, land }: { plan: Plan; land: Land | null }) {
   const t = useT();
-  const pick = usePick();
   const rb = rulebookPlan(plan.id);
-  const dp = decisionPlan(plan.id);
-  const fit = dp?.applicability[land && land !== 'ask' ? land : 'unknown'];
-  const n = (rb?.risk_lines.length ?? 0) + (dp?.questions_for_officer.length ? 1 : 0);
   return (
     <>
-      {fit && (
-        <Row icon="canal" title={t.farmer.rows.fit}>
-          <p className={s.why}>{pick(fit)}</p>
-        </Row>
-      )}
+      <FitRow plan={plan} land={land} />
       <details className={s.more}>
         <summary><Icon name="alert" size={18} />{t.farmer.moreToWeigh(rb?.risk_lines.length ?? 0)}<Icon name="chevronDown" size={18} /></summary>
-      {n > 0 && rb && rb.risk_lines.length > 0 && (
-        <Row icon="alert" title={t.farmer.rows.checks}>
-          <ul className={s.risks}>
-            {rb.risk_lines.map((r) => (
-              <li key={r.quote}><span>{pick(r.text)}</span><span className={s.where}>{t.farmer.riskWhere(sourceName(r.source_id), r.location)}</span></li>
-            ))}
-          </ul>
-        </Row>
-      )}
-      {rb?.why && (
-        <Row icon="question" title={t.farmer.rows.why}>
-          <p className={s.why}>{pick(rb.why.why)}</p>
-          {rb.why.gaps && <p className={s.why}>{pick(rb.why.gaps)}</p>}
-        </Row>
-      )}
-      {dp && dp.questions_for_officer.length > 0 && (
-        <Row icon="user" title={t.farmer.rows.askOfficer}>
-          <ul className={s.bullets}>{dp.questions_for_officer.slice(0, 4).map((q) => <li key={q.vi}>{pick(q)}</li>)}</ul>
-        </Row>
-      )}
+        <RiskRows plan={plan} />
+        <WhyRows plan={plan} />
+        <AskRows plan={plan} />
       </details>
     </>
+  );
+}
+
+function FitRow({ plan, land }: { plan: Plan; land: Land | null }) {
+  const t = useT();
+  const pick = usePick();
+  const fit = decisionPlan(plan.id)?.applicability[land && land !== 'ask' ? land : 'unknown'];
+  return fit ? <Row icon="canal" title={t.farmer.rows.fit}><p className={s.why}>{pick(fit)}</p></Row> : null;
+}
+
+function RiskRows({ plan }: { plan: Plan }) {
+  const t = useT();
+  const pick = usePick();
+  const risks = rulebookPlan(plan.id)?.risk_lines ?? [];
+  if (!risks.length) return null;
+  return (
+    <Row icon="alert" title={t.farmer.rows.checks}>
+      <ul className={s.risks}>
+        {risks.map((r) => <li key={r.quote}><span>{pick(r.text)}</span><span className={s.where}>{t.farmer.riskWhere(sourceName(r.source_id), r.location)}</span></li>)}
+      </ul>
+    </Row>
+  );
+}
+
+function WhyRows({ plan }: { plan: Plan }) {
+  const t = useT();
+  const pick = usePick();
+  const why = rulebookPlan(plan.id)?.why;
+  if (!why) return null;
+  return (
+    <Row icon="question" title={t.farmer.rows.why}>
+      <p className={s.why}>{pick(why.why)}</p>
+      <p className={s.why}>{pick(why.gaps)}</p>
+    </Row>
+  );
+}
+
+function AskRows({ plan }: { plan: Plan }) {
+  const t = useT();
+  const pick = usePick();
+  const qs = decisionPlan(plan.id)?.questions_for_officer ?? [];
+  if (!qs.length) return null;
+  return (
+    <Row icon="user" title={t.farmer.rows.askOfficer}>
+      <ul className={s.bullets}>{qs.slice(0, 4).map((q) => <li key={q.vi}>{pick(q)}</li>)}</ul>
+    </Row>
   );
 }
 

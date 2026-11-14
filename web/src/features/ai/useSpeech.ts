@@ -30,7 +30,7 @@ export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => voi
   const [error, setError] = useState<string | null>(null);
   const rec = useRef<Recognition | null>(null);
   const cb = useRef(onTranscript);
-  cb.current = onTranscript;
+  useEffect(() => { cb.current = onTranscript; }, [onTranscript]);
 
   const listen = useCallback(() => {
     if (!Ctor) return;

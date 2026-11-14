@@ -20,23 +20,20 @@ function fill(pct: number | null): string {
  * 34 years × 12 months of rain against the 1991-2020 normal of the same month: each row a year, each square a month.
  * One look shows the dry springs and the wet autumns; a tap on a year opens its numbers, each with its source.
  */
-export function RainStrip({ initialYear = 2010 }: { initialYear?: number }) {
+export function RainStrip({ initialYear = 2010, year: controlled, onYear }: { initialYear?: number; year?: number; onYear?: (y: number) => void }) {
   const t = useT();
   const f = useFormat();
   const { lang } = useSettings();
   const id = useId();
   const [ref, W] = useWidth<HTMLDivElement>();
-  const [year, setYear] = useState(initialYear);
+  const [own, setOwn] = useState(initialYear);
+  const year = controlled ?? own;
+  const setYear = (y: number) => { setOwn(y); onYear?.(y); };
   const padL = 58, padT = 30, rowH = W < 520 ? 13 : 16, gap = 2;
   const cw = (W - padL) / 12;
   const H = padT + CLIMATE_YEARS.length * rowH;
-  const sel = climateYear(year);
   const vi = lang === 'vi';
   const base = `${CLIMATE.baseline_years[0]}–${CLIMATE.baseline_years[1]}`;
-  const normalYear = CLIMATE.normal_mm.farmland_weighted.reduce((a, b) => a + b, 0);
-  const derived = (value: string, label: string, detail: string): SourceRef => ({
-    sourceId: 'nasa-power', kind: 'derived', value, label, detail, chain: ['nasa-power', 'modis'],
-  });
 
   return (
     <div className={s.strip}>
@@ -81,7 +78,27 @@ export function RainStrip({ initialYear = 2010 }: { initialYear?: number }) {
             {CLIMATE_YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </label>
-        {sel && (
+        <YearFacts year={year} lang={lang} />
+        <p className={s.stripNote}>{t.common.notForecast}. {t.climate.gridNote}</p>
+      </div>
+      <StripTable />
+    </div>
+  );
+}
+
+/** The selected year's numbers, each a sourced value (one tap to its source sheet, UI-UX-SPEC H5). */
+function YearFacts({ year, lang }: { year: number; lang: 'vi' | 'en' }) {
+  const t = useT();
+  const f = useFormat();
+  const sel = climateYear(year);
+  if (!sel) return null;
+  const vi = lang === 'vi';
+  const base = `${CLIMATE.baseline_years[0]}–${CLIMATE.baseline_years[1]}`;
+  const normalYear = CLIMATE.normal_mm.farmland_weighted.reduce((a, b) => a + b, 0);
+  const derived = (value: string, label: string, detail: string): SourceRef => ({
+    sourceId: 'nasa-power', kind: 'derived', value, label, detail, chain: ['nasa-power', 'modis'],
+  });
+  return (
           <dl className={s.yearFacts}>
             <dt>{t.climate.annual}</dt>
             <dd><SourceValue size="lg" {...derived(`${f.n(sel.annual_rain_mm ?? 0)} mm`, `${t.climate.annual} · ${year}`,
@@ -100,10 +117,13 @@ export function RainStrip({ initialYear = 2010 }: { initialYear?: number }) {
               vi ? 'Ngày có nhiệt độ cao nhất từ 35 °C (ngưỡng dưới của QĐ 18/2021, Điều 47), trung bình theo trọng số các ô.'
                 : 'Days with a maximum of 35 °C or more (lower bound of Decision 18/2021, Art. 47), weighted mean of the cells.')} /></dd>
           </dl>
-        )}
-        <p className={s.stripNote}>{t.common.notForecast}. {t.climate.gridNote}</p>
-      </div>
+  );
+}
 
+function StripTable() {
+  const t = useT();
+  const f = useFormat();
+  return (
       <div className="visually-hidden"><table>
         <caption>{t.climate.stripTitle(CLIMATE_YEARS[0] ?? 0, CLIMATE_YEARS[CLIMATE_YEARS.length - 1] ?? 0)}</caption>
         <thead><tr><th>{t.science.year}</th>{Array.from({ length: 12 }, (_, m) => <th key={m}>{m + 1}</th>)}</tr></thead>
@@ -111,6 +131,5 @@ export function RainStrip({ initialYear = 2010 }: { initialYear?: number }) {
           <tr key={y}><th scope="row">{y}</th>{climateYear(y)?.anomaly_pct.map((p, m) => <td key={m}>{p === null ? '—' : `${f.n(p)}%`}</td>)}</tr>
         ))}</tbody>
       </table></div>
-    </div>
   );
 }

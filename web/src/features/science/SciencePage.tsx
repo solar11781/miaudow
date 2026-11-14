@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { geo, hazards, model, YEARS, type MetricRow, type RiceSeason, type RuleCode } from '../../data';
 import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
@@ -10,28 +11,30 @@ import { SkillChart, type SkillRow } from '../charts/SkillChart';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
+import { RainStrip } from '../charts/RainStrip';
+import { TwoSources } from '../charts/TwoSources';
+import { NdviChart } from '../charts/NdviChart';
 import s from './science.module.css';
 
 const SCIENCE_RULES: RuleCode[] = ['drought_rain_any2', 'drought_rain_consecutive', 'heat', 'heavy_rain', 'cold'];
 type Subset = 'national' | 'na_ht_th' | 'nghe_an';
 const SUBSET_KEY: Record<Subset, string> = { national: 'national', na_ht_th: 'na_ht_th', nghe_an: 'unit:Nghe An' };
 
-function GridSection() {
+function GridSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
   const t = useT();
   const pick = usePick();
   const f = useFormat();
   const refs = useRefs();
   const { calm, lang } = useSettings();
   const [rule, setRule] = useState<RuleCode>('drought_rain_any2');
-  const [year, setYear] = useState<number>(2010);
   const [cell, setCell] = useState<string>(hazards.cells.reduce((a, b) => (b.weight > a.weight ? b : a)).id);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     if (!playing) return;
-    const id = window.setInterval(() => setYear((y) => (y >= (YEARS[YEARS.length - 1] as number) ? (YEARS[0] as number) : y + 1)), 1100);
+    const id = window.setInterval(() => setYear(year >= (YEARS[YEARS.length - 1] as number) ? (YEARS[0] as number) : year + 1), 1100);
     return () => window.clearInterval(id);
-  }, [playing]);
+  }, [playing, year, setYear]);
 
   const share = yearShare(rule, year);
   const info = RULES[rule];
@@ -118,6 +121,47 @@ function GridSection() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+const CELLS = ['19.0_105.0', '19.0_105.625', '18.5_105.625', '19.5_105.0', '19.5_105.625'];
+
+/** One shared year: the rain strip, the two rain sources and the greenness follow the observatory's year. */
+function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
+  const t = useT();
+  const [cell, setCell] = useState(CELLS[0] as string);
+  const q = new URLSearchParams({ q: t.climate.askYearQ(year), hoi: '1' }).toString();
+  return (
+    <section className="band surface-paper" aria-labelledby="climate-title">
+      <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
+        <Reveal className={s.colHead}>
+          <p className="eyebrow">{t.climate.sectionEyebrow}</p>
+          <h2 id="climate-title" className="h1">{t.climate.sectionTitle} · <span className="num">{year}</span></h2>
+          <p className="lead">{t.climate.sectionLead}</p>
+          <Link className={s.askLink} to={`/tro-ly?${q}`} viewTransition><Icon name="spark" size={18} />{t.climate.askYear(year)}</Link>
+        </Reveal>
+        <Reveal className={s.chartCard}><RainStrip year={year} onYear={setYear} /></Reveal>
+        <div className={s.skillGrid}>
+          <Reveal className={s.chartCard}>
+            <h3 className="h3">{t.climate.twoHead}</h3>
+            <p className="muted">{t.climate.twoLead}</p>
+            <label className={s.yearSelect}>
+              <span>{t.climate.cellLabel}</span>
+              <select value={cell} onChange={(e) => setCell(e.target.value)}>
+                {CELLS.map((c) => <option key={c} value={c}>{c.replace('_', '°N ')}°E</option>)}
+              </select>
+            </label>
+            <TwoSources year={year} cell={cell} />
+          </Reveal>
+          <Reveal className={s.chartCard}>
+            <h3 className="h3">{t.climate.ndviHead}</h3>
+            <p className="muted">{t.climate.ndviLead}</p>
+            <NdviChart year={year} />
+          </Reveal>
         </div>
       </div>
     </section>
@@ -236,9 +280,15 @@ function SkillSection() {
 }
 
 export function SciencePage() {
+  const [params, setParams] = useSearchParams();
+  const fromUrl = Number(params.get('nam'));
+  const year = YEARS.includes(fromUrl) ? fromUrl : 2010;
+  // The year lives in the URL: shareable, survives reload, and the copilot and evidence links can carry it.
+  const setYear = useCallback((y: number) => setParams((p) => { const n = new URLSearchParams(p); n.set('nam', String(y)); return n; }, { replace: true, preventScrollReset: true }), [setParams]);
   return (
     <main id="main">
-      <GridSection />
+      <GridSection year={year} setYear={setYear} />
+      <ClimateSection year={year} setYear={setYear} />
       <RiceSection />
       <SkillSection />
     </main>

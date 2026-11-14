@@ -25,3 +25,5 @@
 .yearFacts dt { color: var(--fg-3); margin-top: var(--s-3); }
 .yearFacts dt:first-child { margin-top: 0; }
 .stripNote { color: var(--fg-2); border-top: 1px solid var(--line); padding-top: var(--s-3); }
+.twoTotals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3); margin-top: var(--s-3); }
+.twoTotals dt { color: var(--fg-3); }
