@@ -391,6 +391,7 @@ class CopilotAnswers(Entry):
     plan_money: Text
     model_title: Text
     extractive_head: Text
+    own_field: Text
 
 
 class CopilotTexts(Entry):

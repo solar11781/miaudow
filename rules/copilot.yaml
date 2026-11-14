@@ -94,7 +94,12 @@ answers:
   plan_money:
     vi: "Theo nghiên cứu, tiền lãi của từng cây ({unit}): {parts}."
     en: "In the study, the profit of each crop ({unit}): {parts}."
-  extractive_head: {vi: "Các nguồn này trả lời câu hỏi của bạn:", en: "These sources answer your question:"}
+  extractive_head:
+    vi: "Các nguồn liên quan (số của nghiên cứu trong vùng, không phải ruộng nhà bạn):"
+    en: "Related sources (regional study values, not your field):"
+  own_field:
+    vi: "Miaudow không biết ruộng nhà bạn. Ứng dụng chỉ có số của nghiên cứu và số theo vùng, không phải số của ruộng nhà bạn. Hãy hỏi cán bộ khuyến nông của xã về ruộng nhà mình."
+    en: "Miaudow does not know your field. The app has only study values and regional values, never the values of your own field. Please ask the commune's extension officer about your field."
   model_title:
     vi: "Mô hình dự đoán lúa ({season}) có tốt không?"
     en: "Is the rice model ({season}) any good?"

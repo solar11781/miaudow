@@ -652,10 +652,14 @@ PLAN_WORDS = (
     "what to grow", "what should i grow", "which crop", "crop plan", "rotation", "plans",
 )  # fmt: skip
 YEAR = re.compile(r"\b(19\d\d|20\d\d)\b")  # member B's YEAR_RE
+# CLAUDE.md: regional estimates only, never the asker's own field (last pass of PR #55), matched without accents
+OWN_FIELD = re.compile(r"\b(ruong (nha |cua )?(toi|minh|em|tao)|my (own )?(field|farm|plot|land|paddy))s?\b")
 
 
 def intent(question: str) -> str:
     q = f" {normalize(question)} "
+    if OWN_FIELD.search(q):
+        return "own_field"
     if any(f" {w} " in q for w in FORECAST_WORDS):
         return "forecast"
     if any(f" {w} " in q for w in PLAN_WORDS):
@@ -716,15 +720,16 @@ def _year_citations(corpus: Corpus, year: int) -> list[Citation]:
 
 
 def fixed_only(req: CopilotRequest) -> bool:
-    """A forecast, ranking or today's-price question gets a fixed answer and never reaches the model (review of PR #55)."""
-    return intent(req.question) == "forecast" or GUARD.search(normalize(req.question)) is not None
+    """A forecast, own-field, ranking or today's-price question gets a fixed answer and never reaches the model
+    (security passes of PR #55)."""
+    return intent(req.question) in ("forecast", "own_field") or GUARD.search(normalize(req.question)) is not None
 
 
 def deterministic(req: CopilotRequest, corpus: Corpus) -> CopilotResponse:
     lang, said = req.lang, corpus.answers
     kind = intent(req.question)
-    if kind == "forecast":
-        return _response("insufficient_evidence", said.forecast[lang], set())
+    if kind in ("forecast", "own_field"):  # the fixed answers of rules/copilot.yaml with the same names
+        return _response("insufficient_evidence", getattr(said, kind)[lang], set())
     if kind == "plans":
         data = tool_plans(corpus, lang)
         lines = [said.plans_head[lang], *(f"• {p['name'][lang]}" for p in corpus.plans), said.plans_tail[lang]]
@@ -821,7 +826,7 @@ class _ToolRuns:
         except (ValueError, KeyError) as err:
             out, ok = {"error": str(err)}, False
         year = block.input.get("year") if isinstance(block.input, dict) else None
-        shown = {"year": year} if type(year) is int else {}
+        shown = {"year": year} if ok and type(year) is int else {}  # a failed call shows no year
         self.trace.append(ToolCall(tool=block.name if block.name in TOOL_NAMES else "unknown", input=shown, ok=ok))
         content = json.dumps(out, ensure_ascii=False)
         self.result_bytes += len(content.encode())

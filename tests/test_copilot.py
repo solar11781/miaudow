@@ -352,7 +352,7 @@ def test_a_bad_tool_input_is_an_error_result_not_a_crash(
 ) -> None:
     api = fake_api(lambda _: tool_use("year_conditions", {"year": 1800}), lambda _: final())
     out = ask(app_client(monkeypatch), "Năm 1800?")
-    assert out["tool_trace"] == [{"tool": "year_conditions", "input": {"year": 1800}, "ok": False}]
+    assert out["tool_trace"] == [{"tool": "year_conditions", "input": {}, "ok": False}]  # a failed call shows no year
     result = sent(api, 1)["messages"][-1]["content"][0]
     assert result["is_error"] is True
 
@@ -643,3 +643,52 @@ def test_a_yield_unit_is_read_as_a_unit() -> None:
     for text in ("44 tonnes per ha", "5 tons", "5 tạ", "5 yến", "5 sào", "44 hectares", "5 usd", "5 dollars"):
         assert copilot.check_numbers(text, known).unverified, text
     assert copilot.check_numbers("5 cells", known).unverified == []
+
+
+# ---- last pass of PR #55: own-field questions and the trace of failed calls
+
+
+OWN_FIELD = [
+    ("vi", "Ruộng nhà tôi trồng lạc thì lãi bao nhiêu?"),  # the review's two questions
+    ("en", "How much will my field earn with peanut?"),
+    ("vi", "Ruong nha toi trong lac thi lai bao nhieu?"),
+    ("vi", "Ruộng của tôi có hạn không?"),
+    ("vi", "ruộng nhà mình cần bao nhiêu nước"),
+    ("en", "Is my farm too dry for rice?"),
+    ("en", "What can my plot earn?"),
+]
+
+
+@pytest.mark.parametrize(("lang", "question"), OWN_FIELD)
+@pytest.mark.parametrize("key", [KEY, None])
+def test_an_own_field_question_gets_the_fixed_answer(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], lang: str, question: str, key: str | None
+) -> None:
+    api = fake_api(*SEARCH, lambda _: final(["plan-cc1"]))
+    out = ask(app_client(monkeypatch, "1", key), question, lang)
+    assert api.requests == []
+    assert out["engine"] == "deterministic"
+    assert out["status"] == "insufficient_evidence"
+    assert out["answer"] == copilot.load_corpus(REPO).answers.own_field[lang]
+    assert out["citations"] == []
+    assert "25.980" not in out["answer"]
+    assert "25,980" not in out["answer"]
+
+
+def test_the_head_line_says_the_values_are_regional() -> None:
+    head = copilot.load_corpus(REPO).answers.extractive_head
+    assert "không phải ruộng nhà bạn" in head["vi"]
+    assert "not your field" in head["en"]
+
+
+def test_a_failed_call_shows_no_year_in_the_trace(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    fake_api(
+        lambda _: tool_uses(("year_conditions", {"year": 2031}), ("year_conditions", {"year": 2010})), lambda _: final()
+    )
+    out = ask(app_client(monkeypatch), "Năm 2010?")
+    assert out["tool_trace"] == [
+        {"tool": "year_conditions", "input": {}, "ok": False},
+        {"tool": "year_conditions", "input": {"year": 2010}, "ok": True},
+    ]
