@@ -58,16 +58,27 @@ comes back to this task; a review never ends the task. Then continue with the ne
 3. For a user-facing screen: a Playwright check at 360 x 740 and the `cognitive-walkthrough` skill as described in
    `CLAUDE.md`.
 
+Every review is thorough and double-checked (team, 2026-11-14):
+
+- Check each finding against the code before acting on it. Fix the real ones; for each one dismissed, write the reason
+  (the code line or spec line that shows it is not a problem).
+- After the fixes, run the full checks and every review of this step a second time on the final state. Only a clean
+  second pass counts; if it finds something new, fix it and run that pass again.
+- Report both passes in the pull request: findings, fixes and dismissals with their reasons.
+
 ## 6. Commit and push
 
-- Commits in the format of `CLAUDE.md`.
+- Commits in the format of `CLAUDE.md`, one logical step each (the failing test, the implementation, each review
+  fix, the docs), never one commit for the whole task and never work-in-progress commits: with normal merges every
+  branch commit stays on `main`.
 - `git push -u origin <branch>`. Never push to `main`, never force push. The safety hook blocks these; if it blocks
   something, do not work around it, report it.
 
 ## 7. Pull request
 
 Write the body: what and why (one or two lines), the spec lines it implements, the tests run and their real result,
-review findings fixed and left open, what was skipped, risks.
+review findings fixed and left open, what was skipped, risks. A task from the queue names its item in the title, for
+example `chore: switch the gate to normal merges (queue item 0)`.
 
 - If `gh` is installed and signed in (`gh auth status`): `gh pr create --base main --head <branch> --title
   "<type>: <summary>" --body "<body>"`.
@@ -81,14 +92,19 @@ review findings fixed and left open, what was skipped, risks.
    branch, run the local checks, push, watch again. After three failed rounds, stop and report the evidence.
 2. If `main` moved: `git fetch origin && git merge origin/main` on this branch (never rebase pushed work), run the
    local checks, push, and let CI run again.
-3. Run the `security-review` skill on the branch (inside an Agent subagent, as in step 5). Fix real findings (back to 1). A finding that needs a decision
+3. Run the `security-review` skill on the branch (inside an Agent subagent, as in step 5), double-checked as in step
+   5: verify each finding, fix the real ones (back to 1), then a second clean pass. A finding that needs a decision
    about science, rules, numbers or scope: stop and ask (under the autopilot: park it, do not merge).
-4. When CI is green, spec-review and security-review have no open issue, and no commit came after them, post the gate
-   record as a pull request comment, with this exact last line:
+4. When CI is green, the second passes of spec-review and security-review have no open issue, and no commit came
+   after them, post the gate record as a pull request comment, with this exact last line:
    `review-gates: spec-review=pass security-review=pass tests=pass`
-   Above it, list the evidence: check names and results, review findings fixed.
-5. Merge: `gh pr merge <number> --squash`, run alone. If the hook refuses, read its reason, fix that, and retry;
-   never change the command to get around it.
+   Above it, list the evidence: check names and results, findings of both passes and what was done with each.
+5. Merge: `gh pr merge <number> --merge` (a normal merge: every branch commit lands on `main` unchanged; squash and
+   rebase are refused), run alone. If the hook refuses, read its reason, fix that, and retry; never change the
+   command to get around it.
+6. A task from the queue: mark it done in the planning repository's copy of the queue (time and pull request number)
+   and push that at once, so a member who joins later sees it. Never name or link the planning repository in this
+   repository.
 
 ## 9. Report
 
