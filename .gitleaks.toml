@@ -1,6 +1,6 @@
 # Secret scan settings: gitleaks' default rules plus one narrow exception.
 # The artifacts name each plan crop by its UI-UX-SPEC crop key (for example "cc1_spring_peanut"); the generic API key
-# rule reads `"crop_key": "<value>"` as a key, so that exact field pattern is allowed for that rule only.
+# rule reads `"crop_key": "<plan>_<season>_<crop>"` as a key, so only that key format is allowed, for that rule only.
 
 [extend]
 useDefault = true
@@ -9,4 +9,4 @@ useDefault = true
 description = "UI-UX-SPEC crop keys in artifacts, not secrets"
 targetRules = ["generic-api-key"]
 regexTarget = "match"
-regexes = ['''crop_key"?\s*:\s*"[a-z0-9_]+"''']
+regexes = ['''^crop_key"?\s*:\s*"(usual|cc[1-4])_(spring|summer_autumn|autumn_winter)_[a-z_]+"$''']
