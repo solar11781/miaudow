@@ -20,6 +20,7 @@ BOUNDARIES=data/raw/boundaries/geoBoundaries-VNM-ADM1_simplified.geojson
 pip install pyhdf==0.11.7
 python scripts/modis_landcover.py 2001 2015
 python scripts/build_cell_weights.py
+python scripts/build_grid_figure.py   # artifacts/figures/nghe_an_grid.svg for the method page (D-135)
 
 # 3. NASA POWER daily data for every weighted cell (cached files are reused), then the training feature table.
 python scripts/download_power.py
