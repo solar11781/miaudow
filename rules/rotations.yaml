@@ -5,8 +5,8 @@
 # order. Money: P-02 Table 13 "Lãi thuần" (profit) and Tables 4, 8, 12 "Tổng chi" (cost), thousand VND per ha, nominal,
 # written with the digit grouping of 05-DATA-CONTRACTS §6 and UI-UX-SPEC §8 ("16,200 thousand đ/ha"). The whole-year
 # total is computed by the engine, never stored here (§7). Water facts come from rules/crops.yaml per crop id (D-64).
-# Names, flags, definitions, risks and translations are drafts for the copy review. `why` is not written yet
-# [OPEN: question for the team: what each of why, evidence, benefits and gaps holds, from which source].
+# Names, flags, definitions, risks and translations are drafts for the copy review. `why` holds short lines from the
+# studies with their page, and states the gap where a study says nothing (team, 2026-11-14; D-156).
 - id: usual
   name: {vi: "Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu",
          en: "Rice Khang dân - black bean VT1 - sweet potato Chiêm Dâu"}
@@ -41,6 +41,23 @@
         en: "In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the
           paper does not explain this."
   risks: []
+  why:
+    why:
+      vi: "Cơ cấu đối chứng của người dân trong nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "The farmers' own control structure in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: &p02_why_evidence
+      vi: "Một thử nghiệm tại xã Lưu Sơn, huyện Đô Lương, \"từ tháng 6 năm 2020 đến tháng 6 năm 2021\" (tr. 45); mỗi cây
+        trồng một ô 1.000 m2 trong một vụ, không lặp lại."
+      en: "One trial in Lưu Sơn commune, Đô Lương district, from June 2020 to June 2021 (p. 45); one unreplicated plot of
+        1,000 m2 per crop and season."
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: &p02_why_gaps
+      vi: "Bài báo không nói cả cơ cấu có được trồng trên cùng một ruộng hay không. Chỉ có một năm và một địa điểm, nên
+        chưa biết kết quả ở các năm hay các xã khác."
+      en: "The paper does not say whether one field carried the whole structure. There is one year and one site only,
+        so results in other years or communes are not known."
   study_type: &p02_study field_trial_each_crop_in_its_season_unreplicated  # never "tested whole-year sequence" (D-57)
   limitations: &p02_limitations  # D-57, D-62, D-66
     - &one_site {vi: "Một địa điểm", en: "One site"}
@@ -80,6 +97,24 @@
         Autumn-winter: fallow."
     price_year: "2020-21"  # D-103: P-03 p.3 prices at harvest; trial June 2020 - June 2021
   risks: []
+  why:
+    why:
+      vi: "Cơ cấu của người dân \"Lúa - lúa - bỏ hoang\" là đối chứng trong nghiên cứu \"Thử nghiệm một số công thức
+        luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại
+        xã Lưu Sơn, huyện Đô Lương (tr. 2)."
+      en: "The farmers' structure \"rice - rice - fallow\" is the control in the study \"Thử nghiệm một số công thức luân
+        canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An\" (testing some rotation formulas on
+        inefficient, water-short rice land in Nghệ An province; our translation) by Trịnh Đức Toàn et al., 2023, in Lưu
+        Sơn commune, Đô Lương district (p. 2)."
+    evidence:
+      vi: "Một năm, từ tháng 6/2020 đến tháng 6/2021; mỗi cây trồng một ô 1.000 m2, không lặp lại (tr. 2)."
+      en: "One year, June 2020 to June 2021; one unreplicated plot of 1,000 m2 per crop (p. 2)."
+    benefits:
+      vi: "Bài báo không nêu lợi ích riêng của cơ cấu đối chứng này."
+      en: "The paper states no benefit of this control structure."
+    gaps:
+      vi: "Bài báo không ghi ngày gieo và ngày thu hoạch, và lợi nhuận chỉ trừ chi phí vật chất (tr. 3)."
+      en: "The paper gives no sowing or harvest dates, and its profit subtracts material costs only (p. 3)."
   study_type: field_trial_each_crop_in_its_season_unreplicated
   limitations:  # D-52
     - *one_site
@@ -153,6 +188,15 @@
           crop and livestock structures on rice land for the whole province ...; issued before 30 November of the year
           before the plan year.\""
       source_ids: [R-G27]
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên. Bài báo cũng ghi: \"Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.\" (tr. 48)"
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above. The paper also says: \"The total cost of growing peanut and chili F1 is usually 2 - 3 times that of growing rice\" (p. 48; our translation)."
+    gaps: *p02_why_gaps
   study_type: *p02_study
   limitations: *p02_limitations
   source_ids: [R-P02]
@@ -194,6 +238,15 @@
     - *law_6_1
     - *law_6_4
     - *law_7_1
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên. Bài báo cũng ghi: \"Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.\" (tr. 48)"
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above. The paper also says: \"The total cost of growing peanut and chili F1 is usually 2 - 3 times that of growing rice\" (p. 48; our translation)."
+    gaps: *p02_why_gaps
   study_type: *p02_study
   limitations: *p02_limitations
   source_ids: [R-P02]
@@ -227,6 +280,15 @@
     - *law_6_1
     - *law_6_4
     - *law_7_1
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: *p02_why_gaps
   study_type: *p02_study
   limitations: *p02_limitations
   source_ids: [R-P02]
@@ -260,6 +322,15 @@
     - *law_6_1
     - *law_6_4
     - *law_7_1
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: *p02_why_gaps
   study_type: *p02_study
   limitations: *p02_limitations
   source_ids: [R-P02]
