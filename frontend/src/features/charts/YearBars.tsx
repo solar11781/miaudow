@@ -30,7 +30,15 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
   const y = (v: number) => padT + (1 - v) * (H - padT - padB);
   return (
     <figure className={s.figure} ref={ref}>
-      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className={s.svg} role="img" aria-labelledby={`${id}-t`}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        width={W}
+        height={H}
+        className={s.svg}
+        role="img"
+        aria-labelledby={`${id}-t`}
+        data-bars
+      >
         <title id={`${id}-t`}>{label}</title>
         {[0, 0.5, 1].map((g) => (
           <g key={g}>
@@ -57,6 +65,7 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
                 fill={color}
                 opacity={isSel ? 1 : strong ? 0.92 : 0.38}
                 className={isSel ? s.sel : undefined}
+                data-bar
               />
               {(yr % every === 0 || isSel) && (
                 <text x={x + bw / 2} y={H - 6} textAnchor="middle" className={isSel ? s.tickSel : s.tick}>

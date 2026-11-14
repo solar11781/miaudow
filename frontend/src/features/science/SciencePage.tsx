@@ -1,4 +1,7 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState, useRef } from 'react';
+import { usePageReveals } from '../../motion/cinema';
+import { ART } from '../../data/art';
+import { PhotoHead } from '../../design-system/PhotoHead';
 import { Link, useSearchParams } from 'react-router-dom';
 import { geo, hazards, model, YEARS, type RiceSeason, type RuleCode } from '../../data';
 import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
@@ -21,7 +24,6 @@ const SCIENCE_RULES: RuleCode[] = ['drought_rain_any2', 'drought_rain_consecutiv
 
 function GridSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
   const t = useT();
-  const local = useLocalTo();
   const pick = usePick();
   const f = useFormat();
   const refs = useRefs();
@@ -46,17 +48,6 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
   return (
     <section className={`band surface-forest grain ${s.gridBand}`} aria-labelledby="grid-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-6)' }}>
-        <header className={s.pageHead}>
-          <p className="eyebrow">{t.science.eyebrow}</p>
-          <h1 className={`display ${s.pageTitle}`}>{t.science.title}</h1>
-          <p className="lead">{t.science.lead}</p>
-          <Link to={local(`/dai-quan-sat?canh=analysis&nam=${year}`)} className={s.globeLink}>
-            <Icon name="globe" size={20} />
-            {t.science.globeCta}
-            <Icon name="arrowRight" size={18} />
-          </Link>
-        </header>
-
         <div className={s.rules} role="radiogroup" aria-label={t.science.rule}>
           {SCIENCE_RULES.map((r) => (
             <button
@@ -224,7 +215,6 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
     <section className="band surface-paper" aria-labelledby="climate-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
         <Reveal className={s.colHead}>
-          <p className="eyebrow">{t.climate.sectionEyebrow}</p>
           <h2 id="climate-title" className="h1">
             {t.climate.sectionTitle} · <span className="num">{year}</span>
           </h2>
@@ -323,7 +313,23 @@ function MethodLink() {
   );
 }
 
+function ScienceHead({ year }: { year: number }) {
+  const t = useT();
+  const local = useLocalTo();
+  return (
+    <PhotoHead shot={ART.pageHead.science} id="science-title" title={t.science.title} lead={t.science.lead}>
+      <Link to={local(`/dai-quan-sat?canh=analysis&nam=${year}`)} className={s.globeLink}>
+        <Icon name="globe" size={20} />
+        {t.science.globeCta}
+        <Icon name="arrowRight" size={18} />
+      </Link>
+    </PhotoHead>
+  );
+}
+
 export function SciencePage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
   const [params, setParams] = useSearchParams();
   const fromUrl = Number(params.get('nam'));
   const year = YEARS.includes(fromUrl) ? fromUrl : 2010;
@@ -341,7 +347,8 @@ export function SciencePage() {
     [setParams],
   );
   return (
-    <main id="main">
+    <main ref={pageRef} id="main">
+      <ScienceHead year={year} />
       <GridSection year={year} setYear={setYear} />
       <ClimateSection year={year} setYear={setYear} />
       <RiceSection />

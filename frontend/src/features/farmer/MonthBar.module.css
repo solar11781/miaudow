@@ -33,7 +33,6 @@
 .seg {
   position: absolute;
   border-radius: 7px;
-  border-left: 3px solid;
   display: flex;
   align-items: center;
   padding-left: 0.45rem;

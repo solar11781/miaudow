@@ -1,3 +1,4 @@
+import { planLabel } from '../../domain/plans';
 import { model } from '../../data';
 import { RULES } from '../../domain/hazards';
 import { CROPS, PLANS, planProfitMillion } from '../../domain/plans';
@@ -55,7 +56,7 @@ const STATIC: Passage[] = [
     kind: 'study',
     sources: ['p02'],
     keys: 'p02 thu nghiem luu son do luong o 1000 m2 khong lap lai co cau',
-    title: { vi: 'Thử nghiệm P-02 được làm thế nào?', en: 'How was the P-02 trial done?' },
+    title: { vi: 'Thử nghiệm ở Lưu Sơn được làm thế nào?', en: 'How was the Lưu Sơn trial done?' },
     text: {
       vi: 'Thử nghiệm ở xã Lưu Sơn, Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không.',
       en: 'The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on inefficient, drought-prone rice land. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
@@ -71,8 +72,8 @@ const STATIC: Passage[] = [
       en: 'What does summer rice earn on water-short land?',
     },
     text: {
-      vi: 'Nghiên cứu P-03 ở Lưu Sơn ghi lúa hè thu năm 2020 lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác P-02. P-03 mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”.',
-      en: 'Study P-03 in Lưu Sơn records 2020 summer rice profit of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from P-02. P-03 describes current practice as “rice – rice – fallow”.',
+      vi: 'Bài báo thứ hai của nhóm Trịnh Đức Toàn (2023) ở Lưu Sơn ghi lúa hè thu năm 2020 lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Bài này tính lãi theo cách khác bài thử nghiệm. Bài mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”.',
+      en: 'The second paper of Trịnh Đức Toàn et al. (2023) in Lưu Sơn records 2020 summer rice profit of 1.16 million VND/ha, “almost no profit”. It defines profit differently from the trial paper. It describes current practice as “rice – rice – fallow”.',
     },
   },
   {
@@ -132,13 +133,10 @@ function planPassages(): Passage[] {
       kind: 'study',
       sources: ['p02'],
       keys: `${p.id} ${p.crops.map((c) => `${CROPS[c.crop].name.vi} ${CROPS[c.crop].name.en} ${c.variety}`).join(' ')} lai co cau`,
-      title: {
-        vi: `${p.current ? 'Cách làm hiện nay' : `Cơ cấu ${p.id.toUpperCase()}`}: ${seq('vi')}`,
-        en: `${p.current ? 'Current practice' : `Plan ${p.id.toUpperCase()}`}: ${seq('en')}`,
-      },
+      title: { vi: `${planLabel(p, 'vi')}: ${seq('vi')}`, en: `${planLabel(p, 'en')}: ${seq('en')}` },
       text: {
-        vi: `Trong thử nghiệm P-02 (2020–21), lãi đã trừ công của từng vụ (triệu đồng/ha): ${parts('vi')}; cộng lại ${n1(total, 'vi')} triệu đồng/ha (phép cộng của Miaudow). Một ô thử, một năm; giá bán năm nay có thể khác.`,
-        en: `In the P-02 trial (2020–21), profit net of labour per season (million VND/ha): ${parts('en')}; ${n1(total, 'en')} in total (Miaudow’s sum). One plot, one year; this year’s prices may differ.`,
+        vi: `Trong thử nghiệm ở Lưu Sơn (2020–21), lãi đã trừ công của từng vụ (triệu đồng/ha): ${parts('vi')}; cộng lại ${n1(total, 'vi')} triệu đồng/ha (phép cộng của Miaudow). Một ô thử, một năm; giá bán năm nay có thể khác.`,
+        en: `In the Lưu Sơn trial (2020–21), profit net of labour per season (million VND/ha): ${parts('en')}; ${n1(total, 'en')} in total (Miaudow’s sum). One plot, one year; this year’s prices may differ.`,
       },
     };
   });

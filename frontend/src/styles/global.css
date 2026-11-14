@@ -1,17 +1,14 @@
+@import '@fontsource-variable/alegreya/wght.css';
+@import '@fontsource/charm/vietnamese-700.css';
+@import '@fontsource/charm/latin-700.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-400.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-500.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-600.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-700.css';
 @import '@fontsource/be-vietnam-pro/latin-400.css';
 @import '@fontsource/be-vietnam-pro/latin-500.css';
 @import '@fontsource/be-vietnam-pro/latin-600.css';
-@import '@fontsource/noto-serif-display/vietnamese-400.css';
-@import '@fontsource/noto-serif-display/vietnamese-400-italic.css';
-@import '@fontsource/noto-serif-display/vietnamese-500.css';
-@import '@fontsource/noto-serif-display/latin-400.css';
-@import '@fontsource/noto-serif-display/latin-400-italic.css';
-@import '@fontsource/noto-serif-display/latin-500.css';
-@import '@fontsource/jetbrains-mono/latin-400.css';
-@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/be-vietnam-pro/latin-700.css';
 @import './tokens.css';
 
 *,
@@ -27,12 +24,15 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--page-gradient);
+  background-attachment: fixed;
   color: var(--fg);
   font: 400 var(--t-body) / var(--lh-body) var(--font-ui);
   font-feature-settings: 'kern', 'liga';
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  caret-color: var(--c-gold-600);
 }
 img,
 svg,
@@ -68,69 +68,88 @@ ol {
 }
 a {
   color: inherit;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
 }
-:where(button, a, input, summary, [tabindex]):focus-visible {
-  outline: 3px solid var(--focus);
+:where(button, a, input, summary, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 ::selection {
   background: var(--c-gold-300);
   color: var(--c-ink-900);
 }
+html {
+  scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transparent;
+  scrollbar-width: thin;
+}
 
-/* typography */
+/* typography: Alegreya for what is read at a distance, Be Vietnam Pro for what is read up close, Charm brush lettering
+   for one accent phrase per heading (the words after the first comma, see design-system/Accent.tsx) */
 .display {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--w-display);
   letter-spacing: -0.012em;
   line-height: var(--lh-tight);
   text-wrap: balance;
 }
 .display em {
-  font-style: italic;
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 700;
   color: var(--accent-ink);
+  letter-spacing: 0;
+}
+.script {
+  font-family: var(--font-script);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.h1 em,
+.h2 em {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent-ink);
+  letter-spacing: 0;
+  font-size: 1.02em;
 }
 .h1 {
-  font: 400 var(--t-h1) / var(--lh-head) var(--font-display);
-  letter-spacing: -0.01em;
+  font: var(--w-display) var(--t-h1) / var(--lh-head) var(--font-display);
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 .h2 {
-  font: 400 var(--t-h2) / var(--lh-head) var(--font-display);
-  letter-spacing: -0.006em;
+  font: var(--w-head) var(--t-h2) / 1.1 var(--font-display);
+  letter-spacing: -0.008em;
   text-wrap: balance;
 }
 .h3 {
-  font: 600 var(--t-h3) / 1.3 var(--font-ui);
-  letter-spacing: -0.006em;
+  font: var(--w-head) var(--t-h3) / 1.2 var(--font-display);
+  letter-spacing: 0;
   text-wrap: balance;
 }
 .lead {
   font-size: var(--t-lead);
-  line-height: 1.55;
+  line-height: 1.5;
+  font-weight: 500;
   color: var(--fg-2);
   max-width: var(--reading);
   text-wrap: pretty;
 }
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  font: 500 var(--t-small) / 1.3 var(--font-ui);
-  color: var(--fg-3);
-  letter-spacing: 0.01em;
+p {
+  text-wrap: pretty;
 }
-.eyebrow::before {
-  content: '';
-  width: 22px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.7;
+/* A plain line of context; never a tracked kicker with a rule in front. */
+.eyebrow {
+  display: block;
+  font: 500 var(--t-small) / 1.4 var(--font-ui);
+  color: var(--fg-3);
 }
 .mono {
-  font-family: var(--font-mono);
-  font-size: 1em;
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums lining-nums;
   letter-spacing: 0;
 }
 .num {
@@ -152,7 +171,7 @@ a {
   padding-right: var(--gutter-r);
 }
 .band {
-  padding-block: clamp(3.5rem, 2.5rem + 4vw, 7rem);
+  padding-block: clamp(4rem, 2.5rem + 5vw, 8.5rem);
   position: relative;
 }
 .band-tight {
@@ -169,12 +188,17 @@ a {
   align-items: center;
   gap: var(--gap, var(--s-3));
 }
+/* page sections let the page gradient show through; night bands paint their own deeper green */
 .surface-paper {
-  background-color: var(--bg);
+  background-color: transparent;
   position: relative;
   isolation: isolate;
 }
-.surface-paper::before,
+/* film grain: everywhere on the night surfaces, never on the tools */
+.surface-forest.grain {
+  position: relative;
+  isolation: isolate;
+}
 .surface-forest.grain::before {
   content: '';
   position: absolute;
@@ -183,14 +207,7 @@ a {
   pointer-events: none;
   background-image: var(--grain);
   opacity: var(--grain-opacity);
-  mix-blend-mode: multiply;
-}
-.surface-forest.grain {
-  position: relative;
-  isolation: isolate;
-}
-.surface-forest.grain::before {
-  mix-blend-mode: screen;
+  mix-blend-mode: overlay;
 }
 .visually-hidden {
   position: absolute !important;
@@ -221,32 +238,38 @@ a {
   transform: none;
 }
 
-/* field-row divider: the app's quiet signature line, like rows of seedlings */
+/* a quiet divider */
 .rows-rule {
-  height: 10px;
+  height: 1px;
   border: 0;
   margin: 0;
-  background: repeating-linear-gradient(90deg, var(--line-2) 0 1px, transparent 1px 9px);
-  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  opacity: 0.8;
+  background: var(--line);
 }
 
-/* reveal on scroll: elements in the first screen are never hidden (see useReveal) */
+/* Content is visible at rest. Motion is added by GSAP only when allowed (src/motion), never by a hidden start state
+   in CSS, so a slow phone, a screen reader or a screenshot always gets the whole page. */
 .reveal {
-  transition:
-    opacity var(--d-slow) var(--ease-out),
-    transform var(--d-slow) var(--ease-out);
-}
-.reveal[data-pre='true'] {
-  opacity: 0;
-  transform: translateY(22px);
 }
 
 /* route transitions (View Transitions API) */
-::view-transition-old(root),
+/* route change: the old page settles back, the new one lifts in */
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+::view-transition-old(root) {
+  animation: 240ms var(--ease-in-out) both vt-out;
+}
 ::view-transition-new(root) {
-  animation-duration: 320ms;
-  animation-timing-function: var(--ease-out);
+  animation: 560ms var(--ease-out) 40ms both vt-in;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -258,9 +281,9 @@ a {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal[data-pre='true'] {
-    opacity: 1;
-    transform: none;
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
   /* pseudo-elements of the view transition are not matched by the universal selector above (H1, D-155) */
   ::view-transition-old(root),
@@ -274,11 +297,6 @@ a {
   animation: none !important;
   transition: none !important;
 }
-:root[data-lite='true'] .reveal[data-pre='true'] {
-  opacity: 1;
-  transform: none;
-}
-:root[data-lite='true'] .surface-paper::before,
 :root[data-lite='true'] .grain::before {
   display: none;
 }

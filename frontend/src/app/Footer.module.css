@@ -25,12 +25,13 @@
   gap: 0.8rem;
 }
 .name {
-  font: 500 1.8rem/1 var(--font-display);
+  font: 750 2rem/1 var(--font-display);
+  letter-spacing: -0.015em;
 }
 .tagline {
-  font: italic 400 1.35rem/1.35 var(--font-display);
+  font: 700 1.6rem/1.15 var(--font-display);
   color: var(--c-gold-300);
-  max-width: 26ch;
+  max-width: 22ch;
 }
 .support {
   color: var(--fg-2);
@@ -101,4 +102,24 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+.tagline {
+  font-family: var(--font-script);
+  font-weight: 700;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+/* the brocade band sits on the very top edge of the footer */
+.footer {
+  padding-top: 0;
+}
+.grid {
+  padding-top: var(--s-16);
 }

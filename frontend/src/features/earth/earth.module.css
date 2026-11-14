@@ -93,14 +93,14 @@
   color: var(--c-gold-300);
 }
 .title {
-  font: 400 clamp(1.9rem, 1.4rem + 1.6vw, 3rem)/1.1 var(--font-display);
+  font: 700 clamp(1.9rem, 1.4rem + 1.6vw, 3rem)/1.1 var(--font-display);
   letter-spacing: -0.01em;
 }
 .sceneName {
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
-  font: 400 clamp(1.25rem, 1.1rem + 0.5vw, 1.6rem)/1.3 var(--font-display);
+  font: 700 clamp(1.25rem, 1.1rem + 0.5vw, 1.6rem)/1.3 var(--font-display);
   color: #fbf8f0;
 }
 .sceneNum {
@@ -370,7 +370,7 @@
   gap: 0.6rem;
 }
 .insightText {
-  font: 400 1.3rem/1.4 var(--font-display);
+  font: 700 1.5rem/1.3 var(--font-display);
   color: #fbf8f0;
 }
 .insightLinks {
@@ -470,12 +470,19 @@
   position: absolute;
   inset: 0;
   display: grid;
-  place-content: center;
+  align-content: start;
+  justify-items: center;
   gap: var(--s-4);
-  padding: var(--s-8);
+  overflow-y: auto;
+  padding: 12rem var(--s-6) 7rem;
   text-align: center;
   color: #f4f0e5;
   background: var(--g-forest-depth);
+}
+.scan {
+  width: 100%;
+  max-width: 1100px;
+  text-align: left;
 }
 .fallback p {
   max-width: 46ch;
@@ -520,7 +527,7 @@
   gap: var(--s-3);
 }
 .eyesHead h2 {
-  font: 400 1.6rem/1.2 var(--font-display);
+  font: 700 1.6rem/1.2 var(--font-display);
 }
 .eyesActions {
   display: flex;
@@ -568,11 +575,14 @@
     flex-direction: column;
     overflow: visible;
   }
-  .globe,
-  .fallback {
+  .globe {
     position: relative;
     height: 62svh;
     min-height: 380px;
+  }
+  .fallback {
+    position: relative;
+    padding-top: 8rem;
   }
   .head {
     top: 12px;
@@ -612,4 +622,28 @@
 }
 .label {
   overflow-wrap: normal;
+}
+
+.satBtn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(244, 242, 234, 0.3);
+  background: rgba(6, 13, 9, 0.55);
+  color: #f4f2ea;
+  font-weight: 600;
+}
+.satBtn:hover {
+  border-color: var(--c-gold-500);
+}
+.flagNote {
+  max-width: 34rem;
+  color: #d6ddd0;
+  font-size: var(--t-small);
+  line-height: 1.5;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }

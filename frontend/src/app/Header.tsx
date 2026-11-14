@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { pathFor, useLocalTo } from './paths';
 import { ButtonLink } from '../design-system/Button';
 import { Icon, type IconName } from '../design-system/Icon';
-import { BrandMark } from './Brand';
+import { BrandMark, BrandWordmark } from './Brand';
 import { SavedLink } from '../features/account/SavedLink';
 import { useSettings, useT, type Theme } from './settings';
 import s from './Header.module.css';
@@ -27,12 +27,16 @@ function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
     <div className={inMenu ? s.settingsMenu : farmer ? s.settingsFarmer : s.settings}>
       <button
         type="button"
-        className={s.chip}
-        aria-pressed={lite}
+        role="switch"
+        aria-checked={lite}
+        className={s.switch}
         onClick={() => setLite(!lite)}
         title={t.nav.liteHelp}
       >
-        <Icon name="feather" size={17} /> <span>{t.nav.lite}</span>
+        <span className={s.track} aria-hidden="true">
+          <span className={s.thumb} />
+        </span>
+        <span>{t.nav.lite}</span>
       </button>
       <button
         type="button"
@@ -81,7 +85,7 @@ function FarmerHeader() {
         <Link to={local('/')} className={s.brand} viewTransition>
           <BrandMark />
           <span className={s.word}>
-            <span className={s.name}>Miaudow</span>
+            <BrandWordmark height={18} className={s.wordmark} />
             <span className={s.tag}>{t.nav.farmer}</span>
           </span>
         </Link>
@@ -129,7 +133,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
         <Link to={local('/')} className={s.brand} viewTransition>
           <BrandMark />
           <span className={s.word}>
-            <span className={s.name}>Miaudow</span>
+            <BrandWordmark height={18} className={s.wordmark} />
             <span className={s.tag}>{t.nav.tagline}</span>
           </span>
         </Link>
@@ -167,7 +171,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
           <div className={s.menuHead}>
             <span className={s.brand}>
               <BrandMark />
-              <span className={s.name}>Miaudow</span>
+              <BrandWordmark height={18} className={s.wordmark} />
             </span>
             <button
               type="button"

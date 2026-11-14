@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { usePageReveals } from '../../motion/cinema';
+import { planLabel } from '../../domain/plans';
+import { ART } from '../../data/art';
 import { YEARS } from '../../data';
 import { yearShare } from '../../domain/hazards';
 import { CROPS, PLANS, planHasLegume, planProfitMillion, type CropInfo } from '../../domain/plans';
@@ -11,12 +14,13 @@ import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useProvenance } from '../provenance/ProvenanceProvider';
-import { useFormat, usePick, useT } from '../../app/settings';
+import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { EvidenceDesk } from './EvidenceDesk';
 import s from './officer.module.css';
 
 function Matrix() {
   const t = useT();
+  const { lang } = useSettings();
   const pick = usePick();
   const f = useFormat();
   const refs = useRefs();
@@ -38,7 +42,7 @@ function Matrix() {
             return (
               <tr key={p.id}>
                 <th scope="row">
-                  <span className={s.planId}>{p.current ? t.farmer.current : p.id.toUpperCase()}</span>
+                  <span className={s.planId}>{planLabel(p, lang, false)}</span>
                   <span className={s.planSeq}>
                     {p.textOnly ? pick(p.textOnly.sequence) : p.crops.map((c) => pick(CROPS[c.crop].name)).join(' → ')}
                   </span>
@@ -54,7 +58,7 @@ function Matrix() {
                         kind="study"
                         value={pick(p.textOnly.profitNote)}
                         label={t.officer.colMoney}
-                        showSource="P-03"
+                        showSource="Trịnh Đức Toàn và cs. 2023 (bài 2)"
                       />
                     )
                   )}
@@ -179,6 +183,8 @@ function Registry() {
 }
 
 export function OfficerPage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
   const t = useT();
   const f = useFormat();
   const lastDry = [...YEARS].reverse().find((y) => yearShare('drought_rain_any2', y) >= 0.99) ?? (YEARS[0] as number);
@@ -188,11 +194,10 @@ export function OfficerPage() {
     t.officer.talk[1],
   ].filter(Boolean) as { do: string; dont: string }[];
   return (
-    <main id="main" className="surface-paper">
+    <main ref={pageRef} id="main" className="surface-paper">
       <section className={`band ${s.hero}`} aria-labelledby="officer-title">
         <div className={`container ${s.heroGrid}`}>
           <div className="stack" style={{ ['--gap' as string]: 'var(--s-5)' }}>
-            <p className="eyebrow">{t.officer.eyebrow}</p>
             <h1 id="officer-title" className="display" style={{ fontSize: 'var(--t-h1)' }}>
               {t.officer.title}
             </h1>
@@ -207,7 +212,7 @@ export function OfficerPage() {
             </dl>
           </div>
           <div className={s.heroPhoto}>
-            <Media slug="do-luong-lam-son-communal-house" sizes="(min-width: 900px) 420px, 92vw" priority />
+            <Media slug={ART.officer.slug} sizes="(min-width: 900px) 420px, 92vw" priority decorative />
           </div>
         </div>
       </section>

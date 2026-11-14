@@ -108,7 +108,7 @@
   font-size: var(--t-small);
 }
 .value {
-  font: 400 clamp(1.7rem, 1.4rem + 1vw, 2.2rem)/1.15 var(--font-display);
+  font: 700 clamp(1.7rem, 1.4rem + 1vw, 2.2rem)/1.15 var(--font-display);
   font-variant-numeric: lining-nums;
   overflow-wrap: anywhere;
 }
@@ -194,11 +194,10 @@
   }
 }
 .caveat {
-  border-left: 3px solid var(--hl-line);
   background: var(--hl-bg);
   color: var(--hl-fg);
   padding: var(--s-3) var(--s-4);
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  border-radius: var(--r-sm);
   font-size: var(--t-small);
 }
 .link {

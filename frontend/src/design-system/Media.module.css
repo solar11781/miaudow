@@ -20,17 +20,13 @@
 }
 .img {
   opacity: 0;
-  transition:
-    opacity 700ms var(--ease-editorial),
-    transform 1200ms var(--ease-editorial);
-  transform: scale(1.015);
+  transition: opacity 900ms var(--ease-out);
 }
 .on {
   opacity: 1;
-  transform: none;
 }
 .drift.on {
-  animation: drift 24s var(--ease-in-out) infinite alternate;
+  animation: drift 26s var(--ease-in-out) infinite alternate;
 }
 @keyframes drift {
   from {
@@ -40,34 +36,12 @@
     transform: scale(1.1) translate3d(-1.2%, -0.8%, 0);
   }
 }
-.tag {
-  position: absolute;
-  z-index: 2;
-  right: 10px;
-  bottom: 10px;
-  max-width: calc(100% - 20px);
-  padding: 0.3rem 0.7rem;
-  border-radius: var(--r-pill);
-  background: rgba(8, 20, 11, 0.66);
-  color: #f4f0e5;
-  font: 500 17px/1.3 var(--font-ui);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.tagArt {
-  background: rgba(244, 240, 229, 0.9);
-  color: #16201a;
-}
 :global(html[data-lite='true']) .drift.on {
   animation: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .img {
     transition: none;
-    transform: none;
   }
   .drift.on {
     animation: none;

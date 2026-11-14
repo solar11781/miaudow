@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { planLabel } from '../../domain/plans';
 import { CROPS, PLANS, planProfitMillion, type Plan } from '../../domain/plans';
 import { LANDS, type Land } from '../../domain/farmerState';
 import { decisionPlan, rulebookPlan } from '../../data/rulebook';
 import { Icon } from '../../design-system/Icon';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
-import { usePick, useT } from '../../app/settings';
+import { usePick, useSettings, useT } from '../../app/settings';
 import s from './officer.module.css';
 
 /**
@@ -15,6 +16,7 @@ import s from './officer.module.css';
  */
 export function EvidenceDesk() {
   const t = useT();
+  const { lang } = useSettings();
   const pick = usePick();
   const [planId, setPlanId] = useState<Plan['id']>('cc1');
   const [land, setLand] = useState<Land>('canal_end');
@@ -34,7 +36,7 @@ export function EvidenceDesk() {
             className={s.deskTab}
             onClick={() => setPlanId(p.id)}
           >
-            <span className={s.deskTabId}>{p.current ? t.farmer.current : p.id.toUpperCase()}</span>
+            <span className={s.deskTabId}>{planLabel(p, lang, false)}</span>
             <span>
               {p.textOnly ? pick(p.textOnly.sequence) : p.crops.map((c) => pick(CROPS[c.crop].name)).join(' · ')}
             </span>
