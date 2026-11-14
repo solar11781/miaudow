@@ -21,7 +21,7 @@
 .valueSel { background: var(--c-gold-500); }
 .place {
   font: 500 17px/1.2 var(--font-ui); color: #f4f0e5; text-shadow: var(--text-shadow-photo);
-  padding-bottom: 6px; border-bottom: 1px solid rgba(242, 213, 144, .7);
+  padding: .2rem .55rem; border-radius: var(--r-pill); background: rgba(8, 20, 11, .62);
 }
 .controls { position: absolute; z-index: 3; top: 12px; right: 12px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .controls button {
