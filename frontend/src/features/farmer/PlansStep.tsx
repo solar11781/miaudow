@@ -4,7 +4,7 @@ import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { api } from '../../api';
+import { api, explainOn } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
 import { compareRequest, serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
@@ -24,6 +24,7 @@ function Cards({ res }: { res: CompareResponse }) {
   const pick = usePick();
   const { state, update } = useFarmer();
   const [focused, setFocused] = useState(state.plan);
+  const [explain] = useApi(explainOn, 'explain-on'); // asked once per screen; hidden unless the server says on
 
   useEffect(() => {
     if (!state.plan) return;
@@ -80,6 +81,7 @@ function Cards({ res }: { res: CompareResponse }) {
             res={res}
             priority={res.request.priority}
             focused={focused === p.id}
+            explain={explain.status === 'ok' && explain.data}
             onShare={share}
           />
         ))}

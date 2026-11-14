@@ -1,6 +1,6 @@
 // UI-UX-SPEC section 14a test hooks with member B's row names (D-169): card-<plan id> and card-<plan id>-row-<row>.
-import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi as mock } from 'vitest';
+import { cleanup, fireEvent, render, within } from '@testing-library/react';
 import { SettingsProvider } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
@@ -289,5 +289,74 @@ describe('card summary', () => {
       expect(document.getElementById(`card-${id}-row-water`), id).not.toBeNull();
       cleanup();
     }
+  });
+});
+
+// FR-15 and D-172: each of the four why parts gets an "explain simply" button when the server has the feature on; the
+// reply shows under its part, marked as AI-generated (R-H15). Fetch is mocked: no test reaches the real API.
+describe('explain simply', () => {
+  afterEach(() => {
+    cleanup();
+    mock.unstubAllGlobals();
+  });
+  const card = (explain: boolean) => {
+    const res = validateCompare(compare(), body);
+    const plan = res.plans[2];
+    if (!plan) throw new Error('no plan');
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" explain={explain} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const row = document.querySelector(`[data-testid="card-${plan.id}-row-why"]`);
+    if (!row) throw new Error('no why row');
+    return { row: within(row as HTMLElement), res, plan };
+  };
+  const answer = (status: number, json: unknown) => {
+    const fetchMock = mock.fn(async () => new Response(JSON.stringify(json), { status }));
+    mock.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  };
+
+  it('has no button while the feature is off', () => {
+    const { row } = card(false);
+    expect(row.queryAllByRole('button', { name: new RegExp(vi.farmer.explain.button) })).toHaveLength(0);
+  });
+  it('gives each of the four parts its own named button', () => {
+    const { row } = card(true);
+    const buttons = row.getAllByRole('button', { name: new RegExp(vi.farmer.explain.button) });
+    expect(buttons.map((b) => b.textContent)).toEqual(
+      (['why', 'evidence', 'benefits', 'gaps'] as const).map(
+        (k) => `${vi.farmer.explain.button}: ${vi.farmer.whyParts[k]}`,
+      ),
+    );
+  });
+  it('asks for the part and shows the reply under it, marked as AI-generated', async () => {
+    const fetchMock = answer(200, { text: 'Lời dễ hiểu', ai_generated: true, model: 'claude-haiku-5-5' });
+    const { row, res, plan } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.evidence) }));
+    expect(row.getByText(vi.farmer.explain.loading)).not.toBeNull();
+    expect(await row.findByText('Lời dễ hiểu')).not.toBeNull();
+    expect(row.getByText(vi.farmer.explain.aiLabel)).not.toBeNull();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/explain',
+      expect.objectContaining({
+        body: JSON.stringify({ answers: res.request, plan: plan.id, field: 'evidence', lang: 'vi' }),
+      }),
+    );
+  });
+  it.each([
+    [502, 'refused'],
+    [503, 'busy'],
+    [500, 'failed'],
+  ] as const)('says what happened on a %i and keeps the button', async (status, key) => {
+    answer(status, { detail: 'x' });
+    const { row } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.gaps) }));
+    expect(await row.findByText(vi.farmer.explain[key])).not.toBeNull();
+    expect(row.queryByText(vi.farmer.explain.aiLabel)).toBeNull();
+    expect(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.gaps) })).not.toBeNull();
   });
 });

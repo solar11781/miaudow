@@ -1,12 +1,25 @@
 import { useState, type ReactNode } from 'react';
-import type { CompareResponse, Plan, Priority, Rule, RuleCode, Stability, Value, WaterFact } from '../../types';
+import type {
+  CompareRequest,
+  CompareResponse,
+  Lang,
+  Plan,
+  PlanId,
+  Priority,
+  Rule,
+  RuleCode,
+  Stability,
+  Value,
+  WaterFact,
+} from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
 import { moneyStudy } from '../../domain/moneyStudy';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
-import { usePick, useT } from '../../app/settings';
+import { ApiError, explainSimply, type WhyPart } from '../../api';
+import { usePick, useSettings, useT } from '../../app/settings';
 import s from './PlanCard.module.css';
 
 const FAMILY_DOT: Record<string, string> = {
@@ -472,8 +485,59 @@ function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   );
 }
 
+type Explained =
+  { status: 'loading' } | { status: 'ok'; text: string } | { status: 'error'; why: 'refused' | 'busy' | 'failed' };
+
+/** The "explain simply" button of one why part (FR-15): the server rewords the text it shows itself (D-165); the
+ * reply is marked as AI-generated (R-H15) and is dropped when the language changes. */
+function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: PlanId; field: WhyPart }) {
+  const t = useT();
+  const { lang } = useSettings();
+  const [got, setGot] = useState<{ lang: Lang; reply: Explained } | null>(null);
+  const reply = got?.lang === lang ? got.reply : null;
+  const loading = reply?.status === 'loading';
+  const ask = async () => {
+    setGot({ lang, reply: { status: 'loading' } });
+    try {
+      const res = await explainSimply({ answers, plan, field, lang });
+      setGot({ lang, reply: { status: 'ok', text: res.text } });
+    } catch (e) {
+      const status = e instanceof ApiError ? e.status : null;
+      setGot({
+        lang,
+        reply: { status: 'error', why: status === 502 ? 'refused' : status === 503 ? 'busy' : 'failed' },
+      });
+    }
+  };
+  return (
+    <div className={s.explain}>
+      {reply?.status !== 'ok' && (
+        <button
+          type="button"
+          className={s.foldButton}
+          aria-disabled={loading || undefined}
+          onClick={loading ? undefined : ask}
+        >
+          <Icon name="spark" size={18} />
+          {loading ? t.farmer.explain.loading : t.farmer.explain.button}
+          <span className="visually-hidden">: {t.farmer.whyParts[field]}</span>
+        </button>
+      )}
+      <div role="status" aria-live="polite">
+        {reply?.status === 'ok' && (
+          <div className={s.explainReply}>
+            <p className={s.rowNote}>{t.farmer.explain.aiLabel}</p>
+            <p>{displayUnit(reply.text)}</p>
+          </div>
+        )}
+        {reply?.status === 'error' && <p className={s.rowNote}>{t.farmer.explain[reply.why]}</p>}
+      </div>
+    </div>
+  );
+}
+
 /** The risks, always open, then the four reasons of the API's Why behind a disclosure (UI-UX-SPEC section 9). */
-function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
+function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers: CompareRequest; explain: boolean }) {
   const t = useT();
   const pick = usePick();
   const { why } = plan;
@@ -504,10 +568,13 @@ function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
         </summary>
         <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
           {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
-            <p key={k} className={s.why}>
-              <strong>{t.farmer.whyParts[k]}: </strong>
-              {displayUnit(pick(why[k]))}
-            </p>
+            <div key={k}>
+              <p className={s.why}>
+                <strong>{t.farmer.whyParts[k]}: </strong>
+                {displayUnit(pick(why[k]))}
+              </p>
+              {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
+            </div>
           ))}
         </Row>
       </details>
@@ -520,12 +587,15 @@ export function PlanCard({
   res,
   priority,
   focused,
+  explain = false,
   onShare,
 }: {
   plan: Plan;
   res: CompareResponse;
   priority: Priority;
   focused?: boolean;
+  /** The server has "explain simply" on (FR-15: off by default). */
+  explain?: boolean;
   onShare: (plan: Plan) => Promise<boolean>;
 }) {
   const t = useT();
@@ -555,7 +625,7 @@ export function PlanCard({
         <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} />
         <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} />
         <LandRow plan={plan} refs={refs} highlight={priority === 'land'} />
-        <WhyRows plan={plan} refs={refs} />
+        <WhyRows plan={plan} refs={refs} answers={res.request} explain={explain} />
       </div>
       <footer className={s.foot}>
         {/* the four warnings stay inside the card, so a screenshot of one card keeps them (H17, T16) */}
