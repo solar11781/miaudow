@@ -27,6 +27,8 @@ def plan_crops(plans: list[dict]) -> list[dict]:
             continue
         for span in plan["seasons"]:
             sow, harvest = span["sow_from"], span["harvest_from"]
+            if span["sow_to"] != sow:  # P-02 reports one sowing date per crop (03-ML-SPEC section 5a)
+                raise ValueError(f"{span['crop_key']}: sowing range {sow}..{span['sow_to']}, expected one sowing date")
             crops.append(
                 {
                     "plan_id": plan["id"],
@@ -58,7 +60,12 @@ def hazard_label_rows(
     rows = []
     for keys, window in windows:
         for year in years:
-            met = {c: cell_rules(cells[c], year, window["field_dates"], window["months"], clim[c]) for c in weights}
+            met = {}
+            for c in weights:
+                try:
+                    met[c] = cell_rules(cells[c], year, window["field_dates"], window["months"], clim[c])
+                except (KeyError, ValueError) as err:
+                    raise ValueError(f"{keys['crop_key'] or 'year row'} {year} cell {c}: {err}") from err
             for rule in RULES:
                 rows.append(
                     {
