@@ -4,8 +4,8 @@ Usage: PYTHONPATH=src python scripts/build_training_table.py
 All steps are tested library functions; this script only wires them together and writes provenance counts.
 """
 
-import glob
 import json
+from pathlib import Path
 
 import pandas as pd
 
@@ -22,18 +22,19 @@ series = series[series["yield_t_ha"].notna()]
 weights = pd.read_csv("data/processed/cell_weights.csv")  # fixed mask, D-106 (scripts/build_cell_weights.py)
 
 cells = {}
-for f in glob.glob("data/raw/power/power_*_19900101_20241231_*.json"):
-    with open(f) as fh:
-        payload = json.load(fh)
+for f in Path("data/raw/power").glob("power_*_19900101_20241231_*.json"):
+    payload = json.loads(f.read_text(encoding="utf-8"))
     lon, lat = payload["geometry"]["coordinates"][:2]
     cells[(round(lat, 6), round(lon, 6))] = parse_daily(payload)
-for f in glob.glob("data/raw/power_t2m/power_*_19900101_20241231_*.json"):  # daily mean T2M (D-72 cold counts)
-    with open(f) as fh:
-        payload = json.load(fh)
+unmatched_t2m = []
+for f in Path("data/raw/power_t2m").glob("power_*_19900101_20241231_*.json"):  # daily mean T2M (D-72 cold counts)
+    payload = json.loads(f.read_text(encoding="utf-8"))
     lon, lat = payload["geometry"]["coordinates"][:2]
     key = (round(lat, 6), round(lon, 6))
     if key in cells:
         cells[key] = cells[key].join(parse_daily(payload)[["T2M"]], how="left")
+    else:
+        unmatched_t2m.append(key)
 
 provinces = sorted(set(series["province_nso"]))
 regions = {p: calendar_region(p, NSO_EXPORT) for p in provinces}
@@ -52,5 +53,6 @@ print(
     "-",
     table["year"].max(),
 )
+print("T2M files without a POWER cell (not used):", len(unmatched_t2m), sorted(unmatched_t2m))
 print("skipped:", len(skipped), skipped["reason"].value_counts().to_dict())
 print("feature NaNs:", int(table.filter(like="_").isna().sum().sum()))
