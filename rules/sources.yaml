@@ -44,6 +44,18 @@
        en: "We apply the official thresholds to NASA grid values; gridded values smooth extremes."}
   url: null
   nso_credit: false
+- id: E-020
+  citation: {vi: "Thực nghiệm E-020 của nhóm: độ ẩm đất tầng rễ khi cây ở ngoài ruộng, theo từng cây và năm",
+             en: "Our experiment E-020: root-zone soil wetness while each crop was in the field, per crop and year"}
+  study_type: {vi: "Tính toán của chúng tôi từ giá trị mô hình của NASA", en: "Our computation from NASA model values"}
+  place_years: {vi: "Nghệ An; 1995-2024, mức thường 1991-2020", en: "Nghệ An; 1995-2024, normal 1991-2020"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Giá trị mô hình MERRA-2, không phải số đo ngoài ruộng.",
+       en: "A MERRA-2 model value, not a field measurement."}
+  url: null
+  nso_credit: false
 - id: E-022
   citation: {vi: "Thực nghiệm E-022 của nhóm: các phép tính của công cụ (tổng, số đếm, nhỏ nhất, trung vị, lớn nhất)",
              en: "Our experiment E-022: engine computations (sums, counts, minimum, median, maximum)"}
@@ -83,6 +95,18 @@
   limitations:
     - {vi: "Chúng tôi chỉ đọc phần tóm tắt.", en: "We read the abstract only."}
   url: "https://doi.org/10.1002/wcc.147"
+  nso_credit: false
+- id: R-A15
+  citation: {vi: "WMO, mức thường khí hậu chuẩn (trang cộng đồng) và tin \"Updated 30-year reference period\"",
+             en: "WMO, climatological standard normals (community page) and news \"Updated 30-year reference period\""}
+  study_type: {vi: "Hướng dẫn của tổ chức quốc tế", en: "International organisation guidance"}
+  place_years: {vi: "Toàn cầu; giai đoạn chuẩn 1991-2020", en: "Global; reference period 1991-2020"}
+  read_status: "SUMMARY / READ"
+  full_text_read: false
+  limitations:
+    - {vi: "Trang tóm tắt và tin tức, không phải văn bản quy chuẩn đầy đủ.",
+       en: "A summary page and a news item, not the full regulation."}
+  url: "https://community.wmo.int/node/36682"
   nso_credit: false
 - id: R-A18
   citation: {vi: "Báo Văn Hóa (16/1/2025), tin về băng giá ở Kỳ Sơn, Quế Phong",
