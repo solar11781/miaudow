@@ -13,10 +13,11 @@ const FAMILY_DOT: Record<string, string> = { rice: '#6e9e3c', legume: '#c9962e',
 const WEATHER_RULES: RuleCode[] = ['heavy_rain', 'heat', 'cold'];
 const DROUGHT_RULES: RuleCode[] = ['drought_rain_consecutive', 'drought_rain_any2'];
 
-function Row({ icon, title, note, highlight, children }: { icon: IconName; title: string; note?: string; highlight?: boolean; children: ReactNode }) {
+/** One card row; `hook` is its test hook card-<plan id>-row-<row> (UI-UX-SPEC section 14a, B's row names, D-169). */
+function Row({ hook, icon, title, note, highlight, children }: { hook: string; icon: IconName; title: string; note?: string; highlight?: boolean; children: ReactNode }) {
   const t = useT();
   return (
-    <section className={[s.row, highlight ? s.hl : ''].join(' ')} data-highlighted={highlight ? 'true' : undefined}>
+    <section className={[s.row, highlight ? s.hl : ''].join(' ')} data-testid={hook} data-highlighted={highlight ? 'true' : undefined}>
       <h3 className={s.rowHead}>
         <Icon name={icon} size={18} />
         {title}
@@ -42,7 +43,7 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   const seasonLabel = (code: string) => res.seasons.find((x) => x.code === code);
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
   return (
-    <Row icon="coin" title={t.farmer.rows.money} note={pick(m.definition)} highlight={highlight}>
+    <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} note={pick(m.definition)} highlight={highlight}>
       {m.total && (
         <div className={s.money}>
           <SourceValue size="xl" {...refs.value(m.total, t.farmer.ourSum)}>{m.total.value}</SourceValue>
@@ -143,7 +144,7 @@ function WeatherRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: b
   const rice = plan.stability ?? [];
   const nonRice = plan.calendar.filter((c) => !rice.some((st) => st.crop_key === c.crop_key));
   return (
-    <Row icon="sun" title={t.farmer.rows.weather} note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined} highlight={highlight}>
+    <Row hook={`card-${plan.id}-row-weather`} icon="sun" title={t.farmer.rows.weather} note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined} highlight={highlight}>
       <ShareTable plan={plan} rules={WEATHER_RULES} refs={refs} />
       {rice.length > 0 && (
         <div className={s.sub}>
@@ -161,7 +162,7 @@ function WaterRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boo
   const t = useT();
   const pick = usePick();
   return (
-    <Row icon="drop" title={t.farmer.rows.water} highlight={highlight}>
+    <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight}>
       <ShareTable plan={plan} rules={DROUGHT_RULES} refs={refs} />
       <ul className={s.kv}>
         {plan.calendar.map((c) => plan.water.filter((w) => w.crop_key === c.crop_key).map((w, i) => (
@@ -204,7 +205,7 @@ function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: bool
   const { crops_in_year: crops, living_days: days, legume } = plan.land;
   const why = (ids: string[], name: string) => <SourceValue {...refs.sources(ids, t.farmer.principle, name)} />;
   return (
-    <Row icon="sprout" title={t.farmer.rows.land} note={legume.present ? t.farmer.legumeNote : undefined} highlight={highlight}>
+    <Row hook={`card-${plan.id}-row-land`} icon="sprout" title={t.farmer.rows.land} note={legume.present ? t.farmer.legumeNote : undefined} highlight={highlight}>
       <ul className={s.checks}>
         <li>{t.farmer.cropsInYear}: <NumberOr v={crops.value} label={t.farmer.cropsInYear} refs={refs} />{why(crops.principle_source_ids, t.farmer.cropsInYear)}</li>
         <li>{t.farmer.livingDays}: <NumberOr v={days.value} label={t.farmer.livingDays} refs={refs} />{why(days.principle_source_ids, t.farmer.livingDays)}</li>
@@ -221,7 +222,7 @@ function CardHead({ plan }: { plan: Plan }) {
   const t = useT();
   const pick = usePick();
   return (
-    <header className={`${s.head} surface-forest`}>
+    <header className={`${s.head} surface-forest`} data-testid={`card-${plan.id}-row-header`}>
       <p className={s.kicker}>
         {plan.is_usual && <span className={s.currentTag}>{t.farmer.current}</span>}
         <span>{pick(plan.name)}</span>
@@ -247,7 +248,7 @@ function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
   return (
     <details className={s.more}>
       <summary><Icon name="alert" size={18} />{t.farmer.moreToWeigh(why.risks.length)}<Icon name="chevronDown" size={18} /></summary>
-      <Row icon="alert" title={t.farmer.rows.checks}>
+      <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
         {why.risks.length ? (
           <ul className={s.risks}>
             {why.risks.map((r) => (
@@ -260,7 +261,7 @@ function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
         ) : <p className={s.why}>{t.farmer.noneListed}</p>}
         <p className={s.why}>{t.farmer.localReview}</p>
       </Row>
-      <Row icon="question" title={t.farmer.rows.why}>
+      <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
         {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
           <p key={k} className={s.why}><strong>{t.farmer.whyParts[k]}: </strong>{pick(why[k])}</p>
         ))}
@@ -280,7 +281,9 @@ export function PlanCard({ plan, res, priority, focused, onShare }: {
     <article id={`the-${plan.id}`} data-testid={`card-${plan.id}`} className={[s.card, focused ? s.focused : ''].join(' ')} aria-labelledby={`title-${plan.id}`}>
       <CardHead plan={plan} />
       <div className={s.body}>
-        {hasDates ? <MonthBar plan={plan} refs={refs} /> : <p className={s.noCal}><Icon name="calendar" size={18} />{t.farmer.p03NoCalendar}</p>}
+        <div data-testid={`card-${plan.id}-row-calendar`}>
+          {hasDates ? <MonthBar plan={plan} refs={refs} /> : <p className={s.noCal}><Icon name="calendar" size={18} />{t.farmer.p03NoCalendar}</p>}
+        </div>
         <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} />
         <WeatherRow plan={plan} refs={refs} highlight={priority === 'stability'} />
         <WaterRow plan={plan} refs={refs} highlight={priority === 'water'} />
@@ -290,7 +293,7 @@ export function PlanCard({ plan, res, priority, focused, onShare }: {
       <footer className={s.foot}>
         <p>{plan.money.price_year ? t.farmer.priceYear(plan.money.price_year) : t.farmer.priceYearNotStated}</p>
         <p>{t.farmer.cardFoot}</p>
-        <div className={s.shareRow}>
+        <div className={s.shareRow} data-testid={`card-${plan.id}-row-share`}>
           <button type="button" className={s.share} onClick={async () => setShareMsg((await onShare(plan)) ? t.farmer.shareCopied : t.farmer.shareFailed)}>
             <Icon name="share" size={18} />{t.farmer.share}
           </button>
