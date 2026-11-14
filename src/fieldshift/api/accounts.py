@@ -1,24 +1,24 @@
-"""Optional Google sign-in and saved answers (UI-UX-SPEC §12c): account check, session tokens and the database.
+"""Optional Google sign-in and saved answers (UI-UX-SPEC §12c): the Google token check and the database.
 
-On only when both GOOGLE_CLIENT_ID and DATABASE_URL are set. A Google ID token is checked on the server by google-auth
-(signature, audience = our client id, issuer = Google, expiry); only its `sub` (Google's account id) is kept. Downloading
-Google's public keys for that check is the one outbound call, the sign-in exception that NFR-01 allows. The session is a
-bearer token signed with a key made at start, so the page keeps it in memory and no cookie is set (H14); it ends when
-the Google token expires or the server restarts. The database holds two tables: account (Google's account id) and
-saved_answers (land, years, priority of one saved set). SQL is parameterised; nothing is logged.
+On only when both GOOGLE_CLIENT_ID and DATABASE_URL are set and the database answers at start. The page keeps Google's
+ID token in memory and sends it as `Authorization: Bearer` with every account request, so no cookie is set (H14) and
+any server instance can answer. Each request is checked on the server by google-auth (signature, audience = our client
+id, issuer = Google, expiry); only the token's `sub` (Google's account id) is kept. Downloading Google's public keys for
+that check is the one outbound call, the sign-in exception that NFR-01 allows; the keys are kept as long as Google's
+Cache-Control header says. The database holds two tables: account (Google's account id) and saved_answers (land,
+years, priority of one saved set). SQL is parameterised; nothing personal is logged.
 """
 
 from __future__ import annotations
 
-import hashlib
-import hmac
 import logging
 import re
-import secrets
+import ssl
 import time
 import urllib.error
 import urllib.request
 from collections.abc import Mapping
+from http import HTTPStatus
 
 import psycopg
 from google.auth import exceptions, transport
@@ -36,14 +36,15 @@ SCHEMA = (
     " land text NOT NULL, years integer[] NOT NULL, priority text NOT NULL)",
 )
 BIGINT_MAX = 2**63 - 1  # largest PostgreSQL bigint, the type of every id (PostgreSQL 18 docs, numeric types)
-KEY_BYTES = 32  # RFC 2104 §3: an HMAC key at least as long as the hash output (32 bytes for SHA-256)
-# account id and expiry (at most the 19 digits of a PostgreSQL bigint), then the SHA-256 HMAC in hex
-TOKEN = re.compile(r"([0-9]{1,19})\.([0-9]{1,19})\.([0-9a-f]{64})")
 GOOGLE_TIMEOUT_SECONDS = 120  # google-auth's own default for its requests transport (google/auth/transport/requests.py)
+# Google's key answer was 2447 bytes (measured 2026-11-14); 64 KiB leaves room for many more keys
+KEYS_MAX_BYTES = 65536
+MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
+NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
 
 
 class NotSignedInError(Exception):
-    """No valid Google token at sign-in, or no valid session token afterwards."""
+    """No valid Google token, or no account for it (the farmer has not signed in or deleted everything)."""
 
 
 class GoogleUnreachableError(Exception):
@@ -73,14 +74,9 @@ class SignInConfig(Contract):
     client_id: str | None
 
 
-class Session(Contract):
-    token: str
-    expires_at: int
-
-
 class _Answer(transport.Response):
     def __init__(self, status: int, headers: Mapping[str, str], data: bytes) -> None:
-        self._status, self._headers, self._data = status, dict(headers), data
+        self._status, self._headers, self._data = status, {k.lower(): v for k, v in headers.items()}, data
 
     @property
     def status(self) -> int:
@@ -95,8 +91,19 @@ class _Answer(transport.Response):
         return self._data
 
 
-class _HttpsRequest(transport.Request):
-    """google-auth's transport interface on the standard library, so no further HTTP package is needed."""
+def _fresh_for(headers: Mapping[str, str]) -> int:
+    """Seconds an answer may be reused (RFC 9111 §5.2.2: max-age; no-store and no-cache mean not at all)."""
+    cache = headers.get("cache-control", "").lower()
+    found = MAX_AGE.search(cache)
+    return 0 if found is None or NO_CACHE.search(cache) else int(found.group(1))
+
+
+class HttpsRequest(transport.Request):
+    """google-auth's transport interface on the standard library (no further HTTP package is approved): https only,
+    TLS checked with the default context, a timeout, a size cap, and Google's key answer reused while it is fresh."""
+
+    def __init__(self) -> None:
+        self._kept: dict[str, tuple[float, _Answer]] = {}
 
     def __call__(
         self,
@@ -109,21 +116,39 @@ class _HttpsRequest(transport.Request):
     ) -> _Answer:
         if not url.startswith("https://"):
             raise exceptions.TransportError("only https is used for Google's keys")
-        request = urllib.request.Request(url, data=body, headers=dict(headers or {}), method=method)  # noqa: S310  https checked above
+        kept = self._kept.get(url)
+        if method == "GET" and kept is not None and kept[0] > time.monotonic():
+            return kept[1]
+        answer = self._fetch(url, method, body, headers, timeout)
+        if method == "GET" and answer.status == HTTPStatus.OK and (seconds := _fresh_for(answer.headers)):
+            self._kept[url] = (time.monotonic() + seconds, answer)
+        return answer
+
+    @staticmethod
+    def _fetch(
+        url: str, method: str, body: bytes | None, headers: Mapping[str, str] | None, timeout: float | None
+    ) -> _Answer:
+        request = urllib.request.Request(url, data=body, headers=dict(headers or {}), method=method)  # noqa: S310  https checked by the caller
         try:
-            with urllib.request.urlopen(request, timeout=timeout or GOOGLE_TIMEOUT_SECONDS) as answer:  # noqa: S310  https checked above
-                return _Answer(answer.status, answer.headers, answer.read())
+            with urllib.request.urlopen(  # noqa: S310  https checked by the caller
+                request, timeout=timeout or GOOGLE_TIMEOUT_SECONDS, context=ssl.create_default_context()
+            ) as answer:
+                data = answer.read(KEYS_MAX_BYTES + 1)
+                status, answer_headers = answer.status, dict(answer.headers)
         except urllib.error.HTTPError as err:
-            return _Answer(err.code, err.headers, err.read())
+            return _Answer(err.code, {}, b"")
         except OSError as err:
             raise exceptions.TransportError("Google's keys could not be downloaded") from err
+        if len(data) > KEYS_MAX_BYTES:
+            raise exceptions.TransportError(f"Google's key answer is over {KEYS_MAX_BYTES} bytes")
+        return _Answer(status, answer_headers, data)
 
 
 class Accounts:
     def __init__(self, client_id: str, database_url: str) -> None:
         self.client_id = client_id
         self._url = database_url
-        self._key = secrets.token_bytes(KEY_BYTES)
+        self._google = HttpsRequest()
         with self._connect() as conn:
             for statement in SCHEMA:
                 conn.execute(statement)
@@ -131,47 +156,35 @@ class Accounts:
     def _connect(self) -> psycopg.Connection:
         return psycopg.connect(self._url)
 
-    # ---- sign-in and sessions
+    # ---- the Google token
 
-    def sign_in(self, google_token: str) -> Session:
+    def _google_id(self, google_token: str) -> str:
+        """Google's account id from a token that Google issued to our client id and that has not expired."""
         try:
-            claims = id_token.verify_oauth2_token(google_token, _HttpsRequest(), audience=self.client_id)
+            claims = id_token.verify_oauth2_token(google_token, self._google, audience=self.client_id)
         except exceptions.TransportError as err:
             raise GoogleUnreachableError from err
         except (ValueError, exceptions.GoogleAuthError) as err:
             raise NotSignedInError from err
-        sub, expires_at = claims.get("sub"), claims.get("exp")
-        if not isinstance(sub, str) or not sub or not isinstance(expires_at, int):
+        sub = claims.get("sub")
+        if not isinstance(sub, str) or not sub:
             raise NotSignedInError
+        return sub
+
+    def sign_in(self, google_token: str) -> None:
+        """Create the account of a valid token, or keep the one that exists."""
+        sub = self._google_id(google_token)
         with self._connect() as conn:
-            row = conn.execute(
-                "INSERT INTO account (google_sub) VALUES (%s)"
-                " ON CONFLICT (google_sub) DO UPDATE SET google_sub = EXCLUDED.google_sub RETURNING id",
-                (sub,),
-            ).fetchone()
-        return Session(token=self._sign(row[0], expires_at), expires_at=expires_at)
+            conn.execute("INSERT INTO account (google_sub) VALUES (%s) ON CONFLICT (google_sub) DO NOTHING", (sub,))
 
-    def _signature(self, payload: str) -> str:
-        return hmac.new(self._key, payload.encode(), hashlib.sha256).hexdigest()
-
-    def _sign(self, account: int, expires_at: int) -> str:
-        payload = f"{account}.{expires_at}"
-        return f"{payload}.{self._signature(payload)}"
-
-    def account(self, token: str) -> int:
-        """The account of a session token that this server signed, that has not expired, and whose account exists."""
-        parts = TOKEN.fullmatch(token)
-        if parts is None:
-            raise NotSignedInError
-        account, expires_at, signature = parts.groups()
-        if not hmac.compare_digest(signature, self._signature(f"{account}.{expires_at}")):
-            raise NotSignedInError
-        if int(expires_at) <= time.time():
-            raise NotSignedInError
+    def account(self, google_token: str) -> int:
+        """The account of a valid token; NotSignedInError when it never signed in or deleted everything."""
+        sub = self._google_id(google_token)
         with self._connect() as conn:
-            if conn.execute("SELECT 1 FROM account WHERE id = %s", (int(account),)).fetchone() is None:
-                raise NotSignedInError
-        return int(account)
+            row = conn.execute("SELECT id FROM account WHERE google_sub = %s", (sub,)).fetchone()
+        if row is None:
+            raise NotSignedInError
+        return row[0]
 
     # ---- saved sets
 

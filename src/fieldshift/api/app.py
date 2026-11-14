@@ -15,6 +15,7 @@ import asyncio
 import html
 import json
 import os
+from collections.abc import Callable
 from pathlib import Path
 from typing import Annotated, TypeVar, get_args
 
@@ -62,6 +63,7 @@ MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 NO_STORE = {"cache-control": "no-store"}
 M = TypeVar("M", bound=BaseModel)
+T = TypeVar("T")
 
 
 def _artifact_versions(artifacts_dir: Path) -> HealthResponse:
@@ -149,15 +151,22 @@ def _not_signed_in() -> HTTPException:
     return HTTPException(401, "not signed in", headers={"WWW-Authenticate": "Bearer"})  # RFC 6750 §3
 
 
-def _bearer(request: Request) -> str:
-    scheme, _, value = request.headers.get("authorization", "").partition(" ")
-    if scheme.lower() != "bearer" or not value:
+def _with_google_token(check: Callable[[str], T], request: Request) -> T:
+    """`check` on the Google ID token of the Authorization header: 401 without a valid one, 503 when Google's keys
+    cannot be fetched."""
+    scheme, _, token = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not token:
         raise _not_signed_in()
-    return value
+    try:
+        return check(token)
+    except NotSignedInError as err:
+        raise _not_signed_in() from err
+    except GoogleUnreachableError as err:
+        raise HTTPException(503, "google sign-in check is not reachable") from err
 
 
 def _private(model: BaseModel, status_code: int = 200) -> Response:
-    # RFC 6749 §5.1: responses with a token or the account's own data are never stored by a cache
+    # RFC 6749 §5.1: answers about an account are never stored by a cache
     return Response(_json(model), status_code=status_code, media_type="application/json", headers=NO_STORE)
 
 
@@ -173,10 +182,7 @@ Service = Annotated[Accounts, Depends(_service)]
 
 
 def _signed_in(request: Request, service: Service) -> int:
-    try:
-        return service.account(_bearer(request))
-    except NotSignedInError as err:
-        raise _not_signed_in() from err
+    return _with_google_token(service.account, request)
 
 
 AccountId = Annotated[int, Depends(_signed_in)]
@@ -193,12 +199,8 @@ def config_route(request: Request) -> Response:
 
 @accounts_router.post("/sign-in")
 def sign_in_route(request: Request, service: Service) -> Response:
-    try:
-        return _private(service.sign_in(_bearer(request)))
-    except NotSignedInError as err:
-        raise _not_signed_in() from err
-    except GoogleUnreachableError as err:
-        raise HTTPException(503, "google sign-in check is not reachable") from err
+    _with_google_token(service.sign_in, request)
+    return Response(status_code=204, headers=NO_STORE)
 
 
 @accounts_router.get("/saved")
