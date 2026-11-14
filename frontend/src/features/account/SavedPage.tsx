@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api, ApiError, type SavedSet } from '../../api';
 import { Button, ButtonLink } from '../../design-system/Button';
 import { Confirm } from './Confirm';
-import { serializeFarmerState } from '../../domain/farmerState';
+import { NO_OWN, serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { useT } from '../../app/settings';
 import { LoadState } from '../provenance/LoadState';
@@ -11,7 +11,7 @@ import s from './account.module.css';
 
 const plansLink = (set: SavedSet) => ({
   pathname: '/nong-dan/phuong-an',
-  search: `?${serializeFarmerState({ land: set.land, years: set.years, priority: set.priority, plan: null }).toString()}`,
+  search: `?${serializeFarmerState({ land: set.land, years: set.years, priority: set.priority, plan: null, own: NO_OWN }).toString()}`,
 });
 
 /** The name of a saved set, from its answers; the server stores no name. */

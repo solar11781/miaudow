@@ -1,5 +1,6 @@
 import { YEARS } from '../data';
 import { PLAN_IDS, type CompareRequest, type PlanId } from '../types';
+import { readWhole } from './ownMoney';
 
 /** The farmer's water situation, the same ids the API's decision core uses; 'ask' = not sure. */
 export type Land = 'high_field' | 'canal_end' | 'water_short' | 'reliable' | 'ask';
@@ -10,7 +11,17 @@ export interface FarmerState {
   years: number[];
   priority: Priority | null;
   plan: PlanId | null;
+  own: OwnNumbers;
 }
+
+/** "Your price and costs" by crop key, as digits (UI-UX-SPEC section 12d): prices in đ/kg, costs in thousand đ/ha. */
+export interface OwnNumbers {
+  prices: Record<string, string>;
+  costs: Record<string, string>;
+}
+export const NO_OWN: OwnNumbers = { prices: {}, costs: {} };
+// fragment keys yp.<crop key> and yc.<crop key> (research/price-entry-notes.md section 5, D-163)
+const OWN_KEY = /^y([pc])\.([a-z0-9_]+)$/;
 
 export const LANDS: Land[] = ['high_field', 'canal_end', 'water_short', 'reliable', 'ask'];
 /** Links shared before the four water situations existed keep working. */
@@ -39,7 +50,19 @@ export function parseFarmerState(params: URLSearchParams): FarmerState {
     years,
     priority: pick(PRIORITIES, params.get('uutien')),
     plan: pick(PLAN_IDS, params.get('the')),
+    own: parseOwn(params),
   };
+}
+
+function parseOwn(params: URLSearchParams): OwnNumbers {
+  const own: OwnNumbers = { prices: {}, costs: {} };
+  for (const [key, raw] of params) {
+    const m = OWN_KEY.exec(key);
+    const digits = readWhole(raw);
+    if (m?.[2] && typeof digits === 'string' && digits !== 'invalid')
+      own[m[1] === 'p' ? 'prices' : 'costs'][m[2]] = digits;
+  }
+  return own;
 }
 
 export function serializeFarmerState(s: FarmerState): URLSearchParams {
@@ -48,6 +71,8 @@ export function serializeFarmerState(s: FarmerState): URLSearchParams {
   p.set('nam', s.years.join(','));
   if (s.priority) p.set('uutien', s.priority);
   if (s.plan) p.set('the', s.plan);
+  for (const [crop, digits] of Object.entries(s.own.prices)) p.set(`yp.${crop}`, digits);
+  for (const [crop, digits] of Object.entries(s.own.costs)) p.set(`yc.${crop}`, digits);
   return p;
 }
 
@@ -67,7 +92,7 @@ const API_LAND: Record<Land, CompareRequest['land'] | null> = {
 };
 
 /** The POST /api/compare body from the answers, or null while an answer is missing or the field is irrigated. */
-export function compareRequest(s: FarmerState): CompareRequest | null {
+export function compareRequest(s: Pick<FarmerState, 'land' | 'years' | 'priority'>): CompareRequest | null {
   const land = s.land ? API_LAND[s.land] : null;
   if (!land || !s.priority || !s.years.length) return null;
   return { province: 'nghe_an', land, years: s.years, priority: s.priority };

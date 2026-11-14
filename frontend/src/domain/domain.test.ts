@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { hazards, model, YEARS } from '../data';
 import { bareMonths, dateRange, dayOfYear, periodPieces, segments, spanSegments } from './calendar';
 import { cropShare, cropShareRange, RULES, soilReading, yearShare } from './hazards';
-import { compareRequest, parseFarmerState, serializeFarmerState, toggleYear, MAX_YEARS } from './farmerState';
+import { compareRequest, NO_OWN, parseFarmerState, serializeFarmerState, toggleYear, MAX_YEARS } from './farmerState';
 import { planById, planProfitMillion, PLANS } from './plans';
 import { riceSummary, riceYear, seasonStatus } from './rice';
 import { SOURCES } from './sources';
@@ -102,7 +102,7 @@ describe('farmer state in the URL', () => {
   it('round-trips and drops unknown values', () => {
     const p = new URLSearchParams('ruong=dry&nam=2020,2010,1800,2010&uutien=water&the=cc3');
     const s = parseFarmerState(p);
-    expect(s).toEqual({ land: 'water_short', years: [2010, 2020], priority: 'water', plan: 'cc3' });
+    expect(s).toEqual({ land: 'water_short', years: [2010, 2020], priority: 'water', plan: 'cc3', own: NO_OWN });
     expect(parseFarmerState(serializeFarmerState(s))).toEqual(s);
     expect(parseFarmerState(new URLSearchParams('ruong=lake&uutien=gold&the=cc9')).land).toBeNull();
   });
@@ -116,6 +116,20 @@ describe('farmer state in the URL', () => {
   it('picks no year by default', () => {
     expect(parseFarmerState(new URLSearchParams('ruong=canal_end')).years).toEqual([]);
     expect(parseFarmerState(new URLSearchParams('nam=')).years).toEqual([]);
+  });
+  // UI-UX-SPEC section 12d, D-163, research/price-entry-notes.md section 5: yp.<crop key> (your price, đ/kg) and
+  // yc.<crop key> (your cost, thousand đ/ha) in the fragment, whole numbers only; other keys are dropped (section 6b)
+  it('keeps your price and costs under yp. and yc. and drops invalid ones', () => {
+    const p = new URLSearchParams(
+      'ruong=canal_end&nam=2010&uutien=income&yp.cc1_spring_peanut=030000&yc.cc1_spring_peanut=0' +
+        '&yp.cc1_summer_autumn_mung_bean=1.5&yc.cc1_summer_autumn_mung_bean=-3&yc.a-b=5&yq.cc1_spring_peanut=1',
+    );
+    const s = parseFarmerState(p);
+    expect(s.own).toEqual({ prices: { cc1_spring_peanut: '30000' }, costs: { cc1_spring_peanut: '0' } });
+    expect(parseFarmerState(serializeFarmerState(s))).toEqual(s);
+    expect(serializeFarmerState(s).toString()).toBe(
+      'ruong=canal_end&nam=2010&uutien=income&yp.cc1_spring_peanut=30000&yc.cc1_spring_peanut=0',
+    );
   });
   it('keeps the shared plan id of the api', () => {
     expect(parseFarmerState(new URLSearchParams('the=usual_p03')).plan).toBe('usual_p03');
