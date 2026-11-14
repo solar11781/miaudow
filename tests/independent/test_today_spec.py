@@ -1,7 +1,7 @@
 """Independent spec tests for code written on 2026-11-12.
 
-Written only from the specifications (docs/03-ML-SPEC.md, docs/05-DATA-CONTRACTS.md, docs/DECISION-LOG.md,
-research/evidence-audit-findings.md, docs/REVIEWS.md evidence audit) and the cited source text. No file under src/ or the
+Written only from the specifications (docs/03-ML-SPEC.md, docs/05-DATA-CONTRACTS.md, the team decisions they cite by
+number) and the cited source text. No file under src/ or the
 other test files was read. Every expected value is computed by hand in the comments. Synthetic data only.
 """
 
@@ -77,7 +77,7 @@ YEARS = list(range(1995, 2011))
 @pytest.mark.parametrize(
     ("province", "season", "before", "after"),
     [
-        # [DATA] values from research/evidence-audit-findings.md "NSO method": drops below 50%, missed by D-28
+        # [DATA] NSO PX-Web planted area, 2003 -> 2004: drops below 50%, missed by D-28
         ("Can Tho", "spring", 177600, 93900),  # -47%
         ("Lai Chau", "winter", 47500, 24200),  # -49%
         ("Dak Lak", "winter", 49300, 41900),  # -15%
