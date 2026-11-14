@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { hazards, model, YEARS } from '../data';
 import { bareMonths, dateRange, dayOfYear, periodPieces, segments, spanSegments } from './calendar';
 import { cropShare, cropShareRange, RULES, soilReading, yearShare } from './hazards';
-import { compareRequest, NO_OWN, parseFarmerState, serializeFarmerState, toggleYear, MAX_YEARS } from './farmerState';
+import {
+  compareRequest,
+  NO_OWN,
+  ownOf,
+  parseFarmerState,
+  serializeFarmerState,
+  setOwn,
+  toggleYear,
+  MAX_YEARS,
+} from './farmerState';
 import { planById, planProfitMillion, PLANS } from './plans';
 import { riceSummary, riceYear, seasonStatus } from './rice';
 import { SOURCES } from './sources';
@@ -130,6 +139,12 @@ describe('farmer state in the URL', () => {
     expect(serializeFarmerState(s).toString()).toBe(
       'ruong=canal_end&nam=2010&uutien=income&yp.cc1_spring_peanut=30000&yc.cc1_spring_peanut=0',
     );
+  });
+  it('sets or clears one crop of your numbers and keeps only the crops of the response', () => {
+    const own = setOwn(setOwn(NO_OWN, 'prices', 'a', '5'), 'costs', 'b', '7');
+    expect(own).toEqual({ prices: { a: '5' }, costs: { b: '7' } });
+    expect(setOwn(own, 'prices', 'a', null)).toEqual({ prices: {}, costs: { b: '7' } });
+    expect(ownOf(own, ['b', 'c'])).toEqual({ prices: {}, costs: { b: '7' } });
   });
   it('keeps the shared plan id of the api', () => {
     expect(parseFarmerState(new URLSearchParams('the=usual_p03')).plan).toBe('usual_p03');

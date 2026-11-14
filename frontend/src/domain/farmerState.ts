@@ -65,6 +65,20 @@ function parseOwn(params: URLSearchParams): OwnNumbers {
   return own;
 }
 
+/** `own` with one crop's price or cost set to `digits`, or removed when null. */
+export function setOwn(own: OwnNumbers, field: keyof OwnNumbers, crop: string, digits: string | null): OwnNumbers {
+  const next = Object.fromEntries(Object.entries(own[field]).filter(([k]) => k !== crop));
+  if (digits !== null) next[crop] = digits;
+  return { ...own, [field]: next };
+}
+
+/** Only the crop keys of the compare response (UI-UX-SPEC section 6b rule 2: unknown keys are dropped). */
+export function ownOf(own: OwnNumbers, cropKeys: string[]): OwnNumbers {
+  const keep = (m: Record<string, string>) =>
+    Object.fromEntries(Object.entries(m).filter(([k]) => cropKeys.includes(k)));
+  return { prices: keep(own.prices), costs: keep(own.costs) };
+}
+
 export function serializeFarmerState(s: FarmerState): URLSearchParams {
   const p = new URLSearchParams();
   if (s.land) p.set('ruong', s.land);

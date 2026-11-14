@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
+import type { OwnState } from './OwnNumbers';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { api, explainOn, SnapshotMissError, type SavedAnswers, type SnapshotEntry } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
-import { compareRequest, serializeFarmerState, type Land } from '../../domain/farmerState';
+import { compareRequest, NO_OWN, ownOf, serializeFarmerState, setOwn, type Land } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
@@ -29,6 +30,17 @@ function Cards({ res }: { res: CompareResponse }) {
   const { state, update } = useFarmer();
   const [focused, setFocused] = useState(state.plan);
   const [explain] = useApi(explainOn, 'explain-on'); // asked once per screen; hidden unless the server says on
+  const cropKeys = res.plans.flatMap((p) => p.money.items.map((i) => i.crop_key));
+  const known = ownOf(state.own, cropKeys);
+  const own: OwnState = {
+    values: known,
+    set: (field, crop, digits) => update({ own: setOwn(known, field, crop, digits) }),
+  };
+
+  // UI-UX-SPEC section 6b rule 2: price and cost keys of crops this response does not have are dropped
+  useEffect(() => {
+    if (JSON.stringify(known) !== JSON.stringify(state.own)) update({ own: known });
+  }, [known, state.own, update]);
 
   useEffect(() => {
     if (!state.plan) return;
@@ -42,7 +54,8 @@ function Cards({ res }: { res: CompareResponse }) {
 
   const share = useCallback(
     async (plan: Plan) => {
-      const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id }), lang);
+      // the farmer's own price and costs never go into a shared link (D-163: they never leave the phone)
+      const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id, own: NO_OWN }), lang);
       try {
         if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
           await navigator.share({ title: `Miaudow · ${pick(plan.name)}`, text: t.farmer.shareHelp, url });
@@ -86,6 +99,7 @@ function Cards({ res }: { res: CompareResponse }) {
             priority={res.request.priority}
             focused={focused === p.id}
             explain={explain.status === 'ok' && explain.data}
+            own={own}
             onShare={share}
           />
         ))}

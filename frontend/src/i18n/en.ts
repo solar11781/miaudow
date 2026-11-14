@@ -369,6 +369,28 @@ export const en: Messages = {
     needAnswers: 'An answer from an earlier step is missing.',
     yearHeading: (year: number) => `Year ${year}`,
     eachYear: 'Show each year',
+    yourNumbers: 'Work it out with your price and costs',
+    yourNumbersLabel: "The trial's yield with your prices and costs, not your field's harvest.",
+    own: {
+      help: 'Type your sale price and your costs for each crop, per hectare. Leave a box empty if you do not know it.',
+      study: 'In the trial',
+      yield: 'yield',
+      price: 'sale price',
+      yourPrice: 'Your sale price',
+      yourCost: 'Your costs',
+      invalid: 'Type a whole number, 0 or more. This number is not used yet.',
+      title: 'Your numbers',
+      revenue: 'Sales money at your price, before costs',
+      margin: 'Left after the costs you typed',
+      needPrice: 'Type a sale price to work it out.',
+      yearSum: 'Whole year, our addition',
+      costNote:
+        "The trial's costs count materials, labour, energy and interest. If your costs leave out your family's own labour, what is left cannot be compared with the trial's profit.",
+      sheetNote:
+        "The trial's yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.",
+      private: (button: string) =>
+        `The numbers you type are not sent anywhere; they stay only in this page's address on this phone. The "${button}" button leaves them out.`,
+    },
     monthAxis: 'Month',
     definitionPlain: {
       p02: 'In other words: sales money minus the costs the study counted (materials, labour, energy, interest).',
