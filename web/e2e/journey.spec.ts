@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 const PLANS_URL = '/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020&uutien=income';
@@ -53,7 +54,7 @@ test('the farmer route loads no WebGL and no 3D code', async ({ page }) => {
   page.on('request', (r) => { if (r.resourceType() === 'script') scripts.push(r.url()); });
   await page.goto(PLANS_URL);
   await page.waitForLoadState('networkidle');
-  expect(scripts.some((u) => /three|observatory|Observatory/i.test(u))).toBe(false);
+  expect(scripts.some((u) => /three|observatory|Observatory|cesium|globe|EarthPage/i.test(u))).toBe(false);
   expect(await page.locator('canvas').count()).toBe(0);
 });
 
@@ -100,6 +101,82 @@ test('one year flows from the science page to the copilot', async ({ page }) => 
   await expect(page.locator('ol[aria-live] > li').first()).toContainText('2020', { timeout: 30_000 });
 });
 
+// Annual rain of one NASA POWER cell, read straight from the canonical file the app is built from.
+function canonicalRain(cell: string, year: number): number {
+  const climate = JSON.parse(readFileSync(new URL('../../data/canonical/climate.json', import.meta.url), 'utf-8'));
+  return climate.series.cells[cell][String(year)].annual_rain_mm;
+}
+
+test('the Earth observatory walks its eight scenes, keeps them in the link and shows the canonical numbers', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/#/dai-quan-sat');
+  const rail = page.getByRole('navigation', { name: 'Các cảnh của chuyến đi' });
+  await expect(rail.locator('ol button')).toHaveCount(8);
+  await expect(rail.getByRole('button', { name: 'Tự chạy' })).toHaveCount(0);
+  await rail.getByRole('button', { name: 'Cảnh sau' }).click();
+  await expect(page).toHaveURL(/canh=earth/);
+  await rail.getByRole('button', { name: /Vệ tinh/ }).click();
+  await expect(page.getByRole('heading', { level: 3, name: 'Terra (MODIS)' })).toBeVisible();
+  await expect(page.getByText('Chưa tải được').first()).toBeVisible();
+  await rail.getByRole('button', { name: /Phân tích/ }).click();
+  await expect(page).toHaveURL(/canh=analysis/);
+  await page.getByRole('combobox', { name: 'Năm' }).selectOption('2010');
+  const cellRadio = page.getByRole('radio', { name: '18.5°N 105.625°E' });
+  await cellRadio.click();
+  await expect(cellRadio).toBeChecked();
+  const rain = Math.round(canonicalRain('18.5_105.625', 2010)).toLocaleString('vi-VN');
+  await expect(page.getByRole('button', { name: `Mưa cả năm · 2010 · 18.5_105.625: ${rain} mm` })).toBeVisible();
+  await expect(page).toHaveURL(/nam=2010/);
+  await expect(page).toHaveURL(/o=18\.5_105\.625/);
+  // with reduced motion the globe is off and the page says so
+  expect(await page.locator('canvas').count()).toBe(0);
+  await expect(page.getByText(/giảm chuyển động/)).toBeVisible();
+});
+
+test('the observatory insight hands the year to the copilot', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/#/dai-quan-sat?canh=insight&nam=2020');
+  await expect(page.getByText('Năm 2020, ô này', { exact: false })).toBeVisible();
+  await page.getByRole('link', { name: 'Hỏi trợ lý về năm này' }).click();
+  await expect(page).toHaveURL(/tro-ly/);
+  await expect(page.locator('ol[aria-live] > li').first()).toContainText('2020', { timeout: 30_000 });
+});
+
+test('NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/#/dai-quan-sat?canh=cosmos');
+  await page.getByRole('button', { name: 'Sao Hỏa' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Sao Hỏa' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('iframe')).toHaveAttribute('src', 'https://eyes.nasa.gov/apps/solar-system/#/mars');
+  await expect(dialog.getByRole('link', { name: /Mở ở thẻ mới/ })).toHaveAttribute('href', 'https://eyes.nasa.gov/apps/solar-system/#/mars');
+  await dialog.getByRole('button', { name: 'Trở về Trái Đất — Khám phá đồng lúa Nghệ An' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page).toHaveURL(/canh=nghe-an/);
+});
+
+const canonical = (name: string) => JSON.parse(readFileSync(new URL(`../../data/canonical/${name}`, import.meta.url), 'utf-8'));
+
+test('the climate ML section shows the closest years from the canonical file and moves the year', async ({ page }) => {
+  const expected: number[] = canonical('climate_ml.json').analogs.by_year['2010'].map((a: { year: number }) => a.year);
+  await page.goto('/#/khoa-hoc?nam=2010');
+  const section = page.locator('section[aria-labelledby="ml-title"]');
+  for (const y of expected) await expect(section.getByRole('button', { name: `Xem năm ${y}` })).toBeVisible();
+  await expect(section.getByText(/16\/33/).first()).toBeVisible();
+  await section.getByRole('button', { name: `Xem năm ${expected[0]}` }).click();
+  await expect(page).toHaveURL(new RegExp(`nam=${expected[0]}`));
+  await expect(section.getByRole('heading', { level: 2 })).toContainText(String(expected[0]));
+});
+
+test('the evidence page shows the data-quality report as written, warnings included', async ({ page }) => {
+  const q = canonical('quality.json');
+  await page.goto('/#/bang-chung');
+  const section = page.locator('section[aria-labelledby="ev-quality"]');
+  for (const st of ['pass', 'warn', 'fail']) await expect(section.locator(`p[data-status="${st}"] strong`)).toHaveText(String(q.counts[st]));
+  await expect(section.locator('li[data-status="warn"]')).toHaveCount(q.counts.warn);
+  await expect(section.locator('li[data-status="fail"]')).toHaveCount(q.counts.fail);
+});
+
 test('the copilot answers from data and abstains otherwise', async ({ page }) => {
   await page.goto('/#/tro-ly');
   await page.getByRole('button', { name: 'Năm 2010 có hạn không?' }).click();
@@ -119,7 +196,7 @@ test('with the API running, the farmer question returns the six plans in study o
   await expect(answer).not.toContainText('tốt nhất');
 });
 
-for (const url of ['/#/', '/#/nong-dan/ruong', PLANS_URL, '/#/can-bo', '/#/khoa-hoc', '/#/bang-chung', '/#/tro-ly']) {
+for (const url of ['/#/', '/#/nong-dan/ruong', PLANS_URL, '/#/can-bo', '/#/khoa-hoc', '/#/dai-quan-sat?canh=insight', '/#/bang-chung', '/#/tro-ly']) {
   test(`no WCAG 2.2 AA violations on ${url}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(url);
@@ -131,7 +208,7 @@ for (const url of ['/#/', '/#/nong-dan/ruong', PLANS_URL, '/#/can-bo', '/#/khoa-
 }
 
 test('the page never scrolls sideways', async ({ page }) => {
-  for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/khoa-hoc', '/#/bang-chung', '/#/tro-ly']) {
+  for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/khoa-hoc', '/#/dai-quan-sat?canh=satellites', '/#/bang-chung', '/#/tro-ly']) {
     await page.goto(url);
     await page.waitForTimeout(400);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -140,7 +217,7 @@ test('the page never scrolls sideways', async ({ page }) => {
 });
 
 test('no visible text is smaller than 17 px (H6)', async ({ page }) => {
-  for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/bang-chung', '/#/tro-ly']) {
+  for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/dai-quan-sat?canh=analysis', '/#/bang-chung', '/#/tro-ly']) {
     await page.goto(url);
     await page.reload();
     await page.waitForLoadState('networkidle');
