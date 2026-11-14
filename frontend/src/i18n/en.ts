@@ -167,7 +167,7 @@ export const en: Messages = {
     datesAsReported: 'dates as reported',
     overlapNote: 'Two crops on stacked lanes: the reported dates overlap.',
     rows: {
-      money: 'Profit over the year',
+      money: 'Profit in the trial, not on your own field',
       weather: 'Bad weather while the crop is in the field', weatherNote: 'Share of Nghệ An farmland meeting the rule while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation', waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha). 1 m³/ha is 0.1 mm.',
       soil: 'NASA soil wetness', soilNote: 'NASA model value (MERRA-2), percent of saturation, over the field time. Not a field measurement.',
@@ -181,7 +181,7 @@ export const en: Messages = {
     p03NoCalendar: 'The second paper gives no sowing dates, so there is no 12-month calendar and no weather per crop.',
     soilNormal: '1991–2020 average',
     waterLead: { to_apply: 'Water to apply to the field', crop_uses: 'Water the crop uses (rough estimate)' },
-    profit: 'Profit', cost: 'Total cost', ourSum: 'our addition of the profit values, not reported as a sequence',
+    profit: 'Net profit in the trial (Table 13)', cost: 'Total cost in the trial', ourSum: 'our addition of the profit values, not reported as a sequence',
     priceYear: (y: string) => `Prices of ${y}.`, priceYearNotStated: 'The source does not state the price year.',
     trialNote: 'The plans come from one unreplicated trial in Lưu Sơn, Đô Lương (2020–21). Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
     rice: {

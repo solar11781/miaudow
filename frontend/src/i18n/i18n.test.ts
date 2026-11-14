@@ -29,4 +29,12 @@ describe('translations', () => {
     expect(vi.common.notForecast).toBe('Năm đã qua, không phải dự báo');
     expect(strings(vi).join(' ')).toMatch(/[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/);
   });
+  // CLAUDE.md: no profit claim for the farmer's own field; UI-UX-SPEC section 9 money row: P-02 Table 13 "Lãi thuần",
+  // Tables 4, 8, 12 "Tổng chi"
+  it('label the money as the trial figures', () => {
+    expect(vi.farmer.profit).toContain('Lãi thuần');
+    expect(vi.farmer.cost).toContain('Tổng chi');
+    for (const label of [vi.farmer.rows.money, vi.farmer.profit, vi.farmer.cost]) expect(label).toContain('thử nghiệm');
+    for (const label of [en.farmer.rows.money, en.farmer.profit, en.farmer.cost]) expect(label).toContain('trial');
+  });
 });

@@ -165,7 +165,7 @@ export const vi = {
     datesAsReported: 'ngày theo thử nghiệm',
     overlapNote: 'Hai cây nằm chồng hàng: ngày báo cáo chồng nhau.',
     rows: {
-      money: 'Tiền lãi cả năm',
+      money: 'Tiền lãi trong thử nghiệm, không phải của ruộng nhà bạn',
       weather: 'Thời tiết xấu khi cây đang trên ruộng', weatherNote: 'Phần đất trồng Nghệ An gặp điều kiện trong thời gian cây trên ruộng, nếu gieo đúng ngày của thử nghiệm 2020–21, từng năm bạn chọn.',
       water: 'Nước tưới', waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha). 1 m³/ha bằng 0,1 mm.',
       soil: 'Độ ẩm đất NASA', soilNote: 'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa, trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
@@ -179,7 +179,7 @@ export const vi = {
     p03NoCalendar: 'Bài báo thứ hai không ghi ngày gieo, nên không có lịch 12 tháng và không tính được thời tiết theo cây.',
     soilNormal: 'trung bình 1991–2020',
     waterLead: { to_apply: 'Nước phải tưới vào ruộng', crop_uses: 'Nước cây dùng (ước lượng thô)' },
-    profit: 'Lãi', cost: 'Tổng chi', ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
+    profit: 'Lãi thuần trong thử nghiệm (Bảng 13)', cost: 'Tổng chi trong thử nghiệm', ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
     priceYear: (y: string) => `Giá bán năm ${y}.`, priceYearNotStated: 'Nguồn không ghi năm của giá bán.',
     trialNote: 'Các cách trồng lấy từ một thử nghiệm không lặp lại ở Lưu Sơn, Đô Lương (2020–21). Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
     rice: {
