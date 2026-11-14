@@ -323,9 +323,14 @@ test('T28 a picked year scrolls its detail into view above the sticky bar', asyn
   await page.getByTestId('year-1998').click();
   const card = page.getByRole('heading', { level: 2, name: 'Năm 1998' }).locator('xpath=ancestor::article');
   await expect(card).toBeInViewport();
-  const bar = await page.getByRole('link', { name: 'Tiếp tục' }).boundingBox();
-  const top = await card.boundingBox();
-  expect(top && bar && top.y + 40 < bar.y).toBe(true);
+  // the scroll is smooth unless motion is reduced, so the place is checked once the scroll has settled; the Next bar
+  // is sticky at the bottom at both widths
+  const clear = async () => {
+    const bar = await page.getByRole('link', { name: 'Tiếp tục' }).boundingBox();
+    const top = await card.boundingBox();
+    return !!top && !!bar && top.y >= 0 && top.y + 40 < bar.y;
+  };
+  await expect.poll(clear, { timeout: 5_000 }).toBe(true);
 });
 
 // walkthrough 2026-11-14: the note that three choices lead to the same plans is read before choosing
