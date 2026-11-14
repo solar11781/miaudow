@@ -1,0 +1,73 @@
+/** "Your price and costs" (UI-UX-SPEC section 12d, D-163), worked out in the browser so the farmer's numbers never
+ * leave the phone (H14): revenue = study yield (t/ha) x your price (đ/kg), which is thousand đ/ha; margin = revenue -
+ * your cost (thousand đ/ha), only with a cost. Exact until one rounding at the end, half away from zero like the
+ * engine's ROUND_HALF_UP (D-156); the results use the API's notation ("16,200"), so they display like its values. */
+
+/** The digits of a typed field (whole đồng or thousand đồng, 0 or more), null when empty, 'invalid' for anything else. */
+export function readWhole(raw: string): string | null | 'invalid' {
+  if (raw === '') return null;
+  return /^[0-9]+$/.test(raw) ? BigInt(raw).toString() : 'invalid';
+}
+
+/** A number as numerator / 10^places, so the study's decimal yields stay exact. */
+interface Exact {
+  n: bigint;
+  places: number;
+}
+
+function exactOf(value: string): Exact {
+  const m = /^(\d+)(?:\.(\d+))?$/.exec(value.replaceAll(',', ''));
+  if (!m) throw new Error(`not a number: ${value}`);
+  const decimals = m[2] ?? '';
+  return { n: BigInt(`${m[1]}${decimals}`), places: decimals.length };
+}
+
+const scale = (x: Exact, places: number) => x.n * 10n ** BigInt(places - x.places);
+
+function add(a: Exact, b: Exact): Exact {
+  const places = Math.max(a.places, b.places);
+  return { n: scale(a, places) + scale(b, places), places };
+}
+
+function shown(x: Exact): string {
+  const d = 10n ** BigInt(x.places);
+  const abs = x.n < 0n ? -x.n : x.n;
+  const whole = (2n * abs + d) / (2n * d);
+  const sign = x.n < 0n && whole > 0n ? '-' : '';
+  return sign + whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export interface OwnEntry {
+  /** Digits of your sale price, đ/kg. */
+  price: string | null;
+  /** Digits of your cost, thousand đ/ha. */
+  cost: string | null;
+}
+
+export interface OwnResult {
+  revenue: string | null;
+  margin: string | null;
+}
+
+/** Per crop and for the whole year; a whole-year number only when every crop has what it needs (a partial sum would
+ * read as the plan's total). */
+export function ownMoney(yields: string[], entries: OwnEntry[]): { crops: OwnResult[]; total: OwnResult } {
+  const parts = yields.map((y, i) => {
+    const { price, cost } = entries[i] ?? { price: null, cost: null };
+    if (price === null) return { revenue: null, margin: null };
+    const yieldT = exactOf(y);
+    const revenue = { n: yieldT.n * BigInt(price), places: yieldT.places };
+    return { revenue, margin: cost === null ? null : add(revenue, { n: -BigInt(cost), places: 0 }) };
+  });
+  const sum = (xs: (Exact | null)[]) =>
+    xs.length && xs.every((x): x is Exact => x !== null)
+      ? shown(xs.reduce<Exact>((a, x) => add(a, x), { n: 0n, places: 0 }))
+      : null;
+  return {
+    crops: parts.map((p) => ({
+      revenue: p.revenue && shown(p.revenue),
+      margin: p.margin && shown(p.margin),
+    })),
+    total: { revenue: sum(parts.map((p) => p.revenue)), margin: sum(parts.map((p) => p.margin)) },
+  };
+}
