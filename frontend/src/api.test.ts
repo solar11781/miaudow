@@ -213,4 +213,20 @@ describe('snapshot mode (npm run build:snapshot only)', () => {
     const snap = await snapshotApi();
     await expect(snap.api.compare(body)).rejects.toThrow(/file/);
   });
+  it('rejects an index whose made_at is not a date, so the notice cannot break the page', async () => {
+    serve({ 'index.json': { ...index, made_at: 'yesterday' } });
+    const snap = await snapshotApi();
+    await expect(snap.api.snapshot()).rejects.toThrow(/made_at/);
+  });
+  // no live answer may appear under the offline notice
+  it('rejects the copilot and health calls at once with an offline message, calling nothing', async () => {
+    const fetchMock = serve({});
+    const snap = await snapshotApi();
+    const offline = { text: { vi: expect.stringContaining('ngoại tuyến'), en: expect.stringContaining('offline') } };
+    const copilot = snap.api.copilot({ question: 'x', mode: 'simple', lang: 'vi' });
+    await expect(copilot).rejects.toBeInstanceOf(snap.SnapshotOfflineError);
+    await expect(copilot).rejects.toMatchObject(offline);
+    await expect(snap.api.health()).rejects.toMatchObject(offline);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

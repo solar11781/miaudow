@@ -991,6 +991,7 @@ export const vi = {
       `Bản lưu ngoại tuyến các câu trả lời thật của máy chủ${madeAt ? `, tạo lúc ${madeAt}` : ''}.`,
     missing: 'Bản lưu ngoại tuyến không có kết quả cho đúng các lựa chọn này. Các lựa chọn đã lưu:',
     landDry: 'Ruộng thiếu nước (một trong ba ô đầu)',
+    noServer: 'Bản lưu ngoại tuyến không hỏi được máy chủ, nên trợ lý và trạng thái máy chủ không có ở đây.',
     saved: (land: string, years: string, priority: string) => `${land} · năm ${years} · ưu tiên ${priority}`,
   },
   errors: {
