@@ -63,8 +63,8 @@ def _respond(body: bytes) -> Response:
 
 
 def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
-    """A 422 in FastAPI's own shape; the body's values are not echoed back."""
-    return RequestValidationError([{"type": e["type"], "loc": ("body", *e["loc"]), "msg": e["msg"]} for e in errors])
+    """Errors of the compare body, located under "body" as FastAPI locates them."""
+    return RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in errors])
 
 
 async def _compare_request(request: Request) -> CompareRequest:
@@ -77,7 +77,13 @@ async def _compare_request(request: Request) -> CompareRequest:
     try:
         return CompareRequest.model_validate_json(body)
     except ValidationError as err:
-        raise _invalid(err.errors(include_url=False, include_context=False, include_input=False)) from err
+        raise _invalid(err.errors()) from err
+
+
+async def _unprocessable(_: Request, exc: RequestValidationError) -> JSONResponse:
+    """Every 422 in FastAPI's shape with type, loc and msg only, so no route echoes the input back."""
+    detail = [{"type": e["type"], "loc": e["loc"], "msg": e["msg"]} for e in exc.errors()]
+    return JSONResponse({"detail": detail}, status_code=422)
 
 
 async def _internal_error(_: Request, __: Exception) -> JSONResponse:
@@ -93,6 +99,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     compare_data = load_compare_data(base)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
+    app.add_exception_handler(RequestValidationError, _unprocessable)
     app.add_exception_handler(Exception, _internal_error)
 
     @app.get("/api/health")
