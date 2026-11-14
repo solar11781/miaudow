@@ -1,0 +1,2953 @@
+{
+ "schema_version": "0.4",
+ "generated_at": "2026-11-14T05:24:41+00:00",
+ "freeze_commit": "ea7a60c21d1867c4096fc3b3c4822b4127b53839",
+ "test_years": {
+  "first": 2016,
+  "last": 2024
+ },
+ "metrics": [
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08556044591358246,
+   "mae": 0.0447991913914777,
+   "r2_oos": -0.1540777063943617,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.3434898283456319,
+    "ci90_low": -0.04847934395307509,
+    "ci90_high": 0.6639173018402555
+   },
+   "skill_vs_bnw": {
+    "value": -0.0267827273490977,
+    "ci90_low": -0.11014171740728002,
+    "ci90_high": 0.020613002895221767
+   },
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10559717739551314,
+   "mae": 0.04545994566935439,
+   "r2_oos": -0.7578976780910369,
+   "skill_vs_b0": {
+    "value": -0.523205645816663,
+    "ci90_low": -1.9754581401411127,
+    "ci90_high": 0.04623776731012324
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.564001247325177,
+    "ci90_low": -2.1405157962073162,
+    "ci90_high": 0.037103611143308846
+   },
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08443718810218984,
+   "mae": 0.044992165867213135,
+   "r2_oos": -0.12397460110563863,
+   "skill_vs_b0": {
+    "value": 0.026084123384354285,
+    "ci90_low": -0.02104684153861005,
+    "ci90_high": 0.09921410451725164
+   },
+   "skill_vs_b2": {
+    "value": 0.36061432066614807,
+    "ci90_low": -0.03853333709908746,
+    "ci90_high": 0.6815809661842297
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "primary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.0833702933101244,
+   "mae": 0.042303856547773626,
+   "r2_oos": -0.0957503850813588,
+   "skill_vs_b0": {
+    "value": 0.05054020278689253,
+    "ci90_low": 0.013446848546265046,
+    "ci90_high": 0.12282897659288501
+   },
+   "skill_vs_b2": {
+    "value": 0.37666998555270137,
+    "ci90_low": -0.01613794316894679,
+    "ci90_high": 0.6955724092971126
+   },
+   "skill_vs_bnw": {
+    "value": 0.02511107990920436,
+    "ci90_low": -0.027209950715219255,
+    "ci90_high": 0.08218591079099037
+   },
+   "coverage_80": 0.8610603290676416,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.0693025335159401,
+   "mae": 0.039106576460581716,
+   "r2_oos": -0.22200616930128225,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.49475177475261234,
+    "ci90_low": -0.23421470812633668,
+    "ci90_high": 0.9196360061744271
+   },
+   "skill_vs_bnw": {
+    "value": -0.08109455411557387,
+    "ci90_low": -0.1186687285209189,
+    "ci90_high": -0.0144895187358149
+   },
+   "coverage_80": null,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.09749822589239443,
+   "mae": 0.05267638827531845,
+   "r2_oos": -1.4186253572745238,
+   "skill_vs_b0": {
+    "value": -0.9792251610787233,
+    "ci90_low": -11.443384187132596,
+    "ci90_high": 0.1897682032301869
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -1.1397295430107275,
+    "ci90_low": -11.955766808000245,
+    "ci90_high": 0.12287072519299985
+   },
+   "coverage_80": null,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.06665262710151283,
+   "mae": 0.03765249642002392,
+   "r2_oos": -0.13034161965692803,
+   "skill_vs_b0": {
+    "value": 0.07501152772147301,
+    "ci90_low": 0.014282570983694048,
+    "ci90_high": 0.10608030848431588
+   },
+   "skill_vs_b2": {
+    "value": 0.5326512160069818,
+    "ci90_low": -0.14008280336275084,
+    "ci90_high": 0.9228142746705515
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.0663467283748603,
+   "mae": 0.035041909293779656,
+   "r2_oos": -0.11999014124175988,
+   "skill_vs_b0": {
+    "value": 0.08348241655592703,
+    "ci90_low": 0.03333500208168337,
+    "ci90_high": 0.3713377897971824
+   },
+   "skill_vs_b2": {
+    "value": 0.5369311175568576,
+    "ci90_low": -0.15301071077246167,
+    "ci90_high": 0.9469029434588812
+   },
+   "skill_vs_bnw": {
+    "value": 0.009157831787446669,
+    "ci90_low": -0.04887444124592084,
+    "ci90_high": 0.3454657702476228
+   },
+   "coverage_80": 0.9629629629629629,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.0318151661646413,
+   "mae": 0.02658314741341588,
+   "r2_oos": -2.0850415411733403,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.25277001574997304,
+    "ci90_low": -1.0438372344751399,
+    "ci90_high": 0.7876012132037846
+   },
+   "skill_vs_bnw": {
+    "value": -0.46935917235251057,
+    "ci90_low": -0.9813493488004102,
+    "ci90_high": -0.3298685718592406
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.036805019360510276,
+   "mae": 0.030878713583833747,
+   "r2_oos": -3.128637241812114,
+   "skill_vs_b0": {
+    "value": -0.3382760610224589,
+    "ci90_low": -3.7081270158629787,
+    "ci90_high": 0.5107242465707769
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.9664082054031382,
+    "ci90_low": -7.369521225650802,
+    "ci90_high": 0.29894099052469053
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.026246428305485407,
+   "mae": 0.020832293755280794,
+   "r2_oos": -1.0995830013665406,
+   "skill_vs_b0": {
+    "value": 0.31943120591886687,
+    "ci90_low": 0.24804599398344057,
+    "ci90_high": 0.49529307082720586
+   },
+   "skill_vs_b2": {
+    "value": 0.49145859071769504,
+    "ci90_low": -0.42641464697024395,
+    "ci90_high": 0.8805188525079293
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.02668970724873501,
+   "mae": 0.01968906740946179,
+   "r2_oos": -1.1711020881307568,
+   "skill_vs_b0": {
+    "value": 0.29624866986231346,
+    "ci90_low": 0.08580876377972632,
+    "ci90_high": 0.6122945025701905
+   },
+   "skill_vs_b2": {
+    "value": 0.474135904665281,
+    "ci90_low": -0.6400668335528271,
+    "ci90_high": 0.888829142883288
+   },
+   "skill_vs_bnw": {
+    "value": -0.034063471993089456,
+    "ci90_low": -0.38388454967302343,
+    "ci90_high": 0.31409941043887424
+   },
+   "coverage_80": 1.0,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.11126191893521531,
+   "mae": 0.06514727904545443,
+   "r2_oos": -0.11899980811355171,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.5283090248341074,
+    "ci90_low": -0.18391244356541706,
+    "ci90_high": 0.9446947325180219
+   },
+   "skill_vs_bnw": {
+    "value": -0.06750428738115222,
+    "ci90_low": -0.10796176289845608,
+    "ci90_high": 0.19520081902945188
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.1620010250250235,
+   "mae": 0.10019172442815219,
+   "r2_oos": -1.372315492616754,
+   "skill_vs_b0": {
+    "value": -1.1200320816998932,
+    "ci90_low": -17.081460454228388,
+    "ci90_high": 0.1553429432584935
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -1.2631433366002254,
+    "ci90_low": -16.39928641883528,
+    "ci90_high": 0.10078007791148344
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.10768661656966899,
+   "mae": 0.06612936491023899,
+   "r2_oos": -0.048239169941631355,
+   "skill_vs_b0": {
+    "value": 0.06323561242714693,
+    "ci90_low": -0.24254754049905888,
+    "ci90_high": 0.0974417748275419
+   },
+   "skill_vs_b2": {
+    "value": 0.5581366925250808,
+    "ci90_low": -0.11207500782854937,
+    "ci90_high": 0.9425263786007185
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.10850595893144009,
+   "mae": 0.06565273365853622,
+   "r2_oos": -0.06425107863329504,
+   "skill_vs_b0": {
+    "value": 0.04892648692456336,
+    "ci90_low": -0.45377807472530685,
+    "ci90_high": 0.41269671839329397
+   },
+   "skill_vs_b2": {
+    "value": 0.5513872071629959,
+    "ci90_low": -0.1672359999592553,
+    "ci90_high": 0.9658276399629249
+   },
+   "skill_vs_bnw": {
+    "value": -0.015275052822682822,
+    "ci90_low": -0.30659958569527257,
+    "ci90_high": 0.42074796692380373
+   },
+   "coverage_80": 0.8888888888888888,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.03189206879388418,
+   "mae": 0.025589302922874844,
+   "r2_oos": -1.8859534277654637,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": -0.10702721119445324,
+    "ci90_low": -1.6534879562092928,
+    "ci90_high": 0.6513745670667845
+   },
+   "skill_vs_bnw": {
+    "value": 0.024300452629150482,
+    "ci90_low": -0.03274357808959414,
+    "ci90_high": 0.09098900402030058
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.03031122889635594,
+   "mae": 0.026958726813969405,
+   "r2_oos": -1.6069399185333446,
+   "skill_vs_b0": {
+    "value": 0.09667983777830869,
+    "ci90_low": -1.868410948947949,
+    "ci90_high": 0.6231375395317131
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": 0.1186309265893335,
+    "ci90_low": -1.7960191415007662,
+    "ci90_high": 0.6291945206685097
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.03228677301283106,
+   "mae": 0.02599583059455197,
+   "r2_oos": -1.9578300364513272,
+   "skill_vs_b0": {
+    "value": -0.024905671725103495,
+    "ci90_low": -0.10009670431160297,
+    "ci90_high": 0.03170542737808139
+   },
+   "skill_vs_b2": {
+    "value": -0.13459846750721915,
+    "ci90_low": -1.6968317776826227,
+    "ci90_high": 0.6423484881580093
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.026828743941674553,
+   "mae": 0.019783926813341,
+   "r2_oos": -1.0423238777496886,
+   "skill_vs_b0": {
+    "value": 0.29232264869533275,
+    "ci90_low": 0.08268101229314749,
+    "ci90_high": 0.7169468682975015
+   },
+   "skill_vs_b2": {
+    "value": 0.21658191535971683,
+    "ci90_low": -1.1672818086510817,
+    "ci90_high": 0.8747551587173815
+   },
+   "skill_vs_bnw": {
+    "value": 0.3095195286474345,
+    "ci90_low": 0.13977441005260172,
+    "ci90_high": 0.713742178533461
+   },
+   "coverage_80": 1.0,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.055155834015580815,
+   "mae": 0.04384106178858302,
+   "r2_oos": -0.1255657860960515,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.22694322715449444,
+    "ci90_low": -0.7412401781801792,
+    "ci90_high": 0.7097172795635248
+   },
+   "skill_vs_bnw": {
+    "value": -0.03704413884206126,
+    "ci90_low": -0.4322820019759752,
+    "ci90_high": 0.13155778507971402
+   },
+   "coverage_80": null,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.06273151285503747,
+   "mae": 0.045756789041958505,
+   "r2_oos": -0.45599369364944975,
+   "skill_vs_b0": {
+    "value": -0.2935660550765897,
+    "ci90_low": -2.4449174621869245,
+    "ci90_high": 0.4256966850923265
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.3414850956222244,
+    "ci90_low": -3.779580594182452,
+    "ci90_high": 0.45642938921204185
+   },
+   "coverage_80": null,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.05416176834473232,
+   "mae": 0.039554398672656456,
+   "r2_oos": -0.0853595752952534,
+   "skill_vs_b0": {
+    "value": 0.03572088926072503,
+    "ci90_low": -0.15148709795051407,
+    "ci90_high": 0.3018134706570349
+   },
+   "skill_vs_b2": {
+    "value": 0.2545575025295622,
+    "ci90_low": -0.8396873942027525,
+    "ci90_high": 0.790776289169691
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.05278631352564809,
+   "mae": 0.037763998035985215,
+   "r2_oos": -0.030933464615151562,
+   "skill_vs_b0": {
+    "value": 0.08407533584431837,
+    "ci90_low": -0.015390184138629193,
+    "ci90_high": 0.3190668633987535
+   },
+   "skill_vs_b2": {
+    "value": 0.29193823495820526,
+    "ci90_low": -0.6850051449066775,
+    "ci90_high": 0.7708300340020617
+   },
+   "skill_vs_bnw": {
+    "value": 0.05014569541646707,
+    "ci90_low": -0.3324901772902448,
+    "ci90_high": 0.23632271835074597
+   },
+   "coverage_80": 0.8,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.16189837425561487,
+   "mae": 0.0790881001525308,
+   "r2_oos": -0.0771084519233245,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.35314513296236316,
+    "ci90_low": -0.18038739215644004,
+    "ci90_high": 0.7799238715560972
+   },
+   "skill_vs_bnw": {
+    "value": -0.028939460439557196,
+    "ci90_low": -0.13536876994990532,
+    "ci90_high": 0.02376984210473665
+   },
+   "coverage_80": null,
+   "n_rows": 105,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.20129781581548303,
+   "mae": 0.09424046243808974,
+   "r2_oos": -0.6651470164491375,
+   "skill_vs_b0": {
+    "value": -0.5459418348039045,
+    "ci90_low": -3.5438821878171085,
+    "ci90_high": 0.1528205004972845
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.5906805573740685,
+    "ci90_low": -3.77419209478985,
+    "ci90_high": 0.13403000196867434
+   },
+   "coverage_80": null,
+   "n_rows": 105,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.15960539825728592,
+   "mae": 0.07867150555683812,
+   "r2_oos": -0.04681421340687031,
+   "skill_vs_b0": {
+    "value": 0.028125522979937423,
+    "ci90_low": -0.02434860463678569,
+    "ci90_high": 0.11922890036501355
+   },
+   "skill_vs_b2": {
+    "value": 0.3713382643899146,
+    "ci90_low": -0.1547746340803625,
+    "ci90_high": 0.79054047608863
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 105,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.15949050810473714,
+   "mae": 0.0761255260036317,
+   "r2_oos": -0.045307680934096206,
+   "skill_vs_b0": {
+    "value": 0.02952420522969945,
+    "ci90_low": -0.006353007080439376,
+    "ci90_high": 0.09429026740474411
+   },
+   "skill_vs_b2": {
+    "value": 0.37224300881061234,
+    "ci90_low": -0.16202060981438224,
+    "ci90_high": 0.7949148337974082
+   },
+   "skill_vs_bnw": {
+    "value": 0.0014391593593966467,
+    "ci90_low": -0.05602241946537089,
+    "ci90_high": 0.04001660565650839
+   },
+   "coverage_80": 0.6857142857142857,
+   "n_rows": 105,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.07250327652228243,
+   "mae": 0.044771828501597395,
+   "r2_oos": -0.19758135655015563,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.507665158836167,
+    "ci90_low": 0.04681931753535869,
+    "ci90_high": 0.8195931258005371
+   },
+   "skill_vs_bnw": {
+    "value": -0.0418384375356502,
+    "ci90_low": -0.1292752992831487,
+    "ci90_high": -0.01527177899094365
+   },
+   "coverage_80": null,
+   "n_rows": 118,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.10333021857161233,
+   "mae": 0.05945384615037674,
+   "r2_oos": -1.4324529901625218,
+   "skill_vs_b0": {
+    "value": -1.0311379906327462,
+    "ci90_low": -4.5430333100817215,
+    "ci90_high": -0.04911903847658948
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -1.1161176305801206,
+    "ci90_low": -5.111626870556455,
+    "ci90_high": -0.1064170286395915
+   },
+   "coverage_80": null,
+   "n_rows": 118,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.07103255646972478,
+   "mae": 0.043265251176281654,
+   "r2_oos": -0.14948855158665242,
+   "skill_vs_b0": {
+    "value": 0.040158277932818676,
+    "ci90_low": 0.015042059972316515,
+    "ci90_high": 0.11447633506917604
+   },
+   "skill_vs_b2": {
+    "value": 0.5274364782236344,
+    "ci90_low": 0.09618164452516426,
+    "ci90_high": 0.8363773430294411
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 118,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.06733825481236393,
+   "mae": 0.041185645004425356,
+   "r2_oos": -0.03303128249329235,
+   "skill_vs_b0": {
+    "value": 0.13740200042098083,
+    "ci90_low": 0.007630731713121872,
+    "ci90_high": 0.19352247916825524
+   },
+   "skill_vs_b2": {
+    "value": 0.5753129508890236,
+    "ci90_low": 0.14860138070751688,
+    "ci90_high": 0.8341586971895317
+   },
+   "skill_vs_bnw": {
+    "value": 0.10131224789721727,
+    "ci90_low": -0.06767647636654943,
+    "ci90_high": 0.17097074401540344
+   },
+   "coverage_80": 0.8559322033898306,
+   "n_rows": 118,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.04121017239521861,
+   "mae": 0.03519936935238947,
+   "r2_oos": -2.3304415810326984,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": -0.6650546405955327,
+    "ci90_low": -1.8386738531868438,
+    "ci90_high": 0.0014225236486048454
+   },
+   "skill_vs_bnw": {
+    "value": -0.06520877895881871,
+    "ci90_low": -0.25127839861253176,
+    "ci90_high": 0.05619976575957635
+   },
+   "coverage_80": null,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.03193671085579206,
+   "mae": 0.020208028202694323,
+   "r2_oos": -1.0001995729350446,
+   "skill_vs_b0": {
+    "value": 0.3994191087673048,
+    "ci90_low": -0.001424550104817568,
+    "ci90_high": 0.6477228270245461
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": 0.36025596218402156,
+    "ci90_low": -0.16551406690716058,
+    "ci90_high": 0.6326099056473338
+   },
+   "coverage_80": null,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.03992887396338601,
+   "mae": 0.03419601233869275,
+   "r2_oos": -2.1265622728795166,
+   "skill_vs_b0": {
+    "value": 0.061216899679100156,
+    "ci90_low": -0.05954625118425449,
+    "ci90_high": 0.200817284712829
+   },
+   "skill_vs_b2": {
+    "value": -0.5631251577019758,
+    "ci90_low": -1.721902592765727,
+    "ci90_high": 0.14200933705012728
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.04109605233407338,
+   "mae": 0.03431888926036451,
+   "r2_oos": -2.3120216654785577,
+   "skill_vs_b0": {
+    "value": 0.0055307727536928475,
+    "ci90_low": -0.2906256429151255,
+    "ci90_high": 0.2723874170572421
+   },
+   "skill_vs_b2": {
+    "value": -0.6558456017559171,
+    "ci90_low": -2.0710575459344454,
+    "ci90_high": 0.14743211560901157
+   },
+   "skill_vs_bnw": {
+    "value": -0.05931735126715898,
+    "ci90_low": -0.34827559200890823,
+    "ci90_high": 0.1486206675555337
+   },
+   "coverage_80": 0.9126984126984127,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.03888315760984249,
+   "mae": 0.027719960757350053,
+   "r2_oos": -1.4666734299757396,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": -0.2004385507458375,
+    "ci90_low": -2.407524037018875,
+    "ci90_high": 0.5164227795084759
+   },
+   "skill_vs_bnw": {
+    "value": 0.17011328362130318,
+    "ci90_low": 0.04735655343938938,
+    "ci90_high": 0.294121888566022
+   },
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.035488819955419214,
+   "mae": 0.015966470756296158,
+   "r2_oos": -1.0548102428426556,
+   "skill_vs_b0": {
+    "value": 0.1669711045361748,
+    "ci90_low": -1.0679220811086183,
+    "ci90_high": 0.7065317670218967
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": 0.30868038529495345,
+    "ci90_low": -0.5776804031066893,
+    "ci90_high": 0.7801426067720582
+   },
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.04268272311374274,
+   "mae": 0.036016874663120396,
+   "r2_oos": -1.9723013771558415,
+   "skill_vs_b0": {
+    "value": -0.20498374086961113,
+    "ci90_low": -0.4166751829111189,
+    "ci90_high": -0.04971067990900879
+   },
+   "skill_vs_b2": {
+    "value": -0.4465089355618135,
+    "ci90_low": -3.5484035938693395,
+    "ci90_high": 0.3661580630594164
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.03676386975221037,
+   "mae": 0.027231401450897186,
+   "r2_oos": -1.2051139767627719,
+   "skill_vs_b0": {
+    "value": 0.10603732542557942,
+    "ci90_low": -0.06898909213714961,
+    "ci90_high": 0.30258828567086316
+   },
+   "skill_vs_b2": {
+    "value": -0.07314725748699025,
+    "ci90_low": -2.4380952796908586,
+    "ci90_high": 0.6192387490245368
+   },
+   "skill_vs_bnw": {
+    "value": 0.25811225143231653,
+    "ci90_low": 0.09255333440927295,
+    "ci90_high": 0.4996323157283206
+   },
+   "coverage_80": 0.9797979797979798,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.04931882409241361,
+   "mae": 0.032696055149427874,
+   "r2_oos": -0.16475578492391096,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.150380055800017,
+    "ci90_low": -0.3901945648325995,
+    "ci90_high": 0.5734809714947998
+   },
+   "skill_vs_bnw": {
+    "value": -0.1272432484984949,
+    "ci90_low": -0.31718007096514045,
+    "ci90_high": 0.016855423429095427
+   },
+   "coverage_80": null,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.0535057386471682,
+   "mae": 0.032774818779482164,
+   "r2_oos": -0.3709138925883684,
+   "skill_vs_b0": {
+    "value": -0.17699685232979956,
+    "ci90_low": -1.3445628041991682,
+    "ci90_high": 0.2806762266975089
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.3267617552927464,
+    "ci90_low": -1.9142672422752227,
+    "ci90_high": 0.2353621805975855
+   },
+   "coverage_80": null,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.04645194378137717,
+   "mae": 0.02945538741671487,
+   "r2_oos": -0.0332781202951391,
+   "skill_vs_b0": {
+    "value": 0.11288002715295453,
+    "ci90_low": -0.017144402088596918,
+    "ci90_high": 0.24080236101107444
+   },
+   "skill_vs_b2": {
+    "value": 0.24628517817100282,
+    "ci90_low": -0.3078087097255109,
+    "ci90_high": 0.6568604536417972
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.04792260084495941,
+   "mae": 0.029030638678973427,
+   "r2_oos": -0.09974047624924598,
+   "skill_vs_b0": {
+    "value": 0.05581883302593982,
+    "ci90_low": -0.21690968292682222,
+    "ci90_high": 0.21145607259684535
+   },
+   "skill_vs_b2": {
+    "value": 0.19780484960082412,
+    "ci90_low": -0.47648694412759535,
+    "ci90_high": 0.6048873752245202
+   },
+   "skill_vs_bnw": {
+    "value": -0.06432184583093936,
+    "ci90_low": -0.321764430586179,
+    "ci90_high": 0.06276424920318553
+   },
+   "coverage_80": 0.9259259259259259,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08556044591358244,
+   "mae": 0.044799191391477686,
+   "r2_oos": -0.15407770639436125,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.34348982834563213,
+    "ci90_low": -0.048479343953075134,
+    "ci90_high": 0.6639173018402555
+   },
+   "skill_vs_bnw": {
+    "value": -0.020744141042792652,
+    "ci90_low": -0.10511340314772877,
+    "ci90_high": 0.02778596271863852
+   },
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10559717739551314,
+   "mae": 0.04545994566935439,
+   "r2_oos": -0.7578976780910367,
+   "skill_vs_b0": {
+    "value": -0.5232056458166634,
+    "ci90_low": -1.9754581401411127,
+    "ci90_high": 0.04623776731012326
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.5548032385706625,
+    "ci90_low": -2.0948329595247146,
+    "ci90_high": 0.04045974654768782
+   },
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "spring",
+   "role": "reference",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08468657938073061,
+   "mae": 0.04556688180748929,
+   "r2_oos": -0.130623885056401,
+   "skill_vs_b0": {
+    "value": 0.020322566849710788,
+    "ci90_low": -0.028580088113878407,
+    "ci90_high": 0.09511549027306243
+   },
+   "skill_vs_b2": {
+    "value": 0.356831800196593,
+    "ci90_low": -0.042165810380502045,
+    "ci90_high": 0.6768807838489694
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08418627179154843,
+   "mae": 0.0439604140889492,
+   "r2_oos": -0.11730444708288323,
+   "skill_vs_b0": {
+    "value": 0.031863763685694324,
+    "ci90_low": -0.011504268723501859,
+    "ci90_high": 0.0878266645188309
+   },
+   "skill_vs_b2": {
+    "value": 0.3644087133124815,
+    "ci90_low": -0.01573986518326486,
+    "ci90_high": 0.6752777115552234
+   },
+   "skill_vs_bnw": {
+    "value": 0.011780609050951907,
+    "ci90_low": -0.06992455104809474,
+    "ci90_high": 0.06926361522527559
+   },
+   "coverage_80": 0.8519195612431444,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.11136826327834351,
+   "mae": 0.06446870188280295,
+   "r2_oos": -0.13111054173426884,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.172691411830722,
+    "ci90_low": -0.21268209453986733,
+    "ci90_high": 0.42990175445753825
+   },
+   "skill_vs_bnw": {
+    "value": -0.05044433471660814,
+    "ci90_low": -0.11106491943512875,
+    "ci90_high": 0.001061885751523233
+   },
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.1224412291794916,
+   "mae": 0.06228389357466899,
+   "r2_oos": -0.3672172124276667,
+   "skill_vs_b0": {
+    "value": -0.20873881197445887,
+    "ci90_low": -0.7540836789274493,
+    "ci90_high": 0.17538157390078868
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.26971283719065386,
+    "ci90_low": -0.9001633104465261,
+    "ci90_high": 0.14345854006181452
+   },
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10866130726496005,
+   "mae": 0.06154267334208433,
+   "r2_oos": -0.07679246234349302,
+   "skill_vs_b0": {
+    "value": 0.04802190182711319,
+    "ci90_low": -0.0010630171529852602,
+    "ci90_high": 0.09996258317862516
+   },
+   "skill_vs_b2": {
+    "value": 0.2124203436325146,
+    "ci90_low": -0.16748581098904167,
+    "ci90_high": 0.4737294449891223
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10492005343913166,
+   "mae": 0.06102657046001393,
+   "r2_oos": -0.003920128505173981,
+   "skill_vs_b0": {
+    "value": 0.11244737674717531,
+    "ci90_low": 0.08069071881901771,
+    "ci90_high": 0.14698141531956754
+   },
+   "skill_vs_b2": {
+    "value": 0.26572009233076654,
+    "ci90_low": -0.0883420435503115,
+    "ci90_high": 0.505050226336618
+   },
+   "skill_vs_bnw": {
+    "value": 0.06767537514120625,
+    "ci90_low": 0.0029004679189810973,
+    "ci90_high": 0.13386854715282262
+   },
+   "coverage_80": 0.7683982683982684,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.1568503121358585,
+   "mae": 0.11494921651767381,
+   "r2_oos": -0.1601222695631057,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.4050028040989019,
+    "ci90_low": -0.580006487122446,
+    "ci90_high": 0.676688500981569
+   },
+   "skill_vs_bnw": {
+    "value": -0.04249806864452754,
+    "ci90_low": -0.1368744612139848,
+    "ci90_high": 0.044350033226455254
+   },
+   "coverage_80": null,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.20334239188722059,
+   "mae": 0.11980243902587748,
+   "r2_oos": -0.9497945159323813,
+   "skill_vs_b0": {
+    "value": -0.6806801895688639,
+    "ci90_low": -2.0929923712456415,
+    "ci90_high": 0.3670911261203203
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.752105851634659,
+    "ci90_low": -2.255341251468641,
+    "ci90_high": 0.35232249154525036
+   },
+   "coverage_80": null,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.15361999893341427,
+   "mae": 0.10982922022953907,
+   "r2_oos": -0.11282917873556841,
+   "skill_vs_b0": {
+    "value": 0.04076560899511705,
+    "ci90_low": -0.046408240222295394,
+    "ci90_high": 0.12039540346869082
+   },
+   "skill_vs_b2": {
+    "value": 0.4292582271401971,
+    "ci90_low": -0.5439783229421062,
+    "ci90_high": 0.6928125296304763
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "na_ht_th",
+   "rmse": 0.14929835818716522,
+   "mae": 0.10459144029054365,
+   "r2_oos": -0.0510976199786215,
+   "skill_vs_b0": {
+    "value": 0.09397686127130567,
+    "ci90_low": -0.11831235194185186,
+    "ci90_high": 0.2904796427877095
+   },
+   "skill_vs_b2": {
+    "value": 0.46091877303491524,
+    "ci90_low": -0.5843247435660184,
+    "ci90_high": 0.7596174817917724
+   },
+   "skill_vs_bnw": {
+    "value": 0.05547262772808326,
+    "ci90_low": -0.23657186353999382,
+    "ci90_high": 0.2991994301935432
+   },
+   "coverage_80": 0.5185185185185185,
+   "n_rows": 27,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.07132826417976003,
+   "mae": 0.05958198497209063,
+   "r2_oos": -0.2561711102596438,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": -0.009317072792302206,
+    "ci90_low": -1.2929975107620821,
+    "ci90_high": 0.6835015629275181
+   },
+   "skill_vs_bnw": {
+    "value": -0.11238944337242596,
+    "ci90_low": -0.2880998950139346,
+    "ci90_high": 0.2388960412363494
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.07099828292749678,
+   "mae": 0.06146248718762321,
+   "r2_oos": -0.24457531148701683,
+   "skill_vs_b0": {
+    "value": 0.009231066275859567,
+    "ci90_low": -2.1596006697759247,
+    "ci90_high": 0.5638896268720117
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.10212090269608853,
+    "ci90_low": -1.9623096829005378,
+    "ci90_high": 0.5232724264466353
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.06762904051653933,
+   "mae": 0.05784464415214696,
+   "r2_oos": -0.12925479268422002,
+   "skill_vs_b0": {
+    "value": 0.10103425921743325,
+    "ci90_low": -0.31388110305617917,
+    "ci90_high": 0.22366269582749865
+   },
+   "skill_vs_b2": {
+    "value": 0.09265852997277602,
+    "ci90_low": -1.0976342811496425,
+    "ci90_high": 0.6624255312305991
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Nghe An",
+   "rmse": 0.06142756538435177,
+   "mae": 0.05777294698053702,
+   "r2_oos": 0.06835148451701367,
+   "skill_vs_b0": {
+    "value": 0.25834266695528474,
+    "ci90_low": -1.1387580387774083,
+    "ci90_high": 0.6018491274860878
+   },
+   "skill_vs_b2": {
+    "value": 0.25143259159636233,
+    "ci90_low": -0.8397601982263575,
+    "ci90_high": 0.6464398332049665
+   },
+   "skill_vs_bnw": {
+    "value": 0.17498821212131122,
+    "ci90_low": -0.6686338709236516,
+    "ci90_high": 0.5066867721733878
+   },
+   "coverage_80": 0.5555555555555556,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.25302210283233084,
+   "mae": 0.230631043179266,
+   "r2_oos": -0.16124057125006197,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.4540890686462419,
+    "ci90_low": -0.5624885106583526,
+    "ci90_high": 0.7133882956161278
+   },
+   "skill_vs_bnw": {
+    "value": -0.005244739605491322,
+    "ci90_low": -0.09749068888036737,
+    "ci90_high": 0.0857215526243088
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.34245031135836057,
+   "mae": 0.2629393062981304,
+   "r2_oos": -1.1271612355707927,
+   "skill_vs_b0": {
+    "value": -0.8318006520224555,
+    "ci90_low": -2.489041111207255,
+    "ci90_high": 0.3599951627145678
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.8414079694514824,
+    "ci90_low": -2.544447871764271,
+    "ci90_high": 0.3807269405142472
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.2523611839377772,
+   "mae": 0.23176171484288682,
+   "r2_oos": -0.155181942763303,
+   "skill_vs_b0": {
+    "value": 0.005217375827850312,
+    "ci90_low": -0.09375869508729626,
+    "ci90_high": 0.08883052372233267
+   },
+   "skill_vs_b2": {
+    "value": 0.45693729114364623,
+    "ci90_low": -0.6147967812523288,
+    "ci90_high": 0.7178686095759886
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Ha Tinh",
+   "rmse": 0.24842144125750446,
+   "mae": 0.22100628622857918,
+   "r2_oos": -0.11939518208591049,
+   "skill_vs_b0": {
+    "value": 0.03603507335185985,
+    "ci90_low": -0.23010421097615782,
+    "ci90_high": 0.2854667193157381
+   },
+   "skill_vs_b2": {
+    "value": 0.4737610091011567,
+    "ci90_low": -0.7472997306073603,
+    "ci90_high": 0.7794573826622555
+   },
+   "skill_vs_bnw": {
+    "value": 0.030979328322763733,
+    "ci90_low": -0.32074312808966493,
+    "ci90_high": 0.3213387439752992
+   },
+   "coverage_80": 0.0,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.06854309198421461,
+   "mae": 0.054634621401664835,
+   "r2_oos": -2.13048562212724,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": -1.7134803898652042,
+    "ci90_low": -5.388835653943196,
+    "ci90_high": 0.11672387175375629
+   },
+   "skill_vs_bnw": {
+    "value": -0.8515205276121545,
+    "ci90_low": -1.5890864721449631,
+    "ci90_high": -0.6380618664132567
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.04161025218809668,
+   "mae": 0.035005523591878855,
+   "r2_oos": -0.1536791029776896,
+   "skill_vs_b0": {
+    "value": 0.6314696049638021,
+    "ci90_low": -0.13214887066999065,
+    "ci90_high": 0.8434769427544999
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": 0.3176584085414631,
+    "ci90_low": -1.763388250925574,
+    "ci90_high": 0.7324145551917859
+   },
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.05037318668937171,
+   "mae": 0.03988130169358343,
+   "r2_oos": -0.6907647392732528,
+   "skill_vs_b0": {
+    "value": 0.45990336856288205,
+    "ci90_low": 0.38952244339455794,
+    "ci90_high": 0.6137633830470186
+   },
+   "skill_vs_b2": {
+    "value": -0.4655416180368743,
+    "ci90_low": -2.7371240878838003,
+    "ci90_high": 0.638125406495067
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "unit:Thanh Hoa",
+   "rmse": 0.03719463679947305,
+   "mae": 0.034995087662514704,
+   "r2_oos": 0.07818244449731526,
+   "skill_vs_b0": {
+    "value": 0.7055352853285786,
+    "ci90_low": 0.4309592111088903,
+    "ci90_high": 0.7760392408493665
+   },
+   "skill_vs_b2": {
+    "value": 0.2009757712318454,
+    "ci90_low": -0.8518306629049273,
+    "ci90_high": 0.6354563257478795
+   },
+   "skill_vs_bnw": {
+    "value": 0.4547925361284074,
+    "ci90_low": -0.30511608617323965,
+    "ci90_high": 0.6113784486904781
+   },
+   "coverage_80": 1.0,
+   "n_rows": 9,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.0393755200301027,
+   "mae": 0.03291674515266556,
+   "r2_oos": -1.7258709063197424,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": -1.5210673465701499,
+    "ci90_low": -2.8179529943918755,
+    "ci90_high": -0.8715362318708979
+   },
+   "skill_vs_bnw": {
+    "value": -1.34154476072866,
+    "ci90_low": -2.0974826635926913,
+    "ci90_high": -0.8289018332024121
+   },
+   "coverage_80": null,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.024798994875441852,
+   "mae": 0.01820480544834184,
+   "r2_oos": -0.08123684598438952,
+   "skill_vs_b0": {
+    "value": 0.603342607502939,
+    "ci90_low": 0.46567959092136585,
+    "ci90_high": 0.7380795293310389
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": 0.07120896079421524,
+    "ci90_low": -0.2942568678308949,
+    "ci90_high": 0.4337360341595904
+   },
+   "coverage_80": null,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.02573209051923475,
+   "mae": 0.018668772568001712,
+   "r2_oos": -0.16413358908906162,
+   "skill_vs_b0": {
+    "value": 0.5729315036929671,
+    "ci90_low": 0.4532237970099263,
+    "ci90_high": 0.6771571922729906
+   },
+   "skill_vs_b2": {
+    "value": -0.07666844078847546,
+    "ci90_low": -0.7659608608821098,
+    "ci90_high": 0.22735584762480265
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:central_highlands",
+   "rmse": 0.031614812646213734,
+   "mae": 0.023059707401615614,
+   "r2_oos": -0.7572514252408749,
+   "skill_vs_b0": {
+    "value": 0.3553431231219316,
+    "ci90_low": 0.09769860747106392,
+    "ci90_high": 0.5482202236597659
+   },
+   "skill_vs_b2": {
+    "value": -0.6252234020391916,
+    "ci90_low": -1.301995875184554,
+    "ci90_high": -0.24633106993079665
+   },
+   "skill_vs_bnw": {
+    "value": -0.5094929325215416,
+    "ci90_low": -0.9531156786106947,
+    "ci90_high": -0.19361105496493902
+   },
+   "coverage_80": 0.9555555555555556,
+   "n_rows": 45,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.25547217830897073,
+   "mae": 0.1754749644920192,
+   "r2_oos": -0.0914664240423293,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.1527804182872159,
+    "ci90_low": -0.7769842228028685,
+    "ci90_high": 0.5262861657251929
+   },
+   "skill_vs_bnw": {
+    "value": -0.08478730296364945,
+    "ci90_low": -0.12643845892426708,
+    "ci90_high": -0.04372076104630621
+   },
+   "coverage_80": null,
+   "n_rows": 39,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.27755280359587176,
+   "mae": 0.17676659669100384,
+   "r2_oos": -0.28829225339169207,
+   "skill_vs_b0": {
+    "value": -0.1803315475526981,
+    "ci90_low": -1.1109790962631838,
+    "ci90_high": 0.43724878662072647
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.2804086760726019,
+    "ci90_low": -1.3232484485026368,
+    "ci90_high": 0.40325499315953783
+   },
+   "coverage_80": null,
+   "n_rows": 39,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.24528518297136598,
+   "mae": 0.17477733907604212,
+   "r2_oos": -0.006157078959564188,
+   "skill_vs_b0": {
+    "value": 0.07816030177714073,
+    "ci90_low": 0.04188932768387482,
+    "ci90_high": 0.1122462190047976
+   },
+   "skill_vs_b2": {
+    "value": 0.21899935646539004,
+    "ci90_low": -0.6757577612827627,
+    "ci90_high": 0.5695681775601014
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 39,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:mekong_river_delta",
+   "rmse": 0.24340766817528925,
+   "mae": 0.1754756983416238,
+   "r2_oos": 0.009187059630922145,
+   "skill_vs_b0": {
+    "value": 0.0922185799362234,
+    "ci90_low": 0.038253775354783345,
+    "ci90_high": 0.1474576028630282
+   },
+   "skill_vs_b2": {
+    "value": 0.23090980500693015,
+    "ci90_low": -0.654895524146306,
+    "ci90_high": 0.5763573999535543
+   },
+   "skill_vs_bnw": {
+    "value": 0.015250241648504193,
+    "ci90_low": -0.018394855869702686,
+    "ci90_high": 0.04869337287072939
+   },
+   "coverage_80": 0.3333333333333333,
+   "n_rows": 39,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.1213299814751663,
+   "mae": 0.07893739677947655,
+   "r2_oos": -0.17895736936803353,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.296085503737637,
+    "ci90_low": -0.0018478319862106993,
+    "ci90_high": 0.5285945974537318
+   },
+   "skill_vs_bnw": {
+    "value": -0.047189248040346854,
+    "ci90_low": -0.12540289514378575,
+    "ci90_high": 0.04805756316106777
+   },
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.14461328007285898,
+   "mae": 0.08213795564665088,
+   "r2_oos": -0.6748587728027304,
+   "skill_vs_b0": {
+    "value": -0.42062708654216996,
+    "ci90_low": -1.1213163756685005,
+    "ci90_high": 0.0018442728743104033
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.48766541050184387,
+    "ci90_low": -1.234373400099425,
+    "ci90_high": -0.028254709364809782
+   },
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.11856473748249541,
+   "mae": 0.07502726791551262,
+   "r2_oos": -0.12583028480694436,
+   "skill_vs_b0": {
+    "value": 0.045062769818019266,
+    "ci90_low": -0.05048368639599146,
+    "ci90_high": 0.11142933404935525
+   },
+   "skill_vs_b2": {
+    "value": 0.32780584065427487,
+    "ci90_low": 0.02747831749028784,
+    "ci90_high": 0.5524472297698292
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:north_central_and_central_coastal_areas",
+   "rmse": 0.11401150327906773,
+   "mae": 0.0745671027848008,
+   "r2_oos": -0.041020262979288624,
+   "skill_vs_b0": {
+    "value": 0.1169992316708488,
+    "ci90_low": 0.03248005823353368,
+    "ci90_high": 0.20578425816829823
+   },
+   "skill_vs_b2": {
+    "value": 0.37844295896230606,
+    "ci90_low": 0.0712987712767547,
+    "ci90_high": 0.6087272257764278
+   },
+   "skill_vs_bnw": {
+    "value": 0.07533108939434763,
+    "ci90_low": -0.07760367730880358,
+    "ci90_high": 0.22962785322906712
+   },
+   "coverage_80": 0.6262626262626263,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.05765163365105739,
+   "mae": 0.038571083233016376,
+   "r2_oos": -0.382521640599248,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.00818818313061409,
+    "ci90_low": -0.5827894602452401,
+    "ci90_high": 0.521869149948021
+   },
+   "skill_vs_bnw": {
+    "value": -0.08123805264487549,
+    "ci90_low": -0.1834635166022753,
+    "ci90_high": -0.04637846473422876
+   },
+   "coverage_80": null,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.05788912417934218,
+   "mae": 0.030307209217254577,
+   "r2_oos": -0.3939354392480643,
+   "skill_vs_b0": {
+    "value": -0.008255782993652705,
+    "ci90_low": -1.0914777070814023,
+    "ci90_high": 0.36820403147929837
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.09016451937199133,
+    "ci90_low": -1.425243821353651,
+    "ci90_high": 0.3242755664795264
+   },
+   "coverage_80": null,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.05544354073422255,
+   "mae": 0.03677501024598032,
+   "r2_oos": -0.27864685969698,
+   "skill_vs_b0": {
+    "value": 0.07513428929564092,
+    "ci90_low": 0.04432283948603498,
+    "ci90_high": 0.15502253452079198
+   },
+   "skill_vs_b2": {
+    "value": 0.08270725910611376,
+    "ci90_low": -0.4798932121779459,
+    "ci90_high": 0.5876703136511701
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:northern_midlands_and_mountain_areas",
+   "rmse": 0.05104058076159626,
+   "mae": 0.03466627120366194,
+   "r2_oos": -0.08362724630888585,
+   "skill_vs_b0": {
+    "value": 0.21619509272983806,
+    "ci90_low": -0.11840459622669221,
+    "ci90_high": 0.3631437603116468
+   },
+   "skill_vs_b2": {
+    "value": 0.2226130308492401,
+    "ci90_low": -0.3649417658926996,
+    "ci90_high": 0.6221367782188583
+   },
+   "skill_vs_bnw": {
+    "value": 0.15252030840971287,
+    "ci90_low": -0.28013248856094974,
+    "ci90_high": 0.3245694726693722
+   },
+   "coverage_80": 0.9206349206349206,
+   "n_rows": 126,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.10582286573244522,
+   "mae": 0.06691021159330769,
+   "r2_oos": -0.1938305609498634,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.11814395682129564,
+    "ci90_low": -0.2480682759149262,
+    "ci90_high": 0.7381885761772137
+   },
+   "skill_vs_bnw": {
+    "value": 0.08272398147534288,
+    "ci90_low": -0.20733767097204847,
+    "ci90_high": 0.1537478353118939
+   },
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.11268877829684688,
+   "mae": 0.0739723789159411,
+   "r2_oos": -0.3537703462876183,
+   "skill_vs_b0": {
+    "value": -0.13397193083288128,
+    "ci90_low": -2.819543322214979,
+    "ci90_high": 0.19876178307078096
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.040165257833103096,
+    "ci90_low": -3.1595956688323352,
+    "ci90_high": 0.2572936020667949
+   },
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.1104916600540473,
+   "mae": 0.07105603822908813,
+   "r2_oos": -0.3014954461253827,
+   "skill_vs_b0": {
+    "value": -0.09018439357914954,
+    "ci90_low": -0.18168087809233904,
+    "ci90_high": 0.17173130264801328
+   },
+   "skill_vs_b2": {
+    "value": 0.03861430434311597,
+    "ci90_low": -0.34642707415969337,
+    "ci90_high": 0.7595915982224608
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:red_river_delta",
+   "rmse": 0.10055688623055804,
+   "mae": 0.06678076886092522,
+   "r2_oos": -0.07797152615074121,
+   "skill_vs_b0": {
+    "value": 0.09704813948383062,
+    "ci90_low": -0.16695288099731953,
+    "ci90_high": 0.18538745303008786
+   },
+   "skill_vs_b2": {
+    "value": 0.20372644510436155,
+    "ci90_low": -0.15147560379349712,
+    "ci90_high": 0.7128574946255197
+   },
+   "skill_vs_bnw": {
+    "value": 0.1717439124662966,
+    "ci90_low": -0.2594987299267792,
+    "ci90_high": 0.23772357517952858
+   },
+   "coverage_80": 0.7373737373737373,
+   "n_rows": 99,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.04909891953765729,
+   "mae": 0.04001654456538062,
+   "r2_oos": -0.417014221300654,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.09827852791643743,
+    "ci90_low": -0.9673313186885,
+    "ci90_high": 0.5199210989751067
+   },
+   "skill_vs_bnw": {
+    "value": -0.42923609905693194,
+    "ci90_low": -0.9513697836954993,
+    "ci90_high": -0.16657492877142827
+   },
+   "coverage_80": null,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.05170537943920308,
+   "mae": 0.033118774672256594,
+   "r2_oos": -0.5714544514798239,
+   "skill_vs_b0": {
+    "value": -0.10898989428448469,
+    "ci90_low": -1.0829909444976367,
+    "ci90_high": 0.4916972084997592
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.5850083904007162,
+    "ci90_low": -1.9916704248949135,
+    "ci90_high": 0.24877810717283
+   },
+   "coverage_80": null,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.0410695502329691,
+   "mae": 0.031118620281634132,
+   "r2_oos": 0.008551335755052736,
+   "skill_vs_b0": {
+    "value": 0.3003255370754764,
+    "ci90_low": 0.14278973784284815,
+    "ci90_high": 0.4875394638864712
+   },
+   "skill_vs_b2": {
+    "value": 0.36908851331242254,
+    "ci90_low": -0.331164612677316,
+    "ci90_high": 0.6657385814698735
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "region:south_east",
+   "rmse": 0.04594810081742642,
+   "mae": 0.036141611473002336,
+   "r2_oos": -0.24098196231690383,
+   "skill_vs_b0": {
+    "value": 0.12422758807753764,
+    "ci90_low": -0.08792535769002716,
+    "ci90_high": 0.29091696115526006
+   },
+   "skill_vs_b2": {
+    "value": 0.21029721151110503,
+    "ci90_low": -0.6223550960407589,
+    "ci90_high": 0.5661004730653189
+   },
+   "skill_vs_bnw": {
+    "value": -0.2516855456777407,
+    "ci90_low": -0.5892151266600076,
+    "ci90_high": -0.056471369102783844
+   },
+   "coverage_80": 0.8888888888888888,
+   "n_rows": 54,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b0",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.11136826327834351,
+   "mae": 0.06446870188280295,
+   "r2_oos": -0.13111054173426884,
+   "skill_vs_b0": null,
+   "skill_vs_b2": {
+    "value": 0.172691411830722,
+    "ci90_low": -0.21268209453986733,
+    "ci90_high": 0.42990175445753825
+   },
+   "skill_vs_bnw": {
+    "value": -0.03868034867502779,
+    "ci90_low": -0.11344062247787842,
+    "ci90_high": 0.027765036372210797
+   },
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "b2",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.1224412291794916,
+   "mae": 0.06228389357466899,
+   "r2_oos": -0.3672172124276667,
+   "skill_vs_b0": {
+    "value": -0.20873881197445887,
+    "ci90_low": -0.7540836789274493,
+    "ci90_high": 0.17538157390078868
+   },
+   "skill_vs_b2": null,
+   "skill_vs_bnw": {
+    "value": -0.2554932506786698,
+    "ci90_low": -0.8948513850828888,
+    "ci90_high": 0.15721078172380795
+   },
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "bnw",
+   "season": "winter",
+   "role": "reference",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10927491808902688,
+   "mae": 0.06146972000685271,
+   "r2_oos": -0.08898810223679288,
+   "skill_vs_b0": {
+    "value": 0.037239896494017266,
+    "ci90_low": -0.028557948879308372,
+    "ci90_high": 0.10188295647536308
+   },
+   "skill_vs_b2": {
+    "value": 0.2035002980227575,
+    "ci90_low": -0.1865362993002123,
+    "ci90_high": 0.47225412616923745
+   },
+   "skill_vs_bnw": null,
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "model_id": "m1_ridge",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "spatial_holdout",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10514213717117814,
+   "mae": 0.061520081008584415,
+   "r2_oos": -0.008174611506924778,
+   "skill_vs_b0": {
+    "value": 0.10868604410569216,
+    "ci90_low": 0.07139493339965682,
+    "ci90_high": 0.1508114132534446
+   },
+   "skill_vs_b2": {
+    "value": 0.262608309533506,
+    "ci90_low": -0.09166436055659653,
+    "ci90_high": 0.5052875507286635
+   },
+   "skill_vs_bnw": {
+    "value": 0.07420970951278194,
+    "ci90_low": 0.006711795205361366,
+    "ci90_high": 0.1427617583028079
+   },
+   "coverage_80": 0.7489177489177489,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-012"
+   ]
+  }
+ ],
+ "weather_claims": [
+  {
+   "season": "spring",
+   "model_id": "m1_ridge",
+   "made": false,
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "season": "winter",
+   "model_id": "m1_ridge",
+   "made": true,
+   "source_ids": [
+    "E-012"
+   ]
+  }
+ ],
+ "reports": [
+  {
+   "id": "E-010",
+   "title": {
+    "vi": "Cách tính năng suất bình thường",
+    "en": "How the normal yield is computed"
+   },
+   "text": {
+    "vi": "Trung bình 3 năm trước được chọn, vì sai số nhỏ hơn đường xu hướng 5 năm trên các năm 2011-2015 (0,0989 so với 0,0997). Theo từng vụ: vụ xuân: đường xu hướng 5 năm tốt hơn; vụ mùa: trung bình 3 năm tốt hơn.",
+    "en": "The mean of the 3 previous years was chosen: its error was smaller than the 5-year trend's on 2011-2015 (0.0989 against 0.0997). Per season: spring rice: the 5-year trend was better; winter rice: the 3-year mean was better."
+   },
+   "source_ids": [
+    "E-010"
+   ]
+  },
+  {
+   "id": "E-012",
+   "title": {
+    "vi": "Ô thời tiết không có đất trồng",
+    "en": "Weather cells without farmland"
+   },
+   "text": {
+    "vi": "70 ô thời tiết NASA POWER (89 cặp tỉnh và ô) có trọng số đất trồng bằng 0 nên không được dùng.",
+    "en": "70 NASA POWER weather cells (89 province and cell pairs) have a farmland weight of zero and are not used."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "id": "E-012",
+   "title": {
+    "vi": "Mức phạt của mô hình ở đầu thang",
+    "en": "Model penalty at an end of the grid"
+   },
+   "text": {
+    "vi": "Mức phạt được chọn nằm ở một đầu thang mức phạt của Meroni và cộng sự 2021 (đã đổi cho hồi quy ridge) trong 11% số năm kiểm tra với M1 và 78% với mô hình không dùng thời tiết; khi đó thang có thể đã giới hạn việc chọn mức phạt tốt nhất cho mô hình ấy.",
+    "en": "The chosen penalty was at an end of the Meroni et al. 2021 penalty grid (rescaled for ridge) in 11% of the test years for M1 and in 78% for the no-weather model; there, the grid may have limited the choice of that model's best penalty."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  }
+ ]
+}

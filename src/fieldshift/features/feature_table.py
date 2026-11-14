@@ -63,3 +63,29 @@ def build_feature_table(
         )
     skipped_df = pd.DataFrame(skipped, columns=["province_nso", "season", "year", "reason"])
     return pd.DataFrame(rows), skipped_df
+
+
+def build_cell_month_rain(
+    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict
+) -> pd.DataFrame:
+    """Monthly rain of every weighted cell over each rice row's season window (05-DATA-CONTRACTS section 4a).
+
+    The ML drought months compare these totals with the same month's mean over the training years of each fold, so
+    the comparison itself happens in the fold (D-66); rows without a window (D-37) are left out, as in the table.
+    """
+    w = weights[weights["method"] == "farmland_weighted"]
+    rows = []
+    lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
+    for rec in lab.itertuples(index=False):
+        try:
+            start, end = season_window(rec.season, regions[rec.province_nso], rec.year)
+        except ValueError:  # no window for this pair: the feature table lists it as skipped with its reason
+            continue
+        for la, lo, wt in w.loc[w["province_nso"] == rec.province_nso, ["lat", "lon", "farmland_weight"]].itertuples(
+            index=False
+        ):
+            rain = cell_frames[(la, lo)]["PRECTOTCORR"].loc[pd.Timestamp(start) : pd.Timestamp(end)]
+            for month, total in rain.groupby(rain.index.strftime("%Y-%m")).sum().items():
+                rows.append((rec.province_nso, rec.season, rec.year, la, lo, wt, month, float(total)))
+    cols = ["province_nso", "season", "year", "lat", "lon", "farmland_weight", "month", "rain_mm"]
+    return pd.DataFrame(rows, columns=cols)

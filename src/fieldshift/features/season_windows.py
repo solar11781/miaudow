@@ -86,7 +86,7 @@ def season_window(season: str, region: str, stat_year: int, calendar: Calendar |
 
 
 @lru_cache(maxsize=4)
-def _nso_regions(raw_csv: str) -> dict[str, str]:
+def nso_regions(raw_csv: str) -> dict[str, str]:
     text = Path(raw_csv).read_bytes().replace(b"\x00", b"").decode("utf-8-sig")
     region, members = None, {}
     for row in csv.reader(text.splitlines()):
@@ -102,7 +102,7 @@ def _nso_regions(raw_csv: str) -> dict[str, str]:
 
 def calendar_region(province: str, nso_export_csv: Path | str) -> str:
     """Calendar region of a province, from the NSO export's region headers [DATA] and D-38."""
-    nso_region = _nso_regions(str(nso_export_csv))[province]
+    nso_region = nso_regions(str(nso_export_csv))[province]
     if nso_region == CENTRAL_REGION:
         return "north_central" if province in NORTH_CENTRAL_6 else "central_coast"
     return NSO_REGION_TO_CALENDAR[nso_region]
