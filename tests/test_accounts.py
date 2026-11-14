@@ -356,8 +356,10 @@ def test_a_token_google_did_not_issue_to_us_is_401_on_every_route(
 def test_a_valid_token_without_a_sign_in_is_401(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     for method, path in ROUTES[1:]:
-        no_echo(getattr(c, method)(path, headers=bearer(google_token(keys))), 401)
+        body = {"json": ANSWERS} if method == "post" else {}  # a valid set: only the missing account can refuse it
+        no_echo(getattr(c, method)(path, headers=bearer(google_token(keys)), **body), 401)
     assert rows(on, "SELECT count(*) FROM account") == [(0,)]
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
 
 
 def test_every_account_route_answers_503_when_google_keys_cannot_be_fetched(

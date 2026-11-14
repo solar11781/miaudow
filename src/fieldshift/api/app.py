@@ -191,8 +191,15 @@ async def _service(request: Request) -> Accounts:
 Service = Annotated[Accounts, Depends(_service)]
 
 
-async def _signed_in(request: Request, service: Service) -> int:
-    return await _account_work(request, service.account, _bearer(request))
+async def _google_id(request: Request, service: Service) -> str:
+    return await _account_work(request, service.google_id, _bearer(request))
+
+
+GoogleId = Annotated[str, Depends(_google_id)]
+
+
+async def _signed_in(request: Request, service: Service, sub: GoogleId) -> int:
+    return await _account_work(request, service.account, sub)
 
 
 AccountId = Annotated[int, Depends(_signed_in)]
@@ -208,8 +215,8 @@ async def config_route(request: Request) -> Response:
 
 
 @accounts_router.post("/sign-in")
-async def sign_in_route(request: Request, service: Service) -> Response:
-    await _account_work(request, service.sign_in, _bearer(request))
+async def sign_in_route(request: Request, service: Service, sub: GoogleId) -> Response:
+    await _account_work(request, service.sign_in, sub)
     return Response(status_code=204, headers=NO_STORE)
 
 
@@ -219,9 +226,9 @@ async def saved_route(request: Request, service: Service, account: AccountId) ->
 
 
 @accounts_router.post("/saved")
-async def save_route(request: Request, service: Service, account: AccountId) -> Response:
+async def save_route(request: Request, service: Service, sub: GoogleId) -> Response:
     answers = await _body(request, SavedAnswers)
-    return _private(await _account_work(request, service.save, account, answers), 201)
+    return _private(await _account_work(request, service.save, sub, answers), 201)
 
 
 @accounts_router.delete("/saved/{set_id}")

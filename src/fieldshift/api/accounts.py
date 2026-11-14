@@ -189,7 +189,7 @@ class Accounts:
 
     # ---- the Google token
 
-    def _google_id(self, google_token: str) -> str:
+    def google_id(self, google_token: str) -> str:
         """Google's account id from a token that Google issued to our client id and that has not expired."""
         try:
             claims = id_token.verify_oauth2_token(google_token, self._google, audience=self.client_id)
@@ -202,15 +202,14 @@ class Accounts:
             raise NotSignedInError
         return sub
 
-    def sign_in(self, google_token: str) -> None:
-        """Create the account of a valid token, or keep the one that exists."""
-        sub = self._google_id(google_token)
+    def sign_in(self, sub: str) -> None:
+        """Create the account of a checked Google account id, or keep the one that exists."""
         with self._db() as conn:
             conn.execute("INSERT INTO account (google_sub) VALUES (%s) ON CONFLICT (google_sub) DO NOTHING", (sub,))
 
-    def account(self, google_token: str) -> int:
-        """The account of a valid token; NotSignedInError when it never signed in or deleted everything."""
-        sub = self._google_id(google_token)
+    def account(self, sub: str) -> int:
+        """The account of a checked Google account id; NotSignedInError when it never signed in or deleted
+        everything."""
         with self._db() as conn:
             row = conn.execute("SELECT id FROM account WHERE google_sub = %s", (sub,)).fetchone()
         if row is None:
@@ -226,12 +225,17 @@ class Accounts:
             ).fetchall()
         return SavedList(saved=[SavedSet(id=i, land=land, years=y, priority=p) for i, land, y, p in found])
 
-    def save(self, account: int, answers: SavedAnswers) -> SavedSet:
+    def save(self, sub: str, answers: SavedAnswers) -> SavedSet:
+        """Save a set for the account of `sub`; finding the account and inserting is one statement, so a
+        delete-everything in between leaves no set behind and gives NotSignedInError."""
         with self._db() as conn:
             row = conn.execute(
-                "INSERT INTO saved_answers (account_id, land, years, priority) VALUES (%s, %s, %s, %s) RETURNING id",
-                (account, answers.land, answers.years, answers.priority),
+                "INSERT INTO saved_answers (account_id, land, years, priority)"
+                " SELECT id, %s, %s, %s FROM account WHERE google_sub = %s RETURNING id",
+                (answers.land, answers.years, answers.priority, sub),
             ).fetchone()
+        if row is None:
+            raise NotSignedInError
         return SavedSet(id=row[0], **answers.model_dump())
 
     def delete(self, account: int, set_id: int) -> bool:
