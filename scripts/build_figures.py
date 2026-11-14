@@ -1,4 +1,4 @@
-"""Write the README and submission figures docs/figures/*.svg from the committed artifacts (queue item 34).
+"""Write the README and submission figures docs/figures/*.svg from the committed artifacts.
 
 Usage: PYTHONPATH=src python scripts/build_figures.py   (after scripts/export_crop_exposure.py)
 The PNG copies are headless browser renders of these SVGs; docs/figures/README.md gives the command.

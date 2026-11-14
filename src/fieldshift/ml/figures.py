@@ -1,4 +1,4 @@
-"""README and submission figures from the committed artifacts (queue item 34; no new claims, H5).
+"""README and submission figures from the committed artifacts (no new claims, H5).
 
 Plain words: two charts of past years, drawn only from numbers that are already in the artifacts. (1) Nghệ An rice
 yield against its normal per season and year (artifacts/risk_table.json), with the M1 out-of-sample estimate and its
@@ -241,10 +241,12 @@ def rule_shares_svg(hazards: dict, conditions: list[dict]) -> str:
     title = f"Share of Nghệ An farmland meeting each official rule, past years {years[0]}-{years[-1]}"
     legend = [
         "Past years, not a forecast. Bar: the share of Nghệ An farmland where the rule's level 1 or higher was met in"
-        " that year, during the",
-        "field dates of the crops of the Nghệ An field trial (R-P02), with the thresholds of QĐ 18/2021/QĐ-TTg (R-A01)."
-        " n/a: no value.",
-        f"Farmland: the {cells.pop()} NASA POWER cells of Nghệ An, weighted by the NASA MODIS farmland mask.",
+        " that year, with the",
+        "thresholds of QĐ 18/2021/QĐ-TTg (R-A01). Daily rules count the field dates of the crops of the Nghệ An field"
+        " trial (R-P02);",
+        "the drought rules count the calendar months from sowing to harvest, partial months included. n/a: no value.",
+        f"Farmland: the {cells.pop()} NASA POWER cells with farmland in Nghệ An, weighted by the NASA MODIS farmland"
+        " mask.",
     ]
     body: list[str] = []
     desc = [f"{title}. Past years, not a forecast."]

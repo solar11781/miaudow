@@ -1,11 +1,11 @@
-"""Tests for the README and submission figures (queue item 34; EVENING-AUTOPILOT row 5: no new claims, H5).
+"""Tests for the README and submission figures (no new claims, H5).
 
 Spec: from the committed artifacts only; each figure an SVG with role="img", a <title>, a text alternative and a source
 caption; past years labelled as past years, never as a forecast; a null value left out, never drawn as zero. Rice:
 artifacts/risk_table.json Nghệ An rows (05-DATA-CONTRACTS section 5): the real anomaly per season and year, and the
 out-of-sample estimate with its 80% range only where the artifact holds them and the season's model is shown. Rules:
 the `year` rows of artifacts/hazard_labels.json (section 4b), one panel per rule. Text values as whole percent, half up
-(D-95). Expected values are read from the committed artifacts and rules files.
+(D-95), the engine's whole_percent. Expected values are read from the committed artifacts and rules files.
 """
 
 import copy
@@ -13,7 +13,6 @@ import json
 import re
 import struct
 import xml.etree.ElementTree as ET
-from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 import pytest
@@ -34,10 +33,7 @@ NGHE_AN = "Nghe An"  # risk_table.json unit_id of Nghệ An (province_nso spelli
 RULES = ["heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold"]  # rules/conditions.yaml order
 
 
-def _pct(x: float) -> str:
-    """Whole percent, half up (D-95); minus zero prints as 0."""
-    shown = (Decimal(str(x)) * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP)
-    return str(abs(shown) if shown == 0 else shown)
+_pct = whole_percent  # the app's display rule for a fraction (D-95)
 
 
 def _rice() -> str:
@@ -278,3 +274,12 @@ def test_the_readme_names_every_figure_file() -> None:
 def test_percent_text_equals_the_engine_whole_percent(fraction: float) -> None:
     # halves and minus zero: the figures repeat the engine's D-95 rule (ml may not import engine)
     assert figures._percent(fraction) == whole_percent(fraction)
+
+
+def test_rule_legend_names_the_cells_with_farmland_and_what_each_rule_counts() -> None:
+    text = _all_text(_parse(_rules()))
+    # 05-DATA-CONTRACTS 4b: n_cells counts the POWER cells with farmland weight in Nghệ An (5 in hazard_labels.json)
+    assert "the 5 NASA POWER cells with farmland in Nghệ An" in text
+    # 05-DATA-CONTRACTS 4b (D-97): daily rules over the field dates, the drought rule over calendar months
+    assert "Daily rules count the field dates" in text
+    assert "the drought rules count the calendar months from sowing to harvest, partial months included" in text
