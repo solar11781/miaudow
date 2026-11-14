@@ -20,6 +20,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Annotated, TypeVar, get_args
 
+import anyio
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
@@ -63,6 +64,7 @@ FRONTEND_ROUTES = (
 MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 NO_STORE = {"cache-control": "no-store"}
+ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
 M = TypeVar("M", bound=BaseModel)
 T = TypeVar("T")
 
@@ -152,14 +154,18 @@ def _not_signed_in() -> HTTPException:
     return HTTPException(401, "not signed in", headers={"WWW-Authenticate": "Bearer"})  # RFC 6750 §3
 
 
-def _with_google_token(check: Callable[[str], T], request: Request) -> T:
-    """`check` on the Google ID token of the Authorization header: 401 without a valid one, 503 when Google's keys
-    cannot be fetched."""
+def _bearer(request: Request) -> str:
     scheme, _, token = request.headers.get("authorization", "").partition(" ")
     if scheme.lower() != "bearer" or not token:
         raise _not_signed_in()
+    return token
+
+
+async def _account_work(request: Request, work: Callable[..., T], *args: object) -> T:
+    """`work` on the account worker threads, never the farmer routes' ones: 401 without a valid Google token, 503
+    when Google's keys cannot be fetched."""
     try:
-        return check(token)
+        return await anyio.to_thread.run_sync(work, *args, limiter=request.app.state.account_limiter)
     except NotSignedInError as err:
         raise _not_signed_in() from err
     except GoogleUnreachableError as err:
@@ -171,7 +177,7 @@ def _private(model: BaseModel, status_code: int = 200) -> Response:
     return Response(_json(model), status_code=status_code, media_type="application/json", headers=NO_STORE)
 
 
-def _service(request: Request) -> Accounts:
+async def _service(request: Request) -> Accounts:
     """The sign-in service; 503 while sign-in is off (UI-UX-SPEC §12c: every farmer route works without it)."""
     accounts = request.app.state.accounts
     if accounts is None:
@@ -182,8 +188,8 @@ def _service(request: Request) -> Accounts:
 Service = Annotated[Accounts, Depends(_service)]
 
 
-def _signed_in(request: Request, service: Service) -> int:
-    return _with_google_token(service.account, request)
+async def _signed_in(request: Request, service: Service) -> int:
+    return await _account_work(request, service.account, _bearer(request))
 
 
 AccountId = Annotated[int, Depends(_signed_in)]
@@ -192,39 +198,39 @@ accounts_router = APIRouter(prefix="/api/account")
 
 
 @accounts_router.get("/config")
-def config_route(request: Request) -> Response:
+async def config_route(request: Request) -> Response:
     accounts = request.app.state.accounts
     client_id = accounts.client_id if accounts else None
     return _respond(_json(SignInConfig(available=accounts is not None, client_id=client_id)))
 
 
 @accounts_router.post("/sign-in")
-def sign_in_route(request: Request, service: Service) -> Response:
-    _with_google_token(service.sign_in, request)
+async def sign_in_route(request: Request, service: Service) -> Response:
+    await _account_work(request, service.sign_in, _bearer(request))
     return Response(status_code=204, headers=NO_STORE)
 
 
 @accounts_router.get("/saved")
-def saved_route(service: Service, account: AccountId) -> Response:
-    return _private(service.saved(account))
+async def saved_route(request: Request, service: Service, account: AccountId) -> Response:
+    return _private(await _account_work(request, service.saved, account))
 
 
 @accounts_router.post("/saved")
 async def save_route(request: Request, service: Service, account: AccountId) -> Response:
     answers = await _body(request, SavedAnswers)
-    return _private(await run_in_threadpool(service.save, account, answers), 201)
+    return _private(await _account_work(request, service.save, account, answers), 201)
 
 
 @accounts_router.delete("/saved/{set_id}")
-def delete_set_route(set_id: SetId, service: Service, account: AccountId) -> Response:
-    if not service.delete(account, set_id):
+async def delete_set_route(request: Request, set_id: SetId, service: Service, account: AccountId) -> Response:
+    if not await _account_work(request, service.delete, account, set_id):
         raise HTTPException(404, "Not Found")  # also for another account's set: its existence is not revealed
     return Response(status_code=204)
 
 
 @accounts_router.delete("")
-def delete_account_route(service: Service, account: AccountId) -> Response:
-    service.delete_account(account)
+async def delete_account_route(request: Request, service: Service, account: AccountId) -> Response:
+    await _account_work(request, service.delete_account, account)
     return Response(status_code=204)
 
 
@@ -271,6 +277,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     _add_privacy_routes(app, privacy_body)
     app.state.accounts = accounts_from(os.environ)  # None while sign-in is off
+    app.state.account_limiter = anyio.CapacityLimiter(ACCOUNT_THREADS)
     app.include_router(accounts_router)
 
     if (frontend / "index.html").exists():

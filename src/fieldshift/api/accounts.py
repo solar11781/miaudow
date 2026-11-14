@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 import re
 import ssl
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -40,6 +41,7 @@ GOOGLE_TIMEOUT_SECONDS = 10  # team, 2026-11-14: an account request must not han
 DB_CONNECT_TIMEOUT_SECONDS = 5  # team, 2026-11-14: a down database must not hold the start for psycopg's 130 s
 # Google's key answer was 2447 bytes (measured 2026-11-14); 64 KiB leaves room for many more keys
 KEYS_MAX_BYTES = 65536
+KEYS_RETRY_SECONDS = 30  # D-164: a short pause after a failed download, so repeated requests fail fast with 503
 MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
 NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
 
@@ -105,6 +107,8 @@ class HttpsRequest(transport.Request):
 
     def __init__(self) -> None:
         self._kept: dict[str, tuple[float, _Answer]] = {}
+        self._failed_until: dict[str, float] = {}
+        self._one_at_a_time = threading.Lock()
 
     def __call__(
         self,
@@ -117,13 +121,24 @@ class HttpsRequest(transport.Request):
     ) -> _Answer:
         if not url.startswith("https://"):
             raise exceptions.TransportError("only https is used for Google's keys")
-        kept = self._kept.get(url)
-        if method == "GET" and kept is not None and kept[0] > time.monotonic():
-            return kept[1]
-        answer = self._fetch(url, method, body, headers, timeout)
-        if method == "GET" and answer.status == HTTPStatus.OK and (seconds := _fresh_for(answer.headers)):
-            self._kept[url] = (time.monotonic() + seconds, answer)
-        return answer
+        if method != "GET":
+            return self._fetch(url, method, body, headers, timeout)
+        with self._one_at_a_time:  # D-164: the requests waiting here then take the kept answer of this download
+            kept = self._kept.get(url)
+            if kept is not None and kept[0] > time.monotonic():
+                return kept[1]
+            if self._failed_until.get(url, 0.0) > time.monotonic():
+                raise exceptions.TransportError("Google's keys failed a moment ago")
+            try:
+                answer = self._fetch(url, method, body, headers, timeout)
+            except exceptions.TransportError:
+                self._failed_until[url] = time.monotonic() + KEYS_RETRY_SECONDS
+                raise
+            if answer.status != HTTPStatus.OK:
+                self._failed_until[url] = time.monotonic() + KEYS_RETRY_SECONDS
+            elif seconds := _fresh_for(answer.headers):
+                self._kept[url] = (time.monotonic() + seconds, answer)
+            return answer
 
     @staticmethod
     def _fetch(
