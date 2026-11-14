@@ -529,6 +529,24 @@ def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict
     assert [s["id"] for s in c.get("/api/account/saved", headers=me).json()["saved"]] == [mine]
 
 
+def test_a_save_racing_delete_everything_is_401_and_writes_nothing(
+    on: str, keys: dict, fetched: list, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # review of the pull request: delete-everything landing between the account check and the insert gave a 500
+    c = TestClient(create_app(root=REPO), raise_server_exceptions=False)
+    me = sign_in(c, keys)
+    real_save = accounts.Accounts.save
+
+    def save_after_a_delete(self: accounts.Accounts, *args: object) -> object:
+        with psycopg.connect(on) as conn:
+            conn.execute("DELETE FROM account")
+        return real_save(self, *args)
+
+    monkeypatch.setattr(accounts.Accounts, "save", save_after_a_delete)
+    no_echo(c.post("/api/account/saved", headers=me, json=ANSWERS), 401)
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
+
+
 def test_deleting_one_set_keeps_the_others(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)
