@@ -34,7 +34,7 @@ export const RULES: Record<RuleCode, RuleInfo> = {
   heat: {
     code: 'heat',
     name: { vi: 'Nắng nóng', en: 'Heat' },
-    short: { vi: 'Nóng', en: 'Heat' },
+    short: { vi: 'Nắng nóng', en: 'Heat' },
     article: 'Điều 47',
     quote: 'đợt nắng nóng với nhiệt độ cao nhất trong ngày từ 35°c đến 37°c, kéo dài từ 3 ngày trở lên',
     computed: {
@@ -47,8 +47,8 @@ export const RULES: Record<RuleCode, RuleInfo> = {
   },
   drought_rain_any2: {
     code: 'drought_rain_any2',
-    name: { vi: 'Hạn (phần mưa)', en: 'Drought (rain part)' },
-    short: { vi: 'Hạn', en: 'Drought' },
+    name: { vi: 'Hạn hán (phần lượng mưa)', en: 'Drought (rain part)' },
+    short: { vi: 'Hạn hán', en: 'Drought' },
     article: 'Điều 48',
     quote: 'thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến 3 tháng',
     computed: {
@@ -61,8 +61,8 @@ export const RULES: Record<RuleCode, RuleInfo> = {
   },
   drought_rain_consecutive: {
     code: 'drought_rain_consecutive',
-    name: { vi: 'Hạn (2 tháng liền)', en: 'Drought (2 months in a row)' },
-    short: { vi: 'Hạn liền', en: 'Drought+' },
+    name: { vi: 'Hạn hán (2 tháng liền)', en: 'Drought (2 months in a row)' },
+    short: { vi: 'Hạn hán liền', en: 'Drought+' },
     article: 'Điều 48',
     quote: 'thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến 3 tháng',
     computed: {

@@ -572,14 +572,14 @@ const explainShape = obj({
   model: str,
 });
 
-/** Whether the feature is on: the server answers 503 while off before it reads the body, so an empty body gets 503
- * (off) or 422 (on) and never reaches the model. Any other outcome counts as off. */
+/** Whether the feature is on: the `explain` flag of GET /api/health. Off in the offline snapshot and on any failure. */
 export async function explainOn(signal?: AbortSignal): Promise<boolean> {
+  if (SNAPSHOT_MODE) return false;
   try {
-    await call('/explain', { method: 'POST', body: '{}', signal });
+    const health = (await call('/health', { signal })) as Health;
+    return health.explain === true;
+  } catch {
     return false;
-  } catch (e) {
-    return e instanceof ApiError && e.status === 422;
   }
 }
 
@@ -636,6 +636,7 @@ export interface CopilotResponse {
 
 export interface Health {
   status: string;
+  explain?: boolean;
   copilot?: { engine?: string; configured?: boolean } | string;
   [key: string]: unknown;
 }

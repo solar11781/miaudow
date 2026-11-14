@@ -105,12 +105,14 @@ def test_the_grid_figure_is_served_as_svg(client: TestClient) -> None:
 def test_health_lists_each_artifact_with_version_and_time(client: TestClient) -> None:
     r = client.get("/api/health")
     assert r.status_code == 200
-    HealthResponse.model_validate(r.json())
+    HealthResponse.model_validate(
+        {k: v for k, v in r.json().items() if k != "explain"}
+    )  # the flag sits outside the contract, as copilot does
     expected = {}
     for f in sorted((REPO / "artifacts").glob("*.json")):
         data = json.loads(f.read_text(encoding="utf-8"))
         expected[f.name] = {"schema_version": data["schema_version"], "generated_at": data["generated_at"]}
-    assert r.json() == {"status": "ok", "artifacts": expected}
+    assert r.json() == {"status": "ok", "artifacts": expected, "explain": False}
 
 
 # ---- invalid input: HTTP 422
@@ -158,6 +160,19 @@ def test_past_years_rejects_a_bad_province(client: TestClient, query: dict, secr
 )
 def test_compare_rejects_an_invalid_body(client: TestClient, change: dict, secret: str | None) -> None:
     rejected(client.post("/api/compare", json={**BODY, **change}), secret)
+
+
+def test_compare_never_echoes_an_unknown_key_name(client: TestClient) -> None:
+    # the security audit of 2026-11-15: an extra key came back in loc; loc stops at the object that holds it
+    r = client.post("/api/compare", json={**BODY, "zz_secret_key<b>": 1})
+    rejected(r, "zz_secret_key")
+    assert r.json()["detail"] == [{"type": "extra_forbidden", "loc": ["body"], "msg": "Extra inputs are not permitted"}]
+
+
+def test_compare_keeps_the_loc_of_a_known_field(client: TestClient) -> None:
+    r = client.post("/api/compare", json={**BODY, "land": "zz"})
+    rejected(r)
+    assert [item["loc"] for item in r.json()["detail"]] == [["body", "land"]]
 
 
 @pytest.mark.parametrize("field", ["province", "land", "years", "priority"])
@@ -449,6 +464,11 @@ def test_index_html_is_revalidated_and_hashed_assets_are_cached(tmp_path: Path) 
     assert "immutable" not in c.get("/favicon.svg").headers.get("cache-control", "")
 
 
+def test_media_files_are_cached_for_a_week(tmp_path: Path) -> None:
+    # the performance audit of 2026-11-15: a week; the media names carry no content hash, so never immutable
+    assert built_frontend(tmp_path).get("/media/photo/field.webp").headers["cache-control"] == "public, max-age=604800"
+
+
 def test_every_method_on_an_unknown_api_path_is_json_404(tmp_path: Path) -> None:
     c = built_frontend(tmp_path)
     for method in ("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"):
@@ -480,6 +500,9 @@ def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
         # Google's guide for the sign-in script: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
         # (origin only to other sites; the answers live after "#", which is never sent)
         assert r.headers["referrer-policy"] == "strict-origin-when-cross-origin"
+        # one year, as MDN's example (developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security);
+        # no includeSubDomains or preload: the parent domain's other subdomains are not ours (security audit 2026-11-15)
+        assert r.headers["strict-transport-security"] == "max-age=31536000"
         csp = r.headers["content-security-policy"]
         assert "frame-ancestors 'none'" in csp
         assert "default-src 'self'" in csp
@@ -508,6 +531,10 @@ def test_the_csp_names_each_google_sign_in_address_in_its_own_directive(tmp_path
     for name, address in GSI_CSP.items():
         assert address in directives[name], name
     assert directives["default-src"] == ["'self'"]
+    # the security audit of 2026-11-15: base-uri and form-action never fall back to default-src (w3.org/TR/CSP3)
+    assert directives["base-uri"] == ["'none'"]
+    assert directives["form-action"] == ["'self'"]
+    assert directives["object-src"] == ["'none'"]
     # Knockout, bundled in Cesium, runs (0,eval)('this') when the observatory chunk loads (security review 2026-11-14)
     assert "script-src 'self' 'unsafe-eval' https://accounts.google.com/gsi/client;" in csp
 

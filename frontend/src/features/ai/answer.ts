@@ -1,4 +1,3 @@
-import { planLabel } from '../../domain/plans';
 import { YEARS } from '../../data';
 import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
 import { CROPS, PLANS, planProfitMillion, type CropId, type CropInfo } from '../../domain/plans';
@@ -81,8 +80,8 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   const lines: AnswerLine[] = [
     {
       text: vi
-        ? `Năm ${year}, phần đất trồng Nghệ An gặp điều kiện theo QĐ 18/2021, trong thời gian có cây của thử nghiệm Lưu Sơn trên ruộng:`
-        : `In ${year}, share of Nghệ An farmland meeting each Decision 18/2021 rule while the Lưu Sơn trial crops were in the field:`,
+        ? `Năm ${year}, phần đất trồng Nghệ An gặp điều kiện theo QĐ 18/2021, trong thời gian có cây của thử nghiệm Trịnh Đức Toàn và cs. (2023) trên ruộng:`
+        : `In ${year}, share of Nghệ An farmland meeting each Decision 18/2021 condition while the crops of the Trịnh Đức Toàn et al. (2023) trial were in the field:`,
     },
   ];
   for (const rule of FARMER_RULES) {
@@ -101,20 +100,20 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   const rice = riceYear('spring', year);
   if (rice.actual !== null) {
     lines.push({
-      text: vi ? 'Lúa xuân cả tỉnh so với bình thường' : 'Province spring rice against normal',
+      text: vi ? 'Lúa vụ Đông Xuân cả tỉnh so với bình thường' : 'Province spring rice against normal',
       ref: {
         sourceId: 'nso',
         kind: 'data',
         value: f.signedPct(rice.actual),
-        label: vi ? `Lúa xuân ${year}` : `Spring rice ${year}`,
+        label: vi ? `Lúa vụ Đông Xuân ${year}` : `Spring rice ${year}`,
         chain: ['nso', 'e010'],
       },
     });
   }
   lines.push({
     text: vi
-      ? 'Đây là năm đã qua, không phải dự báo. Số liệu từ ô lưới 50 km, không đo ruộng nhà bạn.'
-      : 'This is a past year, not a forecast. Values come from 50 km cells, not your field.',
+      ? 'Đây là năm đã qua, không phải dự báo. Số liệu từ ô lưới khoảng 55 × 66 km, không đo ruộng nhà bạn.'
+      : 'This is a past year, not a forecast. Values come from cells of about 55 × 66 km, not your field.',
   });
   return { type: 'year', lines, evidence: [], kinds: ['data', 'derived'] };
 }
@@ -126,13 +125,13 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
   const lines: AnswerLine[] = [
     {
       text: vi
-        ? `${name} trong thử nghiệm ở Lưu Sơn (2020–21), lãi đã trừ công:`
-        : `${name} in the Lưu Sơn trial (2020–21), profit net of labour:`,
+        ? `${name} trong thử nghiệm 2020–21 của Trịnh Đức Toàn và cs. (2023), lãi đã trừ công:`
+        : `${name} in the 2020–21 trial of Trịnh Đức Toàn et al. (2023), profit net of labour:`,
     },
   ];
   for (const { p, c } of rows) {
     lines.push({
-      text: `${planLabel(p, lang)} · ${c.variety} · ${c.sow} → ${c.harvest}`,
+      text: `${p.current ? (vi ? 'Cách làm hiện nay' : 'Current practice') : p.id.toUpperCase()} · ${c.variety} · ${c.sow} → ${c.harvest}`,
       ref: {
         sourceId: 'p02',
         kind: 'study',

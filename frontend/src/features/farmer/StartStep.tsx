@@ -26,7 +26,7 @@ export function StartStep() {
     <div className={`${s.shell} ${s.wide}`}>
       <article className={`${s.startCard} surface-forest`}>
         <div className={s.startPhoto}>
-          <Media slug={ART.farmerStart.slug} priority sizes="(min-width: 900px) 600px, 100vw" decorative />
+          <Media slug={ART.farmerStart.slug} priority sizes="(max-width: 700px) 320px, 600px" decorative />
         </div>
         <div className={s.startBody}>
           <h1 className={`display ${s.startTitle}`}>

@@ -168,10 +168,10 @@ export const PLANS: Plan[] = [
     source: 'p03',
     crops: [],
     textOnly: {
-      sequence: { vi: 'Lúa xuân – lúa hè thu – bỏ hoang', en: 'Spring rice – summer rice – fallow' },
+      sequence: { vi: 'Lúa vụ Đông Xuân – lúa vụ Hè Thu – bỏ hoang', en: 'Spring rice – summer-autumn rice – fallow' },
       profitNote: {
-        vi: 'Lúa hè thu lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận” (tính lãi theo cách khác P-02)',
-        en: 'Summer rice made 1.16 million VND/ha, “almost no profit” (profit defined differently from P-02)',
+        vi: 'Lúa vụ Hè Thu lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận” (tính lãi theo cách khác bài báo thứ nhất của Trịnh Đức Toàn và cs., 2023)',
+        en: 'Summer-autumn rice made 1.16 million VND/ha, “almost no profit” (profit defined differently from the first paper of Trịnh Đức Toàn et al., 2023)',
       },
     },
   },

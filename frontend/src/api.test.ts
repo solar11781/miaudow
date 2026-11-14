@@ -230,20 +230,23 @@ describe('account requests', () => {
   });
 });
 
-// FR-15 and PR #43 (src/fieldshift/api/explain.py, tests/test_explain.py): POST /api/explain answers 503 while off
-// before it reads the body, 422 for a body it rejects, 502 when no usable reply came, else {text, ai_generated, model}
+// FR-15 and PR #43 (src/fieldshift/api/explain.py, tests/test_explain.py): GET /api/health carries explain: true|false;
+// POST /api/explain answers 503 while off, 422 for a body it rejects, 502 when no usable reply came, else {text, ai_generated, model}
 describe('explain simply', () => {
   afterEach(() => vi.unstubAllGlobals());
   const reply = (status: number, json: unknown) => vi.fn(async () => new Response(JSON.stringify(json), { status }));
   const request = { answers: body, plan: 'cc1', field: 'evidence', lang: 'vi' } as const;
 
-  it('reads the feature as off from a 503 and as on from a 422 to an empty body', async () => {
-    const off = reply(503, { detail: 'Service Unavailable' });
-    vi.stubGlobal('fetch', off);
-    await expect(explainOn()).resolves.toBe(false);
-    expect(off).toHaveBeenCalledWith('/api/explain', expect.objectContaining({ method: 'POST', body: '{}' }));
-    vi.stubGlobal('fetch', reply(422, { detail: [] }));
+  it('reads the feature from the explain flag of the health answer, with one GET and no probe', async () => {
+    const on = reply(200, { status: 'ok', artifacts: {}, explain: true });
+    vi.stubGlobal('fetch', on);
     await expect(explainOn()).resolves.toBe(true);
+    expect(on).toHaveBeenCalledTimes(1);
+    expect(on).toHaveBeenCalledWith('/api/health', expect.not.objectContaining({ method: 'POST' }));
+    vi.stubGlobal('fetch', reply(200, { status: 'ok', artifacts: {}, explain: false }));
+    await expect(explainOn()).resolves.toBe(false);
+    vi.stubGlobal('fetch', reply(200, { status: 'ok', artifacts: {} }));
+    await expect(explainOn()).resolves.toBe(false);
   });
   it('reads the feature as off when the check cannot reach the server', async () => {
     vi.stubGlobal(

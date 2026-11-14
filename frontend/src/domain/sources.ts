@@ -38,7 +38,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     short: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An',
     title: {
       vi: 'Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An',
-      en: 'Testing some rotation formulas on inefficient, water-short rice land in Nghệ An province',
+      en: 'Testing some rotation formulas on low-return (inefficient), water-short rice land in Nghệ An province',
     },
     publisher: {
       vi: 'Trịnh Đức Toàn và cộng sự (2023), Đặc san KH&CN Nghệ An, số 2/2023',
@@ -47,13 +47,13 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     where: { vi: 'Xã Lưu Sơn, Đô Lương, Nghệ An', en: 'Lưu Sơn commune, Đô Lương, Nghệ An' },
     period: { vi: 'Tháng 6/2020 – tháng 6/2021', en: 'June 2020 – June 2021' },
     method: {
-      vi: 'Mô hình trình diễn, không lặp lại; cách tính lãi khác P-02',
-      en: 'Demonstration plots, not replicated; profit defined differently from P-02',
+      vi: 'Mô hình trình diễn, không lặp lại; cách tính lãi khác bài báo thứ nhất của cùng nhóm',
+      en: 'Demonstration plots, not replicated; profit defined differently from the same team’s first paper',
     },
     howRead: { vi: 'Đã đọc toàn văn bản PDF do nhóm cung cấp', en: 'Full text read from the PDF supplied by the team' },
     caveat: {
-      vi: 'Cùng xã với P-02 nhưng mô tả cách làm hiện nay khác: “Lúa – lúa – bỏ hoang”. Bài không ghi ngày gieo nên không tính được thời tiết theo cây.',
-      en: 'Same site as P-02 but describes current practice differently: “rice – rice – fallow”. It gives no sowing dates, so weather per crop cannot be computed.',
+      vi: 'Cùng xã với bài báo thứ nhất của cùng nhóm nhưng mô tả cách làm hiện nay khác: “Lúa – lúa – bỏ hoang”. Bài không ghi ngày gieo nên không tính được thời tiết theo cây.',
+      en: 'Same site as the same team’s first paper but describes current practice differently: “rice – rice – fallow”. It gives no sowing dates, so weather per crop cannot be computed.',
     },
   },
   qd18: {
@@ -72,8 +72,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     period: { vi: 'Ban hành năm 2021', en: 'Issued 2021' },
     method: {
-      vi: 'Ngưỡng cấp độ rủi ro: mưa lớn Điều 44, nắng nóng Điều 47, hạn (phần mưa) Điều 48, rét hại Điều 53',
-      en: 'Risk-level thresholds: heavy rain Art. 44, heat Art. 47, drought rain part Art. 48, damaging cold Art. 53',
+      vi: 'Ngưỡng cấp độ rủi ro: mưa lớn Điều 44, nắng nóng Điều 47, hạn hán (phần lượng mưa) Điều 48, rét hại Điều 53',
+      en: 'Risk-level thresholds: heavy rain Art. 44, heat Art. 47, drought (rain part) Art. 48, damaging cold Art. 53',
     },
     howRead: {
       vi: 'Đã đọc nguyên văn; Miaudow áp ngưỡng từ cấp độ 1 trở lên',
@@ -140,8 +140,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     publisher: { vi: 'Trung tâm Nghiên cứu Langley của NASA', en: 'NASA Langley Research Center' },
     where: {
-      vi: '5 ô lưới phủ đất trồng Nghệ An, mỗi ô 0,5° × 0,625° (khoảng 50 km)',
-      en: '5 grid cells over Nghệ An farmland, each 0.5° × 0.625° (about 50 km)',
+      vi: '5 ô lưới phủ đất trồng Nghệ An, mỗi ô 0,5° × 0,625° (khoảng 55 × 66 km)',
+      en: '5 grid cells over Nghệ An farmland, each 0.5° × 0.625° (about 55 × 66 km)',
     },
     period: { vi: '1990–2024, theo ngày', en: '1990–2024, daily' },
     method: {
@@ -153,8 +153,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       en: 'Downloaded from the API on 14 Nov 2026; no missing value filled',
     },
     caveat: {
-      vi: 'Ô lưới 50 km làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
-      en: '50 km cells smooth out extremes; your own field is not measured.',
+      vi: 'Ô lưới khoảng 55 × 66 km làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
+      en: 'Cells of about 55 × 66 km smooth out extremes; your own field is not measured.',
     },
     url: 'https://power.larc.nasa.gov/',
     licence: { vi: 'Dữ liệu mở của NASA, cần trích dẫn', en: 'NASA open data, citation requested' },
@@ -305,7 +305,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       vi: 'Bài kiểm tra chính E-012: mô hình M1 ridge, kiểm tra trên các năm 2016–2024',
       en: 'Primary test E-012: M1 ridge model, tested on 2016–2024',
     },
-    publisher: { vi: 'Nhóm Miaudow, đóng băng ở commit ea7a60c', en: 'Team Miaudow, frozen at commit ea7a60c' },
+    publisher: { vi: 'Nhóm Miaudow, cố định ở commit ea7a60c', en: 'Team Miaudow, frozen at commit ea7a60c' },
     where: { vi: 'Cả nước; riêng Nghệ An, Hà Tĩnh, Thanh Hóa', en: 'Nationwide; Nghệ An, Hà Tĩnh, Thanh Hóa subset' },
     period: { vi: 'Năm kiểm tra 2016–2024 (gốc lăn)', en: 'Test years 2016–2024 (rolling origin)' },
     method: {
@@ -317,7 +317,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       en: 'Results recorded in metrics.json and gates.json',
     },
     caveat: {
-      vi: 'Lúa xuân không vượt mô hình bỏ thời tiết, nên dự đoán lúa xuân không được hiện. Lúa mùa vượt qua, với mức hơn nhỏ.',
+      vi: 'Lúa vụ Đông Xuân không vượt mô hình bỏ thời tiết, nên dự đoán lúa vụ Đông Xuân không được hiện. Lúa vụ Mùa vượt qua, nhưng chỉ hơn một chút.',
       en: 'Spring rice did not beat the no-weather model, so spring predictions are not shown. Winter rice passed by a small margin.',
     },
   },
