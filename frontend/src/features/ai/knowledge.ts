@@ -176,8 +176,8 @@ function modelPassages(): Passage[] {
       keys: 'mo hinh du doan lua mua winter skill thang',
       title: { vi: 'Mô hình dự đoán lúa vụ Mùa thì sao?', en: 'What about the winter rice model?' },
       text: {
-        vi: `Lúa vụ Mùa qua bài kiểm tra, nhưng chỉ hơn một chút: ${g('winter')?.detail.vi ?? ''} Dự đoán ngoài mẫu 2016–2024 được hiện cạnh số liệu thật, kèm khoảng 80%.`,
-        en: `Winter rice passed by a small margin: ${g('winter')?.detail.en ?? ''} Out-of-sample predictions for 2016–2024 are shown next to the real values, with an 80% range.`,
+        vi: `Lúa vụ Mùa qua bài kiểm tra, nhưng chỉ hơn một chút: ${g('winter')?.detail.vi ?? ''} Ước tính của mô hình cho năm kiểm tra 2016–2024 được hiện cạnh số liệu thật, kèm khoảng 80%.`,
+        en: `Winter rice passed by a small margin: ${g('winter')?.detail.en ?? ''} The model estimate for each test year 2016–2024 is shown next to the real values, with an 80% range.`,
       },
     },
   ];

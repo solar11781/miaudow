@@ -511,10 +511,10 @@ export const en: Messages = {
     tableCaption: 'Grid-cell values for the selected year and rule',
     riceTitle: 'Nghệ An rice yield against normal',
     riceLead:
-      'Real NSO values, 1995–2024. For winter rice, the model’s out-of-sample predictions are shown next to the real values for 2016–2024, with their 80% range.',
+      'Real NSO values, 1995–2024. For winter rice, the model estimate for each test year is shown next to the real values for 2016–2024, with its 80% range.',
     seasons: { spring: 'Spring rice', summer_autumn: 'Summer-autumn rice', winter: 'Winter rice' },
     actual: 'Real value',
-    predicted: 'Out-of-sample prediction',
+    predicted: 'Model estimate for a test year',
     interval: '80% range',
     modelHidden: 'No prediction is shown for this season because the model did not pass its test.',
     notModeled: 'Too little data to model this season; only real values are shown.',
@@ -977,7 +977,7 @@ export const en: Messages = {
     riceSeriesLabel: (span: string) => `Nghệ An rice yield against normal, ${span}`,
     riceSeason: { spring: 'spring', summer_autumn: 'summer-autumn', winter: 'winter' },
     riceDetail: (season: string) => `Actual yield ÷ mean of the 3 previous years − 1 (${season} season).`,
-    predictionsLabel: 'Out-of-sample predictions, winter rice, 2016–2024',
+    predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',
     predictionsDetail:
       'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
     ndviLabel: 'NDVI greenness around Lưu Sơn',

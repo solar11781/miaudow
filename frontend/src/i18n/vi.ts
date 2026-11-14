@@ -507,10 +507,10 @@ export const vi = {
     tableCaption: 'Bảng số liệu các ô lưới cho năm và luật đang chọn',
     riceTitle: 'Năng suất lúa Nghệ An so với bình thường',
     riceLead:
-      'Số liệu thật của Cục Thống kê, 1995–2024. Với lúa vụ Mùa, dự đoán ngoài mẫu của mô hình được hiện cạnh số thật cho 2016–2024, kèm khoảng 80%.',
+      'Số liệu thật của Cục Thống kê, 1995–2024. Với lúa vụ Mùa, ước tính của mô hình cho năm kiểm tra được hiện cạnh số thật cho 2016–2024, kèm khoảng 80%.',
     seasons: { spring: 'Lúa vụ Đông Xuân', summer_autumn: 'Lúa vụ Hè Thu', winter: 'Lúa vụ Mùa' },
     actual: 'Số liệu thật',
-    predicted: 'Dự đoán ngoài mẫu',
+    predicted: 'Ước tính của mô hình cho năm kiểm tra',
     interval: 'Khoảng 80%',
     modelHidden: 'Dự đoán không được hiện cho vụ này vì mô hình chưa qua bài kiểm tra.',
     notModeled: 'Vụ này không đủ số liệu để mô hình hóa; chỉ hiện số thật.',
@@ -979,7 +979,7 @@ export const vi = {
     riceSeriesLabel: (span: string) => `Năng suất lúa Nghệ An so với bình thường, ${span}`,
     riceSeason: { spring: 'Đông Xuân', summer_autumn: 'Hè Thu', winter: 'Mùa' },
     riceDetail: (season: string) => `Năng suất thật ÷ trung bình 3 năm trước − 1 (vụ ${season}).`,
-    predictionsLabel: 'Dự đoán ngoài mẫu lúa vụ Mùa, 2016–2024',
+    predictionsLabel: 'Ước tính của mô hình cho năm kiểm tra, lúa vụ Mùa, 2016–2024',
     predictionsDetail:
       'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
     ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
