@@ -148,6 +148,7 @@ jobs:
           grep -q '^cesium [0-9]' dist/THIRD-PARTY-LICENSES.txt
           grep -q '^three [0-9]' dist/THIRD-PARTY-LICENSES.txt
           grep -q '^react [0-9]' dist/THIRD-PARTY-LICENSES.txt
+          grep -q '^react-router-dom [0-9]' dist/THIRD-PARTY-LICENSES.txt
           grep -q 'SIL OPEN FONT LICENSE' dist/THIRD-PARTY-LICENSES.txt
       # the saved snapshot ships only in the offline demo build (04-TECH-DESIGN section 9), never in the deployed one
       - name: snapshot not in the deployed build

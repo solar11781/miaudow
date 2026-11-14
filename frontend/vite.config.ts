@@ -25,9 +25,11 @@ function snapshotFiles(): Plugin {
   };
 }
 
-// Shipped as files, not as bundled modules, so the plugin does not list them: the fonts and the Cesium runtime files.
+// Not found by the plugin, so listed by hand: the fonts and the Cesium runtime files ship as files, and
+// react-router-dom only re-exports react-router, so the bundle holds none of its own code.
 const FILE_PACKAGES = [
   { name: 'cesium', licenseFile: 'LICENSE.md' },
+  { name: 'react-router-dom', licenseFile: 'LICENSE.md' },
   ...['be-vietnam-pro', 'jetbrains-mono', 'noto-serif-display'].map((n) => ({
     name: `@fontsource/${n}`,
     licenseFile: 'LICENSE',
