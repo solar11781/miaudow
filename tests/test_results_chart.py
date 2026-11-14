@@ -22,6 +22,12 @@ SKILLS = {"b0": "skill_vs_b0", "b2": "skill_vs_b2", "bnw": "skill_vs_bnw"}
 NUMBER = re.compile(r"-?\d+\.\d+")
 
 
+def _two(x: float) -> str:
+    """2 decimals (D-160); minus zero prints as 0.00, like the engine (coordinator decision 2026-11-14)."""
+    text = f"{x:.2f}"
+    return "0.00" if text == "-0.00" else text
+
+
 def _main_model_rows(doc: dict) -> list[dict]:
     return [
         r
@@ -74,7 +80,7 @@ def test_every_main_model_run_has_its_three_marks_with_its_own_numbers() -> None
         for ref, key in SKILLS.items():
             skill = r[key]
             g = marks[(r["season"], r["model_id"], ref)]
-            expected = [f"{skill[k]:.2f}" for k in ("value", "ci90_low", "ci90_high")]
+            expected = [_two(skill[k]) for k in ("value", "ci90_low", "ci90_high")]
             assert _numbers(g) == expected, (r["season"], r["model_id"], ref)
             assert len(g.findall(f"{SVG_NS}circle")) == 1
             assert len(g.findall(f"{SVG_NS}line")) == 1
@@ -88,7 +94,7 @@ def test_no_reference_row_is_drawn() -> None:
 
 def test_every_printed_number_is_a_main_model_number_at_two_decimals() -> None:
     allowed = {
-        f"{r[key][k]:.2f}"
+        _two(r[key][k])
         for r in _main_model_rows(METRICS)
         for key in SKILLS.values()
         for k in r[key]
@@ -159,3 +165,14 @@ def test_text_contrast_is_at_least_4_5_to_1_on_the_background() -> None:
         lighter, darker = sorted((_luminance(fill), _luminance(background)), reverse=True)
         # WCAG 2.1 success criterion 1.4.3: contrast (L1 + 0.05) / (L2 + 0.05) at least 4.5:1 (UI-UX-SPEC H8)
         assert (lighter + 0.05) / (darker + 0.05) >= 4.5, text.text
+
+
+def test_minus_zero_prints_as_zero() -> None:
+    doc = _one_row_doc({"value": -0.001, "ci90_low": -0.004, "ci90_high": 0.02}, None)
+    svg = results_chart_svg(doc)
+    assert _numbers(_marks(svg)[("spring", "m1_ridge", "b0")]) == ["0.00", "0.00", "0.02"]
+    assert "-0.00" not in svg
+
+
+def test_committed_svg_has_no_minus_zero() -> None:
+    assert "-0.00" not in (REPO / "artifacts" / "figures" / "results_chart.svg").read_text(encoding="utf-8")
