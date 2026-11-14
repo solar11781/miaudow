@@ -1,0 +1,6 @@
+province_nso,cell_id,lat,lon,farmland_weight,method
+Nghe An,18.5_105.625,18.5,105.625,0.19582605085467786,farmland_weighted
+Nghe An,19.0_105.0,19.0,105.0,0.13557776145741154,farmland_weighted
+Nghe An,19.0_105.625,19.0,105.625,0.4731011431233363,farmland_weighted
+Nghe An,19.5_105.0,19.5,105.0,0.03781640069781736,farmland_weighted
+Nghe An,19.5_105.625,19.5,105.625,0.15767864386675676,farmland_weighted

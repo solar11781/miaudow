@@ -1,0 +1,114 @@
+{
+  "dataset_id": "evidence_documents",
+  "generated_at": "2026-11-14T09:25:10Z",
+  "script": "pipeline/fetch_documents.py",
+  "copyright_basis": {
+    "law_2005": {
+      "url": "https://vbpl.vn/van-ban/chi-tiet/luat-so-huu-tri-tue-so-50-2005-qh11--16748",
+      "dieu_15": "Điều 15. Các đối tượng không thuộc phạm vi bảo hộ quyền tác giả\n1. Tin tức thời sự thuần tuý đưa tin.\n2. Văn bản quy phạm pháp luật, văn bản hành chính, văn bản khác thuộc lĩnh vực tư pháp và bản dịch chính thức của văn bản đó.\n3. Quy trình, hệ thống, phương pháp hoạt động, khái niệm, nguyên lý, số liệu.",
+      "retrieved_at": "2026-11-14T09:20:24Z"
+    },
+    "amend_2025": {
+      "url": "https://vbpl.vn/van-ban/chi-tiet/luat-sua-doi-bo-sung-mot-so-dieu-cua-luat-so-huu-tri-tue-so-131-2025-qh15--187492",
+      "paragraphs_mentioning_dieu_15": [
+        "7. Bổ sung khoản 4 vào sau khoản 3 Điều 15 như sau:\n“4. Ý tưởng; khẩu hiệu; tên tác phẩm một cách độc lập.”."
+      ],
+      "retrieved_at": "2026-11-14T09:20:25Z",
+      "reading": "The 2025 amendment adds a khoản 4 to Điều 15; khoản 2 is unchanged."
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "qd18_2021",
+      "source_id": "R-A01",
+      "title": "Quyết định 18/2021/QĐ-TTg quy định về dự báo, cảnh báo, truyền tin thiên tai và cấp độ rủi ro thiên tai",
+      "source_url": "https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc",
+      "extraction": "antiword -m UTF-8.txt -w 0 (Word 97-2003 .doc to UTF-8 text)",
+      "sha256_basis": "bytes of the downloaded .doc file",
+      "status": "INGESTED",
+      "license": "Not protected by copyright: Luật Sở hữu trí tuệ 50/2005/QH11 (amended), Điều 15 khoản 2 - văn bản quy phạm pháp luật (https://vbpl.vn/van-ban/chi-tiet/luat-so-huu-tri-tue-so-50-2005-qh11--16748)",
+      "retrieved_at": "2026-11-14T09:20:23Z",
+      "http": {
+        "content_type": "application/msword",
+        "last_modified": "Fri, 06 Aug 2021 04:47:41 GMT",
+        "etag": "\"e21644307e8ad71:0\"",
+        "final_url": "https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc"
+      },
+      "source_metadata": {},
+      "sha256_of_source": "5163fcf4316fb5749641bba61b11d5396cb5b0d55b78add567a94073f264dbbd",
+      "chunks_file": "data/raw/documents/qd18_2021/chunks.jsonl",
+      "chunks_sha256": "a4fa625b760b95d8805e7d6fee8a30dc6e71ea6b8d8077e5158639b6c9b62ae5",
+      "chunk_count": 278,
+      "articles_kept": "1-63",
+      "articles_missing_in_range": [],
+      "notes": [
+        "Host: Viet Nam Disaster Prevention portal (vupc.mae.gov.vn) of the Ministry of Agriculture and Environment. The .doc file's own properties name thuvienphapluat.vn / LawSoft as its author, so the government site serves a file prepared by that publisher; the wording is the decree's.",
+        "Source typos are kept as they are (e.g. 'tình Quảng Bình', '39°c', 'xâm nhập mận').",
+        "Body articles 1-63 are chunked; the annexes (Phụ lục I-XIII, mostly tables) are not.",
+        "In-force status of QĐ 18/2021 was not re-checked in this run."
+      ]
+    },
+    {
+      "doc_id": "nd112_2024",
+      "source_id": "R-G06",
+      "title": "Nghị định 112/2024/NĐ-CP quy định chi tiết về đất trồng lúa",
+      "source_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-112-2024-nd-cp-quy-dinh-chi-tiet-ve-dat-trong-lua--169866",
+      "extraction": "documentContent HTML from the vbpl.vn page payload; tags removed, entities decoded, spaces collapsed",
+      "sha256_basis": "UTF-8 bytes of the documentContent HTML extracted from the vbpl.vn page",
+      "status": "INGESTED",
+      "license": "Not protected by copyright: Luật Sở hữu trí tuệ 50/2005/QH11 (amended), Điều 15 khoản 2 - văn bản quy phạm pháp luật (https://vbpl.vn/van-ban/chi-tiet/luat-so-huu-tri-tue-so-50-2005-qh11--16748)",
+      "retrieved_at": "2026-11-14T09:23:47Z",
+      "http": {
+        "content_type": "text/html; charset=utf-8",
+        "last_modified": null,
+        "etag": null,
+        "final_url": "https://vbpl.vn/van-ban/chi-tiet/nghi-dinh-so-112-2024-nd-cp-quy-dinh-chi-tiet-ve-dat-trong-lua--169866"
+      },
+      "source_metadata": {
+        "documentContentFileName": "VanBanGoc_112_2024_ND-CP_11092024_2-signed.pdf",
+        "documentContentFileDocName": "112_2024_ND-CP_11092024.docx",
+        "legislationLegalForce (schema.org on the page)": "PartiallyInForce"
+      },
+      "sha256_of_source": "cb9f86850aeee658d3fcc4872b9f089b264ae8e9e4f83826d57ad68c5917c2f5",
+      "chunks_file": "data/raw/documents/nd112_2024/chunks.jsonl",
+      "chunks_sha256": "0192cd7ea34592d4fd28e6b55750ec01e928d3a5eb55108595e43f024cf614c8",
+      "chunk_count": 65,
+      "articles_kept": "1-20",
+      "articles_missing_in_range": [],
+      "notes": [
+        "Host: Cơ sở dữ liệu quốc gia về pháp luật (vbpl.vn, Ministry of Justice), item 169866; the page marks the decree as partially in force.",
+        "These chunks are the ORIGINAL 2024 wording. The decree was later amended by Nghị định 151/2025/NĐ-CP (from 1 July 2025, two-level local government: 'cấp huyện' duties moved) and Nghị định 226/2025/NĐ-CP (from 15 August 2025, Điều 10); a consolidated text exists (VBHN). Check the current wording before giving procedural advice.",
+        "Articles 1-20 are chunked; the annex forms (Phụ lục) are not."
+      ]
+    },
+    {
+      "doc_id": "p02",
+      "source_id": "R-P02",
+      "title": "Trịnh Đức Toàn et al. (2023). Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An. Tạp chí Khoa học và Công nghệ Nông nghiệp Việt Nam 04(146): 43-51",
+      "article_page": "https://vjol.info.vn/vaas/vi/article/view/167049",
+      "galley": "https://vjol.info.vn/vaas/vi/article/download/167049/143292/289735",
+      "journal_site_policy": "http://tapchivaas.vn/page/thong-tin-chung/quy-che-hoat-dong-140227",
+      "vjol_metadata_title_for_167049": "Xác định tác nhân gây bệnh xơ đen trên giống mít changai tại Tiền Giang",
+      "vjol_page_licence_statement": "none found",
+      "journal_site_copyright_statement": "© Bản quyền thuộc Tạp chí Viện Khoa học Nông nghiệp Việt Nam - VAAS. Không được phép sao chép khi chưa được chấp thuận bằng văn bản.",
+      "status": "RECORDED_ONLY",
+      "license": "No open licence found. VJOL serves the full text free of charge but states no reuse licence; the journal's own site says '© Bản quyền thuộc Tạp chí Viện Khoa học Nông nghiệp Việt Nam - VAAS. Không được phép sao chép khi chưa được chấp thuận bằng văn bản.' The PDF and its text are therefore not stored and no chunks are made.",
+      "manual_check_2026_11_14": "The galley at the URL above (served as 'news-tap-chi-bài 8 số 4 năm 2023.pdf', 9 pages, sha256 1f96246f96b6d39086b0ea1d1c2e317d506ec49ee6ee404d4f02e8d3ca4b3bd0) holds printed pages 43-51 of issue 04(146)/2023: the English abstract of the preceding paper (Vinh Linh pepper cuttings) and then the P-02 paper. VJOL's metadata for article 167049 carries a different title (a jackfruit disease paper). The PDF's text layer loses most Vietnamese letters with pdftotext (font without a Unicode map), so even a licensed copy would need OCR. The PDF was deleted after the check.",
+      "notes": []
+    }
+  ],
+  "chunk_schema": [
+    "doc_id",
+    "source_id",
+    "location",
+    "text",
+    "url",
+    "license",
+    "retrieved_at",
+    "sha256_of_source",
+    "chunk_id",
+    "heading",
+    "chapter"
+  ],
+  "chunking": "One chunk per khoản (numbered clause) of each Điều; text of an article before its first khoản, or of an article without khoản, is one chunk located at 'Điều N'. Points a), b) stay inside their khoản. Wording is unchanged; only tags are removed and spaces collapsed."
+}

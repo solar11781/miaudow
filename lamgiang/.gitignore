@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# Node
+node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+web/review-shots/
+# Secrets: only the .example file is committed
+api/.env
+.env
+# Caches that the pipelines rebuild
+data/cache/
+# Sentinel-2 composite GeoTIFFs (about 16 MB): rebuilt by pipeline/fetch_sentinel2.py; the web uses the PNGs
+data/raw/sentinel2/composites/

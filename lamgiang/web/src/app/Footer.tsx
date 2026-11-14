@@ -1,0 +1,52 @@
+import { Link } from 'react-router-dom';
+import { useAreas } from './Header';
+import { PHOTO_CREDITS } from '../data/media';
+import { hazards } from '../data';
+import { BrandMark } from './Brand';
+import { usePick, useSettings, useT } from './settings';
+import s from './Footer.module.css';
+
+export function Footer() {
+  const t = useT();
+  const pick = usePick();
+  const { lang } = useSettings();
+  const areas = useAreas().slice(1);
+  const built = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Ho_Chi_Minh' })
+    .format(new Date(hazards.generated_at));
+  return (
+    <footer className={`${s.footer} surface-forest grain`}>
+      <div className={`container ${s.grid}`}>
+        <div className={s.brandCol}>
+          <span className={s.brand}><BrandMark size={44} /><span className={s.name}>Miaudow</span></span>
+          <p className={s.tagline}>{t.footer.tagline}</p>
+          <p className={s.support}>{t.common.support}</p>
+        </div>
+        <nav className={s.links} aria-label={t.nav.main}>
+          {areas.map((a) => <Link key={a.to} to={a.to} viewTransition>{a.label}</Link>)}
+        </nav>
+        <div className={s.meta}>
+          <p>{t.common.dataLine}</p>
+          <p className="mono">{t.footer.built}: {built}</p>
+          <details className={s.credits}>
+            <summary>{t.footer.photos}</summary>
+            <p>{t.footer.photosLead}</p>
+            <ul>
+              {PHOTO_CREDITS.map(([slug, m]) => (
+                <li key={slug}>
+                  <span>{pick(m.caption)}</span>
+                  <span>{m.credit ? pick(m.credit) : ''}</span>
+                  <span className={s.creditLinks}>
+                    {m.license_url && <a href={m.license_url} target="_blank" rel="noreferrer license">{t.footer.licence}: {m.license}</a>}
+                    {m.source_url && <a href={m.source_url} target="_blank" rel="noreferrer">{t.footer.source}</a>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </details>
+          <p>{t.footer.team}</p>
+        </div>
+      </div>
+      <hr className="rows-rule" />
+    </footer>
+  );
+}

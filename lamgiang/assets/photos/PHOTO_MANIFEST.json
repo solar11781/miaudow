@@ -1,0 +1,600 @@
+{
+  "generated": "2026-11-14",
+  "note": "Real photographs only. Licences verified through the Wikimedia Commons API (imageinfo extmetadata) on verified_at. Concept illustrations are described in assets/ART_REVIEW.md, not here.",
+  "photos": [
+    {
+      "asset_id": "do-luong-nam-son-road-rice",
+      "filename": "do-luong-nam-son-road-rice.jpg",
+      "creator": "Bún bòa",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Qu%E1%BB%91c_l%E1%BB%99_46C.jpg",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "geography": {
+        "vi": "Xã Nam Sơn, huyện Đô Lương, Nghệ An (Quốc lộ 46C)",
+        "en": "Nam Sơn commune, Đô Lương district, Nghệ An (National Road 46C)"
+      },
+      "subject": "Rural road QL46C running beside a ripening rice field, with houses and banana plants",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: Bún bòa, CC BY-SA 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+      "permitted_use": "Any use, including commercial use and changes, if we (1) credit the author, (2) name and link the licence, (3) say the colour was adjusted, and (4) release the graded web files under CC BY-SA 4.0 or a compatible licence (ShareAlike).",
+      "date_taken": "2023-07-19",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 70,
+        "y": 62
+      },
+      "alt": {
+        "vi": "Đường nhựa nông thôn chạy cạnh ruộng lúa đang chín, cột mốc đỏ trắng bên lề, nhà hai tầng và hàng chuối phía xa, trời xanh nhiều mây",
+        "en": "Paved rural road beside a ripening rice field, a red-and-white marker post on the verge, a two-storey house and banana plants beyond, blue sky with clouds"
+      },
+      "caption": {
+        "vi": "Quốc lộ 46C qua xã Nam Sơn, huyện Đô Lương: ruộng lúa nằm sát mép đường.",
+        "en": "National Road 46C through Nam Sơn commune, Đô Lương district: rice fields right at the roadside."
+      },
+      "is_study_area": true,
+      "notes": "Commons file: Quốc lộ 46C.jpg (2560×1920). Commons licence tag: CC BY-SA 4.0; description: \"QL46C đoạn qua Nam Sơn, Đô Lương\". Verifiably Đô Lương district (source caption and category Do Luong District), but Nam Sơn commune, not Lưu Sơn. Taken July 2023. A lorry far down the road; no identifiable people. Best study-district photo found."
+    },
+    {
+      "asset_id": "do-luong-lam-son-communal-house",
+      "filename": "do-luong-lam-son-communal-house.jpg",
+      "creator": "Nguyentrandang",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Dinh_Phuc_Hau.jpg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "geography": {
+        "vi": "Đình Phúc Hậu, xã Lam Sơn, huyện Đô Lương, Nghệ An",
+        "en": "Phúc Hậu communal house, Lam Sơn commune, Đô Lương district, Nghệ An"
+      },
+      "subject": "Traditional village communal house (đình) with a tiled roof and wooden columns",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the Commons 3840 px thumbnail of the original, downscaled locally to 3000 px wide (sharp, JPEG quality 92) to respect the 3000 px archive limit.",
+      "attribution": "Ảnh: Nguyentrandang, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+      "permitted_use": "Any use, including commercial use and changes, if we (1) credit the author, (2) name and link the licence, (3) say the colour was adjusted, and (4) release the graded web files under CC BY-SA 3.0 or a compatible licence (ShareAlike).",
+      "date_taken": "not stated",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 55,
+        "y": 55
+      },
+      "alt": {
+        "vi": "Ngôi đình cổ mái ngói nâu, hàng cột gỗ và cột trát vôi trắng, cây cổ thụ phía sau, bãi cỏ phía trước",
+        "en": "An old communal house with a brown tiled roof, wooden and white plastered columns, a large old tree behind and grass in front"
+      },
+      "caption": {
+        "vi": "Đình Phúc Hậu ở xã Lam Sơn, huyện Đô Lương.",
+        "en": "Phúc Hậu communal house in Lam Sơn commune, Đô Lương district."
+      },
+      "is_study_area": true,
+      "notes": "Commons file: Dinh Phuc Hau.jpg (4320×3240). Commons licence tag: CC BY-SA 3.0; description: \"Đình Phúc Hậu, xã Lam Sơn, huyện Đô Lương, tỉnh Nghệ An.\". Verifiably Đô Lương (source caption), Lam Sơn commune, not Lưu Sơn. Village heritage, not farmland. File is dual-licensed GFDL and CC BY-SA 3.0; we use CC BY-SA 3.0. No date on the file page (uploader's other Đô Lương photos are from 2013)."
+    },
+    {
+      "asset_id": "nam-dan-ql46-rice-plain",
+      "filename": "nam-dan-ql46-rice-plain.jpg",
+      "creator": "Mạnh An",
+      "source_url": "https://commons.wikimedia.org/wiki/File:QL46_qua_huy%E1%BB%87n_Nam_%C4%90%C3%A0n,_t%E1%BB%89nh_Ngh%E1%BB%87_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Huyện Nam Đàn, Nghệ An (Quốc lộ 46); nguồn không ghi xã",
+        "en": "Nam Đàn district, Nghệ An (National Road 46); commune not stated"
+      },
+      "subject": "Panorama of National Road 46 crossing a flat plain of ripening rice, low hills on the horizon",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the Commons 3840 px thumbnail of the original, downscaled locally to 3000 px wide (sharp, JPEG quality 92) to respect the 3000 px archive limit.",
+      "attribution": "Ảnh: Mạnh An, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2022-08-30",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 62,
+        "y": 55
+      },
+      "alt": {
+        "vi": "Ảnh toàn cảnh: quốc lộ thẳng chạy giữa cánh đồng lúa phẳng rộng đang chuyển vàng, cột điện, dãy đồi thấp phía chân trời, trời xanh mây trắng",
+        "en": "Panorama: a straight highway across a wide, flat plain of rice turning gold, power poles, low hills on the horizon, blue sky with white clouds"
+      },
+      "caption": {
+        "vi": "Đồng lúa hai bên Quốc lộ 46, huyện Nam Đàn, Nghệ An.",
+        "en": "Rice fields on both sides of National Road 46, Nam Đàn district, Nghệ An."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: QL46 qua huyện Nam Đàn, tỉnh Nghệ An.jpg (8640×3072). Commons licence tag: CC0; description: \"Ảnh chụp đường w:vi:Quốc lộ 46, qua huyện Nam Đàn, tỉnh Nghệ An\". Lowland rice plain in a neighbouring Lam River district; not the study area. Very wide (about 2.8:1): crop around the focal point. Late August 2022, rice close to harvest."
+    },
+    {
+      "asset_id": "lam-river-vinh-ben-thuy",
+      "filename": "lam-river-vinh-ben-thuy.jpg",
+      "creator": "Bùi Thụy Đào Nguyên",
+      "source_url": "https://commons.wikimedia.org/wiki/File:S%C3%B4ng_Lam.jpg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "geography": {
+        "vi": "Sông Lam gần cầu Bến Thủy 2, thành phố Vinh, Nghệ An",
+        "en": "Lam River near Bến Thủy 2 bridge, Vinh city, Nghệ An"
+      },
+      "subject": "Sandy bank of the Lam River, a small covered boat, a long bridge and a forested hill",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the Commons 3840 px thumbnail of the original, downscaled locally to 3000 px wide (sharp, JPEG quality 92) to respect the 3000 px archive limit.",
+      "attribution": "Ảnh: Bùi Thụy Đào Nguyên, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+      "permitted_use": "Any use, including commercial use and changes, if we (1) credit the author, (2) name and link the licence, (3) say the colour was adjusted, and (4) release the graded web files under CC BY-SA 3.0 or a compatible licence (ShareAlike).",
+      "date_taken": "2013-05-30",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 45,
+        "y": 62
+      },
+      "alt": {
+        "vi": "Bãi cát ven sông Lam lúc nước cạn, một chiếc thuyền nhỏ có mui trên mặt nước đục, cây cầu dài và quả đồi xanh ở bờ bên kia",
+        "en": "Sandy bank of the Lam River at low water, a small covered boat on muddy water, a long bridge and a green hill on the far bank"
+      },
+      "caption": {
+        "vi": "Sông Lam đoạn gần cầu Bến Thủy 2, thành phố Vinh.",
+        "en": "The Lam River near Bến Thủy 2 bridge, Vinh city."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Sông Lam.jpg (4608×3456). Commons licence tag: CC BY-SA 3.0; description: \"Sông Lam, đoạn gần cầu Bến Thủy 2, thuộc TP. Vinh, tỉnh Nghệ An, Việt Nam.\". Late May 2013, low water exposes the sand bar. One person in the boat, far away and not identifiable. Strong in-camera colour; the grade changes very little. Far downstream of Đô Lương, not the study area."
+    },
+    {
+      "asset_id": "lam-river-hong-linh-view",
+      "filename": "lam-river-hong-linh-view.jpg",
+      "creator": "Nhcuong81",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Lam_river-hong_mountain.jpg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "geography": {
+        "vi": "Sông Lam và núi Hồng (theo tên ảnh gốc); nguồn không ghi huyện, xã",
+        "en": "Lam River and 'Hong mountain' (per the file title); district and commune not stated"
+      },
+      "subject": "Elevated view over the Lam River, flat green riverside fields, a curving road and a mountain range",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: Nhcuong81, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+      "permitted_use": "Any use, including commercial use and changes, if we (1) credit the author, (2) name and link the licence, (3) say the colour was adjusted, and (4) release the graded web files under CC BY-SA 3.0 or a compatible licence (ShareAlike).",
+      "date_taken": "2009-08-20",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 55,
+        "y": 66
+      },
+      "alt": {
+        "vi": "Nhìn từ trên đồi qua tán cây: dòng sông Lam rộng, cánh đồng xanh bằng phẳng, con đường uốn cong và dãy núi phía xa dưới trời xanh",
+        "en": "View from a hill over treetops: the wide Lam River, flat green fields, a curving road and a mountain range under blue sky"
+      },
+      "caption": {
+        "vi": "Sông Lam và cánh đồng ven sông, nhìn về phía núi Hồng.",
+        "en": "The Lam River and riverside fields, looking towards Hồng mountain."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Lam river-hong mountain.jpg (2592×1944). Commons licence tag: CC BY-SA 3.0; description: \"Lam river-Hong mountain\". August 2009, compact camera, slightly soft; trees fill the lower third and a power pylon stands at left. Probably near Vinh (the Hồng Lĩnh range is on the Hà Tĩnh bank) but the source does not say, so captions name no town."
+    },
+    {
+      "asset_id": "con-cuong-lam-river-chau-khe",
+      "filename": "con-cuong-lam-river-chau-khe.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Lam_river_(photographed_at_Chau_Khe,Con_Cuong,Nghe_An).jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Sông Lam ở Châu Khê, huyện Con Cuông, Nghệ An",
+        "en": "Lam River at Châu Khê, Con Cuông district, Nghệ An"
+      },
+      "subject": "Wide, calm stretch of the Lam River between a forested bank and a grassy bar, mountains in haze",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-02-07",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 50,
+        "y": 60
+      },
+      "alt": {
+        "vi": "Dòng sông Lam rộng và phẳng lặng, bờ trái là cây rừng, bờ phải là bãi cỏ dưới chân đồi, ngọn núi nhọn mờ trong mây ở xa",
+        "en": "The wide, calm Lam River, forest on the left bank, a grassy bar at the foot of hills on the right, a pointed mountain in haze far away"
+      },
+      "caption": {
+        "vi": "Sông Lam đoạn chảy qua Châu Khê, huyện Con Cuông.",
+        "en": "The Lam River at Châu Khê, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Lam river (photographed at Chau Khe,Con Cuong,Nghe An).jpg (1477×1108). Commons licence tag: CC0; description: \"Lam river (photographed at Chau Khe,Con Cuong,Nghe An)\". Overcast, soft light; the grade warms it slightly. Upstream of Đô Lương, not the study area."
+    },
+    {
+      "asset_id": "con-cuong-chau-khe-rice-field",
+      "filename": "con-cuong-chau-khe-rice-field.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rice_field_in_Chau_Khe,_Con_Cuong,_Nghe_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Châu Khê, huyện Con Cuông, Nghệ An",
+        "en": "Châu Khê, Con Cuông district, Nghệ An"
+      },
+      "subject": "Flooded paddies with newly transplanted rice, one farmer planting in the distance",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-02-07",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 48,
+        "y": 62
+      },
+      "alt": {
+        "vi": "Ruộng nước mới cấy, mạ non xanh nhạt, bờ ruộng đất chạy chéo, xa xa một người đội nón đang cúi cấy, núi mờ phía sau, trời nhiều mây",
+        "en": "Flooded paddies with newly transplanted seedlings, an earth bund running diagonally, in the distance a person in a conical hat bending to plant, hazy mountains behind under a cloudy sky"
+      },
+      "caption": {
+        "vi": "Ruộng lúa mới cấy ở Châu Khê, huyện Con Cuông (tháng 2/2025).",
+        "en": "Newly transplanted rice in Châu Khê, Con Cuông district (February 2025)."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Rice field in Chau Khe, Con Cuong, Nghe An.jpg (1477×1108). Commons licence tag: CC0; description: \"Cánh đồng lúa Châu Khe, Con Cuông, Nghệ An\". Winter–spring crop at transplanting. One farmer, small and far away, face not visible. Sugarcane at the right edge. Upland valley district, not the study area."
+    },
+    {
+      "asset_id": "con-cuong-mon-son-rice-field",
+      "filename": "con-cuong-mon-son-rice-field.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ricefield_in_Mon_Son_Village,_Con_Cuong,_Nghe_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Bản Môn Sơn, huyện Con Cuông, Nghệ An",
+        "en": "Môn Sơn village, Con Cuông district, Nghệ An"
+      },
+      "subject": "Flat field of young green rice reaching to low hills under a grey, misty sky",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-02-17",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 50,
+        "y": 72
+      },
+      "alt": {
+        "vi": "Cánh đồng lúa non xanh mướt trải phẳng tới chân đồi, bờ ruộng chạy chéo, trời mưa mù xám",
+        "en": "A flat field of young bright-green rice stretching to the foot of the hills, a bund running diagonally, grey misty sky"
+      },
+      "caption": {
+        "vi": "Ruộng lúa non ở bản Môn Sơn, huyện Con Cuông.",
+        "en": "Young rice in Môn Sơn village, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Ricefield in Mon Son Village, Con Cuong, Nghe An.jpg (1477×1108). Commons licence tag: CC0; description: \"Ricefield in Mon Son Village, Con Cuong, Nghe An\". The top 60 % is flat grey sky: crop to the field with the focal point. Closest of the Con Cuông photos to a lowland look. Not the study area."
+    },
+    {
+      "asset_id": "con-cuong-mon-son-road-rice",
+      "filename": "con-cuong-mon-son-road-rice.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Scenary_of_Mon_Son_Village,Con_Cuong,Nghe_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Bản Môn Sơn, huyện Con Cuông, Nghệ An",
+        "en": "Môn Sơn village, Con Cuông district, Nghệ An"
+      },
+      "subject": "Tree-lined village road running straight between green rice fields on a wet day",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-03-06",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 60,
+        "y": 68
+      },
+      "alt": {
+        "vi": "Đường nhựa nhỏ có hàng cây hai bên chạy thẳng giữa đồng lúa xanh, phía trước một người đi xe máy nhìn từ sau lưng, núi mờ trong mưa",
+        "en": "A narrow tree-lined paved road running straight between green rice fields, one motorcyclist ahead seen from behind, mountains faint in the rain"
+      },
+      "caption": {
+        "vi": "Đường làng giữa đồng lúa ở bản Môn Sơn, huyện Con Cuông.",
+        "en": "A village road between rice fields in Môn Sơn village, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Scenary of Mon Son Village,Con Cuong,Nghe An.jpg (1478×1108). Commons licence tag: CC0; description: \"Scenary of Mon Son Village,Con Cuong,Nghe An\". Rider seen from behind, not identifiable; the number plate is small. Not the study area."
+    },
+    {
+      "asset_id": "con-cuong-binh-chuan-water-wheels",
+      "filename": "con-cuong-binh-chuan-water-wheels.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:B%C3%A1nh_xe_n%C6%B0%E1%BB%9Bc%E2%91%A1_%E1%BB%9F_B%C3%ACnh_Chu%E1%BA%A9n,_Con_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Bình Chuẩn, huyện Con Cuông, Nghệ An",
+        "en": "Bình Chuẩn, Con Cuông district, Nghệ An"
+      },
+      "subject": "Bamboo water wheels in a stream lifting water for the fields",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-03-05",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 60,
+        "y": 62
+      },
+      "alt": {
+        "vi": "Một guồng nước bằng tre đứng giữa dòng suối, nối với ống nhựa đen; bên kia bãi cỏ là một hàng guồng nước khác; đồi rừng xanh và trời nhiều mây",
+        "en": "A bamboo water wheel standing in a stream, connected to black plastic pipes; a row of more wheels on the far grassy bank; green forested hills and a cloudy sky"
+      },
+      "caption": {
+        "vi": "Guồng nước tre lấy nước từ suối ở Bình Chuẩn, huyện Con Cuông.",
+        "en": "Bamboo water wheels lifting water from a stream in Bình Chuẩn, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Bánh xe nước② ở Bình Chuẩn, Con Cuông, Nghệ An.jpg (1477×1108). Commons licence tag: CC0; description: \"Water wheel ① in Binh Chuan, Con Cuong, Nghe An\". Traditional irrigation, useful next to water-shortage content. The Commons description of this file repeats the text of photo 1 ('Water wheel ①'); the file title says ②. No people. Not the study area."
+    },
+    {
+      "asset_id": "con-cuong-binh-chuan-field-path",
+      "filename": "con-cuong-binh-chuan-field-path.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Phong_c%E1%BA%A3nh_n%C3%B4ng_th%C3%B4n_%E1%BB%9F_B%C3%ACnh_Chu%E1%BA%A9n,_Con_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Bình Chuẩn, huyện Con Cuông, Nghệ An",
+        "en": "Bình Chuẩn, Con Cuông district, Nghệ An"
+      },
+      "subject": "Earth path along bamboo fences between green rice paddies, water wheels in the distance",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-03-05",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 55,
+        "y": 65
+      },
+      "alt": {
+        "vi": "Đường bờ đất chạy giữa hai thửa ruộng lúa xanh, hàng rào tre và lưới thép, vài người đi bộ ở xa quay lưng lại, đồi rừng phía sau, mấy guồng nước nhỏ ở góc phải",
+        "en": "An earth path between two green rice fields, bamboo and wire fences, a few people walking away in the distance, forested hills behind, small water wheels at the right"
+      },
+      "caption": {
+        "vi": "Bờ ruộng giữa đồng lúa ở Bình Chuẩn, huyện Con Cuông.",
+        "en": "A field path through rice paddies in Bình Chuẩn, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Phong cảnh nông thôn ở Bình Chuẩn, Con Cuông, Nghệ An.jpg (1477×1108). Commons licence tag: CC0; description: \"Rural landscape in Binh Chuan, Con Cuong, Nghe An\". Three people in the middle distance, seen from behind and side, faces not visible. Plastic sheeting on the left fence. Not the study area."
+    },
+    {
+      "asset_id": "con-cuong-luc-da-rice-village",
+      "filename": "con-cuong-luc-da-rice-village.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:L%E1%BB%A5c_D%E1%BA%A1,Con_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Xã Lục Dạ, huyện Con Cuông, Nghệ An",
+        "en": "Lục Dạ commune, Con Cuông district, Nghệ An"
+      },
+      "subject": "Young rice field framed by banana leaves, village houses and limestone mountains behind",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-03-03",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 50,
+        "y": 68
+      },
+      "alt": {
+        "vi": "Ruộng lúa non xanh nhìn qua tán lá chuối, phía sau là mấy nếp nhà, hàng cây và dãy núi đá vôi trong mây",
+        "en": "Young green rice seen through banana leaves, a few houses, trees and limestone mountains in cloud behind"
+      },
+      "caption": {
+        "vi": "Ruộng lúa và nhà dân ở xã Lục Dạ, huyện Con Cuông.",
+        "en": "Rice paddies and houses in Lục Dạ commune, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Lục Dạ,Con Cuông, Nghệ An.jpg (1477×1108). Commons licence tag: CC0; description: \"Luc Da commune, Con Cuong, Nghe An\". Banana leaves frame the top and sides; the field fills the lower half. No people. Not the study area."
+    },
+    {
+      "asset_id": "con-cuong-nua-rice-karst",
+      "filename": "con-cuong-nua-rice-karst.jpg",
+      "creator": "KoheiU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rice_field_near_Nua_village,_Con_Cuong,_Nghe_An.jpg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "geography": {
+        "vi": "Gần bản Nưa, huyện Con Cuông, Nghệ An",
+        "en": "Near Nưa village, Con Cuông district, Nghệ An"
+      },
+      "subject": "Flooded, newly planted paddies below limestone peaks in cloud",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the unchanged Commons original.",
+      "attribution": "Ảnh: KoheiU, CC0 1.0, Wikimedia Commons",
+      "permitted_use": "Public-domain dedication (CC0 1.0): any use, including commercial use and changes, with no conditions. We still keep the credit line.",
+      "date_taken": "2025-02-17",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 50,
+        "y": 62
+      },
+      "alt": {
+        "vi": "Ruộng nước mới cấy phản chiếu bầu trời, dãy núi đá vôi chìm trong mây phía sau, một đường dây điện vắt ngang phía trên",
+        "en": "Flooded, newly planted paddies reflecting the sky, limestone peaks wrapped in cloud behind, a power line across the top"
+      },
+      "caption": {
+        "vi": "Ruộng mới cấy gần bản Nưa, huyện Con Cuông.",
+        "en": "Newly planted paddies near Nưa village, Con Cuông district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Rice field near Nua village, Con Cuong, Nghe An.jpg (1477×1108). Commons licence tag: CC0; description: \"Rice field near Nua village, Con Cuong, Nghe An\". Limestone karst makes this clearly a mountain valley: never use it to stand for Đô Lương. A power line crosses the top edge."
+    },
+    {
+      "asset_id": "thanh-chuong-tea-hills",
+      "filename": "thanh-chuong-tea-hills.jpg",
+      "creator": "NKSTTSSHNVN",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%C4%90%E1%BB%93i_ch%C3%A8_Thanh_Ch%C6%B0%C6%A1ng.jpg",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "geography": {
+        "vi": "Huyện Thanh Chương, Nghệ An; nguồn không ghi xã",
+        "en": "Thanh Chương district, Nghệ An; commune not stated"
+      },
+      "subject": "Tea hills around a reservoir with forested mountains",
+      "modification": "Web derivatives made by web/pipeline/build_media.mjs with sharp: .rotate() (apply EXIF orientation); .modulate({ saturation: 1.03 }); .linear([1.02, 1, 0.97], [0, 0, 0]) (slight warm shift); resized to 640/1280/1920 px wide, never upscaled; encoded AVIF quality 55 and WebP quality 78; all metadata stripped. No crop, no retouching. Archived file is the Commons 3840 px thumbnail of the original, downscaled locally to 3000 px wide (sharp, JPEG quality 92) to respect the 3000 px archive limit.",
+      "attribution": "Ảnh: NKSTTSSHNVN, CC BY-SA 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+      "permitted_use": "Any use, including commercial use and changes, if we (1) credit the author, (2) name and link the licence, (3) say the colour was adjusted, and (4) release the graded web files under CC BY-SA 4.0 or a compatible licence (ShareAlike).",
+      "date_taken": "2022-07-31",
+      "verified_at": "2026-11-14",
+      "focal_point": {
+        "x": 50,
+        "y": 62
+      },
+      "alt": {
+        "vi": "Những đồi chè xanh trồng theo hàng quanh một hồ nước, lá cờ đỏ cắm bên hồ, núi rừng và trời nhiều mây phía sau",
+        "en": "Rows of green tea bushes on hills around a lake, a red flag by the water, forested mountains and a cloudy sky behind"
+      },
+      "caption": {
+        "vi": "Đồi chè quanh hồ nước ở huyện Thanh Chương.",
+        "en": "Tea hills around a lake in Thanh Chương district."
+      },
+      "is_study_area": false,
+      "notes": "Commons file: Đồi chè Thanh Chương.jpg (6000×4000). Commons licence tag: CC BY-SA 4.0; description: \"Đồi chè Thanh Chương - 6/2022\". Tea, not rice: use only in a secondary gallery or card, never as the hero (sourcebook rule). The description says June 2022, the date field says 2022-07-31. Neighbouring district, not the study area."
+    }
+  ],
+  "rejected": [
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Qu%E1%BB%91c_l%E1%BB%99_7_%C4%91o%E1%BA%A1n_qua_th%E1%BB%8B_tr%E1%BA%A5n_%C4%90%C3%B4_L%C6%B0%C6%A1ng,_huy%E1%BB%87n_%C4%90%C3%B4_L%C6%B0%C6%A1ng,_t%E1%BB%89nh_Ngh%E1%BB%87_An.jpg",
+      "reason": "Licence OK (CC BY-SA 4.0) and verifiably Đô Lương, but shot through a wet windscreen (raindrop spots, haze), soft, only 1280 px wide."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Qu%E1%BB%91c_l%E1%BB%99_15_qua_%C4%90%C3%B4_L%C6%B0%C6%A1ng.jpg",
+      "reason": "Licence OK (CC BY-SA 4.0), Đô Lương town centre, but a town street shot through a windscreen with traffic; not farmland; 1280 px."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:%C4%90%E1%BB%A9c_S%C6%A1n_Anh_S%C6%A1n,_Ngh%E1%BB%87_An.jpg",
+      "reason": "Licence OK (CC BY-SA 4.0) and a good midland village view, but large title text 'Đức Sơn / Anh Sơn - Nghệ An' is burned into the image (acts like a watermark)."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:S%C3%B4ng_Lam,_%C4%91o%E1%BA%A1n_qua_Nghi_Xu%C3%A2n,_H%C3%A0_T%C4%A9nh.JPG",
+      "reason": "Only 1024 px wide; Hà Tĩnh bank, not Nghệ An; litter on the bank; grey and flat."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Ben_Thuy_Bridge_crossover_Lam_River,_Vietnam.jpg",
+      "reason": "Public domain, but only 859 px wide."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:MOC_Spring%E2%91%A0_Nua_village,Con_Cuong,_Nhge_An,_Vietnam.jpg",
+      "reason": "CC0 verified. Off-topic: a tourist spring pool with warning signboards, not rice land or irrigation."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:S%C3%B4ng_Gi%C4%83ng%E2%91%A0%EF%BC%9ACon_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Off-topic: forest river bank with a hut in the mountains, unlike the lowland study area."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:S%C3%B4ng_Gi%C4%83ng%E2%91%A1%EF%BC%9ACon_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Off-topic: mountain forest river seen from a boat bow."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Sugarcane_field_(photographed_at_Chau_Khe,Con_Cuong,Nghe_An).jpg",
+      "reason": "CC0 verified. The standing crop is actually maize (tassels visible) behind a pile of cut sugarcane; not rice, and the title would mislead."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:B%E1%BA%A3n_M%C3%B4n_S%C6%A1n%EF%BC%9ACon_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Off-topic: market street with stalls and flags; people at the stalls."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Den_Khai_Long.jpg",
+      "reason": "CC BY-SA 3.0, Trung Sơn commune, Đô Lương. Off-topic: collapsed temple ruin; would look like disaster damage next to drought data."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Bia_tong_Do_Luong.jpg",
+      "reason": "CC BY-SA 3.0, Đô Lương. Off-topic (stone stele); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Tuong_dai_binh_bien_Do_Luong.jpg",
+      "reason": "CC BY-SA 3.0, Đô Lương town. Off-topic (war monument); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Den_tho_cu_Thai_Ba_Du.jpg",
+      "reason": "CC BY-SA 4.0, Yên Sơn, Đô Lương. Off-topic (memorial temple); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:2015_Hyundai_Grand_i10,_photgraphed_in_Thai_Son,_Do_Luong,_Nghe_An,_Vietnam.jpg",
+      "reason": "Off-topic (car photo); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Content_danh-gia-truong-thpt-do-luong-3-nghe-an-co-tot-khong-2.jpg",
+      "reason": "800 px, school yard, and the file name suggests it was copied from a website, so the CC BY-SA claim is doubtful."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Bamboo_Crafts_(photographed_in_Chau_Khe,_Con_Cuong,_Nghe_An).jpg",
+      "reason": "CC0 verified. Off-topic (handicraft); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Traditional_bamboo_craftsmanship_of_the_Vietnamese_Thai_people%E2%91%A0_(Photographed_in_Diem_Village,_Chau_Khe_Area,_Con_Cuong_District,_Nghe_An_Province,_Vietnam).jpg",
+      "reason": "CC0 verified. Off-topic (handicraft, likely shows a craftsperson); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Bamboo_basketry_of_the_Thai_ethnic_group_(photographed_in_Di%E1%BB%81m_Village,_Ch%C3%A2u_Khe_Commune,_Con_Cu%C3%B4ng_District).jpg",
+      "reason": "CC0 verified. Off-topic (handicraft); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Loom_2_(Taken_in_Mon_Son_Commune,_Con_Cuong_District,_Nghe_An_Province,_Vietnam).jpg",
+      "reason": "CC0 verified. Off-topic (weaving loom); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:R%E1%BB%ABng_S%C4%83ng_L%E1%BA%BB%E2%91%A0%3BHuy%E1%BB%87n_T%C6%B0%C6%A1ng_D%C6%B0%C6%A1ng,Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Off-topic (forest, Tương Dương mountains); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:R%E1%BB%ABng_S%C4%83ng_L%E1%BA%BB%E2%91%A1%3BHuy%E1%BB%87n_T%C6%B0%C6%A1ng_D%C6%B0%C6%A1ng,Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Off-topic (forest, Tương Dương mountains); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Pu_Mat_National_Park_and_Giang_river,Con_Cuong,Nghe_An,Vietnam.jpg",
+      "reason": "CC0 verified. Off-topic (national-park forest river); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Annamite_range_pu_mat_2007_05.jpg",
+      "reason": "CC BY-SA 3.0. Off-topic (Annamite mountains, Pù Mát); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:C%E1%BB%95ng_ch%C3%A0o_l%C3%A0ng_Ho%C3%A0ng_Tr%C3%B9_v%C3%A0_M%E1%BA%ADu_T%C3%A0i,_Nam_%C4%90%C3%A0n,_Ngh%E1%BB%87_An.jpeg",
+      "reason": "CC BY-SA 3.0. Off-topic (village gate of a heritage site); not downloaded."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:M%E1%BB%8Dt_n%C6%B0%E1%BB%9Bc_h%E1%BA%A1i_l%C3%BAa.jpeg",
+      "reason": "CC BY-SA 4.0, Châu Quang, Quỳ Hợp. Rice water weevil damage close-up: outside this photo set; not downloaded. Possible future lead for a pest card."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Scenary_from_Thanh_Nam_Bridge_Con_Cuong,_Nghe_An,_Vietnam.jpg",
+      "reason": "CC0 verified and reviewed (river from a bridge, karst hills). Left out to keep the set at 14: the source does not name the river and a rusty railing fills the bottom; the Châu Khê Lam River photo covers the same need."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:B%E1%BA%A3n_N%C6%B0a,_Con_Cu%C3%B4ng,_Ngh%E1%BB%87_An%E2%91%A0.jpg",
+      "reason": "CC0 verified and reviewed (concrete village lane, no people). Left out to keep the set at 14; the Môn Sơn road between rice fields is a better village-road picture."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Road_of_Mon_Son_Village,Con_Cuong,Nghe_An.jpg",
+      "reason": "CC0 verified. Shop signboards with readable phone numbers and a person standing by a scooter; not farmland."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:B%C3%A1nh_xe_n%C6%B0%E1%BB%9Bc%E2%91%A0_%E1%BB%9F_B%C3%ACnh_Chu%E1%BA%A9n,_Con_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Close-up near-duplicate of water wheel ② (accepted); a bystander stands at the right edge."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:X%C3%A3_L%E1%BB%A5c_D%E1%BA%A1,Con_Cu%C3%B4ng,_Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified. Download blocked by Wikimedia rate limit (HTTP 429, Retry-After 600 s); not viewed, so not used."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Pha_L%C3%A0i_Dam,Con_Cu%C3%B4ng,Ngh%E1%BB%87_An.jpg",
+      "reason": "CC0 verified (water infrastructure, would be relevant). Download blocked by Wikimedia rate limit (HTTP 429, Retry-After 600 s); not viewed, so not used. Worth retrying."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:K%C3%AAnh_Nh%C3%A0_L%C3%AA,_Nghi_Y%C3%AAn,_Nghi_L%E1%BB%99c,_Ngh%E1%BB%87_An.jpeg",
+      "reason": "CC BY-SA 3.0 verified (historic canal, Nghi Yên, Nghi Lộc). Found late; download blocked by Wikimedia rate limit (HTTP 429). Not viewed, so not used. Best lead for an irrigation-canal photo."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:K%C3%AAnh_Nh%C3%A0_L%C3%AA_3,_Nghi_Y%C3%AAn,_Nghi_L%E1%BB%99c,_Ngh%E1%BB%87_An.jpeg",
+      "reason": "CC BY-SA 3.0 verified. Same canal as above; download blocked by Wikimedia rate limit (HTTP 429). Not viewed."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:K%C3%AAnh_Nh%C3%A0_L%C3%AA_2,_Nghi_Y%C3%AAn,_Nghi_L%E1%BB%99c,_Ngh%E1%BB%87_An.jpeg",
+      "reason": "CC BY-SA 3.0 verified. Portrait version of the same canal; not downloaded (rate limit)."
+    },
+    {
+      "file_page": "https://commons.wikimedia.org/wiki/File:Giang_river,_Mon_Son_Village,Con_Cuong,Nghe_An.jpg",
+      "reason": "CC0 verified. Mountain river (Giăng), off-topic for lowland rice; not downloaded."
+    }
+  ]
+}

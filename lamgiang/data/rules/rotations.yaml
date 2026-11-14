@@ -1,0 +1,342 @@
+# Plans (05-DATA-CONTRACTS §7, hand-curated; D-52, D-57): the four P-02 tested structures CC1-CC4, the farmers' usual
+# structure CC5 of the same trial (`usual`) and the P-03 local control (`usual_p03`). No assembled plans.
+# Dates "MM-DD" from P-02 Tables 9 (spring 2021), 1 (summer-autumn 2020) and 5 (autumn-winter 2020); from = to where
+# the table gives one date; a harvest range ("30/8 - 3/9") gives harvest_from and harvest_to. Seasons in Table 13
+# order. Money: P-02 Table 13 "Lãi thuần" (profit) and Tables 4, 8, 12 "Tổng chi" (cost), thousand VND per ha, nominal,
+# written with the digit grouping of 05-DATA-CONTRACTS §6 and UI-UX-SPEC §8 ("16,200 thousand đ/ha"). The whole-year
+# total is computed by the engine, never stored here (§7). Water facts come from rules/crops.yaml per crop id (D-64).
+# Names, flags, definitions, risks and translations are drafts for the copy review. `why` holds short lines from the
+# studies with their page, and states the gap where a study says nothing (team, 2026-11-14; D-156).
+- id: usual
+  name: {vi: "Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu",
+         en: "Rice Khang dân - black bean VT1 - sweet potato Chiêm Dâu"}
+  is_usual: true
+  land_archetypes: [drought_prone_paddy]  # P-02: "đất lúa kém hiệu quả, thường xuyên khô hạn"; scope only, no filter
+  provinces_studied: [VN-NA]
+  site: "Lưu Sơn, Đô Lương"
+  trial_period: "2020-06 to 2021-06"
+  seasons:
+    - {crop_key: usual_spring_rice, crop_id: rice, variety: {vi: "Khang dân", en: "Khang dân"}, season: spring,
+       sow_from: "01-17", sow_to: "01-17", harvest_from: "05-17", harvest_to: "05-17"}
+    - {crop_key: usual_summer_autumn_black_bean, crop_id: black_bean, variety: {vi: "VT1", en: "VT1"},
+       season: summer_autumn, sow_from: "06-06", sow_to: "06-06", harvest_from: "08-25", harvest_to: "08-25"}
+    - {crop_key: usual_autumn_winter_sweet_potato, crop_id: sweet_potato, variety: {vi: "Chiêm Dâu", en: "Chiêm Dâu"},
+       season: autumn_winter, sow_from: "08-15", sow_to: "08-15", harvest_from: "12-10", harvest_to: "12-10"}
+  reported_economics:
+    source_id: R-P02
+    definition: &p02_definition
+      vi: "lợi nhuận thuần (RVAC) = GR - TVC; TVC gồm vật tư, công lao động, năng lượng và lãi vay"
+      en: "net profit (RVAC) = GR - TVC (gross return minus total variable cost); TVC counts materials, labour, energy
+        and interest"
+    unit: &p02_unit {vi: "nghìn đồng/ha", en: "thousand đ/ha"}
+    profit_per_crop: {usual_spring_rice: "5,149", usual_summer_autumn_black_bean: "16,200",
+                      usual_autumn_winter_sweet_potato: "9,450"}
+    cost_per_crop: {usual_spring_rice: "32,426", usual_summer_autumn_black_bean: "25,000",
+                    usual_autumn_winter_sweet_potato: "40,800"}
+    price_year: "2020-21"  # P-02: "Giá bán theo giá thị trường tại thời điểm thu hoạch", trial 2020-21
+    flags:
+      usual_summer_autumn_black_bean: &table4_flag
+        vi: "Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau ở mọi cột; bài báo không
+          giải thích điều này."
+        en: "In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the
+          paper does not explain this."
+  risks: []
+  why:
+    why:
+      vi: "Cơ cấu đối chứng của người dân trong nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "The farmers' own control structure in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: &p02_why_evidence
+      vi: "Một thử nghiệm tại xã Lưu Sơn, huyện Đô Lương, \"từ tháng 6 năm 2020 đến tháng 6 năm 2021\" (tr. 45); mỗi cây
+        trồng một ô 1000 m2 trong một vụ, không lặp lại."
+      en: "One trial in Lưu Sơn commune, Đô Lương district, from June 2020 to June 2021 (p. 45); one unreplicated plot of
+        1000 m2 per crop and season."
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: &p02_why_gaps
+      vi: "Bài báo không nói cả cơ cấu có được trồng trên cùng một ruộng hay không. Chỉ có một năm và một địa điểm, nên
+        chưa biết kết quả ở các năm hay các xã khác."
+      en: "The paper does not say whether one field carried the whole structure. There is one year and one site only,
+        so results in other years or communes are not known."
+  study_type: &p02_study field_trial_each_crop_in_its_season_unreplicated  # never "tested whole-year sequence" (D-57)
+  limitations: &p02_limitations  # D-57, D-62, D-66
+    - &one_site {vi: "Một địa điểm", en: "One site"}
+    - &one_year {vi: "Một năm", en: "One year"}
+    - &one_plot {vi: "Mỗi cây một ô 1000 m2, không lặp lại", en: "One unreplicated 1000 m2 plot per crop"}
+    - {vi: "Không rõ cả cơ cấu có được trồng trên cùng một ruộng hay không",
+       en: "Plot layout unknown: whether one field carried the whole structure"}
+    - {vi: "Có ngày gieo của vụ sau sớm hơn ngày thu hoạch của vụ trước",
+       en: "Some sowing dates come before the harvest of the season before"}
+    - {vi: "Phần phương pháp của bài báo (tr. 44) ghi các cơ cấu CC2-CC4 khác với các bảng kết quả",
+       en: "The paper's methods text (p. 44) lists CC2-CC4 differently from the results tables"}
+    - {vi: "Trong Bảng 4, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau",
+       en: "In Table 4, the CC1 mung bean row and the CC5 black bean row are identical"}
+  source_ids: [R-P02]
+- id: usual_p03
+  name: {vi: "Lúa - lúa - bỏ hoang", en: "Rice - rice - fallow"}
+  is_usual: true
+  land_archetypes: [water_short_paddy]  # P-03: "đất lúa kém hiệu quả, có nguy cơ thiếu nước"; scope only, no filter
+  provinces_studied: [VN-NA]
+  site: "Lưu Sơn, Đô Lương"
+  trial_period: "2020-06 to 2021-06"
+  seasons:  # P-03 reports durations only ("Thời vụ ... được điều chỉnh tùy vào điều kiện thực tế"); the third season is fallow
+    - {crop_key: usual_p03_spring_rice, crop_id: rice, variety: null, season: spring,
+       sow_from: null, sow_to: null, harvest_from: null, harvest_to: null}
+    - {crop_key: usual_p03_summer_autumn_rice, crop_id: rice, variety: null, season: summer_autumn,
+       sow_from: null, sow_to: null, harvest_from: null, harvest_to: null}
+  reported_economics:
+    source_id: R-P03
+    definition:
+      vi: "Lợi nhuận = GR - Tổng chi phí vật chất"
+      en: "Profit = GR - total material costs (labour may not be counted)"
+    text_only:
+      vi: "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng):
+        \"gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha\". Vụ Thu Đông: bỏ hoang."
+      en: "Spring-season rice 2021 (control): economic return (\"hiệu quả kinh tế\") 5.36 million đ/ha. Summer-autumn
+        rice 2020 (control): \"almost no profit, the economic return only reaches 1.16 million/ha\" (our translation).
+        Autumn-winter: fallow."
+    price_year: "2020-21"  # D-103: P-03 p.3 prices at harvest; trial June 2020 - June 2021
+  risks: []
+  why:
+    why:
+      vi: "Cơ cấu của người dân \"Lúa - lúa - bỏ hoang\" là đối chứng trong nghiên cứu \"Thử nghiệm một số công thức
+        luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại
+        xã Lưu Sơn, huyện Đô Lương (tr. 2)."
+      en: "The farmers' structure \"rice - rice - fallow\" is the control in the study \"Thử nghiệm một số công thức luân
+        canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An\" (testing some rotation formulas on
+        inefficient, water-short rice land in Nghệ An province; our translation) by Trịnh Đức Toàn et al., 2023, in Lưu
+        Sơn commune, Đô Lương district (p. 2)."
+    evidence:
+      vi: "Một năm, từ tháng 6/2020 đến tháng 6/2021; mỗi cây trồng một ô 1000 m2, không lặp lại (tr. 2)."
+      en: "One year, June 2020 to June 2021; one unreplicated plot of 1000 m2 per crop (p. 2)."
+    benefits:
+      vi: "Bài báo không nêu lợi ích riêng của cơ cấu đối chứng này."
+      en: "The paper states no benefit of this control structure."
+    gaps:
+      vi: "Bài báo không ghi ngày gieo và ngày thu hoạch, và lợi nhuận chỉ trừ chi phí vật chất (tr. 3)."
+      en: "The paper gives no sowing or harvest dates, and its profit subtracts material costs only (p. 3)."
+  study_type: field_trial_each_crop_in_its_season_unreplicated
+  limitations:  # D-52
+    - *one_site
+    - *one_year
+    - *one_plot
+    - {vi: "Bài báo không ghi ngày gieo và ngày thu hoạch, chỉ ghi thời gian sinh trưởng",
+       en: "No sowing or harvest dates reported, only durations"}
+    - {vi: "Lợi nhuận chỉ trừ chi phí vật chất (tr. 3)", en: "Profit subtracts material costs only (p. 3)"}
+    - {vi: "Hai bài báo của cùng nhóm tác giả, tại cùng địa điểm, mô tả cơ cấu của người dân khác nhau",
+       en: "Two papers by the same team at the same site describe the farmers' usual structure differently"}
+  source_ids: [R-P03]
+- id: cc1
+  name: {vi: "Lạc L20 - Đậu xanh D22 - Ngô thương phẩm VN5885", en: "Peanut L20 - mung bean D22 - grain maize VN5885"}
+  is_usual: false
+  land_archetypes: [drought_prone_paddy]
+  provinces_studied: [VN-NA]
+  site: "Lưu Sơn, Đô Lương"
+  trial_period: "2020-06 to 2021-06"
+  seasons:
+    - {crop_key: cc1_spring_peanut, crop_id: peanut, variety: {vi: "L20", en: "L20"}, season: spring,
+       sow_from: "01-18", sow_to: "01-18", harvest_from: "05-12", harvest_to: "05-12"}
+    - {crop_key: cc1_summer_autumn_mung_bean, crop_id: mung_bean, variety: {vi: "D22", en: "D22"}, season: summer_autumn,
+       sow_from: "06-10", sow_to: "06-10", harvest_from: "08-30", harvest_to: "09-03"}
+    - {crop_key: cc1_autumn_winter_maize_grain, crop_id: maize_grain, variety: {vi: "VN5885", en: "VN5885"},
+       season: autumn_winter, sow_from: "09-01", sow_to: "09-01", harvest_from: "12-22", harvest_to: "12-22"}
+  reported_economics:
+    source_id: R-P02
+    definition: *p02_definition
+    unit: *p02_unit
+    profit_per_crop: {cc1_spring_peanut: "25,980", cc1_summer_autumn_mung_bean: "16,200",
+                      cc1_autumn_winter_maize_grain: "11,200"}
+    cost_per_crop: {cc1_spring_peanut: "83,500", cc1_summer_autumn_mung_bean: "25,000",
+                    cc1_autumn_winter_maize_grain: "29,900"}
+    price_year: "2020-21"
+    flags:
+      cc1_summer_autumn_mung_bean: *table4_flag
+  risks:
+    - &p02_cost
+      text:
+        vi: "Bài báo ghi: \"Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.\" (tr. 48)"
+        en: "The paper says: \"The total cost of growing peanut and chili F1 is usually 2 - 3 times that of growing rice\" (p. 48; our translation)."
+      source_ids: [R-P02]
+    - &p03_market
+      text:
+        vi: "Một thử nghiệm khác của cùng nhóm tác giả tại cùng xã, vụ Hè Thu 2020: \"Tuy nhiên đầu ra tiêu thụ cho cây
+          đậu tương, cây vừng tại địa phương còn gặp nhiều khó khăn. Thị trường tiêu thụ nhỏ hẹp, khó mở rộng, nên hiệu
+          quả kinh tế - xã hội chưa cao. Trong khi đó, cây ngô tuy hiệu quả kinh tế thấp hơn, nhưng người dân dễ tiêu
+          thụ sản phẩm, bên cạnh đó còn dùng làm thức ăn cho gia súc, nên cây ngô được người dân lựa chọn.\""
+        en: "Another trial by the same team in the same commune, summer-autumn 2020 (our translation): \"However,
+          selling soybean and sesame locally is still very difficult. The market is small and hard to expand, so the
+          economic and social benefit is not yet high. Maize, although its economic benefit is lower, is easy for people
+          to sell and is also used as cattle feed, so people choose maize.\""
+      source_ids: [R-P03]
+    - &law_6_1
+      text:
+        vi: "Nghị định 112/2024/NĐ-CP, Điều 6.1: \"c) Không được chuyển đổi cơ cấu cây trồng, vật nuôi trên đất trồng lúa
+          tại vùng quy hoạch trồng lúa có năng suất, chất lượng cao; d) Phù hợp với Kế hoạch chuyển đổi cơ cấu cây trồng,
+          vật nuôi trên đất trồng lúa do cấp có thẩm quyền ban hành;\""
+        en: "Decree 112/2024/ND-CP, Art. 6.1 (our translation): \"c) Crop and livestock structures may not be converted
+          on rice land in areas planned for high-yield, high-quality rice; d) [conversion must] follow the plan for
+          converting crop and livestock structures on rice land issued by the competent authority;\""
+      source_ids: [R-G06]
+    - &law_6_4
+      text:
+        vi: "Nghị định 112/2024/NĐ-CP, Điều 6.4: \"Đất trồng lúa sau khi chuyển đổi cơ cấu cây trồng, vật nuôi theo quy
+          định tại Nghị định này được thống kê là đất trồng lúa.\""
+        en: "Decree 112/2024/ND-CP, Art. 6.4 (our translation): \"Rice land whose crop or livestock structure has been
+          converted under this Decree is still counted as rice land.\""
+      source_ids: [R-G06]
+    - &law_7_1
+      text:
+        vi: "Nghị định 112/2024/NĐ-CP, Điều 7.1, kế hoạch của tỉnh: \"ban hành Kế hoạch chuyển đổi cơ cấu cây trồng, vật
+          nuôi trên đất trồng lúa phạm vi toàn tỉnh ...; thời gian ban hành trước 30 tháng 11 năm trước của năm kế
+          hoạch.\""
+        en: "Decree 112/2024/ND-CP, Art. 7.1, the province's plan (our translation): \"issues the plan for converting
+          crop and livestock structures on rice land for the whole province ...; issued before 30 November of the year
+          before the plan year.\""
+      source_ids: [R-G27]
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: *p02_why_gaps
+  study_type: *p02_study
+  limitations: *p02_limitations
+  source_ids: [R-P02]
+- id: cc2
+  name: {vi: "Ớt chỉ thiên F1 - Đậu tương ĐT51 - Ngô sinh khối NK7328",
+         en: "Chili F1 - soybean ĐT51 - biomass maize NK7328"}
+  is_usual: false
+  land_archetypes: [drought_prone_paddy]
+  provinces_studied: [VN-NA]
+  site: "Lưu Sơn, Đô Lương"
+  trial_period: "2020-06 to 2021-06"
+  seasons:
+    - {crop_key: cc2_spring_chili, crop_id: chili, variety: {vi: "F1", en: "F1"}, season: spring,
+       sow_from: "01-17", sow_to: "01-17", harvest_from: "06-25", harvest_to: "06-25"}
+    - {crop_key: cc2_summer_autumn_soybean, crop_id: soybean, variety: {vi: "ĐT51", en: "ĐT51"}, season: summer_autumn,
+       sow_from: "06-10", sow_to: "06-10", harvest_from: "09-09", harvest_to: "09-12"}
+    - {crop_key: cc2_autumn_winter_maize_biomass, crop_id: maize_biomass, variety: {vi: "NK7328", en: "NK7328"},
+       season: autumn_winter, sow_from: "09-10", sow_to: "09-10", harvest_from: "11-26", harvest_to: "11-26"}
+  reported_economics:
+    source_id: R-P02
+    definition: *p02_definition
+    unit: *p02_unit
+    profit_per_crop: {cc2_spring_chili: "21,100", cc2_summer_autumn_soybean: "16,700",
+                      cc2_autumn_winter_maize_biomass: "15,865"}
+    cost_per_crop: {cc2_spring_chili: "113,100", cc2_summer_autumn_soybean: "26,500",
+                    cc2_autumn_winter_maize_biomass: "27,400"}
+    price_year: "2020-21"
+    flags: {}
+  risks:
+    - *p02_cost
+    - *p03_market
+    - &fodder_contracts
+      text:
+        vi: "Ông Hoàng Nghĩa Hiếu, Phó Chủ tịch UBND tỉnh Nghệ An (VietNamNet, 31/08/2020): \"Chúng tôi chủ trương những
+          vùng trồng ngô sinh khối làm thức ăn xanh cho bò phải có hợp đồng thu mua với các đơn vị bao tiêu sản phẩm.\""
+        en: "Hoàng Nghĩa Hiếu, vice chair of the Nghệ An People's Committee (VietNamNet, 31/08/2020; our translation): \"Our
+          policy is that areas growing biomass maize as green fodder for cattle must have purchase contracts with the
+          units that guarantee to buy the product.\""
+      source_ids: [R-C13]
+    - *law_6_1
+    - *law_6_4
+    - *law_7_1
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: *p02_why_gaps
+  study_type: *p02_study
+  limitations: *p02_limitations
+  source_ids: [R-P02]
+- id: cc3
+  name: {vi: "Ngô thương phẩm VN5885 - Vừng đen - Bí đỏ F1 Flato 757", en: "Grain maize VN5885 - black sesame - pumpkin F1 Flato 757"}
+  is_usual: false
+  land_archetypes: [drought_prone_paddy]
+  provinces_studied: [VN-NA]
+  site: "Lưu Sơn, Đô Lương"
+  trial_period: "2020-06 to 2021-06"
+  seasons:
+    - {crop_key: cc3_spring_maize_grain, crop_id: maize_grain, variety: {vi: "VN5885", en: "VN5885"}, season: spring,
+       sow_from: "01-17", sow_to: "01-17", harvest_from: "05-04", harvest_to: "05-04"}
+    - {crop_key: cc3_summer_autumn_black_sesame, crop_id: black_sesame, variety: null, season: summer_autumn,
+       sow_from: "06-10", sow_to: "06-10", harvest_from: "09-04", harvest_to: "09-04"}
+    - {crop_key: cc3_autumn_winter_pumpkin, crop_id: pumpkin,
+       variety: {vi: "F1 Flato 757 - Én vàng", en: "F1 Flato 757 - Én vàng"}, season: autumn_winter,
+       sow_from: "09-05", sow_to: "09-05", harvest_from: "11-21", harvest_to: "11-21"}
+  reported_economics:
+    source_id: R-P02
+    definition: *p02_definition
+    unit: *p02_unit
+    profit_per_crop: {cc3_spring_maize_grain: "12,420", cc3_summer_autumn_black_sesame: "12,500",
+                      cc3_autumn_winter_pumpkin: "30,440"}
+    cost_per_crop: {cc3_spring_maize_grain: "29,100", cc3_summer_autumn_black_sesame: "23,500",
+                    cc3_autumn_winter_pumpkin: "48,200"}
+    price_year: "2020-21"
+    flags: {}
+  risks:
+    - *p03_market
+    - *law_6_1
+    - *law_6_4
+    - *law_7_1
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: *p02_why_gaps
+  study_type: *p02_study
+  limitations: *p02_limitations
+  source_ids: [R-P02]
+- id: cc4
+  name: {vi: "Ngô sinh khối NK7328 - Ngô sinh khối NK7328 - Khoai lang KL20-209",
+         en: "Biomass maize NK7328 - biomass maize NK7328 - sweet potato KL20-209"}
+  is_usual: false
+  land_archetypes: [drought_prone_paddy]
+  provinces_studied: [VN-NA]
+  site: "Lưu Sơn, Đô Lương"
+  trial_period: "2020-06 to 2021-06"
+  seasons:
+    - {crop_key: cc4_spring_maize_biomass, crop_id: maize_biomass, variety: {vi: "NK7328", en: "NK7328"}, season: spring,
+       sow_from: "01-17", sow_to: "01-17", harvest_from: "04-05", harvest_to: "04-05"}
+    - {crop_key: cc4_summer_autumn_maize_biomass, crop_id: maize_biomass, variety: {vi: "NK7328", en: "NK7328"},
+       season: summer_autumn, sow_from: "06-10", sow_to: "06-10", harvest_from: "08-20", harvest_to: "08-20"}
+    - {crop_key: cc4_autumn_winter_sweet_potato, crop_id: sweet_potato, variety: {vi: "KL20-209", en: "KL20-209"},
+       season: autumn_winter, sow_from: "09-05", sow_to: "09-05", harvest_from: "12-02", harvest_to: "12-02"}
+  reported_economics:
+    source_id: R-P02
+    definition: *p02_definition
+    unit: *p02_unit
+    profit_per_crop: {cc4_spring_maize_biomass: "18,925", cc4_summer_autumn_maize_biomass: "19,450",
+                      cc4_autumn_winter_sweet_potato: "20,390"}
+    cost_per_crop: {cc4_spring_maize_biomass: "27,400", cc4_summer_autumn_maize_biomass: "27,300",
+                    cc4_autumn_winter_sweet_potato: "63,200"}
+    price_year: "2020-21"
+    flags: {}
+  risks:
+    - *fodder_contracts
+    - *law_6_1
+    - *law_6_4
+    - *law_7_1
+  why:
+    why:
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
+    evidence: *p02_why_evidence
+    benefits:
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
+    gaps: *p02_why_gaps
+  study_type: *p02_study
+  limitations: *p02_limitations
+  source_ids: [R-P02]

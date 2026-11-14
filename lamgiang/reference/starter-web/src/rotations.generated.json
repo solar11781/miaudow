@@ -1,0 +1,153 @@
+[
+  {
+    "id": "r1",
+    "name": "Lúa · Đậu đen · Khoai lang",
+    "seasons": [
+      "Lúa",
+      "Đậu đen",
+      "Khoai lang"
+    ],
+    "months": [
+      [
+        1,
+        5
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        9,
+        12
+      ]
+    ],
+    "kind": "Cơ cấu tham khảo",
+    "status": "illustrative_unverified",
+    "risk_lines": []
+  },
+  {
+    "id": "r2",
+    "name": "Lúa xuân · Lúa hè thu",
+    "seasons": [
+      "Lúa xuân",
+      "Lúa hè thu"
+    ],
+    "months": [
+      [
+        1,
+        5
+      ],
+      [
+        6,
+        9
+      ]
+    ],
+    "kind": "Cơ cấu tham khảo",
+    "status": "illustrative_unverified",
+    "risk_lines": []
+  },
+  {
+    "id": "r3",
+    "name": "Lạc · Đậu xanh · Ngô",
+    "seasons": [
+      "Lạc",
+      "Đậu xanh",
+      "Ngô"
+    ],
+    "months": [
+      [
+        2,
+        5
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        9,
+        12
+      ]
+    ],
+    "kind": "Cơ cấu tham khảo",
+    "status": "illustrative_unverified",
+    "risk_lines": []
+  },
+  {
+    "id": "r4",
+    "name": "Ớt · Đậu tương · Ngô sinh khối",
+    "seasons": [
+      "Ớt",
+      "Đậu tương",
+      "Ngô sinh khối"
+    ],
+    "months": [
+      [
+        2,
+        5
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        10,
+        12
+      ]
+    ],
+    "kind": "Cơ cấu tham khảo",
+    "status": "illustrative_unverified",
+    "risk_lines": []
+  },
+  {
+    "id": "r5",
+    "name": "Ngô · Vừng đen · Bí đỏ",
+    "seasons": [
+      "Ngô",
+      "Vừng đen",
+      "Bí đỏ"
+    ],
+    "months": [
+      [
+        2,
+        5
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        9,
+        12
+      ]
+    ],
+    "kind": "Cơ cấu tham khảo",
+    "status": "illustrative_unverified",
+    "risk_lines": []
+  },
+  {
+    "id": "r6",
+    "name": "Ngô sinh khối · Ngô sinh khối · Khoai lang",
+    "seasons": [
+      "Ngô sinh khối",
+      "Ngô sinh khối",
+      "Khoai lang"
+    ],
+    "months": [
+      [
+        2,
+        4
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        8,
+        11
+      ]
+    ],
+    "kind": "Cơ cấu tham khảo",
+    "status": "illustrative_unverified",
+    "risk_lines": []
+  }
+]

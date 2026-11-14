@@ -1,0 +1,2109 @@
+{
+ "generated_at": "2026-11-14T10:31:30Z",
+ "service": "NASA Global Imagery Browse Services (GIBS) WMTS",
+ "capabilities": {
+  "epsg4326": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/1.0.0/WMTSCapabilities.xml",
+  "epsg3857": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/1.0.0/WMTSCapabilities.xml"
+ },
+ "use": {
+  "vi": "Chỉ để hiển thị quả địa cầu 3D. Màu ô ảnh không phải số đo; không đọc giá trị từ màu.",
+  "en": "Visualisation for the 3D globe only. Tile colours are not measurements; never read values from them."
+ },
+ "validation_status": "ILLUSTRATIVE",
+ "acknowledgement": "We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS).",
+ "acknowledgement_source": "https://nasa-gibs.github.io/gibs-api-docs/ (Data Use Guidance and Acknowledgements), read 2026-11-14",
+ "data_use_policy": {
+  "url": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance",
+  "statement": "NASA promotes full and open sharing of data (GIBS docs, linking to the Earthdata data use guidance).",
+  "fetch_status": "HTTP 403 to automated requests on 2026-11-14; not re-read here"
+ },
+ "url_pattern": "https://gibs.earthdata.nasa.gov/wmts/{epsg}/best/{Layer}/default/{Time}/{TileMatrixSet}/{z}/{y}/{x}.{ext}  ({Time} segment omitted for layers without a time dimension; Time = YYYY-MM-DD or the 'default' value)",
+ "probe_point": {
+  "lat": 18.89638889,
+  "lon": 105.2802778,
+  "label": "Lưu Sơn study point (Wikidata Q10788283)"
+ },
+ "layers": [
+  {
+   "identifier": "BlueMarble_ShadedRelief_Bathymetry",
+   "role": "base map (static)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "500m",
+     "tile_matrix_sets_all": [
+      "500m"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 7,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_ShadedRelief_Bathymetry/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_ShadedRelief_Bathymetry/default/500m/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_ShadedRelief_Bathymetry/default/500m/5/7/31.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 60424,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": null
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level8",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level8"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 8,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/5/14/25.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 13477,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": null
+     },
+     "verified": true
+    }
+   },
+   "title": "Blue Marble Shaded Relief and Bathymetry (MODIS)"
+  },
+  {
+   "identifier": "BlueMarble_NextGeneration",
+   "role": "base map (static, monthly-composite true colour)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "500m",
+     "tile_matrix_sets_all": [
+      "500m"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 7,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_NextGeneration/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_NextGeneration/default/500m/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/BlueMarble_NextGeneration/default/500m/5/7/31.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 48897,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": null
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level8",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level8"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 8,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/5/14/25.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 11880,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": null
+     },
+     "verified": true
+    }
+   },
+   "title": "Blue Marble (MODIS)"
+  },
+  {
+   "identifier": "VIIRS_SNPP_CorrectedReflectance_TrueColor",
+   "role": "daily true colour",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "250m",
+     "tile_matrix_sets_all": [
+      "250m"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 8,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-02",
+      "first": "2015-11-24",
+      "last": "2026-11-02",
+      "n_periods": 8,
+      "periods": [
+       {
+        "start": "2015-11-24",
+        "end": "2022-07-27",
+        "period": "P1D"
+       },
+       {
+        "start": "2022-08-10",
+        "end": "2024-05-31",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-06-04",
+        "end": "2024-07-11",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-16",
+        "end": "2024-07-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-29",
+        "end": "2024-11-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-11-06",
+        "end": "2026-04-28",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-04-30",
+        "end": "2026-07-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-07-16",
+        "end": "2026-11-02",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/{Time}/250m/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/2026-11-02/250m/5/7/31.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 6606,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-02"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level9",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level9"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 9,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-02",
+      "first": "2015-11-24",
+      "last": "2026-11-02",
+      "n_periods": 8,
+      "periods": [
+       {
+        "start": "2015-11-24",
+        "end": "2022-07-27",
+        "period": "P1D"
+       },
+       {
+        "start": "2022-08-10",
+        "end": "2024-05-31",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-06-04",
+        "end": "2024-07-11",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-16",
+        "end": "2024-07-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-29",
+        "end": "2024-11-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-11-06",
+        "end": "2026-04-28",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-04-30",
+        "end": "2026-07-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-07-16",
+        "end": "2026-11-02",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/{Time}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/2026-11-02/GoogleMapsCompatible_Level9/5/14/25.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 6584,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-02"
+     },
+     "verified": true
+    }
+   },
+   "title": "Corrected Reflectance (True Color, VIIRS, Suomi NPP)"
+  },
+  {
+   "identifier": "MODIS_Terra_CorrectedReflectance_TrueColor",
+   "role": "daily true colour",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "250m",
+     "tile_matrix_sets_all": [
+      "250m"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 8,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-14",
+      "first": "2000-02-24",
+      "last": "2026-11-14",
+      "n_periods": 9,
+      "periods": [
+       {
+        "start": "2000-02-24",
+        "end": "2000-04-25",
+        "period": "P1D"
+       },
+       {
+        "start": "2000-04-28",
+        "end": "2000-08-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2000-08-18",
+        "end": "2001-06-15",
+        "period": "P1D"
+       },
+       {
+        "start": "2001-07-03",
+        "end": "2002-03-19",
+        "period": "P1D"
+       },
+       {
+        "start": "2002-03-28",
+        "end": "2003-12-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2003-12-24",
+        "end": "2008-12-20",
+        "period": "P1D"
+       },
+       {
+        "start": "2008-12-23",
+        "end": "2016-02-18",
+        "period": "P1D"
+       },
+       {
+        "start": "2016-02-27",
+        "end": "2022-10-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2022-10-23",
+        "end": "2026-11-14",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{Time}/250m/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-11-14/250m/5/7/31.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 89567,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-14"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level9",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level9"
+     ],
+     "formats": [
+      "image/jpeg"
+     ],
+     "format": "image/jpeg",
+     "max_zoom": 9,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-14",
+      "first": "2000-02-24",
+      "last": "2026-11-14",
+      "n_periods": 11,
+      "periods": [
+       {
+        "start": "2000-02-24",
+        "end": "2000-04-25",
+        "period": "P1D"
+       },
+       {
+        "start": "2000-04-28",
+        "end": "2000-08-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2000-08-18",
+        "end": "2001-06-15",
+        "period": "P1D"
+       },
+       {
+        "start": "2001-07-03",
+        "end": "2002-03-19",
+        "period": "P1D"
+       },
+       {
+        "start": "2002-03-28",
+        "end": "2003-12-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2003-12-24",
+        "end": "2008-12-20",
+        "period": "P1D"
+       },
+       {
+        "start": "2008-12-23",
+        "end": "2016-02-18",
+        "period": "P1D"
+       },
+       {
+        "start": "2016-02-27",
+        "end": "2022-10-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2022-10-23",
+        "end": "2025-08-08",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-08-10",
+        "end": "2025-11-08",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-11-10",
+        "end": "2026-11-14",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{Time}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-11-14/GoogleMapsCompatible_Level9/5/14/25.jpeg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "bytes": 21297,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-14"
+     },
+     "verified": true
+    }
+   },
+   "title": "Corrected Reflectance (True Color, MODIS, Terra)"
+  },
+  {
+   "identifier": "VIIRS_Black_Marble",
+   "role": "night lights (annual)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "500m",
+     "tile_matrix_sets_all": [
+      "500m"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 7,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2016-01-01",
+      "first": "2012-01-01",
+      "last": "2016-01-01",
+      "n_periods": 2,
+      "periods": [
+       {
+        "start": "2012-01-01",
+        "end": "2012-01-01",
+        "period": "P1Y"
+       },
+       {
+        "start": "2016-01-01",
+        "end": "2016-01-01",
+        "period": "P1Y"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_Black_Marble/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_Black_Marble/default/{Time}/500m/{z}/{y}/{x}.png",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_Black_Marble/default/2016-01-01/500m/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 305524,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2016-01-01"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level8",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level8"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 8,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2016-01-01",
+      "first": "2012-01-01",
+      "last": "2016-01-01",
+      "n_periods": 2,
+      "periods": [
+       {
+        "start": "2012-01-01",
+        "end": "2012-01-01",
+        "period": "P1Y"
+       },
+       {
+        "start": "2016-01-01",
+        "end": "2016-01-01",
+        "period": "P1Y"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/{Time}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 74215,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2016-01-01"
+     },
+     "verified": true
+    }
+   },
+   "title": "Black Marble (VIIRS, Suomi NPP)"
+  },
+  {
+   "identifier": "VIIRS_SNPP_DayNightBand_At_Sensor_Radiance",
+   "role": "night lights (daily)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "500m",
+     "tile_matrix_sets_all": [
+      "500m"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 7,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-02",
+      "first": "2020-11-18",
+      "last": "2026-11-02",
+      "n_periods": 12,
+      "periods": [
+       {
+        "start": "2020-11-18",
+        "end": "2021-08-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2021-08-05",
+        "end": "2022-07-26",
+        "period": "P1D"
+       },
+       {
+        "start": "2022-08-24",
+        "end": "2023-02-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2023-02-26",
+        "end": "2024-05-28",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-06-05",
+        "end": "2024-07-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-18",
+        "end": "2024-07-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-30",
+        "end": "2024-09-25",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-09-30",
+        "end": "2024-11-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-11-09",
+        "end": "2026-04-28",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-04-30",
+        "end": "2026-07-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-07-16",
+        "end": "2026-08-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-08-06",
+        "end": "2026-11-02",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_SNPP_DayNightBand_At_Sensor_Radiance/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_SNPP_DayNightBand_At_Sensor_Radiance/default/{Time}/500m/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/VIIRS_DayNightBand_At_Sensor_Radiance_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/VIIRS_DayNightBand_At_Sensor_Radiance_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/VIIRS_SNPP_DayNightBand_At_Sensor_Radiance/default/2026-11-02/500m/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 1382,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-02"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level8",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level8"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 8,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-02",
+      "first": "2020-11-18",
+      "last": "2026-11-02",
+      "n_periods": 12,
+      "periods": [
+       {
+        "start": "2020-11-18",
+        "end": "2021-08-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2021-08-05",
+        "end": "2022-07-26",
+        "period": "P1D"
+       },
+       {
+        "start": "2022-08-24",
+        "end": "2023-02-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2023-02-26",
+        "end": "2024-05-28",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-06-05",
+        "end": "2024-07-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-18",
+        "end": "2024-07-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-07-30",
+        "end": "2024-09-25",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-09-30",
+        "end": "2024-11-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2024-11-09",
+        "end": "2026-04-28",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-04-30",
+        "end": "2026-07-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-07-16",
+        "end": "2026-08-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-08-06",
+        "end": "2026-11-02",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_DayNightBand_At_Sensor_Radiance/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_DayNightBand_At_Sensor_Radiance/default/{Time}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/VIIRS_DayNightBand_At_Sensor_Radiance_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/VIIRS_DayNightBand_At_Sensor_Radiance_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_DayNightBand_At_Sensor_Radiance/default/2026-11-02/GoogleMapsCompatible_Level8/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 925,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-02"
+     },
+     "verified": true
+    }
+   },
+   "title": "At Sensor Radiance (Day/Night Band, VIIRS, Suomi NPP)"
+  },
+  {
+   "identifier": "MODIS_Terra_NDVI_8Day",
+   "role": "vegetation (8-day, rolling recent window)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "250m",
+     "tile_matrix_sets_all": [
+      "250m"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 8,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-13",
+      "first": "2025-02-12",
+      "last": "2026-11-13",
+      "n_periods": 2,
+      "periods": [
+       {
+        "start": "2025-02-12",
+        "end": "2026-02-08",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-02-10",
+        "end": "2026-11-13",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_NDVI_8Day/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_NDVI_8Day/default/{Time}/250m/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_NDVI_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_NDVI_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_NDVI_8Day/default/2026-11-13/250m/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 199812,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-13"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level9",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level9"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 9,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-13",
+      "first": "2025-02-12",
+      "last": "2026-11-13",
+      "n_periods": 5,
+      "periods": [
+       {
+        "start": "2025-02-12",
+        "end": "2025-08-21",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-08-23",
+        "end": "2025-09-04",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-09-06",
+        "end": "2025-09-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-09-18",
+        "end": "2026-02-08",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-02-10",
+        "end": "2026-11-13",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_NDVI_8Day/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_NDVI_8Day/default/{Time}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_NDVI_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_NDVI_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_NDVI_8Day/default/2026-11-13/GoogleMapsCompatible_Level9/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 34774,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-13"
+     },
+     "verified": true
+    }
+   },
+   "title": "Vegetation Index (rolling 8-Day, MODIS, Terra)"
+  },
+  {
+   "identifier": "MODIS_Terra_L3_NDVI_16Day",
+   "role": "vegetation (16-day, 2000-present)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "250m",
+     "tile_matrix_sets_all": [
+      "250m"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 8,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-10-16",
+      "first": "2000-03-05",
+      "last": "2026-10-16",
+      "n_periods": 27,
+      "periods": [
+       {
+        "start": "2000-03-05",
+        "end": "2000-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2001-01-01",
+        "end": "2001-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2002-01-01",
+        "end": "2002-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2003-01-01",
+        "end": "2003-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2004-01-01",
+        "end": "2004-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2005-01-01",
+        "end": "2005-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2006-01-01",
+        "end": "2006-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2007-01-01",
+        "end": "2007-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2008-01-01",
+        "end": "2008-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2009-01-01",
+        "end": "2009-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2010-01-01",
+        "end": "2010-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2011-01-01",
+        "end": "2011-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2012-01-01",
+        "end": "2012-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2013-01-01",
+        "end": "2013-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2014-01-01",
+        "end": "2014-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2015-01-01",
+        "end": "2015-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2016-01-01",
+        "end": "2016-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2017-01-01",
+        "end": "2017-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2018-01-01",
+        "end": "2018-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2019-01-01",
+        "end": "2019-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2020-01-01",
+        "end": "2020-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2021-01-01",
+        "end": "2021-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2022-01-01",
+        "end": "2022-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2023-01-01",
+        "end": "2023-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2024-01-01",
+        "end": "2024-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2025-01-01",
+        "end": "2025-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2026-01-01",
+        "end": "2026-10-16",
+        "period": "P16D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_L3_NDVI_16Day/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_L3_NDVI_16Day/default/{Time}/250m/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_L3_NDVI_16Day/default/2026-10-16/250m/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 180167,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-10-16"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level9",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level9"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 9,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-10-16",
+      "first": "2000-03-05",
+      "last": "2026-10-16",
+      "n_periods": 27,
+      "periods": [
+       {
+        "start": "2000-03-05",
+        "end": "2000-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2001-01-01",
+        "end": "2001-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2002-01-01",
+        "end": "2002-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2003-01-01",
+        "end": "2003-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2004-01-01",
+        "end": "2004-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2005-01-01",
+        "end": "2005-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2006-01-01",
+        "end": "2006-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2007-01-01",
+        "end": "2007-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2008-01-01",
+        "end": "2008-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2009-01-01",
+        "end": "2009-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2010-01-01",
+        "end": "2010-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2011-01-01",
+        "end": "2011-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2012-01-01",
+        "end": "2012-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2013-01-01",
+        "end": "2013-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2014-01-01",
+        "end": "2014-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2015-01-01",
+        "end": "2015-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2016-01-01",
+        "end": "2016-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2017-01-01",
+        "end": "2017-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2018-01-01",
+        "end": "2018-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2019-01-01",
+        "end": "2019-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2020-01-01",
+        "end": "2020-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2021-01-01",
+        "end": "2021-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2022-01-01",
+        "end": "2022-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2023-01-01",
+        "end": "2023-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2024-01-01",
+        "end": "2024-12-18",
+        "period": "P16D"
+       },
+       {
+        "start": "2025-01-01",
+        "end": "2025-12-19",
+        "period": "P16D"
+       },
+       {
+        "start": "2026-01-01",
+        "end": "2026-10-16",
+        "period": "P16D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_L3_NDVI_16Day/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_L3_NDVI_16Day/default/{Time}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_L3_NDVI_16Day/default/2026-10-16/GoogleMapsCompatible_Level9/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 30400,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-10-16"
+     },
+     "verified": true
+    }
+   },
+   "title": "Vegetation Index (16-Day, MODIS, Terra)"
+  },
+  {
+   "identifier": "MODIS_Terra_L3_NDVI_Monthly",
+   "role": "vegetation (monthly)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "1km",
+     "tile_matrix_sets_all": [
+      "1km"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 6,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-10-01",
+      "first": "2000-03-01",
+      "last": "2026-10-01",
+      "n_periods": 2,
+      "periods": [
+       {
+        "start": "2000-03-01",
+        "end": "2025-03-01",
+        "period": "P1M"
+       },
+       {
+        "start": "2025-05-01",
+        "end": "2026-10-01",
+        "period": "P1M"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_L3_NDVI_Monthly/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_L3_NDVI_Monthly/default/{Time}/1km/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Terra_L3_NDVI_Monthly/default/2026-10-01/1km/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 157849,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-10-01"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level7",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level7"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 7,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-10-01",
+      "first": "2000-03-01",
+      "last": "2026-10-01",
+      "n_periods": 2,
+      "periods": [
+       {
+        "start": "2000-03-01",
+        "end": "2025-03-01",
+        "period": "P1M"
+       },
+       {
+        "start": "2025-05-01",
+        "end": "2026-10-01",
+        "period": "P1M"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_L3_NDVI_Monthly/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_L3_NDVI_Monthly/default/{Time}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/MODIS_L3_NDVI_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_L3_NDVI_Monthly/default/2026-10-01/GoogleMapsCompatible_Level7/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 29713,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-10-01"
+     },
+     "verified": true
+    }
+   },
+   "title": "Vegetation Index (L3, Monthly, MODIS, Terra)"
+  },
+  {
+   "identifier": "IMERG_Precipitation_Rate",
+   "role": "precipitation rate (daily)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "2km",
+     "tile_matrix_sets_all": [
+      "2km"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 5,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-12",
+      "first": "2000-06-01",
+      "last": "2026-11-12",
+      "n_periods": 5,
+      "periods": [
+       {
+        "start": "2000-06-01",
+        "end": "2025-10-22",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-10-30",
+        "end": "2026-02-02",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-02-04",
+        "end": "2026-02-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-02-12",
+        "end": "2026-05-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-27",
+        "end": "2026-11-12",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/IMERG_Precipitation_Rate/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/IMERG_Precipitation_Rate/default/{Time}/2km/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/GPM_Precipitation_Rate_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/GPM_Precipitation_Rate_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/IMERG_Precipitation_Rate/default/2026-11-12/2km/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 11033,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-12"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level6",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level6"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 6,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-12",
+      "first": "2000-06-01",
+      "last": "2026-11-12",
+      "n_periods": 6,
+      "periods": [
+       {
+        "start": "2000-06-01",
+        "end": "2025-10-22",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-10-30",
+        "end": "2026-01-07",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-01-09",
+        "end": "2026-02-02",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-02-04",
+        "end": "2026-02-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-02-12",
+        "end": "2026-05-24",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-27",
+        "end": "2026-11-12",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/IMERG_Precipitation_Rate/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/IMERG_Precipitation_Rate/default/{Time}/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/GPM_Precipitation_Rate_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/GPM_Precipitation_Rate_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/IMERG_Precipitation_Rate/default/2026-11-12/GoogleMapsCompatible_Level6/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 12589,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-12"
+     },
+     "verified": true
+    }
+   },
+   "title": "Precipitation Rate (IMERG)"
+  },
+  {
+   "identifier": "SMAP_L4_Analyzed_Surface_Soil_Moisture",
+   "role": "surface soil moisture (SMAP L4, daily)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "2km",
+     "tile_matrix_sets_all": [
+      "2km"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 5,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-10",
+      "first": "2015-03-31",
+      "last": "2026-11-10",
+      "n_periods": 8,
+      "periods": [
+       {
+        "start": "2015-03-31",
+        "end": "2025-10-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-12-12",
+        "end": "2026-03-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-03-18",
+        "end": "2026-05-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-12",
+        "end": "2026-05-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-19",
+        "end": "2026-08-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-08-16",
+        "end": "2026-08-30",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-09-01",
+        "end": "2026-11-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-11-08",
+        "end": "2026-11-10",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/SMAP_L4_Analyzed_Surface_Soil_Moisture/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/SMAP_L4_Analyzed_Surface_Soil_Moisture/default/{Time}/2km/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/SMAP_L4_Analyzed_Surface_Soil_Moisture/default/2026-11-10/2km/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 18258,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-10"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level6",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level6"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 6,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-10",
+      "first": "2015-03-31",
+      "last": "2026-11-10",
+      "n_periods": 9,
+      "periods": [
+       {
+        "start": "2015-03-31",
+        "end": "2025-07-27",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-07-29",
+        "end": "2025-10-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-12-12",
+        "end": "2026-03-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-03-18",
+        "end": "2026-05-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-12",
+        "end": "2026-05-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-19",
+        "end": "2026-08-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-08-16",
+        "end": "2026-08-30",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-09-01",
+        "end": "2026-11-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-11-08",
+        "end": "2026-11-10",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Surface_Soil_Moisture/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Surface_Soil_Moisture/default/{Time}/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Surface_Soil_Moisture/default/2026-11-10/GoogleMapsCompatible_Level6/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 18657,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-10"
+     },
+     "verified": true
+    }
+   },
+   "title": "Surface Soil Moisture (L4, 12z Instantaneous, Model Value-Added, SMAP)"
+  },
+  {
+   "identifier": "SMAP_L4_Analyzed_Root_Zone_Soil_Moisture",
+   "role": "root-zone soil moisture (SMAP L4, daily)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "2km",
+     "tile_matrix_sets_all": [
+      "2km"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 5,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": {
+      "default": "2026-11-10",
+      "first": "2015-03-31",
+      "last": "2026-11-10",
+      "n_periods": 8,
+      "periods": [
+       {
+        "start": "2015-03-31",
+        "end": "2025-10-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-12-12",
+        "end": "2026-03-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-03-18",
+        "end": "2026-05-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-12",
+        "end": "2026-05-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-19",
+        "end": "2026-08-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-08-16",
+        "end": "2026-08-30",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-09-01",
+        "end": "2026-11-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-11-08",
+        "end": "2026-11-10",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/{Time}/2km/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/2026-11-10/2km/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 17936,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": "2026-11-10"
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level6",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level6"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 6,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": {
+      "default": "2026-11-10",
+      "first": "2015-03-31",
+      "last": "2026-11-10",
+      "n_periods": 16,
+      "periods": [
+       {
+        "start": "2015-03-31",
+        "end": "2025-07-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-07-08",
+        "end": "2025-07-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-07-11",
+        "end": "2025-07-20",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-07-22",
+        "end": "2025-08-03",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-08-05",
+        "end": "2025-08-22",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-08-24",
+        "end": "2025-08-25",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-08-27",
+        "end": "2025-09-04",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-09-06",
+        "end": "2025-09-30",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-10-02",
+        "end": "2025-10-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2025-12-12",
+        "end": "2026-03-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-03-18",
+        "end": "2026-05-10",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-12",
+        "end": "2026-05-16",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-05-19",
+        "end": "2026-08-09",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-08-16",
+        "end": "2026-08-30",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-09-01",
+        "end": "2026-11-06",
+        "period": "P1D"
+       },
+       {
+        "start": "2026-11-08",
+        "end": "2026-11-10",
+        "period": "P1D"
+       }
+      ],
+      "periods_truncated": false
+     },
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/{Time}/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png",
+     "legend_urls": [
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_H.svg",
+      "https://gibs.earthdata.nasa.gov/legends/SMAP_Analyzed_Soil_Moisture_V.svg"
+     ],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/SMAP_L4_Analyzed_Root_Zone_Soil_Moisture/default/2026-11-10/GoogleMapsCompatible_Level6/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 18209,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": "2026-11-10"
+     },
+     "verified": true
+    }
+   },
+   "title": "Root Zone Soil Moisture (L4, 12z Instantaneous, Model Value-Added, SMAP)"
+  },
+  {
+   "identifier": "Coastlines_15m",
+   "role": "reference overlay",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "15.625m",
+     "tile_matrix_sets_all": [
+      "15.625m"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 12,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/Coastlines_15m/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/Coastlines_15m/default/15.625m/{z}/{y}/{x}.png",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/Coastlines_15m/default/15.625m/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 7858,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": null
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level13",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level13"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 13,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Coastlines_15m/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Coastlines_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Coastlines_15m/default/GoogleMapsCompatible_Level13/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 11250,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": null
+     },
+     "verified": true
+    }
+   },
+   "title": "Coastlines (15m, OSM)"
+  },
+  {
+   "identifier": "Reference_Labels_15m",
+   "role": "reference overlay (place labels)",
+   "projections": {
+    "epsg4326": {
+     "present": true,
+     "tile_matrix_set": "15.625m",
+     "tile_matrix_sets_all": [
+      "15.625m"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 12,
+     "tile_size": [
+      512,
+      512
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/Reference_Labels_15m/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/Reference_Labels_15m/default/15.625m/{z}/{y}/{x}.png",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/Reference_Labels_15m/default/15.625m/5/7/31.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 1108,
+      "z": 5,
+      "x": 31,
+      "y": 7,
+      "time": null
+     },
+     "verified": true
+    },
+    "epsg3857": {
+     "present": true,
+     "tile_matrix_set": "GoogleMapsCompatible_Level13",
+     "tile_matrix_sets_all": [
+      "GoogleMapsCompatible_Level13"
+     ],
+     "formats": [
+      "image/png"
+     ],
+     "format": "image/png",
+     "max_zoom": 13,
+     "tile_size": [
+      256,
+      256
+     ],
+     "time": null,
+     "rest_template_capabilities": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Reference_Labels_15m/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png",
+     "rest_template": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Reference_Labels_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png",
+     "legend_urls": [],
+     "probe_tile": {
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Reference_Labels_15m/default/GoogleMapsCompatible_Level13/5/14/25.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 206,
+      "z": 5,
+      "x": 25,
+      "y": 14,
+      "time": null
+     },
+     "verified": true
+    }
+   },
+   "title": "Reference Labels (15m, OSM)"
+  }
+ ],
+ "missing": [],
+ "notes": [
+  "The 'best' endpoint serves the best available version of each layer.",
+  "EPSG:3857 layers use GoogleMapsCompatible_LevelN tile matrix sets (256 px, XYZ order z/y/x).",
+  "EPSG:4326 layers use 512 px tiles on a geographic grid; max zoom differs from the 3857 set.",
+  "Daily layers can have gaps; use a date inside the listed periods or the default."
+ ],
+ "script": "pipeline/check_gibs.py"
+}

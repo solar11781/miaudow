@@ -1,0 +1,215 @@
+{
+ "date": "2026-11-14",
+ "eval_file": "api/eval/retrieval_eval.jsonl",
+ "n_passages": 530,
+ "n_questions": {
+  "dev": 37,
+  "test": 36
+ },
+ "method": "BM25 (two indexes, diacritics kept or stripped) + character 3-gram TF-IDF cosine, reciprocal rank fusion k=60; abstain below MIN_BM25 or MIN_COVERAGE on the top fused hit; scope guard for forecasts, current prices and plan ranking. No neural embeddings.",
+ "thresholds_in_use": {
+  "min_bm25": 0.0,
+  "min_coverage": 0.45,
+  "min_idf_coverage": 0.3
+ },
+ "rrf_weights_in_use": [
+  1.0,
+  0.1,
+  1.0
+ ],
+ "dev": {
+  "ranking": {
+   "n_answerable": 28,
+   "recall@1": 0.643,
+   "recall@3": 0.857,
+   "recall@5": 0.893,
+   "mrr": 0.749,
+   "misses_at_3": [
+    {
+     "id": "a03",
+     "question": "Cơ cấu CC2 gồm những cây gì?",
+     "gold": [
+      "plan-cc2-overview"
+     ],
+     "top3": [
+      "risk-r-g06-dieu-6-khoan-1-diem-c-va-d",
+      "risk-r-g06-dieu-6-khoan-4",
+      "risk-r-g27-dieu-7-khoan-1"
+     ]
+    },
+    {
+     "id": "a25",
+     "question": "nang nong cap do 1 la bao nhieu do",
+     "gold": [
+      "rule-heat",
+      "doc-qd18-2021-216"
+     ],
+     "top3": [
+      "doc-qd18-2021-123",
+      "doc-qd18-2021-124",
+      "doc-qd18-2021-120"
+     ]
+    },
+    {
+     "id": "a27",
+     "question": "Hạn hán theo Điều 48 tính thế nào?",
+     "gold": [
+      "rule-drought-rain-consecutive",
+      "rule-drought-rain-any2",
+      "doc-qd18-2021-220"
+     ],
+     "top3": [
+      "doc-qd18-2021-125",
+      "doc-qd18-2021-129",
+      "doc-qd18-2021-121"
+     ]
+    },
+    {
+     "id": "a51",
+     "question": "What does the 1991-2020 climate normal mean?",
+     "gold": [
+      "src-r-a15"
+     ],
+     "top3": [
+      "climate-1991",
+      "climate-2020",
+      "dataset-chirps-v3-monthly"
+     ]
+    }
+   ]
+  },
+  "abstention": {
+   "abstained_unanswerable": 9,
+   "abstained_answerable": 1,
+   "answered_unanswerable": 0,
+   "answered_answerable": 27,
+   "abstention_precision": 0.9,
+   "abstention_recall": 1.0,
+   "errors": [
+    {
+     "id": "a15",
+     "question": "Đậu tương và vừng có dễ bán ở địa phương không?",
+     "abstained": true,
+     "reason": "below_threshold"
+    }
+   ]
+  }
+ },
+ "test": {
+  "ranking": {
+   "n_answerable": 27,
+   "recall@1": 0.481,
+   "recall@3": 0.815,
+   "recall@5": 0.889,
+   "mrr": 0.651,
+   "misses_at_3": [
+    {
+     "id": "a04",
+     "question": "co cau cc4 trong cay gi",
+     "gold": [
+      "plan-cc4-overview"
+     ],
+     "top3": [
+      "risk-r-g06-dieu-6-khoan-1-diem-c-va-d",
+      "risk-r-g06-dieu-6-khoan-4",
+      "risk-r-g27-dieu-7-khoan-1"
+     ]
+    },
+    {
+     "id": "a08",
+     "question": "bi do co cau cc3 lai bao nhieu",
+     "gold": [
+      "plan-cc3-money"
+     ],
+     "top3": [
+      "plan-cc3-year-total",
+      "plan-cc3-overview",
+      "limits-r-p02"
+     ]
+    },
+    {
+     "id": "a16",
+     "question": "dau tuong vung co de ban khong",
+     "gold": [
+      "risk-r-p03-phan-ket-qua-vu-he-thu-2020"
+     ],
+     "top3": [
+      "doc-nd112-2024-50",
+      "doc-nd112-2024-63",
+      "doc-qd18-2021-130"
+     ]
+    },
+    {
+     "id": "a26",
+     "question": "Rét hại cấp độ 1 khi nhiệt độ trung bình ngày bao nhiêu?",
+     "gold": [
+      "rule-cold",
+      "doc-qd18-2021-235"
+     ],
+     "top3": [
+      "doc-qd18-2021-35",
+      "doc-qd18-2021-236",
+      "doc-qd18-2021-237"
+     ]
+    },
+    {
+     "id": "a28",
+     "question": "What is the heat rule in Decision 18/2021?",
+     "gold": [
+      "rule-heat",
+      "doc-qd18-2021-216"
+     ],
+     "top3": [
+      "hazards-2021",
+      "hazards-1998",
+      "hazards-2001"
+     ]
+    }
+   ]
+  },
+  "abstention_with_guard": {
+   "abstained_unanswerable": 8,
+   "abstained_answerable": 0,
+   "answered_unanswerable": 1,
+   "answered_answerable": 27,
+   "abstention_precision": 1.0,
+   "abstention_recall": 0.889,
+   "errors": [
+    {
+     "id": "u16",
+     "question": "lam sao de hoc tieng anh nhanh",
+     "abstained": false,
+     "top1": "doc-qd18-2021-264"
+    }
+   ]
+  },
+  "abstention_without_guard": {
+   "abstained_unanswerable": 6,
+   "abstained_answerable": 0,
+   "answered_unanswerable": 3,
+   "answered_answerable": 27,
+   "abstention_precision": 1.0,
+   "abstention_recall": 0.667,
+   "errors": [
+    {
+     "id": "u02",
+     "question": "Tuần tới có mưa không?",
+     "abstained": false,
+     "top1": "doc-nd112-2024-50"
+    },
+    {
+     "id": "u04",
+     "question": "Giá lúa ở Thanh Hóa hôm nay bao nhiêu?",
+     "abstained": false,
+     "top1": "src-r-m03"
+    },
+    {
+     "id": "u16",
+     "question": "lam sao de hoc tieng anh nhanh",
+     "abstained": false,
+     "top1": "doc-qd18-2021-264"
+    }
+   ]
+  }
+ }
+}

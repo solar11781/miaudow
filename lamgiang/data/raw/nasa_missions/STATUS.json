@@ -1,0 +1,362 @@
+{
+ "generated_at": "2026-11-14T10:32:21Z",
+ "bbox": [
+  105.219672,
+  18.775349,
+  105.485593,
+  19.056227
+ ],
+ "bbox_source": "data/canonical/geo_do_luong.json (Đô Lương ADM2)",
+ "temporal": [
+  "2020-01-01T00:00:00Z",
+  "2021-12-31T23:59:59Z"
+ ],
+ "discovery": "https://cmr.earthdata.nasa.gov/search (public, no login)",
+ "credentials_present": false,
+ "license": "NASA Earth science data: no restrictions on reuse, sale or redistribution (NASA Earth Science Data and Information Policy); cite each product DOI",
+ "products": [
+  {
+   "short_name": "HLSS30",
+   "version": "2.0",
+   "daac": "LP DAAC (LPCLOUD)",
+   "native_resolution": "30 m, 2-3 day revisit with HLSL30",
+   "use_in_miaudow": "field-scale vegetation time series (NDVI/EVI) harmonised with Landsat",
+   "collection_concept_id": "C2021957295-LPCLOUD",
+   "title": "HLS Sentinel-2 Multi-spectral Instrument Surface Reflectance Daily Global 30m v2.0",
+   "temporal_coverage": "2015-11-28T00:00:00.000Z .. ongoing",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2021957295-LPCLOUD.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=HLSS30&version=2.0&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 200,
+   "sample_granules": [
+    "HLS.S30.T48QWG.2020004T033129",
+    "HLS.S30.T48QWF.2020004T033129",
+    "HLS.S30.T48QWG.2020009T033121"
+   ],
+   "cmr_stac": {
+    "url": "https://cmr.earthdata.nasa.gov/stac/LPCLOUD/search?collections=HLSS30_2.0&bbox=105.219672%2C18.775349%2C105.485593%2C19.056227&datetime=2020-01-01T00%3A00%3A00Z%2F2021-12-31T23%3A59%3A59Z&limit=1",
+    "status": 200,
+    "numberMatched": 200
+   },
+   "unauthenticated_probe": {
+    "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/HLSS30.020/HLS.S30.T48QWG.2020004T033129.v2.0/HLS.S30.T48QWG.2020004T033129.v2.0.B06.tif",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "HLSL30",
+   "version": "2.0",
+   "daac": "LP DAAC (LPCLOUD)",
+   "native_resolution": "30 m",
+   "use_in_miaudow": "field-scale vegetation time series (Landsat 8/9 part)",
+   "collection_concept_id": "C2021957657-LPCLOUD",
+   "title": "HLS Landsat Operational Land Imager Surface Reflectance and TOA Brightness Daily Global 30m v2.0",
+   "temporal_coverage": "2013-04-11T00:00:00.000Z .. ongoing",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2021957657-LPCLOUD.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=HLSL30&version=2.0&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 119,
+   "sample_granules": [
+    "HLS.L30.T48QWG.2020004T032401",
+    "HLS.L30.T48QWF.2020004T032425",
+    "HLS.L30.T48QWF.2020020T032422"
+   ],
+   "cmr_stac": {
+    "url": "https://cmr.earthdata.nasa.gov/stac/LPCLOUD/search?collections=HLSL30_2.0&bbox=105.219672%2C18.775349%2C105.485593%2C19.056227&datetime=2020-01-01T00%3A00%3A00Z%2F2021-12-31T23%3A59%3A59Z&limit=1",
+    "status": 200,
+    "numberMatched": 119
+   },
+   "unauthenticated_probe": {
+    "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/HLSL30.020/HLS.L30.T48QWG.2020004T032401.v2.0/HLS.L30.T48QWG.2020004T032401.v2.0.B01.tif",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "SPL3SMP_E",
+   "version": "006",
+   "daac": "NSIDC DAAC (NSIDC_CPRD)",
+   "native_resolution": "9 km EASE-Grid 2.0, daily (AM/PM passes)",
+   "use_in_miaudow": "surface soil moisture (top ~5 cm), coarse context only",
+   "collection_concept_id": "C2938664763-NSIDC_CPRD",
+   "title": "SMAP Enhanced L3 Radiometer Global and Polar Grid Daily 9 km EASE-Grid Soil Moisture V006",
+   "temporal_coverage": "2015-03-31T00:00:00.000Z .. ongoing",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2938664763-NSIDC_CPRD.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=SPL3SMP_E&version=006&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 731,
+   "sample_granules": [
+    "SMAP_L3_SM_P_E_20200101_R19240_001.h5",
+    "SMAP_L3_SM_P_E_20200102_R19240_001.h5",
+    "SMAP_L3_SM_P_E_20200103_R19240_001.h5"
+   ],
+   "unauthenticated_probe": {
+    "url": "https://data.nsidc.earthdatacloud.nasa.gov/nsidc-cumulus-prod-protected/SMAP/SPL3SMP_E/006/2020/01/01/SMAP_L3_SM_P_E_20200101_R19240_001.h5",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "SPL4SMGP",
+   "version": "008",
+   "daac": "NSIDC DAAC (NSIDC_CPRD)",
+   "native_resolution": "9 km EASE-Grid 2.0, 3-hourly (model + assimilation)",
+   "use_in_miaudow": "surface and root-zone soil moisture (modelled), coarse context only",
+   "collection_concept_id": "C3480440870-NSIDC_CPRD",
+   "title": "SMAP L4 Global 3-hourly 9 km EASE-Grid Surface and Root Zone Soil Moisture Geophysical Data V008",
+   "temporal_coverage": "2015-03-31T00:00:00.000Z .. ongoing",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C3480440870-NSIDC_CPRD.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=SPL4SMGP&version=008&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 5849,
+   "sample_granules": [
+    "SMAP_L4_SM_gph_20191231T223000_Vv8010_001.h5",
+    "SMAP_L4_SM_gph_20200101T013000_Vv8010_001.h5",
+    "SMAP_L4_SM_gph_20200101T043000_Vv8010_001.h5"
+   ],
+   "unauthenticated_probe": {
+    "url": "https://data.nsidc.earthdatacloud.nasa.gov/nsidc-cumulus-prod-protected/SMAP/SPL4SMGP/008/2019/12/31/SMAP_L4_SM_gph_20191231T223000_Vv8010_001.h5",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "GPM_3IMERGDF",
+   "version": "07",
+   "daac": "GES DISC",
+   "native_resolution": "0.1° x 0.1°, daily",
+   "use_in_miaudow": "daily precipitation (satellite + gauge)",
+   "collection_concept_id": "C2723754864-GES_DISC",
+   "title": "GPM IMERG Final Precipitation L3 1 day 0.1 degree x 0.1 degree V07 (GPM_3IMERGDF)",
+   "temporal_coverage": "1998-01-01T00:00:00.000Z .. 2025-09-30T23:59:59.999Z",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2723754864-GES_DISC.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=GPM_3IMERGDF&version=07&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 731,
+   "sample_granules": [
+    "3B-DAY.MS.MRG.3IMERG.20200101-S000000-E235959.V07B.nc4",
+    "3B-DAY.MS.MRG.3IMERG.20200102-S000000-E235959.V07B.nc4",
+    "3B-DAY.MS.MRG.3IMERG.20200103-S000000-E235959.V07B.nc4"
+   ],
+   "unauthenticated_probe": {
+    "url": "https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGDF.07/2020/01/3B-DAY.MS.MRG.3IMERG.20200101-S000000-E235959.V07B.nc4",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'; authorise 'NASA GESDISC DATA ARCHIVE' in the Earthdata profile",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "GPM_3IMERGM",
+   "version": "07",
+   "daac": "GES DISC",
+   "native_resolution": "0.1° x 0.1°, monthly",
+   "use_in_miaudow": "monthly precipitation (satellite + gauge)",
+   "collection_concept_id": "C2723754851-GES_DISC",
+   "title": "GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07 (GPM_3IMERGM)",
+   "temporal_coverage": "1998-01-01T00:00:00.000Z .. 2025-09-30T23:59:59.999Z",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2723754851-GES_DISC.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=GPM_3IMERGM&version=07&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 24,
+   "sample_granules": [
+    "3B-MO.MS.MRG.3IMERG.20200101-S000000-E235959.01.V07B.HDF5",
+    "3B-MO.MS.MRG.3IMERG.20200201-S000000-E235959.02.V07B.HDF5",
+    "3B-MO.MS.MRG.3IMERG.20200301-S000000-E235959.03.V07B.HDF5"
+   ],
+   "unauthenticated_probe": {
+    "url": "https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/2020/3B-MO.MS.MRG.3IMERG.20200101-S000000-E235959.01.V07B.HDF5",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'; authorise 'NASA GESDISC DATA ARCHIVE' in the Earthdata profile",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "ECO_L2T_LSTE",
+   "version": "002",
+   "daac": "LP DAAC (LPCLOUD)",
+   "native_resolution": "70 m, irregular ISS overpass times",
+   "use_in_miaudow": "land surface temperature (crop heat stress context)",
+   "collection_concept_id": "C2076090826-LPCLOUD",
+   "title": "ECOSTRESS Tiled Land Surface Temperature and Emissivity Instantaneous L2 Global 70 m V002",
+   "temporal_coverage": "2018-07-09T00:00:00.000Z .. ongoing",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2076090826-LPCLOUD.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=ECO_L2T_LSTE&version=002&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 190,
+   "sample_granules": [
+    "ECOv002_L2T_LSTE_08464_006_48QWF_20200102T172857_0712_01",
+    "ECOv002_L2T_LSTE_08464_006_48QWG_20200102T172857_0712_01",
+    "ECOv002_L2T_LSTE_08485_008_48QWG_20200104T023144_0712_01"
+   ],
+   "unauthenticated_probe": {
+    "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/ECO_L2T_LSTE.002/ECOv002_L2T_LSTE_08464_006_48QWF_20200102T172857_0712_01/ECOv002_L2T_LSTE_08464_006_48QWF_20200102T172857_0712_01_water.tif",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  },
+  {
+   "short_name": "ECO_L3T_JET",
+   "version": "002",
+   "daac": "LP DAAC (LPCLOUD)",
+   "native_resolution": "70 m, irregular ISS overpass times",
+   "use_in_miaudow": "evapotranspiration (crop water use context)",
+   "collection_concept_id": "C2076106409-LPCLOUD",
+   "title": "ECOSTRESS Tiled Evapotranspiration Instantaneous and Daytime L3 Global 70 m V002",
+   "temporal_coverage": "2018-07-10T00:00:00.000Z .. ongoing",
+   "cloud_hosted": true,
+   "cmr_collection_url": "https://cmr.earthdata.nasa.gov/search/concepts/C2076106409-LPCLOUD.html",
+   "granule_search": {
+    "url": "https://cmr.earthdata.nasa.gov/search/granules.json?short_name=ECO_L3T_JET&version=002&bounding_box=105.219672%2C18.775349%2C105.485593%2C19.056227&temporal=2020-01-01T00%3A00%3A00Z%2C2021-12-31T23%3A59%3A59Z&page_size=10&sort_key=start_date",
+    "status": 200,
+    "bbox": [
+     105.219672,
+     18.775349,
+     105.485593,
+     19.056227
+    ],
+    "temporal": [
+     "2020-01-01T00:00:00Z",
+     "2021-12-31T23:59:59Z"
+    ]
+   },
+   "granules_found_2020_2021": 86,
+   "sample_granules": [
+    "ECOv002_L3T_JET_08485_008_48QWG_20200104T023144_0712_01",
+    "ECOv002_L3T_JET_08769_006_48QWG_20200122T093343_0712_01",
+    "ECOv002_L3T_JET_08769_006_48QWF_20200122T093343_0712_01"
+   ],
+   "unauthenticated_probe": {
+    "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/ECO_L3T_JET.002/ECOv002_L3T_JET_08485_008_48QWG_20200104T023144_0712_01/ECOv002_L3T_JET_08485_008_48QWG_20200104T023144_0712_01_STICinst.tif",
+    "status": 302,
+    "redirect_host": "urs.earthdata.nasa.gov",
+    "urs_status_without_credentials": 401
+   },
+   "access_status": "BLOCKED_EARTHDATA_LOGIN",
+   "prerequisite": "Free Earthdata Login account (https://urs.earthdata.nasa.gov/users/new); set EARTHDATA_USERNAME and EARTHDATA_PASSWORD, or a .netrc/_netrc entry 'machine urs.earthdata.nasa.gov login <user> password <pass>'",
+   "adapter": "pipeline/fetch_nasa_missions.py: fetch(product_short_name, bbox, start, end, limit) -> list[Path]; download_granule(url, dest, auth) -> Path"
+  }
+ ],
+ "note": {
+  "vi": "Chỉ tìm kiếm danh mục, chưa tải dữ liệu: cần tài khoản Earthdata miễn phí.",
+  "en": "Catalogue discovery only, no data downloaded: a free Earthdata account is required."
+ },
+ "script": "pipeline/fetch_nasa_missions.py"
+}

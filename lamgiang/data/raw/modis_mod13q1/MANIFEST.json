@@ -1,0 +1,88 @@
+{
+  "dataset_id": "modis_mod13q1_ndvi_study_site",
+  "title": {
+    "vi": "Chỉ số NDVI MODIS MOD13Q1 (250 m, 16 ngày) quanh điểm xã Lưu Sơn, Đô Lương",
+    "en": "MODIS MOD13Q1 NDVI (250 m, 16-day) around the Lưu Sơn, Đô Lương study point"
+  },
+  "provider": "NASA LP DAAC (MOD13Q1 v061), subset served by ORNL DAAC MODIS/VIIRS Land Product Subsets",
+  "source_id": "MOD13Q1.061",
+  "source_url": "https://modis.ornl.gov/rst/api/v1/MOD13Q1/subset",
+  "license": "No restrictions on reuse, sale or redistribution under the NASA Earth Science Data and Information Policy (https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance); cite the product DOI and the ORNL DAAC subset tool",
+  "source_revision": "MOD13Q1 collection 6.1 (v061); processing dates reported by the API: 2020286133559 to 2025006015707",
+  "retrieved_at": "2026-11-14T09:43:44Z",
+  "temporal_coverage": "2015-01-01 to 2024-12-18 (16-day composites, requested years 2015-2024)",
+  "spatial_resolution": "250 m (231.66 m sinusoidal grid cell)",
+  "geometry_crs": "MODIS Sinusoidal (SR-ORG:6974); point given in EPSG:4326",
+  "variables": [
+    "ndvi (unitless, raw x 0.0001)",
+    "reliability (0 good, 1 marginal, 2 snow/ice, 3 cloudy, -1 fill)",
+    "valid"
+  ],
+  "missing_policy": "NDVI is reported only for pixels with reliability 0 or 1 and raw NDVI within -2000..10000 (fill -3000 excluded). Every other pixel is kept with an empty ndvi and valid=false; nothing is filled or interpolated. Per-date statistics use valid pixels only and are empty when a date has no valid pixel.",
+  "allowed_use": {
+    "vi": "Mô tả độ xanh của mặt đất theo thời gian quanh điểm nghiên cứu; không phải chẩn đoán sức khỏe cây trồng.",
+    "en": "Describe the greenness of the land surface over time around the study point; not a crop-health diagnosis."
+  },
+  "version_sha256": "8626b5c78a929ca1000bd10f835fdded81bdb362881463d63f1038d988da8701",
+  "summary_sha256": "6ffc5cdabb05c73eaab6341ea37e19fb0b9a920137bda3bc526ec08be3686d17",
+  "ingestion_status": "INGESTED",
+  "is_field_measurement": false,
+  "files": {
+    "pixels": "data/raw/modis_mod13q1/ndvi_study_site.csv",
+    "summary": "data/raw/modis_mod13q1/ndvi_study_site_summary.csv",
+    "script": "pipeline/fetch_modis_ndvi.py"
+  },
+  "request": {
+    "product": "MOD13Q1",
+    "bands": [
+      "250m_16_days_NDVI",
+      "250m_16_days_pixel_reliability"
+    ],
+    "latitude": 18.89638889,
+    "longitude": 105.2802778,
+    "kmAboveBelow": 1,
+    "kmLeftRight": 1,
+    "site_source_url": "https://www.wikidata.org/wiki/Q10788283"
+  },
+  "grid": {
+    "nrows": 9,
+    "ncols": 9,
+    "cellsize": 231.656358264,
+    "xllcorner": "11074795.55",
+    "yllcorner": "2100196.54"
+  },
+  "row_count_pixels": 18630,
+  "row_count_dates": 230,
+  "pixels_invalid": 5205,
+  "reliability_counts": {
+    "0": 10899,
+    "1": 2526,
+    "3": 5166,
+    "-1": 39
+  },
+  "dates_without_valid_pixel": 35,
+  "dates_not_retrieved": [],
+  "failed_requests": [],
+  "citations": [
+    "Didan, K. (2021). MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061. NASA EOSDIS Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MODIS/MOD13Q1.061",
+    "ORNL DAAC. 2018. MODIS and VIIRS Land Products Global Subsetting and Visualization Tool. ORNL DAAC, Oak Ridge, Tennessee, USA. https://doi.org/10.3334/ORNLDAAC/1379"
+  ],
+  "notes": [
+    {
+      "vi": "NDVI cho biết độ xanh của mặt đất; nó không phải là chẩn đoán sức khỏe cây trồng, sâu bệnh hay độ ẩm đất. Một điểm ảnh 250 m gộp nhiều thửa ruộng (và cả nhà, đường, cây lâu năm).",
+      "en": "NDVI shows the greenness of the land surface; it is not a diagnosis of crop health, disease or soil moisture. A 250 m pixel mixes several fields (and houses, roads, perennial trees)."
+    },
+    {
+      "vi": "Vị trí là điểm đánh dấu xã Lưu Sơn trên Wikidata (Q10788283), không phải ruộng thử nghiệm; ô ±1 km quanh điểm đó.",
+      "en": "The location is the Lưu Sơn commune marker on Wikidata (Q10788283), not the trial field; the block is +/-1 km around it."
+    },
+    {
+      "vi": "Ngày trong tệp là ngày bắt đầu của kỳ tổng hợp 16 ngày; ngày quan sát thật của mỗi điểm ảnh có thể là bất kỳ ngày nào trong kỳ.",
+      "en": "The date is the first day of the 16-day composite period; each pixel's actual observation day can be any day in that period."
+    },
+    {
+      "vi": "Độ tin cậy 0 = tốt, 1 = tạm dùng, 2 = tuyết/băng, 3 = mây; chỉ 0 và 1 được coi là hợp lệ. Mùa mưa nhiều mây nên nhiều kỳ có ít điểm ảnh hợp lệ.",
+      "en": "Reliability 0 = good, 1 = marginal, 2 = snow/ice, 3 = cloudy; only 0 and 1 count as valid. The cloudy wet season leaves many periods with few valid pixels."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+# Crops and their cited water facts (05-DATA-CONTRACTS §6; 03-ML-SPEC §4b; D-64, D-68). One entry per crop id.
+# Names: the crop names of P-02 Tables 1, 5 and 9 (R-P02) in Vietnamese, the crop ids of §6 in English; drafts for the
+# copy review. Water facts are cited one by one (D-61) and only where the source lists the crop: `to_apply` = TCVN
+# 8641:2011 (R-W15, "nước phải tưới vào ruộng", m3/ha), `crop_uses` = FAO Training Manual 3 Table 14 (R-M02, "nước cây
+# dùng", mm, "rough estimate"). The two sources measure different things and are never compared. Values as written in
+# 05-DATA-CONTRACTS §6. A crop listed in neither source has no fact here; the engine adds `not_listed` (§6).
+# is_legume: the crop's family on its USDA GRIN-Global taxon page (R-B01); Fabaceae is the legume family.
+- crop_id: rice
+  name: {vi: "Lúa", en: "Rice"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 26077 Oryza sativa
+  water_facts:
+    - &tcvn_rice
+      source_id: R-W15
+      measure: to_apply
+      value_text: "6,500-7,500"
+      unit: {vi: "m3/ha", en: "m3/ha"}
+      scope: {vi: "Trung bộ, lúa cấy, vụ xuân", en: "Trung bộ, transplanted rice, spring season"}
+      note:
+        vi: "Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ."
+        en: "Maintenance irrigation only, land preparation not included. The standard does not say whether Nghệ An
+          belongs to Trung bộ or Bắc bộ."
+    - <<: *tcvn_rice
+      value_text: "6,000-7,000"
+      scope: {vi: "Trung bộ, lúa cấy, vụ hè thu", en: "Trung bộ, transplanted rice, summer-autumn season"}
+    - <<: *tcvn_rice
+      value_text: "6,500-7,500"
+      scope: {vi: "Trung bộ, lúa gieo thẳng, vụ xuân", en: "Trung bộ, direct-seeded rice, spring season"}
+    - <<: *tcvn_rice
+      value_text: "5,700-7,000"
+      scope: {vi: "Trung bộ, lúa gieo thẳng, vụ hè thu", en: "Trung bộ, direct-seeded rice, summer-autumn season"}
+    - <<: *tcvn_rice
+      value_text: "6,000-7,000"
+      scope: {vi: "Bắc bộ, vụ xuân", en: "Bắc bộ, spring season"}
+    - <<: *tcvn_rice
+      value_text: "4,500-5,500"
+      scope: {vi: "Bắc bộ, vụ mùa", en: "Bắc bộ, mùa season"}
+    - &fao
+      source_id: R-M02
+      measure: crop_uses
+      value_text: "450-700"
+      unit: {vi: "mm", en: "mm"}
+      scope: {vi: "Lúa nước, cả thời gian sinh trưởng", en: "Rice (paddy), total growing period"}
+      note: {vi: "Chỉ là ước tính sơ bộ", en: "Only a rough estimate"}
+- crop_id: peanut
+  name: {vi: "Lạc", en: "Peanut"}
+  is_legume: true
+  legume_source_ids: [R-B01, R-E06]  # GRIN 3785 Arachis hypogaea; R-E06: groundnut as a nitrogen-fixing legume
+  water_facts:
+    - &tcvn
+      source_id: R-W15
+      measure: to_apply
+      value_text: "2,000"
+      unit: {vi: "m3/ha", en: "m3/ha"}
+      scope: {vi: "Trung bình", en: "On average"}
+      note: null
+    - <<: *fao
+      value_text: "500-700"
+      scope: {vi: "Cả thời gian sinh trưởng", en: "Total growing period"}
+- crop_id: mung_bean
+  name: {vi: "Đậu xanh", en: "Mung bean"}
+  is_legume: true
+  legume_source_ids: [R-B01]  # GRIN 41629 Vigna radiata
+  water_facts: []
+- crop_id: maize_grain
+  name: {vi: "Ngô thương phẩm", en: "Grain maize"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 42207 Zea mays
+  water_facts:
+    - <<: *tcvn
+      value_text: "2,000-2,500"
+      scope: {vi: "Tổng mức tưới cả vụ", en: "Total irrigation for the whole season"}
+    - <<: *fao
+      value_text: "500-800"
+      scope: {vi: "Cả thời gian sinh trưởng", en: "Total growing period"}
+- crop_id: maize_biomass
+  name: {vi: "Ngô sinh khối", en: "Biomass maize"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 42207 Zea mays
+  water_facts: []  # no source applies the grain maize values to maize harvested green (D-68)
+- crop_id: soybean
+  name: {vi: "Đậu tương", en: "Soybean"}
+  is_legume: true
+  legume_source_ids: [R-B01]  # GRIN 17711 Glycine max
+  water_facts:
+    - <<: *tcvn
+      value_text: "2,000"
+    - <<: *fao
+      value_text: "450-700"
+      scope: {vi: "Cả thời gian sinh trưởng", en: "Total growing period"}
+- crop_id: sweet_potato
+  name: {vi: "Khoai lang", en: "Sweet potato"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 20142 Ipomoea batatas
+  water_facts:
+    - <<: *tcvn
+      value_text: "1,200-1,400"
+      scope: {vi: "Tổng mức tưới toàn vụ", en: "Total irrigation for the whole season"}
+- crop_id: black_bean
+  name: {vi: "Đậu đen xanh lòng", en: "Black bean"}
+  is_legume: true
+  legume_source_ids: [R-B01, R-B02]  # GRIN 467840 Vigna unguiculata Biflora Group; R-B02: đậu đen = Vigna cylindrica Skeels, Fabaceae
+  water_facts: []
+- crop_id: black_sesame
+  name: {vi: "Vừng đen", en: "Black sesame"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 33749 Sesamum indicum
+  water_facts: []
+- crop_id: chili
+  name: {vi: "Ớt chỉ thiên", en: "Chili"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 8904 Capsicum annuum, 8913 Capsicum frutescens
+  water_facts: []
+- crop_id: pumpkin
+  name: {vi: "Bí đỏ", en: "Pumpkin"}
+  is_legume: false
+  legume_source_ids: [R-B01]  # GRIN 12601 Cucurbita moschata
+  water_facts: []
