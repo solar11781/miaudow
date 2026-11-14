@@ -986,7 +986,6 @@ export const en: Messages = {
     notice: (madeAt: string | null) => `Offline copy of real server answers${madeAt ? `, made at ${madeAt}` : ''}.`,
     missing: 'The offline copy has no result for exactly these choices. Saved choices:',
     landDry: 'Water-short field (any of the first three)',
-    noServer: 'The offline copy cannot ask the server, so the copilot and the server status are not available here.',
     saved: (land: string, years: string, priority: string) => `${land} · years ${years} · priority ${priority}`,
   },
   errors: {

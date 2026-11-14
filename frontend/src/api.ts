@@ -2,8 +2,6 @@
 // the farmer's answers go to our own server only, in the POST body (D-92). Every response is checked before a screen
 // uses it ("Validation in src/api.ts"); a response that fails the check is an error, never shown.
 import type { Bilingual } from './domain/provenance';
-import { en } from './i18n/en';
-import { vi } from './i18n/vi';
 import {
   COVERAGE_AXES,
   EXPLAIN_KEYS,
@@ -363,7 +361,7 @@ export function validateMethod(raw: unknown): MethodResponse {
 // No app-level timeout on our calls (UI-UX-SPEC section 11): only member B's health and copilot calls pass one.
 async function call(path: string, init: RequestInit & { timeoutMs?: number } = {}): Promise<unknown> {
   // the offline copy has no server: no live answer may appear under its notice
-  if (SNAPSHOT_MODE) throw new SnapshotOfflineError();
+  if (SNAPSHOT_MODE) throw new Error('the offline copy has no server');
   const ctrl = new AbortController();
   const timer = init.timeoutMs === undefined ? undefined : window.setTimeout(() => ctrl.abort(), init.timeoutMs);
   const outer = init.signal;
@@ -407,14 +405,6 @@ export interface SnapshotIndex {
 export class SnapshotMissError extends Error {
   constructor(readonly saved: SnapshotEntry[]) {
     super('these answers are not in the offline copy');
-  }
-}
-
-/** Any server call (health, copilot) in the offline copy: it rejects at once, with a message for the screen. */
-export class SnapshotOfflineError extends Error {
-  readonly text: Bilingual = { vi: vi.snapshot.noServer, en: en.snapshot.noServer };
-  constructor() {
-    super(en.snapshot.noServer);
   }
 }
 
