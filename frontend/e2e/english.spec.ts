@@ -81,3 +81,17 @@ test('T32 the Vietnamese paths stay as they are in Vietnamese', async ({ page })
     .click();
   await expect(page).toHaveURL(/#\/nong-dan\/uu-tien\?/);
 });
+
+test('T31 in English, share copies the English link of that exact card', async ({
+  page,
+  context,
+  browserName,
+}, info) => {
+  test.skip(info.project.name !== 'desktop-1440' || browserName !== 'chromium', 'clipboard check on desktop only');
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto(`/#/farmer/plans${ANSWERS}`);
+  await page.locator('#the-cc3').getByRole('button', { name: 'Send this card' }).click();
+  await expect(page.locator('#the-cc3')).toContainText('Link to this card copied');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toContain('#/farmer/plans?ruong=canal_end&nam=2010%2C2020&uutien=income&the=cc3');
+});
