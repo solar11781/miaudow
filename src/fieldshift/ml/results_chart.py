@@ -80,7 +80,7 @@ def _label(skill: dict) -> str:
     return value if ci is None else f"{value} [{_fmt(ci[0])}, {_fmt(ci[1])}]"
 
 
-def _text(x: float, y: float, content: str, extra: str = "") -> str:
+def svg_text(x: float, y: float, content: str, extra: str = "") -> str:
     return f'<text x="{x:.1f}" y="{y:.1f}"{extra}>{escape(content)}</text>'
 
 
@@ -115,7 +115,7 @@ def _mark(key: tuple[str, str, str], skill: dict, column: int, y: float, scale: 
     parts.append(f'<circle cx="{cx:.1f}" cy="{y + 14:.1f}" r="4.5" fill="{MARK}"/>')
     left = COLUMN_X + column * COLUMN_W + LABEL_HALF_W
     label_x = min(max(cx, left), left + COLUMN_W - 2 * LABEL_HALF_W)
-    parts.append(_text(label_x, y + 34, _label(skill), f' font-size="12" text-anchor="middle"{HALO}'))
+    parts.append(svg_text(label_x, y + 34, _label(skill), f' font-size="12" text-anchor="middle"{HALO}'))
     parts.append("</g>")
     return "".join(parts)
 
@@ -123,11 +123,11 @@ def _mark(key: tuple[str, str, str], skill: dict, column: int, y: float, scale: 
 def _season(season: str, by_model: dict[str, dict], y: float, scale: tuple[float, float]) -> tuple[list[str], str]:
     """(svg elements, text alternative) of one season block starting at height y."""
     models = [m for m in MODEL_LABELS if m in by_model]
-    out = [_text(LABEL_X, y + 18, SEASON_LABELS[season], ' font-size="16" font-weight="bold"')]
+    out = [svg_text(LABEL_X, y + 18, SEASON_LABELS[season], ' font-size="16" font-weight="bold"')]
     bottom = y + 52 + len(models) * ROW_H
     for column, ref_label in enumerate(REFERENCE_LABELS.values()):
         centre = COLUMN_X + column * COLUMN_W + COLUMN_W / 2
-        out.append(_text(centre, y + 42, ref_label, ' text-anchor="middle" font-weight="bold"'))
+        out.append(svg_text(centre, y + 42, ref_label, ' text-anchor="middle" font-weight="bold"'))
         zero = _x(column, 0.0, scale)
         out.append(
             f'<line x1="{zero:.1f}" y1="{y + 50:.1f}" x2="{zero:.1f}" y2="{bottom:.1f}" stroke="{ZERO}"'
@@ -136,7 +136,7 @@ def _season(season: str, by_model: dict[str, dict], y: float, scale: tuple[float
     desc = [f"{SEASON_LABELS[season]}:"]
     for i, model_id in enumerate(models):
         row_y = y + 52 + i * ROW_H
-        out.append(_text(LABEL_X, row_y + 18, MODEL_LABELS[model_id]))
+        out.append(svg_text(LABEL_X, row_y + 18, MODEL_LABELS[model_id]))
         for column, ref in enumerate(REFERENCE_LABELS):
             skill = _drawn(by_model[model_id], ref)
             if skill:
@@ -157,18 +157,23 @@ def results_chart_svg(doc: dict) -> str:
         body += elements
         desc.append(text)
         y += 52 + len(rows[season]) * ROW_H + 16
-    body.append(_text(LABEL_X, y + 12, CAPTION, ' font-size="12"'))
-    height = y + 24
+    body.append(svg_text(LABEL_X, y + 12, CAPTION, ' font-size="12"'))
+    return svg_document("results-chart", TITLE, " ".join(desc), [LEGEND], body, y + 24)
+
+
+def svg_document(key: str, title: str, desc: str, legend: list[str], body: list[str], height: float) -> str:
+    """A standalone SVG image: role="img" named by its <title> and <desc>, white background, title and legend lines."""
+    lines = [svg_text(LABEL_X, 52 + 16 * i, line, ' font-size="12"') for i, line in enumerate(legend)]
     return "\n".join(
         [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" viewBox="0 0 {WIDTH} {height}"'
-            f' role="img" aria-labelledby="results-chart-title results-chart-desc" font-family="sans-serif"'
+            f' role="img" aria-labelledby="{key}-title {key}-desc" font-family="sans-serif"'
             f' font-size="14" fill="{TEXT}">',
-            f'<title id="results-chart-title">{escape(TITLE)}</title>',
-            f'<desc id="results-chart-desc">{escape(" ".join(desc))}</desc>',
+            f'<title id="{key}-title">{escape(title)}</title>',
+            f'<desc id="{key}-desc">{escape(desc)}</desc>',
             f'<rect width="{WIDTH}" height="{height}" fill="{BACKGROUND}"/>',
-            _text(LABEL_X, 28, TITLE, ' font-size="18" font-weight="bold"'),
-            _text(LABEL_X, 52, LEGEND, ' font-size="12"'),
+            svg_text(LABEL_X, 28, title, ' font-size="18" font-weight="bold"'),
+            *lines,
             *body,
             "</svg>",
             "",
