@@ -85,3 +85,38 @@ def test_the_interval_needs_g4():
     winter = _row(table, "winter", 2016)
     assert winter["anom_oos"] == pytest.approx(0.03)
     assert (winter["oos_low_80"], winter["oos_high_80"]) == (None, None)
+
+
+def test_no_prediction_outside_the_test_years_or_without_g3():
+    # Source: 05-DATA-CONTRACTS section 5: anom_oos "filled only for the test years 2016-2024" and only where the
+    # season's own test (G2 and G3) passed; a 2010 prediction in the input must never reach the artifact
+    history = pd.concat(
+        [_history(), pd.DataFrame({"province_nso": ["Nghe An"], "season": ["winter"], "year": [2011], "anom": [0.01]})]
+    )
+    pred = pd.concat(
+        [
+            _pred(),
+            pd.DataFrame(
+                {
+                    "province_nso": ["Nghe An"],
+                    "season": ["winter"],
+                    "year": [2011],
+                    "m1": [0.5],
+                    "lo80": [0.4],
+                    "hi80": [0.6],
+                }
+            ),
+        ]
+    )
+    table = risk_table(history, pred, _gates(), freeze_commit="f", data_versions={})
+    assert _row(table, "winter", 2011)["anom_oos"] is None
+    g3_fails = [g if (g["gate"], g["season"]) != ("G3", "winter") else {**g, "passed": False} for g in _gates()]
+    table = risk_table(history, pred, g3_fails, freeze_commit="f", data_versions={})
+    assert _row(table, "winter", 2016)["anom_oos"] is None
+
+
+def test_a_modeled_season_without_its_gate_rows_fails_loudly():
+    # Source: python rules (unknown data fails loudly): a modeled season needs its G2, G3 and G4 rows
+    gates = [g for g in _gates() if (g["gate"], g["season"]) != ("G3", "winter")]
+    with pytest.raises(ValueError, match=r"winter.*G3"):
+        risk_table(_history(), _pred(), gates, freeze_commit="f", data_versions={})
