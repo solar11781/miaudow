@@ -295,10 +295,11 @@ def _exposure(
 
 
 def _water(calendar: list[CropSpan], crops: dict[str, CropEntry]) -> list[WaterFact]:
-    """Every cited water fact of each crop's id; one `not_listed` fact where neither source lists it (§6)."""
+    """The cited water facts of each crop's id, season rows only for the crop's own season (UI-UX-SPEC §9, D-161); one
+    `not_listed` fact where no source lists the crop (05-DATA-CONTRACTS §6)."""
     water = []
     for span in calendar:
-        facts = crops[span.crop_id].water_facts
+        facts = [f for f in crops[span.crop_id].water_facts if f.season in (None, span.season)]
         if not facts:
             water.append(WaterFact(crop_key=span.crop_key, measure="not_listed", value=None, scope=None, note=None))
         for fact in facts:

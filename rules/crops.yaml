@@ -15,6 +15,7 @@
       measure: to_apply
       value_text: "6,500-7,500"
       unit: {vi: "m3/ha", en: "m3/ha"}
+      season: spring  # the row label "vụ xuân" (D-161)
       scope: {vi: "Trung bộ, lúa cấy, vụ xuân", en: "Trung bộ, transplanted rice, spring season"}
       note:
         vi: "Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ."
@@ -22,18 +23,21 @@
           belongs to Trung bộ or Bắc bộ."
     - <<: *tcvn_rice
       value_text: "6,000-7,000"
+      season: summer_autumn
       scope: {vi: "Trung bộ, lúa cấy, vụ hè thu", en: "Trung bộ, transplanted rice, summer-autumn season"}
     - <<: *tcvn_rice
       value_text: "6,500-7,500"
       scope: {vi: "Trung bộ, lúa gieo thẳng, vụ xuân", en: "Trung bộ, direct-seeded rice, spring season"}
     - <<: *tcvn_rice
       value_text: "5,700-7,000"
+      season: summer_autumn
       scope: {vi: "Trung bộ, lúa gieo thẳng, vụ hè thu", en: "Trung bộ, direct-seeded rice, summer-autumn season"}
     - <<: *tcvn_rice
       value_text: "6,000-7,000"
       scope: {vi: "Bắc bộ, vụ xuân", en: "Bắc bộ, spring season"}
     - <<: *tcvn_rice
       value_text: "4,500-5,500"
+      season: winter  # vụ mùa (glossary: winter season)
       scope: {vi: "Bắc bộ, vụ mùa", en: "Bắc bộ, mùa season"}
     - &fao
       source_id: R-M02

@@ -418,14 +418,12 @@ def test_water_facts_come_from_crops_yaml_per_crop(resp: dict) -> None:
             "Nghệ An belongs to Trung bộ or Bắc bộ.",
         },
     }
-    # every fact of the crop id (05-DATA-CONTRACTS §6; D-68: all region rows, the standard does not place Nghệ An)
+    # the TCVN 8641:2011 rows of the crop's own season, every region (UI-UX-SPEC §9, D-68, D-161: the standard does
+    # not place Nghệ An), then the FAO whole-season figure; rules/crops.yaml rice rows labelled "vụ xuân"
     assert [(w["measure"], w["value"]["value"]) for w in rice] == [
-        ("to_apply", "6,500-7,500"),
-        ("to_apply", "6,000-7,000"),
-        ("to_apply", "6,500-7,500"),
-        ("to_apply", "5,700-7,000"),
-        ("to_apply", "6,000-7,000"),
-        ("to_apply", "4,500-5,500"),
+        ("to_apply", "6,500-7,500"),  # Trung bộ, lúa cấy, vụ xuân
+        ("to_apply", "6,500-7,500"),  # Trung bộ, lúa gieo thẳng, vụ xuân
+        ("to_apply", "6,000-7,000"),  # Bắc bộ, vụ xuân
         ("crop_uses", "450-700"),
     ]
     assert rice[-1]["value"]["source_ids"] == ["R-M02"]
@@ -440,6 +438,17 @@ def test_water_facts_come_from_crops_yaml_per_crop(resp: dict) -> None:
     ]
     sweet_potato = [w for w in water if w["crop_key"] == "usual_autumn_winter_sweet_potato"]
     assert [(w["measure"], w["value"]["value"], w["note"]) for w in sweet_potato] == [("to_apply", "1,200-1,400", None)]
+
+
+def test_summer_autumn_rice_gets_only_its_season_rows(resp: dict) -> None:
+    # rules/crops.yaml rice rows labelled "vụ hè thu" (UI-UX-SPEC §9, D-161), then the FAO figure
+    water = plan(resp, "usual_p03")["water"]
+    rice = [w for w in water if w["crop_key"] == "usual_p03_summer_autumn_rice"]
+    assert [(w["value"]["value"], w["scope"]["vi"] if w["scope"] else None) for w in rice] == [
+        ("6,000-7,000", "Trung bộ, lúa cấy, vụ hè thu"),
+        ("5,700-7,000", "Trung bộ, lúa gieo thẳng, vụ hè thu"),
+        ("450-700", "Lúa nước, cả thời gian sinh trưởng"),
+    ]
 
 
 def test_every_crop_of_every_plan_has_water_facts(resp: dict) -> None:
