@@ -1,7 +1,7 @@
 // D-174: every page also has an English path that opens the same page in English; the Vietnamese paths stay the main
 // ones, and the answers after "?" in the fragment stay exactly as they are.
 import { describe, expect, it } from 'vitest';
-import { isEnglishPath, localTo, pathFor } from './paths';
+import { localTo, pathFor } from './paths';
 
 const MAP: [string, string][] = [
   ['/', '/home'],
@@ -27,8 +27,6 @@ describe('English paths', () => {
     // already in the asked language: unchanged
     expect(pathFor(en, 'en')).toBe(en);
     expect(pathFor(vi, 'vi')).toBe(vi);
-    expect(isEnglishPath(en)).toBe(true);
-    expect(isEnglishPath(vi)).toBe(false);
   });
 
   it('keeps the answers in the search part exactly', () => {

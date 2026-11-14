@@ -31,8 +31,6 @@ export function pathFor(path: string, lang: Lang): string {
     .join('/');
 }
 
-export const isEnglishPath = (path: string) => path === EN_HOME || (path.split('/')[1] ?? '') in VI_SEGMENT;
-
 /** A link target in `lang`; only the path changes, so the answers after "?" stay exactly as they are. */
 export function localTo(to: To, lang: Lang): To {
   if (typeof to !== 'string') return to.pathname === undefined ? to : { ...to, pathname: pathFor(to.pathname, lang) };
