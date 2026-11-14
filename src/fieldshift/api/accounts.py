@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import re
 import secrets
 import time
@@ -25,6 +26,7 @@ from google.oauth2 import id_token
 
 from fieldshift.engine.schemas import Contract, Land, Priority, Years
 
+LOG = logging.getLogger(__name__)
 SCHEMA = (
     "CREATE TABLE IF NOT EXISTS account ("
     " id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, google_sub text NOT NULL UNIQUE)",
@@ -201,6 +203,16 @@ class Accounts:
 
 
 def accounts_from(environ: Mapping[str, str]) -> Accounts | None:
-    """Sign-in on when both settings are set, otherwise off (None): the database is then never connected to."""
+    """Sign-in on when both settings are set and the database answers at start, otherwise off (None).
+
+    A database that is down never stops the start, because every farmer route must work without sign-in (UI-UX-SPEC
+    §12c). The log line names no address and carries no traceback, since the connection error text holds the host.
+    """
     client_id, database_url = environ.get("GOOGLE_CLIENT_ID"), environ.get("DATABASE_URL")
-    return Accounts(client_id, database_url) if client_id and database_url else None
+    if not (client_id and database_url):
+        return None
+    try:
+        return Accounts(client_id, database_url)
+    except psycopg.Error:
+        LOG.warning("sign-in is off: the database did not answer at start")
+        return None
