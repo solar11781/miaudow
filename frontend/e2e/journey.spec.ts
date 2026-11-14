@@ -10,7 +10,9 @@ async function copilotUp(page: Page): Promise<boolean> {
   return !!res && res.ok() && 'copilot' in ((await res.json()) as Record<string, unknown>);
 }
 
-test('a farmer completes the four steps by tapping only, and nothing is stored in the browser', async ({ page }) => {
+test('T4 T14 a farmer completes the four steps by tapping only, and nothing is stored in the browser', async ({
+  page,
+}) => {
   await page.goto('/#/nong-dan');
   await page.getByRole('link', { name: 'Bắt đầu', exact: false }).last().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Ruộng nhà mình thế nào?' })).toBeVisible();
@@ -45,12 +47,12 @@ test('a farmer completes the four steps by tapping only, and nothing is stored i
   await expect(page.getByRole('radio', { name: /Tiết kiệm nước/ })).toHaveAttribute('aria-checked', 'true');
 });
 
-test('links shared before the four water situations still open', async ({ page }) => {
+test('T31 links shared before the four water situations still open', async ({ page }) => {
   await page.goto('/#/nong-dan/phuong-an?ruong=dry&nam=2010&uutien=income');
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
 });
 
-test('the farmer route loads no WebGL and no 3D code', async ({ page }) => {
+test('T1 the farmer route loads no WebGL and no 3D code', async ({ page }) => {
   const scripts: string[] = [];
   page.on('request', (r) => {
     if (r.resourceType() === 'script') scripts.push(r.url());
@@ -61,7 +63,7 @@ test('the farmer route loads no WebGL and no 3D code', async ({ page }) => {
   expect(await page.locator('canvas').count()).toBe(0);
 });
 
-test('every sourced number opens its provenance sheet and Escape closes it', async ({ page }) => {
+test('T5 every sourced number opens its provenance sheet and Escape closes it', async ({ page }) => {
   await page.goto(PLANS_URL);
   const firstValue = page.locator('#the-cc1 [data-value]').first();
   await firstValue.click();
@@ -74,7 +76,7 @@ test('every sourced number opens its provenance sheet and Escape closes it', asy
   await expect(firstValue).toBeFocused();
 });
 
-test('share copies the link of that exact card', async ({ page, context, browserName }, info) => {
+test('T31 share copies the link of that exact card', async ({ page, context, browserName }, info) => {
   test.skip(info.project.name !== 'desktop-1440' || browserName !== 'chromium', 'clipboard check on desktop only');
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto(PLANS_URL);
@@ -87,7 +89,7 @@ test('share copies the link of that exact card', async ({ page, context, browser
   await expect(page.locator('#the-cc3')).toBeInViewport();
 });
 
-test('language switch changes the whole interface', async ({ page }) => {
+test('T33 language switch changes the whole interface', async ({ page }) => {
   await page.goto('/#/khoa-hoc');
   await expect(page.getByRole('heading', { level: 1, name: 'Nghệ An qua 30 mùa vụ' })).toBeVisible();
   const lang = page.getByRole('button', { name: 'Switch to English' });
@@ -100,7 +102,7 @@ test('language switch changes the whole interface', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
-test('one year flows from the science page to the copilot', async ({ page }) => {
+test('T31 one year flows from the science page to the copilot', async ({ page }) => {
   await page.goto('/#/khoa-hoc?nam=2020');
   await expect(page.getByRole('heading', { level: 2, name: /Một năm, ba cách nhìn · 2020/ })).toBeVisible();
   await page.getByRole('link', { name: 'Hỏi trợ lý về năm 2020' }).click();
@@ -114,7 +116,7 @@ function canonicalRain(cell: string, year: number): number {
   return climate.series.cells[cell][String(year)].annual_rain_mm;
 }
 
-test('the Earth observatory walks its eight scenes, keeps them in the link and shows the canonical numbers', async ({
+test('T1 T31 the Earth observatory walks its eight scenes, keeps them in the link and shows the canonical numbers', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -142,7 +144,7 @@ test('the Earth observatory walks its eight scenes, keeps them in the link and s
   await expect(page.getByText(/giảm chuyển động/)).toBeVisible();
 });
 
-test('the observatory insight hands the year to the copilot', async ({ page }) => {
+test('T31 the observatory insight hands the year to the copilot', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/#/dai-quan-sat?canh=insight&nam=2020');
   await expect(page.getByText('Năm 2020, ô này', { exact: false })).toBeVisible();
@@ -151,7 +153,7 @@ test('the observatory insight hands the year to the copilot', async ({ page }) =
   await expect(page.locator('ol[aria-live] > li').first()).toContainText('2020', { timeout: 30_000 });
 });
 
-test('NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async ({ page }) => {
+test('T14 NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/#/dai-quan-sat?canh=cosmos');
   await page.getByRole('button', { name: 'Sao Hỏa' }).click();
@@ -170,7 +172,7 @@ test('NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async
 const canonical = (name: string) =>
   JSON.parse(readFileSync(new URL(`../data/canonical/${name}`, import.meta.url), 'utf-8'));
 
-test('the evidence page shows the data-quality report as written, warnings included', async ({ page }) => {
+test('T5 the evidence page shows the data-quality report as written, warnings included', async ({ page }) => {
   const q = canonical('quality.json');
   await page.goto('/#/bang-chung');
   const section = page.locator('section[aria-labelledby="ev-quality"]');
@@ -180,7 +182,7 @@ test('the evidence page shows the data-quality report as written, warnings inclu
   await expect(section.locator('li[data-status="fail"]')).toHaveCount(q.counts.fail);
 });
 
-test('the copilot answers from data and abstains otherwise', async ({ page }) => {
+test('T5 the copilot answers from data and abstains otherwise', async ({ page }) => {
   await page.goto('/#/tro-ly');
   await page.getByRole('button', { name: 'Năm 2010 có hạn không?' }).click();
   await expect(page.locator('ol[aria-live] > li').first()).toContainText('Năm 2010', { timeout: 30_000 });
@@ -191,7 +193,7 @@ test('the copilot answers from data and abstains otherwise', async ({ page }) =>
   });
 });
 
-test('with the API running, the farmer question returns the six plans in study order and never a ranking', async ({
+test('T3 with the API running, the farmer question returns the six plans in study order and never a ranking', async ({
   page,
 }) => {
   test.skip(!(await copilotUp(page)), 'no copilot backend is running');
@@ -216,7 +218,7 @@ for (const url of [
   '/#/bang-chung',
   '/#/tro-ly',
 ]) {
-  test(`no WCAG 2.2 AA violations on ${url}`, async ({ page }) => {
+  test(`T7 T8 no WCAG 2.2 AA violations on ${url}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(url);
     await page.waitForLoadState('networkidle');
@@ -234,7 +236,7 @@ for (const url of [
   });
 }
 
-test('the page never scrolls sideways', async ({ page }) => {
+test('T10 the page never scrolls sideways', async ({ page }) => {
   for (const url of [
     '/#/',
     PLANS_URL,
@@ -253,7 +255,7 @@ test('the page never scrolls sideways', async ({ page }) => {
   }
 });
 
-test('no visible text is smaller than 17 px (H6)', async ({ page }) => {
+test('T6 no visible text is smaller than 17 px (H6)', async ({ page }) => {
   for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/dai-quan-sat?canh=analysis', '/#/bang-chung', '/#/tro-ly']) {
     await page.goto(url);
     await page.reload();
@@ -280,7 +282,7 @@ test('no visible text is smaller than 17 px (H6)', async ({ page }) => {
 
 // D-167: the farmer routes, the home page and the other pages make no third-party request; NASA GIBS tiles and the NASA
 // Eyes frame on /dai-quan-sat are the one allowed exception, so that page is not in this list
-test('no page outside the observatory makes a third-party request', async ({ page, baseURL }) => {
+test('T14 no page outside the observatory makes a third-party request', async ({ page, baseURL }) => {
   const own = new URL(baseURL ?? 'http://localhost:4173/').origin;
   const outside: string[] = [];
   // an antivirus on a team laptop injects its own script into every page; that request is not the app's
