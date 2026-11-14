@@ -1,0 +1,22 @@
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  font-size: var(--t-small);
+  color: var(--hl-fg);
+}
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 1rem;
+}
+.name {
+  flex-basis: 100%;
+}
+.side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
