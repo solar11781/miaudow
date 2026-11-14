@@ -143,7 +143,7 @@ def heavy_rain_check_report(heavy_rain_years: set[int], damage_years: set[int], 
             "DesInventar chỉ dùng để kiểm tra; các bản ghi của nó không được hiển thị.",
             f"Nghệ An {first}-{last}: years with heavy rain by the official rule (on part of the farmland, while a "
             "trial crop was in the field) against years with rice area damaged by a flood, flash flood or inundation "
-            f"in the DesInventar records. They match: both in {both} years; heavy rain only in {rain_only}; recorded "
+            f"in the DesInventar records: both in {both} years; heavy rain only in {rain_only}; recorded "
             f"damage only in {damage_only}; neither in {neither}; they agree in {both + neither} of {len(years)} "
             "years. DesInventar is used for this check only; its records are not shown.",
         ),

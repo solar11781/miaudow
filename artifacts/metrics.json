@@ -1,6 +1,6 @@
 {
  "schema_version": "0.4",
- "generated_at": "2026-11-14T07:18:13+00:00",
+ "generated_at": "2026-11-14T10:20:35+00:00",
  "freeze_commit": "ea7a60c21d1867c4096fc3b3c4822b4127b53839",
  "test_years": {
   "first": 2016,
@@ -4831,6 +4831,72 @@
    },
    "source_ids": [
     "E-012"
+   ]
+  },
+  {
+   "id": "E-018",
+   "title": {
+    "vi": "Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững",
+    "en": "The winter rice weather result is narrow and fragile"
+   },
+   "text": {
+    "vi": "Lúa vụ Mùa: trong lần kiểm tra chính, M1 hơn mô hình không dùng thời tiết 0,068 (khoảng tin cậy 90%: 0,003 đến 0,134); đầu dưới gần 0, nên kết quả còn hẹp. Trong 5 trong 7 lần chạy kiểm tra, đầu dưới thấp hơn 0, và trong 1 lần nữa bằng 0,000 khi làm tròn, nên kết quả chưa vững.",
+    "en": "Winter rice: in the main test, M1's skill against the no-weather model was 0.068 (90% CI 0.003 to 0.134); the lower end is close to 0, so the result is narrow. In 5 of the 7 checking runs the lower end is below 0, and in 1 more it is 0.000 after rounding, so the result is fragile."
+   },
+   "source_ids": [
+    "E-012",
+    "E-018",
+    "E-008"
+   ]
+  },
+  {
+   "id": "E-012",
+   "title": {
+    "vi": "Các lựa chọn khi dựng mô hình",
+    "en": "Choices made when setting up the models"
+   },
+   "text": {
+    "vi": "Nhóm đặt sau khi đã chốt danh sách đặc trưng và trước mọi lần chạy mô hình: tương tác theo vụ lúa của M1 là chỉ báo vụ Đông Xuân nhân với từng đặc trưng thời tiết; trung bình khí hậu dài hạn của tỉnh là trung bình của từng đặc trưng thời tiết theo tỉnh và vụ, trên các năm trước năm kiểm tra (Lobell và Burke 2010; Ortiz-Bobea 2021). Thang tìm tham số của M2 (LightGBM: mặc định của LightGBM lùi và tiến một bước, và thang độ sâu của Meroni và cộng sự 2021) và của M3 (rừng ngẫu nhiên: Bảng 4 của Meroni và cộng sự 2021) do nhóm chọn.",
+    "en": "Set by the team after the features were frozen and before any model run: M1's rice-season interactions are the spring indicator times every weather feature; the province long-term climate means are, per province and season, the mean of every weather feature over the years before the test year (Lobell and Burke 2010; Ortiz-Bobea 2021). The search grids of M2 (LightGBM: the LightGBM defaults one step either side, and the depth grid of Meroni et al. 2021) and of M3 (random forest: Meroni et al. 2021 Table 4) were chosen by the team."
+   },
+   "source_ids": [
+    "E-012",
+    "E-013",
+    "E-017",
+    "R-M25",
+    "R-M26",
+    "R-M12",
+    "R-M27"
+   ]
+  },
+  {
+   "id": "E-014",
+   "title": {
+    "vi": "Hai cách đọc quy tắc hạn hán",
+    "en": "Two readings of the drought rule"
+   },
+   "text": {
+    "vi": "Quy tắc hạn hán tính các tháng mưa thiếu hơn 50% so với trung bình 1991-2020, \"kéo dài từ 2 tháng đến 3 tháng\"; chúng tôi tính theo hai cách: 2 tháng liền nhau, hoặc 2 tháng bất kỳ trong vụ. Trên lượng mưa trung bình theo đất trồng của từng tỉnh, trong khung thời gian các vụ lúa của Cục Thống kê, hai cách cho kết quả khác nhau ở 339 trong 3.961 vụ của các tỉnh 1995-2024 (vụ Đông Xuân: 153 trong 1.827; vụ Hè Thu: 39 trong 514; vụ Mùa: 147 trong 1.620), và ở 9 trong 90 vụ của Nghệ An.",
+    "en": "The drought rule counts months with rain more than 50% below the 1991-2020 normal, \"kéo dài từ 2 tháng đến 3 tháng\" (lasting 2 to 3 months); we compute two readings: 2 months in a row, or any 2 months of the season. On each province's farmland-weighted rain, over the NSO rice season windows, the two readings differ in 339 of 3,961 province seasons 1995-2024 (spring 153 of 1,827; summer-autumn 39 of 514; winter 147 of 1,620), and in 9 of 90 Nghệ An seasons."
+   },
+   "source_ids": [
+    "E-014"
+   ]
+  },
+  {
+   "id": "E-016",
+   "title": {
+    "vi": "Kiểm tra năm mưa lớn với thiệt hại lúa được ghi nhận",
+    "en": "Heavy-rain years checked against recorded rice damage"
+   },
+   "text": {
+    "vi": "Nghệ An 1995-2008: năm có mưa lớn theo quy tắc chính thức (trên một phần đất trồng, khi cây của thử nghiệm ở ngoài ruộng) so với năm có diện tích lúa bị hư hại do lũ, lũ quét hoặc lụt trong các bản ghi của DesInventar. Cả hai: 8 năm; chỉ mưa lớn: 2; chỉ có thiệt hại được ghi nhận: 2; không có cả hai: 2; trùng nhau ở 10 trong 14 năm. DesInventar chỉ dùng để kiểm tra; các bản ghi của nó không được hiển thị.",
+    "en": "Nghệ An 1995-2008: years with heavy rain by the official rule (on part of the farmland, while a trial crop was in the field) against years with rice area damaged by a flood, flash flood or inundation in the DesInventar records: both in 8 years; heavy rain only in 2; recorded damage only in 2; neither in 2; they agree in 10 of 14 years. DesInventar is used for this check only; its records are not shown."
+   },
+   "source_ids": [
+    "E-016",
+    "R-A19",
+    "E-019"
    ]
   }
  ]
