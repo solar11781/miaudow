@@ -13,6 +13,7 @@ import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useProvenance } from '../provenance/ProvenanceProvider';
 import { useFormat, usePick, useT } from '../../app/settings';
+import { EvidenceDesk } from './EvidenceDesk';
 import s from './officer.module.css';
 
 function Matrix() {
@@ -141,13 +142,17 @@ export function OfficerPage() {
         </div>
       </section>
 
-      <section className="band" aria-labelledby="matrix-title" style={{ paddingTop: 0 }}>
-        <div className="container stack" style={{ ['--gap' as string]: 'var(--s-5)' }}>
-          <Reveal className="stack" style={{ ['--gap' as string]: 'var(--s-3)' }}>
-            <h2 id="matrix-title" className="h1">{t.officer.matrixTitle}</h2>
-            <p className="lead">{t.officer.matrixLead}</p>
-          </Reveal>
-          <Reveal><Matrix /></Reveal>
+      <section className="band" aria-labelledby="desk-title" style={{ paddingTop: 0 }}>
+        <div className="container stack" style={{ ['--gap' as string]: 'var(--s-6)' }}>
+          <div className="stack" style={{ ['--gap' as string]: 'var(--s-3)' }}>
+            <h2 id="desk-title" className="h1">{t.officer.deskTitle}</h2>
+            <p className="lead">{t.officer.deskLead}</p>
+          </div>
+          <EvidenceDesk />
+          <details className={s.matrixDetails}>
+            <summary><span className="h3">{t.officer.matrixTitle}</span><span className="muted">{t.officer.matrixLead}</span></summary>
+            <Matrix />
+          </details>
         </div>
       </section>
 
