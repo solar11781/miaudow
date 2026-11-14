@@ -89,7 +89,10 @@ CSP = "; ".join(
 )
 SECURITY_HEADERS = [
     (b"x-content-type-options", b"nosniff"),
-    (b"referrer-policy", b"no-referrer"),
+    # Google's sign-in script needs the origin: "a Referrer-Policy of strict-origin-when-cross-origin is recommended"
+    # (https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid); other sites get our origin only,
+    # and the answers live after "#", which is never sent
+    (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"content-security-policy", CSP.encode()),
 ]
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes

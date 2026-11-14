@@ -477,7 +477,9 @@ def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
         c.post("/api/compare"),
     ):
         assert r.headers["x-content-type-options"] == "nosniff"
-        assert r.headers["referrer-policy"] == "no-referrer"
+        # Google's guide for the sign-in script: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
+        # (origin only to other sites; the answers live after "#", which is never sent)
+        assert r.headers["referrer-policy"] == "strict-origin-when-cross-origin"
         csp = r.headers["content-security-policy"]
         assert "frame-ancestors 'none'" in csp
         assert "default-src 'self'" in csp
