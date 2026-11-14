@@ -123,7 +123,7 @@ export const en: Messages = {
     titleA: 'Our village fields,',
     titleB: 'read with data from space.',
     lead: 'More than 30 years of NASA weather next to 6 ways of farming tested in Đô Lương, so each family can compare before the next season.',
-    ctaFarmer: 'See my field',
+    ctaFarmer: 'Understand my field',
     ctaScience: 'Explore Nghệ An data',
     ctaCopilot: 'Ask the copilot',
     ctaCores: 'What do the four AI cores do?',

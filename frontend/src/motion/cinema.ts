@@ -85,7 +85,7 @@ export function revealSections(scope: Element) {
   });
   scope.querySelectorAll('[data-stagger]').forEach((group) => {
     gsap.from(group.children, {
-      autoAlpha: 0,
+      opacity: 0,
       y: 28,
       duration: 0.9,
       ease: EASE.heavy,

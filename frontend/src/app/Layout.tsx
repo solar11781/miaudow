@@ -1,5 +1,5 @@
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
-import { Fragment, Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { pathFor } from './paths';
@@ -55,7 +55,6 @@ const tone = (path: string) => (path === '/' ? 'overlay' : path.startsWith('/kho
 export function Layout() {
   const t = useT();
   const { pathname } = useLocation();
-  const { lang } = useSettings();
   return (
     <>
       <a className="skip" href="#main">
@@ -70,9 +69,7 @@ export function Layout() {
           </div>
         }
       >
-        <Fragment key={lang}>
-          <Outlet />
-        </Fragment>
+        <Outlet />
       </Suspense>
       <Footer />
       <ScrollRestoration />

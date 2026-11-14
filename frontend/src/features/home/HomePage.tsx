@@ -31,11 +31,17 @@ function Hero() {
   const root = useRef<HTMLElement>(null);
   const [shown, setShown] = useState(0);
   const [paused, setPaused] = useState(false);
-  const slides = ART.hero;
+  const [later, setLater] = useState(false);
+  const slides = later ? ART.hero : ART.hero.slice(0, 1);
   const playing = !calm && !paused;
 
   useEffect(() => {
-    if (!playing) return;
+    const id = window.setTimeout(() => setLater(true), 2500);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || slides.length < 2) return;
     const id = window.setInterval(() => setShown((n) => (n + 1) % slides.length), SLIDE_MS);
     return () => window.clearInterval(id);
   }, [playing, slides.length]);
@@ -50,7 +56,7 @@ function Hero() {
       ease: 'none',
       scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true },
     });
-    gsap.from('[data-hero-after]', { autoAlpha: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
+    gsap.from('[data-hero-after]', { opacity: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
   }, [t.home.titleA]);
 
   return (
@@ -61,7 +67,7 @@ function Hero() {
             <Media
               slug={shot.slug}
               narrow={shot.narrow}
-              priority
+              priority={n === 0}
               sizes="100vw"
               decorative
               drift={playing && n === shown}
@@ -85,12 +91,6 @@ function Hero() {
           <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">
             {t.home.ctaFarmer}
           </ButtonLink>
-          {/* a farmer on a second phone finds the saved answers on the first screen (walkthrough of PR #53) */}
-          {signIn && (
-            <ButtonLink to="/da-luu" size="lg" variant="secondary" icon="book">
-              {t.account.savedTitle}
-            </ButtonLink>
-          )}
           <a
             className={s.textLink}
             href="#cores"
@@ -103,6 +103,14 @@ function Hero() {
             <Icon name="chevronDown" size={18} />
           </a>
         </div>
+        {/* a farmer on a second phone finds the saved answers on the first screen (walkthrough of PR #53) */}
+        {signIn && (
+          <div className={s.ctas} data-hero-after>
+            <ButtonLink to="/da-luu" size="lg" variant="secondary" icon="book">
+              {t.account.savedTitle}
+            </ButtonLink>
+          </div>
+        )}
       </div>
       <div className={`container ${s.heroFoot}`} data-hero-after>
         <ol className={s.progress} aria-hidden="true">
