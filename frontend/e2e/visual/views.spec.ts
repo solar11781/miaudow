@@ -2,6 +2,9 @@ import { test } from '@playwright/test';
 
 // Viewport screenshots with motion on: the 3D grid, a dragged view, and the first screen of key pages.
 test('science 3D grid, default and dragged', async ({ page }, info) => {
+  // CI's Chromium has no GPU and draws the three.js scene in software: the 360 px run took 31 s of the 45 s limit and
+  // the 1440 px run timed out. The scene works under the server CSP locally with and without WebGL (2026-11-14).
+  test.slow();
   await page.goto('/#/khoa-hoc');
   const stage = page.getByRole('group', { name: /Lưới NASA POWER/ });
   await stage.scrollIntoViewIfNeeded();
