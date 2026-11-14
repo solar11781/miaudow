@@ -214,7 +214,8 @@ def test_secondary_grids_follow_their_sources():
     assert {g["max_features"] for g in ev.M3_GRID} == {1.0, "sqrt"}
     assert sorted({g["min_samples_split"] for g in ev.M3_GRID}) == pytest.approx([0.2, 0.32, 0.44, 0.56, 0.68, 0.8])
     assert len(ev.M3_GRID) == 7 * 2 * 6
-    assert {(g["num_leaves"], g["min_data_in_leaf"], g["max_depth"]) for g in ev.M2_GRID} == {
-        (nl, md, d) for nl in (15, 31, 63) for md in (10, 20, 40) for d in (10, 20, 40)
-    }
+    assert len(ev.M2_GRID) == 27
+    assert {g["num_leaves"] for g in ev.M2_GRID} == {15, 31, 63}
+    assert {g["min_data_in_leaf"] for g in ev.M2_GRID} == {10, 20, 40}
+    assert {g["max_depth"] for g in ev.M2_GRID} == {10, 20, 40}
     assert all(g["num_leaves"] < 2 ** g["max_depth"] for g in ev.M2_GRID)

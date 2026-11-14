@@ -6,6 +6,7 @@ Adds their metric rows (role secondary) to artifacts/metrics.json and replaces e
 """
 
 import json
+from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
 
@@ -36,7 +37,9 @@ doc["metrics"] = [r for r in doc["metrics"] if r["model_id"] not in MODELS]
 for model_id, (fit, grid, experiment) in MODELS.items():
     pred = run_secondary(rows, weather, context, (partial(fit, seed=SEED), grid), fold_transform=transform)
     both = references.merge(pred[["series_id", "year", "pred"]], on=["series_id", "year"], how="inner")
-    print(model_id, "rows:", len(pred), "| on the E-012 rows:", len(both), "of", len(references))
+    if len(both) != len(references):  # same rows as M1 (03-ML-SPEC section 6)
+        raise ValueError(f"{model_id} covers {len(both)} of the {len(references)} E-012 rows")
+    print(model_id, "rows:", len(pred), "| on the E-012 rows:", len(both))
     for season in ev.ML_SEASONS:
         part = both[both["season"] == season].rename(columns={"pred": model_id})
         row = metric_row(part, model_id, seed=SEED)
@@ -54,4 +57,5 @@ for model_id, (fit, grid, experiment) in MODELS.items():
             }
         )
         print(" ", season, {k: round(v["value"], 3) for k, v in row.items() if k.startswith("skill_vs") and v})
+doc["generated_at"] = datetime.now(UTC).isoformat(timespec="seconds")
 METRICS.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
