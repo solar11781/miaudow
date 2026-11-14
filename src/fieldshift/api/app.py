@@ -73,7 +73,7 @@ IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed
 CSP = "; ".join(
     (
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval'",  # Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
+        "script-src 'self' 'unsafe-eval'",  # D-170: Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
         "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov",
         "connect-src 'self' https://gibs.earthdata.nasa.gov",
         "frame-src https://eyes.nasa.gov",
