@@ -9,10 +9,16 @@ import { PlanCard } from './PlanCard';
 
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
-function renderCard() {
+function renderCard(languages: string[] = ['vi-VN', 'vi']) {
+  Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
   const res = validateCompare(compare(), body);
   const plan = res.plans[2];
   if (!plan) throw new Error('no plan');
+  plan.money.total = { value: '30,799', unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' }, source_ids: ['R-P02'] };
+  const water = { value: '6,500-7,500', unit: { vi: 'm3/ha', en: 'm3/ha' }, source_ids: ['R-P02'] };
+  plan.water = [
+    { crop_key: plan.calendar[0]?.crop_key ?? '', measure: 'to_apply', value: water, scope: null, note: null },
+  ];
   render(
     <SettingsProvider>
       <ProvenanceProvider>
@@ -36,5 +42,15 @@ describe('plan card test hooks', () => {
       e.getAttribute('data-testid'),
     );
     expect(marked).toEqual([`card-${id}-row-water`]);
+  });
+  // review 2026-11-14: Vietnamese digit grouping on every API value, the same string on the card and in the sheet
+  it('shows api values in the notation of the language', () => {
+    const values = () => [...document.querySelectorAll('[data-value]')].map((e) => e.getAttribute('data-value'));
+    renderCard();
+    expect(values()).toEqual(expect.arrayContaining(['30.799 nghìn đồng/ha', '6.500-7.500 m³/ha']));
+    cleanup();
+    renderCard(['en-GB', 'en']);
+    expect(values()).toEqual(expect.arrayContaining(['30,799 thousand đ/ha', '6,500-7,500 m³/ha']));
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
   });
 });

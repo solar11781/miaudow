@@ -86,10 +86,10 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
       {m.total && (
         <div className={s.money}>
           <SourceValue size="xl" {...refs.value(m.total, t.farmer.ourSum)}>
-            {m.total.value}
+            {refs.number(m.total)}
           </SourceValue>
           <span className={s.unit}>
-            {pick(m.total.unit)} · {t.farmer.ourSum}
+            {refs.unit(m.total)} · {t.farmer.ourSum}
           </span>
         </div>
       )}
