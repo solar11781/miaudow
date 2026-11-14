@@ -5,9 +5,9 @@ ID token in memory and sends it as `Authorization: Bearer` with every account re
 any server instance can answer. Each request is checked on the server by google-auth (signature, audience = our client
 id, issuer = Google, expiry with CLOCK_SKEW_SECONDS of allowance); only the token's `sub` (Google's account id) is
 kept. Downloading Google's public keys for that check is the one outbound call, the sign-in exception that NFR-01
-allows; the keys are kept as long as Google's Cache-Control header says. The database holds two tables: account (Google's account id) and saved_answers (land,
-years, priority of one saved set), at most SAVED_SETS_MAX sets per account. SQL is parameterised; nothing personal
-is logged.
+allows; the keys are kept as long as Google's Cache-Control header says. The database holds two tables: account
+(Google's account id) and saved_answers (land, years, priority of one saved set), at most SAVED_SETS_MAX sets per
+account. SQL is parameterised; nothing personal is logged.
 """
 
 from __future__ import annotations
