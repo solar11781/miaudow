@@ -9,16 +9,18 @@ the inner-year errors (split conformal).
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Sequence
+
 import numpy as np
 import pandas as pd
 
 from fieldshift.ml import evaluation as ev
 
-INTERVAL_ALPHA = 0.2  # 80% interval (G4, D-48)
+FoldTransform = Callable[[pd.DataFrame, pd.Index], pd.DataFrame]
 ALPHA_GRID = np.logspace(-5, 0, 13)  # D-110: Meroni et al. 2021 grid (lasso scale; ev.fit_ridge converts, D-146)
 
 
-def add_precip_anom(df: pd.DataFrame, train_idx) -> pd.DataFrame:
+def add_precip_anom(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
     """precip_anom_pct = season rain vs the same unit and season's mean over the training rows only (D-66).
 
     The unit key is province_nso until the unit_id crosswalk exists (05-DATA-CONTRACTS §2, §4c).
@@ -30,7 +32,13 @@ def add_precip_anom(df: pd.DataFrame, train_idx) -> pd.DataFrame:
     return out
 
 
-def _tune(df, train_idx, cols, alphas, fold_transform=None):
+def _tune(
+    df: pd.DataFrame,
+    train_idx: pd.Index,
+    cols: list[str],
+    alphas: Sequence[float] | np.ndarray,
+    fold_transform: FoldTransform | None = None,
+) -> tuple[float, np.ndarray]:
     """Penalty with the lowest inner-fold MSE (first in grid order on ties), and that penalty's inner residuals.
 
     Fold-time features are refit on each inner split's training rows (03-ML-SPEC §4), so an inner test year never
@@ -58,7 +66,12 @@ def _tune(df, train_idx, cols, alphas, fold_transform=None):
 
 
 def run_rolling_origin(
-    df: pd.DataFrame, weather_cols, context_cols, alphas, test_years=ev.TEST_YEARS, fold_transform=None
+    df: pd.DataFrame,
+    weather_cols: Sequence[str],
+    context_cols: Sequence[str],
+    alphas: Sequence[float] | np.ndarray,
+    test_years: Iterable[int] = ev.TEST_YEARS,
+    fold_transform: FoldTransform | None = None,
 ) -> dict:
     """Run the outer rolling origin. df: one row per series and year with `anom` (non-null), features, series_id.
 
@@ -92,7 +105,7 @@ def run_rolling_origin(
         bnw = ev.fit_ridge(
             d.loc[train_idx, list(context_cols)].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), alpha=a_bnw
         )
-        q = ev.conformal_halfwidth(np.abs(res_m1), alpha=INTERVAL_ALPHA)
+        q = ev.conformal_halfwidth(np.abs(res_m1), alpha=ev.INTERVAL_ALPHA)
         p_m1 = m1.predict(d.loc[test_idx, m1_cols].to_numpy())
         part = pd.DataFrame(
             {
