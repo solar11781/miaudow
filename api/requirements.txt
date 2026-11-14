@@ -1,5 +1,9 @@
-fastapi==0.115.12
-uvicorn==0.34.2
+# Runtime of the MIAUDOW API. Exact pins; the versions match the team's miaudow lock where the package is shared.
+fastapi==0.162.5
+uvicorn[standard]==0.54.0
 httpx==0.28.1
-pydantic==2.11.4
-pytest==8.3.5
+pydantic==2.13.5
+numpy==2.5.3
+pandas==3.0.5
+PyYAML==6.0.3
+anthropic==2.3.0
