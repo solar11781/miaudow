@@ -1,9 +1,10 @@
 import { YEARS } from '../../data';
 import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
-import { CROPS, PLANS, planProfitMillion, type CropId } from '../../domain/plans';
+import { CROPS, PLANS, planProfitMillion, type CropId, type CropInfo } from '../../domain/plans';
 import { riceYear } from '../../domain/rice';
 import type { EvidenceKind, SourceRef } from '../../domain/provenance';
-import { PASSAGES } from './knowledge';
+import { SOURCES } from '../../domain/sources';
+import { PASSAGES, type Passage } from './knowledge';
 import { normalize } from './normalize';
 import { isStrong, search, type Hit } from './retrieve';
 
@@ -32,6 +33,16 @@ const CROP_WORDS: [RegExp, CropId][] = [
   [/\b(ngo sinh khoi|biomass)\b/, 'biomaize'], [/\b(ngo|maize|corn)\b/, 'maize'], [/\b(khoai lang|sweet potato)\b/, 'sweetpotato'],
   [/\b(vung|sesame)\b/, 'sesame'], [/\b(bi do|pumpkin)\b/, 'pumpkin'], [/\b(ot|chili)\b/, 'chili'],
 ];
+
+/** A passage as answer lines: its text with the button of its first source, then one line per further source (H5). */
+function passageLines(p: Passage, lang: Lang): AnswerLine[] {
+  const ref = (id: Passage['sources'][number]): SourceRef => ({ sourceId: id, kind: SOURCES[id].kind, value: SOURCES[id].short, label: p.title[lang] });
+  const [first, ...rest] = p.sources;
+  return [
+    { text: `${p.title[lang]} — ${p.text[lang]}`, ref: first ? ref(first) : undefined },
+    ...rest.map((id) => ({ text: SOURCES[id].title[lang], ref: ref(id) })),
+  ];
+}
 
 function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   const vi = lang === 'vi';
@@ -68,10 +79,16 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
       ref: { sourceId: 'p02', kind: 'study', value: `${f.n(c.profit / 1000, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`, label: `${name} ${c.variety}`, detail: vi ? `Chi phí ${f.n(c.cost)} nghìn đ/ha; giá ${f.n(c.price)} đ/kg.` : `Cost ${f.n(c.cost)} thousand VND/ha; price ${f.n(c.price)} VND/kg.` },
     });
   }
-  const info = CROPS[crop] as { tcvn?: { vi: string; en: string } };
-  lines.push(info.tcvn
-    ? { text: vi ? 'Mức tưới theo TCVN 8641' : 'Irrigation in TCVN 8641', ref: { sourceId: 'tcvn8641', kind: 'standard', value: `${info.tcvn[lang]} m³/ha`, label: name } }
-    : { text: vi ? 'TCVN 8641 không ghi mức tưới cho cây này.' : 'TCVN 8641 lists no irrigation amount for this crop.' });
+  const info: CropInfo = CROPS[crop];
+  const tcvnRows = info.tcvn ?? [];
+  if (tcvnRows.length) {
+    for (const r of tcvnRows) {
+      const scope = r.scope ? ` (${r.scope[lang]})` : '';
+      lines.push({ text: `${vi ? 'Mức tưới theo TCVN 8641' : 'Irrigation in TCVN 8641'}${scope}`, ref: { sourceId: 'tcvn8641', kind: 'standard', value: `${r.value[lang]} m³/ha`, label: `${name}${scope}` } });
+    }
+  } else {
+    lines.push({ text: vi ? 'TCVN 8641 không ghi mức tưới cho cây này.' : 'TCVN 8641 lists no irrigation amount for this crop.' });
+  }
   lines.push({ text: vi ? 'Một ô thử, một năm. Giá năm nay có thể khác; hỏi nơi thu mua ở xã.' : 'One plot, one year. Prices may differ this year; ask local buyers.' });
   return { type: 'crop', lines, evidence: [], kinds: ['study', 'standard'] };
 }
@@ -103,7 +120,7 @@ export function answer(question: string, lang: Lang, f: Fmt, text: { noEvidence:
   if (RANKING.test(q)) return rankingAnswer(lang, f, text.noRanking);
   if (FORECAST.test(q)) {
     const p = PASSAGES.find((x) => x.id === 'no-forecast');
-    if (p) return { type: 'evidence', lines: [{ text: `${p.title[lang]} — ${p.text[lang]}` }], evidence: [{ passage: p, score: 0, coverage: 1 }], kinds: [p.kind] };
+    if (p) return { type: 'evidence', lines: passageLines(p, lang), evidence: [{ passage: p, score: 0, coverage: 1 }], kinds: [p.kind] };
   }
   const y = q.match(YEAR);
   if (y?.[1]) return yearAnswer(Number(y[1]), lang, f);
@@ -115,7 +132,7 @@ export function answer(question: string, lang: Lang, f: Fmt, text: { noEvidence:
   const top = strong.slice(0, 2);
   return {
     type: 'evidence',
-    lines: top.map((h) => ({ text: `${h.passage.title[lang]} — ${h.passage.text[lang]}` })),
+    lines: top.flatMap((h) => passageLines(h.passage, lang)),
     evidence: top,
     kinds: [...new Set(top.map((h) => h.passage.kind))],
   };

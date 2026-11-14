@@ -161,6 +161,7 @@ function Climate() {
 function Evidence() {
   const t = useT();
   const pick = usePick();
+  const refs = useRefs();
   const rule = 'drought_rain_any2' as const;
   const values = hazards.year_level[rule];
   const dryYears = values.filter((v) => v > 0.5).length;
@@ -179,6 +180,7 @@ function Evidence() {
             <span className="muted">{t.home.droughtAxis}</span>
           </div>
           <YearBars years={YEARS} values={values} color="var(--data-drought)" label={t.home.evidenceTitle} />
+          <SourceValue {...refs.shareSeries(rule)} />
           <p className="muted">{t.common.notForecast}</p>
         </Reveal>
       </div>
@@ -217,7 +219,6 @@ function Steps() {
 /** The signature transition: the river photograph dims and the real province border and NASA grid draw over it. */
 function Observatory() {
   const t = useT();
-  const f = useFormat();
   const pick = usePick();
   const shape = useMemo(() => {
     const [minLon, minLat, maxLon, maxLat] = geo.bounds;
@@ -229,7 +230,6 @@ function Observatory() {
     const cells = geo.grid.map((c) => ({ id: c.id, w: c.weight, x: x(c.lon - 0.3125), y: y(c.lat + 0.25), cw: 0.625 * k * 100, ch: 50 }));
     return { W, H, outline, cells };
   }, []);
-  const days = (CLIMATE_YEARS.length * 365.25) | 0;
   return (
     <section id="ch-6" className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
       <Reveal className={s.obsStage}>
@@ -249,7 +249,6 @@ function Observatory() {
         <dl className={s.obsFacts}>
           <div><dt className="num">{hazards.cells.length}</dt><dd>{t.home.obsCells}</dd></div>
           <div><dt className="num">{CLIMATE_YEARS.length}</dt><dd>{t.home.obsYears}</dd></div>
-          <div><dt className="num">{f.n(days)}</dt><dd>{t.home.obsDays}</dd></div>
         </dl>
         <ButtonLink to="/dai-quan-sat" size="lg" icon="globe">{t.home.obsCta}</ButtonLink>
         <p className={s.obsCredit}>{pick(media('lam-river-vinh-ben-thuy').caption)} · {pick(media('lam-river-vinh-ben-thuy').credit ?? { vi: '', en: '' })}</p>
@@ -288,6 +287,7 @@ function Honesty() {
               </span>
               <h3 className="h3">{c.title}</h3>
               <p>{c.body}</p>
+              {c.key === 'winter' && <p><strong>{t.home.honestyWinterFragile}</strong></p>}
               {c.skill !== undefined && c.key !== 'summer' && (
                 <p className={s.skillLine}>
                   <span className="muted">{t.science.models.m1_ridge} vs BNW</span>

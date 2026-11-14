@@ -30,6 +30,8 @@ export type SourceId =
 
 export interface SourceRecord {
   id: SourceId;
+  /** The row of the team's source registers (REFERENCES.md R-ids, EXPERIMENTS.md E-ids). */
+  registerId: string;
   kind: EvidenceKind;
   short: string;
   title: Bilingual;

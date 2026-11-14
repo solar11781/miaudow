@@ -9,7 +9,6 @@ const Observatory3D = lazy(() => import('./Observatory3D').then((m) => ({ defaul
 import { YearBars } from '../charts/YearBars';
 import { RiceHistoryChart } from '../charts/RiceHistoryChart';
 import { SourceValue } from '../provenance/SourceValue';
-import { ClimateMlSection } from './ClimateMl';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { RainStrip } from '../charts/RainStrip';
@@ -106,6 +105,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
                 onSelect={(y) => { setPlaying(false); setYear(y); }} height={150} label={`${pick(info.name)} · ${t.science.shareOfFarmland}`} />
             </div>
           </div>
+          <SourceValue {...refs.shareSeries(rule)} />
         </div>
 
         <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.science.tableCaption}>
@@ -123,6 +123,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
               ))}
             </tbody>
           </table>
+          <SourceValue {...refs.cellTable(rule, year)} />
         </div>
       </div>
     </section>
@@ -135,6 +136,7 @@ const CELLS = ['19.0_105.0', '19.0_105.625', '18.5_105.625', '19.5_105.0', '19.5
 /** One shared year: the rain strip, the two rain sources and the greenness follow the observatory's year. */
 function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
   const t = useT();
+  const refs = useRefs();
   const [cell, setCell] = useState(CELLS[0] as string);
   const q = new URLSearchParams({ q: t.climate.askYearQ(year), hoi: '1' }).toString();
   return (
@@ -163,6 +165,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
             <h3 className="h3">{t.climate.ndviHead}</h3>
             <p className="muted">{t.climate.ndviLead}</p>
             <NdviChart year={year} />
+            <SourceValue {...refs.ndviSeries()} />
           </Reveal>
         </div>
       </div>
@@ -172,6 +175,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
 
 function RiceSection() {
   const t = useT();
+  const refs = useRefs();
   const [season, setSeason] = useState<RiceSeason>('winter');
   const status = model.seasons.find((x) => x.season === season)?.model_status;
   return (
@@ -187,7 +191,13 @@ function RiceSection() {
           </div>
           {status !== 'shown' && <p className={s.notice}><Icon name="alert" size={18} />{status === 'not_shown' ? t.science.modelHidden : t.science.notModeled}</p>}
         </Reveal>
-        <Reveal className={s.chartCard}><RiceHistoryChart season={season} /></Reveal>
+        <Reveal className={s.chartCard}>
+          <RiceHistoryChart season={season} />
+          <div className="cluster">
+            <SourceValue {...refs.riceSeries(season)} />
+            {status === 'shown' && <SourceValue {...refs.ricePredictionSeries()} />}
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -216,7 +226,6 @@ export function SciencePage() {
     <main id="main">
       <GridSection year={year} setYear={setYear} />
       <ClimateSection year={year} setYear={setYear} />
-      <ClimateMlSection year={year} setYear={setYear} />
       <RiceSection />
       <MethodLink />
     </main>

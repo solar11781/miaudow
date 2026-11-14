@@ -21,8 +21,8 @@ const STATIC: Passage[] = [
     id: 'nasa-power', kind: 'data', sources: ['nasa-power'], keys: 'nasa power du lieu thoi tiet reanalysis merra ve tinh luoi 50 km',
     title: { vi: 'Dữ liệu NASA POWER là gì?', en: 'What is the NASA POWER data?' },
     text: {
-      vi: 'NASA POWER cho thời tiết theo ngày từ năm 1981 trên lưới ô khoảng 50 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
-      en: 'NASA POWER gives daily weather since 1981 on a grid of about 50 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
+      vi: 'NASA POWER cho thời tiết theo ngày trên lưới ô khoảng 50 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
+      en: 'NASA POWER gives daily weather on a grid of about 50 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
     },
   },
   {
@@ -69,16 +69,8 @@ const STATIC: Passage[] = [
     id: 'water-units', kind: 'standard', sources: ['tcvn8641', 'fao-tm3'], keys: 'nuoc tuoi m3 ha mm tcvn fao nhu cau nuoc lua lac ngo',
     title: { vi: 'Lúa và các cây khác cần bao nhiêu nước?', en: 'How much water do rice and other crops need?' },
     text: {
-      vi: 'Theo TCVN 8641:2011, lúa xuân vùng Trung bộ cần tưới dưỡng 6.500–7.500 m³/ha; ngô 2.000–2.500; lạc và đậu tương khoảng 2.000; khoai lang 1.200–1.400 m³/ha. FAO ước tính thô nhu cầu nước cả vụ: lúa 450–700 mm, lạc 500–700, ngô 500–800. 1 m³/ha bằng 0,1 mm. Tiêu chuẩn không nói Nghệ An thuộc vùng nào.',
-      en: 'Under TCVN 8641:2011, central-region spring rice needs 6,500–7,500 m³/ha of maintenance irrigation; maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. FAO’s rough seasonal water need: rice 450–700 mm, peanut 500–700, maize 500–800. 1 m³/ha is 0.1 mm. The standard does not say which region Nghệ An is in.',
-    },
-  },
-  {
-    id: 'legume', kind: 'study', sources: ['p02'], keys: 'cay ho dau dam nito dat luan canh dau lac',
-    title: { vi: 'Cây họ đậu có làm đất tốt hơn không?', en: 'Do legumes improve the soil?' },
-    text: {
-      vi: 'Cây họ đậu (lạc, đậu xanh, đậu tương, đậu đen) lấy đạm từ không khí, nhưng phần lớn đạm đi theo hạt khi thu hoạch. Đạm chỉ ở lại khi để thân lá trên ruộng. Miaudow không có số đo đất ở Nghệ An nên chỉ đếm, không hứa hẹn.',
-      en: 'Legumes (peanut, mung bean, soybean, black bean) take nitrogen from the air, but most leaves with the harvested seed. Nitrogen stays only when stems and leaves stay on the field. Miaudow has no soil measurements for Nghệ An, so it counts and promises nothing.',
+      vi: 'Theo TCVN 8641:2011, lúa vụ xuân cần tưới dưỡng 6.500–7.500 m³/ha (Trung bộ, lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha (Bắc bộ); ngô 2.000–2.500; lạc và đậu tương khoảng 2.000; khoai lang 1.200–1.400 m³/ha. FAO ước tính thô nhu cầu nước cả vụ: lúa 450–700 mm, lạc 500–700, ngô 500–800. 1 m³/ha bằng 0,1 mm. Tiêu chuẩn không nói Nghệ An thuộc vùng nào.',
+      en: 'Under TCVN 8641:2011, spring rice needs 6,500–7,500 m³/ha of maintenance irrigation (Trung bộ, transplanted or direct-seeded) and 6,000–7,000 m³/ha (Bắc bộ); maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. FAO’s rough seasonal water need: rice 450–700 mm, peanut 500–700, maize 500–800. 1 m³/ha is 0.1 mm. The standard does not say which region Nghệ An is in.',
     },
   },
   {

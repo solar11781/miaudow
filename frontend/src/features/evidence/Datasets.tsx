@@ -33,7 +33,8 @@ export function Datasets() {
                 <dt>{t.evidence.licence}</dt><dd>{d.license}</dd>
                 <dt>{t.evidence.fieldMeasured}</dt><dd>{d.is_field_measurement ? t.evidence.yes : t.evidence.no}</dd>
               </dl>
-              {d.notes.length > 0 && <p className={s.dsNote}>{pick(d.notes[0] as { vi: string; en: string })}</p>}
+              {/* a blocked dataset's note counts CMR granules from a query that was not recorded, so it is not shown (D-169) */}
+              {d.notes.length > 0 && d.ingestion_status !== 'BLOCKED' && <p className={s.dsNote}>{pick(d.notes[0] as { vi: string; en: string })}</p>}
             </li>
           ))}
         </ul>

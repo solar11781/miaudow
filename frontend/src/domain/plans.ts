@@ -8,22 +8,34 @@ export interface CropInfo {
   name: Bilingual;
   family: CropFamily;
   legume: boolean;
-  /** TCVN 8641:2011 seasonal irrigation, m³/ha, where the standard lists the crop. */
-  tcvn?: Bilingual;
+  /** TCVN 8641:2011 seasonal irrigation, m³/ha, where the standard lists the crop: every row of rules/crops.yaml for the
+   * trial's season, each with its scope, since the standard does not place Nghệ An in a region (D-68). */
+  tcvn?: readonly TcvnRow[];
   /** FAO TM3 Table 14 seasonal water need, mm, where FAO lists the crop. */
   fao?: string;
 }
 
+export interface TcvnRow {
+  value: Bilingual;
+  scope?: Bilingual;
+}
+
+const tcvn = (vi: string, en: string): TcvnRow[] => [{ value: { vi, en } }];
+
 export const CROPS = {
   rice: { name: { vi: 'Lúa', en: 'Rice' }, family: 'rice', legume: false,
-    tcvn: { vi: '6.500–7.500 (vụ xuân, Trung bộ, chỉ tưới dưỡng)', en: '6,500–7,500 (spring, central region, maintenance only)' }, fao: '450–700' },
+    tcvn: [
+      { value: { vi: '6.500–7.500', en: '6,500–7,500' }, scope: { vi: 'Trung bộ, lúa cấy, vụ xuân', en: 'Trung bộ, transplanted rice, spring season' } },
+      { value: { vi: '6.500–7.500', en: '6,500–7,500' }, scope: { vi: 'Trung bộ, lúa gieo thẳng, vụ xuân', en: 'Trung bộ, direct-seeded rice, spring season' } },
+      { value: { vi: '6.000–7.000', en: '6,000–7,000' }, scope: { vi: 'Bắc bộ, vụ xuân', en: 'Bắc bộ, spring season' } },
+    ], fao: '450–700' },
   blackbean: { name: { vi: 'Đậu đen', en: 'Black bean' }, family: 'legume', legume: true },
-  sweetpotato: { name: { vi: 'Khoai lang', en: 'Sweet potato' }, family: 'root', legume: false, tcvn: { vi: '1.200–1.400', en: '1,200–1,400' } },
-  peanut: { name: { vi: 'Lạc', en: 'Peanut' }, family: 'legume', legume: true, tcvn: { vi: 'khoảng 2.000', en: 'about 2,000' }, fao: '500–700' },
+  sweetpotato: { name: { vi: 'Khoai lang', en: 'Sweet potato' }, family: 'root', legume: false, tcvn: tcvn('1.200–1.400', '1,200–1,400') },
+  peanut: { name: { vi: 'Lạc', en: 'Peanut' }, family: 'legume', legume: true, tcvn: tcvn('khoảng 2.000', 'about 2,000'), fao: '500–700' },
   mung: { name: { vi: 'Đậu xanh', en: 'Mung bean' }, family: 'legume', legume: true },
-  maize: { name: { vi: 'Ngô hạt', en: 'Grain maize' }, family: 'maize', legume: false, tcvn: { vi: '2.000–2.500', en: '2,000–2,500' }, fao: '500–800' },
+  maize: { name: { vi: 'Ngô hạt', en: 'Grain maize' }, family: 'maize', legume: false, tcvn: tcvn('2.000–2.500', '2,000–2,500'), fao: '500–800' },
   chili: { name: { vi: 'Ớt', en: 'Chili' }, family: 'other', legume: false },
-  soy: { name: { vi: 'Đậu tương', en: 'Soybean' }, family: 'legume', legume: true, tcvn: { vi: 'khoảng 2.000', en: 'about 2,000' }, fao: '450–700' },
+  soy: { name: { vi: 'Đậu tương', en: 'Soybean' }, family: 'legume', legume: true, tcvn: tcvn('khoảng 2.000', 'about 2,000'), fao: '450–700' },
   biomaize: { name: { vi: 'Ngô sinh khối', en: 'Biomass maize' }, family: 'maize', legume: false },
   sesame: { name: { vi: 'Vừng đen', en: 'Black sesame' }, family: 'other', legume: false },
   pumpkin: { name: { vi: 'Bí đỏ', en: 'Pumpkin' }, family: 'root', legume: false },
