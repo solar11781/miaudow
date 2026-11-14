@@ -482,6 +482,17 @@ def test_a_forecast_or_guarded_question_never_reaches_the_model(
     assert api.requests == []
 
 
+def test_the_winter_model_passage_says_the_result_is_narrow_and_fragile() -> None:
+    # D-165: wherever the winter weather result appears it says "narrow" and "fragile", in the method report's words
+    reports = json.loads((REPO / "artifacts" / "metrics.json").read_text(encoding="utf-8"))["reports"]
+    title = next(r["title"] for r in reports if r["id"] == "E-018")  # src/fieldshift/ml/reports.py winter report
+    winter = next(p for p in copilot.load_corpus(REPO).passages if p.id == "model-winter")
+    for lang in ("vi", "en"):
+        assert title[lang] in winter.text[lang]
+    spring = next(p for p in copilot.load_corpus(REPO).passages if p.id == "model-spring")
+    assert title["en"] not in spring.text["en"]
+
+
 def test_the_grid_cell_size_is_the_audited_wording() -> None:
     nasa = next(p for p in copilot.load_corpus(REPO).passages if p.id == "nasa-power")
     assert "55 × 66 km" in nasa.text["vi"]  # noqa: RUF001 - frontend/src/i18n/vi.ts, the D-169 audit

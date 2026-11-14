@@ -30,6 +30,8 @@ export const vi = {
   },
   common: {
     notForecast: 'Năm đã qua, không phải dự báo',
+    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
+    winterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     support:
       'Ứng dụng giúp bạn xem và so sánh. Nó không thay thế kinh nghiệm của bạn và lời khuyên của cán bộ khuyến nông.',
     dataLine: 'Dữ liệu: NASA POWER · CHIRPS v3 · NASA MODIS · Cục Thống kê · Trịnh Đức Toàn và cs. (2023)',
@@ -197,8 +199,6 @@ export const vi = {
       'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
     honestyWinter:
       'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
-    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
-    honestyWinterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     vsBnw: 'so với BNW',
     skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',

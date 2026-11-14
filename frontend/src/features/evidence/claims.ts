@@ -5,6 +5,8 @@ import { CROPS, PLANS, type PlanCrop } from '../../domain/plans';
 import type { Bilingual, SourceRef } from '../../domain/provenance';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, useSettings } from '../../app/settings';
+import { en as enText } from '../../i18n/en';
+import { vi as viText } from '../../i18n/vi';
 
 /** What the evidence is, never how it looks (docs/07-ARCHITECTURE-AND-CONTRACTS.md). */
 export type Status = 'VERIFIED' | 'DERIVED' | 'ESTIMATED' | 'ILLUSTRATIVE' | 'PENDING_VERIFICATION' | 'UNAVAILABLE';
@@ -261,8 +263,8 @@ export function useClaims(): Claim[] {
           en: 'For winter-season rice, the weather model predicts slightly better than the no-weather model.',
         },
         meaning: {
-          vi: 'Mức hơn nhỏ và khoảng tin cậy rộng; dự đoán chỉ dùng để xem lại các năm đã qua.',
-          en: 'The gain is small and the interval wide; predictions are only used to look back at past years.',
+          vi: `${viText.common.winterFragile} (trang Phương pháp, báo cáo E-018); dự đoán chỉ dùng để xem lại các năm đã qua.`,
+          en: `${enText.common.winterFragile} (method page, report E-018); predictions are only used to look back at past years.`,
         },
         refs: [skillRef('winter', wi)],
         location: { vi: 'Thực nghiệm E-012 của nhóm', en: 'Team experiment E-012' },

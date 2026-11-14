@@ -404,7 +404,7 @@ function Honesty() {
               <p>{c.body}</p>
               {c.key === 'winter' && (
                 <p>
-                  <strong>{t.home.honestyWinterFragile}</strong>
+                  <strong>{t.common.winterFragile}</strong>
                 </p>
               )}
               {c.skill !== undefined && c.key !== 'summer' && (

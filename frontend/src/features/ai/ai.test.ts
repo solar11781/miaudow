@@ -4,6 +4,9 @@ import { normalize } from './normalize';
 import { isStrong, search } from './retrieve';
 import { yearShare } from '../../domain/hazards';
 import { CROPS, PLANS } from '../../domain/plans';
+import { PASSAGES } from './knowledge';
+import { vi } from '../../i18n/vi';
+import { en } from '../../i18n/en';
 
 const f: Fmt = {
   pct: (v) => `${Math.round(v * 100)}%`,
@@ -85,5 +88,14 @@ describe('answers', () => {
   it('only shows numbers that exist in the data', () => {
     const a = ask('Năm 2015 thế nào?', 'en');
     for (const l of a.lines) if (l.ref?.sourceId === 'nasa-power') expect(l.ref.value).toMatch(/^\d{1,3}%$/);
+  });
+});
+
+// D-165: the winter weather result is "narrow" and "fragile" wherever it appears, in the method report's words
+describe('model passages', () => {
+  it('say the winter result is narrow and fragile', () => {
+    const winter = PASSAGES.find((p) => p.id === 'model-winter');
+    expect(winter?.text.vi).toContain(vi.common.winterFragile);
+    expect(winter?.text.en).toContain(en.common.winterFragile);
   });
 });

@@ -52,6 +52,7 @@ from fieldshift.engine.rules import (
     load_plans,
     load_prompt,
     load_sources,
+    metrics_file,
 )
 from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, Contract, PlanId, SourceFacts, SourceId, Text
 
@@ -61,6 +62,9 @@ QUESTION_MAX_CHARS = 300
 MAX_TOKENS = 1024  # routine choice: a list of at most a dozen candidate ids as JSON
 EFFORT = "low"  # the explain endpoint's effort; the server has already found the candidates
 SEARCH_LIMIT = 3  # member B's deterministic answer quotes the top 3 passages
+# the method report that qualifies a season's model result (D-165: the winter result is "narrow" and "fragile"; E-018 is
+# src/fieldshift/ml/reports.py winter_claim_report)
+SEASON_REPORTS = {"winter": "E-018"}
 # member B's search (frontend/src/features/ai/retrieve.ts, kept by the D-169 audit): BM25 with k1 1.4 and b 0.72, and
 # an answer only when the top hit reaches both floors (its MIN_SCORE and MIN_COVERAGE)
 K1, B = 1.4, 0.72
@@ -359,12 +363,17 @@ def load_corpus(root: Path) -> Corpus:
         )
         passages.append(rule_passage)
     seasons = load_card_texts(root).season_labels
+    reports = {r.id: r.title for r in metrics_file(root).reports}
     for gate in gate_rows(root):
         if gate.gate == "G2":
             label = seasons[gate.season].label
             title: Text = {lang: texts.answers.model_title[lang].format(season=label[lang]) for lang in ("vi", "en")}
             keys = f"{label['vi']} {label['en']} mo hinh du doan model skill"
-            passages.append(Passage(f"model-{gate.season}", gate.source_ids[0], keys, title, gate.detail))
+            report = reports[SEASON_REPORTS[gate.season]] if gate.season in SEASON_REPORTS else None
+            text = {
+                lang: f"{gate.detail[lang]} {report[lang]}." if report else gate.detail[lang] for lang in ("vi", "en")
+            }
+            passages.append(Passage(f"model-{gate.season}", gate.source_ids[0], keys, title, text))
     years = {y.year: {code: (v.value if v else None) for code, v in y.shares.items()} for y in shown.years}
     year_sources = [shown.rules[0].threshold_source_id, *shown.rules[0].values_source_ids, shown.rules[0].computed_by]
     missing = {p.source_id for p in passages} - set(sources) | set(year_sources) - set(sources)
