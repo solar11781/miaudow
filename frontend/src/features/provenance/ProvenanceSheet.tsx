@@ -61,6 +61,7 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
 
           <dl className={s.facts}>
             <dt>{t.sheet.from}</dt><dd>{pick(src.title)}</dd>
+            <dt>{t.sheet.registerId}</dt><dd className="mono">{src.registerId}</dd>
             <dt>{t.sheet.publisher}</dt><dd>{pick(src.publisher)}</dd>
             <dt>{t.sheet.where}</dt><dd>{pick(src.where)}</dd>
             <dt>{t.sheet.period}</dt><dd>{pick(src.period)}</dd>

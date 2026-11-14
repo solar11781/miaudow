@@ -4,6 +4,7 @@ import type { SourceId, SourceRecord } from './provenance';
 export const SOURCES: Record<SourceId, SourceRecord> = {
   p02: {
     id: 'p02',
+    registerId: 'R-P02',
     kind: 'study',
     short: 'Trịnh Đức Toàn và cs. 2023 · VAAS',
     title: {
@@ -29,6 +30,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   p03: {
     id: 'p03',
+    registerId: 'R-P03',
     kind: 'study',
     short: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An',
     title: {
@@ -50,6 +52,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   qd18: {
     id: 'qd18',
+    registerId: 'R-A01',
     kind: 'standard',
     short: 'QĐ 18/2021/QĐ-TTg',
     title: {
@@ -72,6 +75,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   tcvn8641: {
     id: 'tcvn8641',
+    registerId: 'R-W15',
     kind: 'standard',
     short: 'TCVN 8641:2011',
     title: { vi: 'TCVN 8641:2011 Công trình thủy lợi – Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm', en: 'TCVN 8641:2011 Irrigation techniques for food crops' },
@@ -87,6 +91,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   'fao-tm3': {
     id: 'fao-tm3',
+    registerId: 'R-M02',
     kind: 'standard',
     short: 'FAO Training Manual 3',
     title: { vi: 'FAO Irrigation Water Management, Training Manual 3, Bảng 14', en: 'FAO Irrigation Water Management, Training Manual 3, Table 14' },
@@ -99,6 +104,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   'nasa-power': {
     id: 'nasa-power',
+    registerId: 'R-N01',
     kind: 'data',
     short: 'NASA POWER',
     title: { vi: 'NASA POWER – thời tiết theo ngày (API Daily, cộng đồng AG)', en: 'NASA POWER daily weather (Daily API, AG community)' },
@@ -116,6 +122,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   'chirps-v3': {
     id: 'chirps-v3',
+    registerId: 'R-D05',
     kind: 'data',
     short: 'CHIRPS v3',
     title: { vi: 'CHIRPS v3 – lượng mưa tháng (vệ tinh kết hợp trạm đo)', en: 'CHIRPS v3 monthly rainfall (satellite and station blend)' },
@@ -130,6 +137,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   'modis-ndvi': {
     id: 'modis-ndvi',
+    registerId: 'R-N11',
     kind: 'data',
     short: 'NASA MODIS MOD13Q1',
     title: { vi: 'MODIS MOD13Q1 v061 – chỉ số thực vật NDVI 16 ngày, 250 m', en: 'MODIS MOD13Q1 v061 – 16-day NDVI, 250 m' },
@@ -144,6 +152,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   modis: {
     id: 'modis',
+    registerId: 'R-N02',
     kind: 'data',
     short: 'NASA MODIS MCD12C1',
     title: { vi: 'MODIS Land Cover MCD12C1 v061 – trọng số đất trồng', en: 'MODIS Land Cover MCD12C1 v061 – farmland weights' },
@@ -158,6 +167,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   nso: {
     id: 'nso',
+    registerId: 'R-D01',
     kind: 'data',
     short: 'Cục Thống kê',
     title: { vi: 'Năng suất lúa theo tỉnh và vụ, 1995–2024', en: 'Rice yield by province and season, 1995–2024' },
@@ -178,6 +188,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   geoboundaries: {
     id: 'geoboundaries',
+    registerId: 'R-D04',
     kind: 'data',
     short: 'geoBoundaries',
     title: { vi: 'Ranh giới tỉnh Việt Nam (geoBoundaries gbOpen VNM ADM1)', en: 'Vietnam province boundaries (geoBoundaries gbOpen VNM ADM1)' },
@@ -191,6 +202,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   e012: {
     id: 'e012',
+    registerId: 'E-012',
     kind: 'model',
     short: 'E-012 · bài kiểm tra chính',
     title: { vi: 'Bài kiểm tra chính E-012: mô hình M1 ridge, kiểm tra trên các năm 2016–2024', en: 'Primary test E-012: M1 ridge model, tested on 2016–2024' },
@@ -209,6 +221,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   e010: {
     id: 'e010',
+    registerId: 'E-010',
     kind: 'derived',
     short: 'E-010 · mức bình thường',
     title: { vi: 'Cách tính năng suất bình thường (E-010)', en: 'How the normal yield is computed (E-010)' },
@@ -221,6 +234,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   },
   zhang2011: {
     id: 'zhang2011',
+    registerId: 'R-A10',
     kind: 'study',
     short: 'Zhang et al. 2011',
     title: { vi: 'Chỉ số cực trị khí hậu trên dữ liệu lưới (Zhang và cộng sự, 2011)', en: 'Climate extremes indices on gridded data (Zhang et al., 2011)' },

@@ -39,7 +39,7 @@ export const vi = {
     period: 'Thời gian', method: 'Cách làm', howRead: 'Chúng tôi đã dùng', caveat: 'Có thể không đúng khi', chain: 'Đường đi của con số',
     licence: 'Quyền sử dụng', link: 'Mở trang nguồn', arithmetic: 'Cách tính',
     name: 'Nguồn', type: 'Loại nghiên cứu', placeYears: 'Nơi và năm', readStatus: 'Chúng tôi đã đọc', fullText: 'Đã đọc toàn văn',
-    limits: 'Giới hạn', yes: 'Có', no: 'Không', ruleText: 'Lời văn của quy định',
+    limits: 'Giới hạn', yes: 'Có', no: 'Không', ruleText: 'Lời văn của quy định', registerId: 'Mã trong danh mục nguồn',
   },
   home: {
     eyebrow: 'Nghệ An · đất lúa thiếu nước · thời tiết NASA từ 1990',

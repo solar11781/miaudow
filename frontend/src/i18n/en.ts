@@ -41,7 +41,7 @@ export const en: Messages = {
     period: 'When', method: 'Method', howRead: 'How we used it', caveat: 'May not apply when', chain: 'Path of the number',
     licence: 'Rights', link: 'Open the source page', arithmetic: 'Arithmetic',
     name: 'Source', type: 'Type of study', placeYears: 'Place and years', readStatus: 'What we read', fullText: 'Full text read',
-    limits: 'Limitations', yes: 'Yes', no: 'No', ruleText: 'Text of the rule',
+    limits: 'Limitations', yes: 'Yes', no: 'No', ruleText: 'Text of the rule', registerId: 'Register id',
   },
   home: {
     eyebrow: 'Nghệ An · water-short rice land · NASA weather since 1990',
