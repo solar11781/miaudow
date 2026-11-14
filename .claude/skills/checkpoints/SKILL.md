@@ -19,8 +19,8 @@ Reminders scheduled here live only in this session and fire only while it is idl
 | When (ICT) | Message |
 |---|---|
 | Sat 14 Nov 09:00 | Work starts. Opening ceremony in the organisers' Zoom; the code-move pull requests get prepared. |
-| Sat 14 Nov 09:30 | Merge the code move and the approved queue; create the Railway account and deploy the skeleton. |
-| Sat 14 Nov 10:30 | Skeleton health check must return 200. Next: real-data pipeline, normal-yield method, freeze commit. |
+| Sat 14 Nov 09:30 | Merge the code move and the approved queue; start the downloads in the background; create the Railway account and deploy the skeleton. |
+| Sat 14 Nov 10:15 | 15 min to the 10:30 checkpoint: skeleton health check returns 200? Next: real-data pipeline, normal-yield method, freeze commit. |
 | Sat 14 Nov 12:15 | 15 min to the 12:30 checkpoint: real-data pipeline done? If behind, re-plan the order; nothing is cut. |
 | Sat 14 Nov 14:45 | 15 min to the 15:00 checkpoint: primary test done, gates.json written? If behind, re-plan; nothing is cut. |
 | Sat 14 Nov 16:45 | 30 min to the end-to-end version (Tier 0, about 17:15). |
@@ -33,7 +33,7 @@ Reminders scheduled here live only in this session and fire only while it is idl
 | Sun 15 Nov 09:45 | 15 min to the final resubmit (10:00). Check the submitted status afterwards. |
 | Sun 15 Nov 10:50 | 10 min to the 11:00 hard deadline. Then the frozen production branch and the tag `submitted-hanoi`. |
 | Sun 15 Nov 16:30 | Closing ceremony. After it, switch the project page and the app link to the improved version. |
-| Sun 15 Nov 23:30 | 30 min to the global deadline (23:59). |
+| Sun 15 Nov 23:29 | 30 min to the global deadline (23:59). |
 
 The times follow the approved schedule for the 09:00 start (team decisions D-144 and D-154; the times are planning
 estimates); if the team changes the schedule, change this table.
