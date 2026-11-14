@@ -22,7 +22,7 @@ fake_api = test_copilot.fake_api  # the fixture, shared with the copilot tests
 EXPLAIN = {"answers": ANSWERS, "plan": "cc1", "field": "why", "lang": "vi"}
 COPILOT = {"question": "Lúa cần bao nhiêu nước tưới?", "mode": "simple", "lang": "vi"}
 FORECAST = {**COPILOT, "question": "Năm sau có hạn không?"}  # a fixed answer: no model call
-NO_NUMBER = (lambda _: final("Không có số."),)  # one model call per copilot answer
+NO_NUMBER = (lambda _: final(),)  # one model call per copilot answer
 
 
 class Clock:
@@ -122,7 +122,7 @@ def test_model_calls_are_counted_not_requests(
 ) -> None:
     def three_calls(request: httpx2.Request) -> httpx2.Response:  # 2 tool rounds and the answer: 3 model calls
         turns = len(request.content.decode().split('"tool_result"')) - 1
-        return tool_use("list_plans", {"n": turns}) if turns < 2 else final("Không có số.")
+        return tool_use("list_plans", {"n": turns}) if turns < 2 else final()
 
     api = fake_api(three_calls)
     c = with_both(monkeypatch)

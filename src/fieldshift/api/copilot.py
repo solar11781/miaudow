@@ -5,10 +5,10 @@ Two engines share three read-only tools over our own data: a search of the passa
 the official conditions and the model gates), the year shares of the official conditions (GET /api/past-years) and
 the plans in the study order (rules/rotations.yaml).
 - deterministic (the default, no key): fixed sentences from rules/copilot.yaml filled from the tool results.
-- claude (only with ANTHROPIC_API_KEY): Claude calls the same tools and writes the answer as JSON. The question goes
-  to the model escaped inside <question> tags and capped at QUESTION_MAX_CHARS. Every number of the answer must
-  equal a number of a tool result (member B's number check, allowing a unit scale and the shown rounding), or the
-  answer is refused with a 502; a number in the question is never a source.
+- claude (only with ANTHROPIC_API_KEY): Claude calls the same tools and returns only ids, in a structured output
+  (D-177): passages, plans and years the tools returned. The server drops unknown ids and shows the rest word for
+  word from our data, each with its source, under one fixed line; no model-written sentence reaches the farmer. The
+  question goes to the model escaped inside <question> tags and capped at QUESTION_MAX_CHARS.
 Plans are never ranked, a past year is never a forecast, and the year card is not sent (D-169: it has no source
 button). Member B's climate ML, satellite, map and dataset tools are not ported: D-169 hid the climate ML and the
 other data have no register row or are not served by our API.
@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import anthropic
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
+from pydantic import BaseModel, ConfigDict, StringConstraints, ValidationError
 
 from fieldshift.api.caps import ModelCallsFullError
 from fieldshift.api.explain import (
@@ -86,9 +86,8 @@ STRICT_UNITS = frozenset(
     ("tonnes", "tonne", "tons", "ton", "tạ", "yến", "sào", "hectare", "hectares", "dollars", "dollar", "usd")
 )
 COPILOT_UNITS = UNITS | STRICT_UNITS
-# third pass of PR #55: a safer option the team may switch to; "extractive" shows only the passages the model picks
-MODE: Literal["generative", "extractive"] = "generative"
-EXTRACTIVE_PROMPT = "copilot_extractive"  # rules/prompts/copilot_extractive.md, added to the system prompt in that mode
+
+
 # security review of PR #55: numbers written in words escape the digit check, so each must also be in a tool result;
 # "năm" (five, also "year") counts only before another number word or a unit (number_words)
 NUMBER_WORDS = frozenset(
@@ -262,7 +261,6 @@ class Corpus:
     plans: list[dict[str, object]]  # what the list_plans tool returns, per language below
     plan_names: dict[PlanId, Text]
     system: str  # rules/prompts/copilot.md
-    extractive: str  # rules/prompts/copilot_extractive.md
 
 
 # ---------------------------------------------------------------- search (port of member B's normalize.ts, retrieve.ts)
@@ -496,7 +494,6 @@ def load_corpus(root: Path) -> Corpus:
         plans=tool_plans,
         plan_names={p.id: p.name for p in plans},
         system=load_prompt(root, PROMPT),
-        extractive=load_prompt(root, EXTRACTIVE_PROMPT),
     )
 
 
@@ -590,19 +587,6 @@ TOOLS = [
 
 TOOL_NAMES = frozenset(t["name"] for t in TOOLS)
 
-ANSWER_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "status": {"type": "string", "enum": ["grounded", "insufficient_evidence"]},
-        "answer": {"type": "string"},
-        "passage_ids": {"type": "array", "items": {"type": "string"}},
-        "plan_ids": {"type": "array", "items": {"type": "string"}},
-        "missing_information": {"type": "array", "items": {"type": "string"}},
-    },
-    "required": ["status", "answer", "passage_ids", "plan_ids", "missing_information"],
-    "additionalProperties": False,
-}
-
 PROMPT = "copilot"  # rules/prompts/copilot.md: member B's SYSTEM without its climate ML, map rules and numbers
 
 
@@ -624,10 +608,6 @@ def _leaves(value: object) -> list[int | str]:
     return []
 
 
-def _strings(value: object) -> list[str]:
-    return [x for x in _leaves(value) if isinstance(x, str)]
-
-
 def _units_spelled(text: str) -> str:
     for spelling, unit in UNIT_SPELLINGS:
         text = text.replace(spelling, unit)
@@ -646,24 +626,10 @@ def known_numbers(value: object) -> set[Number]:
     return found
 
 
-def unit_words(value: object) -> set[str]:
-    """The unit words a tool result names anywhere; a number it gives without a unit may take one of them."""
-    words = set(_keep_accents(_units_spelled(" ".join(_strings(value)))).split()) | {
-        w.lower() for w in _units_spelled(" ".join(_strings(value))).split()
-    }
-    return {u for u in COPILOT_UNITS if u in words or (u == "%" and "%" in " ".join(_strings(value)))}
-
-
-def check_numbers(text: str, known: set[Number], units: set[str]) -> NumberCheck:
-    """A number passes when the same digits with the same sign are a token of a tool result with the same unit, or a
-    token without a unit and the answer adds no unit or one the tool results name (second pass of PR #55)."""
+def check_numbers(text: str, known: set[Number]) -> NumberCheck:
+    """The shown text's numbers that are not a token, with the same sign and unit, of the data it was built from."""
     found = numbers(_units_spelled(text), COPILOT_UNITS)
-    unverified = [
-        f"{s}{d}"
-        for s, d, u in found
-        if (s, d, u) not in known and not ((s, d, "") in known and (not u or (u in units and u not in STRICT_UNITS)))
-    ]
-    return NumberCheck(checked=len(found), unverified=unverified)
+    return NumberCheck(checked=len(found), unverified=[f"{s}{d}" for s, d, u in found if (s, d, u) not in known])
 
 
 def number_words(text: str) -> set[str]:
@@ -721,6 +687,7 @@ def _response(
     cards: list[AnswerCard] | None = None,
     trace: list[ToolCall] | None = None,
 ) -> CopilotResponse:
+    """An answer the server writes from our data (the extractive answer names the model that picked it, D-177)."""
     return CopilotResponse(
         status=status,
         engine="deterministic",
@@ -729,9 +696,23 @@ def _response(
         citations=citations or [],
         cards=cards or [],
         tool_trace=trace or [],
-        numbers=check_numbers(answer, known, set()),
+        numbers=check_numbers(answer, known),
         missing_information=[],
     )
+
+
+def _year_block(corpus: Corpus, year: int, lang: str) -> tuple[list[str], dict[str, object]]:
+    """The fixed year lines (rules/copilot.yaml) filled from GET /api/past-years, and the tool data behind them."""
+    said = corpus.answers
+    lines = [said.year_head[lang].format(year=year)]
+    for code, share in corpus.years[year].items():
+        lines.append(f"• {corpus.rule_labels[code][lang]}: {f'{share}%' if share else said.no_value[lang]}")
+    lines.append(said.year_note[lang])
+    return lines, tool_year(corpus, year, lang)
+
+
+def _year_citations(corpus: Corpus, year: int) -> list[Citation]:
+    return [_citation(corpus, f"year-{year}-{sid}", sid) for sid in corpus.year_sources]
 
 
 def fixed_only(req: CopilotRequest) -> bool:
@@ -754,14 +735,9 @@ def deterministic(req: CopilotRequest, corpus: Corpus) -> CopilotResponse:
         year = int(YEAR.search(req.question).group(1))  # type: ignore[union-attr]
         if year not in corpus.years:
             return _response("insufficient_evidence", said.insufficient[lang], set())
-        data = tool_year(corpus, year, lang)
-        lines = [said.year_head[lang].format(year=year)]
-        for code, share in corpus.years[year].items():
-            lines.append(f"• {corpus.rule_labels[code][lang]}: {f'{share}%' if share else said.no_value[lang]}")
-        lines.append(said.year_note[lang])
-        citations = [_citation(corpus, f"year-{year}-{sid}", sid) for sid in corpus.year_sources]
+        lines, data = _year_block(corpus, year, lang)
         trace = [ToolCall(tool="year_conditions", input={"year": year}, ok=True)]
-        return _response("grounded", "\n".join(lines), known_numbers(data), citations, trace=trace)
+        return _response("grounded", "\n".join(lines), known_numbers(data), _year_citations(corpus, year), trace=trace)
     hits = search(corpus, req.question)
     trace = [ToolCall(tool="search_evidence", input={}, ok=True)]
     if not hits:
@@ -776,14 +752,6 @@ def deterministic(req: CopilotRequest, corpus: Corpus) -> CopilotResponse:
 # ---------------------------------------------------------------- claude engine
 
 
-class ModelAnswer(BaseModel):
-    status: Literal["grounded", "insufficient_evidence"]
-    answer: str = Field(min_length=1)
-    passage_ids: list[str]
-    plan_ids: list[str]
-    missing_information: list[str]
-
-
 def copilot_on(environ: Mapping[str, str]) -> bool:
     return environ.get("FIELDSHIFT_COPILOT") == "1"
 
@@ -796,9 +764,7 @@ def copilot_client(environ: Mapping[str, str]) -> anthropic.Anthropic | None:
     return anthropic.Anthropic(api_key=key, base_url=BASE_URL, timeout=TIMEOUT_SECONDS, max_retries=MAX_RETRIES)
 
 
-def _create(
-    client: anthropic.Anthropic, system: str, messages: list[dict[str, object]], schema: dict[str, object]
-) -> anthropic.types.Message:
+def _create(client: anthropic.Anthropic, system: str, messages: list[dict[str, object]]) -> anthropic.types.Message:
     try:
         message = client.messages.create(
             model=MODEL,
@@ -806,7 +772,7 @@ def _create(
             system=system,
             tools=TOOLS,  # type: ignore[arg-type]
             thinking=THINKING,  # type: ignore[arg-type]
-            output_config={"effort": EFFORT, "format": {"type": "json_schema", "schema": schema}},
+            output_config={"effort": EFFORT, "format": {"type": "json_schema", "schema": ANSWER_SCHEMA}},
             messages=messages,  # type: ignore[arg-type]
         )
     except anthropic.APIStatusError as err:
@@ -830,6 +796,7 @@ class _ToolRuns:
     result_bytes: int = 0
     seen: dict[str, Passage] = field(default_factory=dict)
     listed: bool = False
+    years: set[int] = field(default_factory=set)
 
     def reply(self, block: anthropic.types.ToolUseBlock, n: int, request_id: str | None) -> dict[str, object]:
         """The tool_result of one call: past MAX_TOOLS_PER_ROUND not run, a repeat answered by a short note."""
@@ -865,109 +832,101 @@ class _ToolRuns:
             by_id = {p.id: p for p in self.corpus.passages}
             self.seen |= {p["passage_id"]: by_id[p["passage_id"]] for p in out.get("passages", [])}
             self.listed = self.listed or block.name == "list_plans"
+            if block.name == "year_conditions":
+                self.years.add(block.input["year"])
         return content, ok
 
 
-def _checked(message: anthropic.types.Message, results: list[dict[str, object]]) -> tuple[ModelAnswer, NumberCheck]:
-    """The final answer, refused when it is not whole JSON, holds a number or number word no tool returned, or says
-    what will happen or what to do (CLAUDE.md scientific boundaries)."""
-    request_id = getattr(message, "_request_id", None)
-    if message.stop_reason != "end_turn":  # refusal, or cut off at max_tokens
-        raise CopilotError("NotWhole", 200, message.stop_reason, request_id)
-    text = "".join(b.text for b in message.content if isinstance(b, anthropic.types.TextBlock))
-    try:
-        out = ModelAnswer.model_validate_json(text)
-    except ValidationError as err:
-        raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
-    written = "\n".join([out.answer, *out.missing_information])
-    cause = refusal(written, results)
-    if cause:
-        raise CopilotError(cause, 200, message.stop_reason, request_id)
-    return out, check_numbers(written, known_numbers(results), unit_words(results))
-
-
-def refusal(written: str, results: object) -> str | None:
-    """Why a model-written text is refused, or None: a number or number word no tool returned, or a forecast,
-    ranking or advice phrase (CLAUDE.md scientific boundaries; the three security passes of PR #55)."""
-    if check_numbers(written, known_numbers(results), unit_words(results)).unverified:
-        return "NumbersUnverified"
-    if number_words(written) - number_words(" ".join(_strings(results))):
-        return "NumberWordsUnverified"
-    if FIELD_CLAIMS.search(_keep_accents(written)):
+def id_refusal(raw: str) -> str | None:
+    """A second layer on each id the model returns: a forecast, ranking or advice phrase, a number word or a number
+    with a unit in it refuses the whole reply (CLAUDE.md scientific boundaries; the security passes of PR #55)."""
+    if FIELD_CLAIMS.search(_keep_accents(raw)):
         return "FieldClaim"
+    if number_words(raw):
+        return "NumberWords"
+    if any(unit for _, _, unit in numbers(raw, COPILOT_UNITS)):  # an id never carries a unit
+        return "NumberWithUnit"
     return None
 
 
+PICKED_BY = {"engine": "claude", "model": MODEL}  # the model picked what the server shows (D-177)
+
+
 class PickedIds(BaseModel):
-    """The extractive mode's whole answer: ids only, so no model-written sentence reaches the farmer."""
+    """The model's whole answer (D-177): ids of what the tools returned, so no model-written sentence reaches the
+    farmer."""
 
     model_config = ConfigDict(extra="forbid")
 
     passage_ids: list[str]
     plan_ids: list[str]
+    years: list[int]
 
 
-EXTRACTIVE_SCHEMA = {
+ANSWER_SCHEMA = {
     "type": "object",
     "properties": {
         "passage_ids": {"type": "array", "items": {"type": "string"}},
         "plan_ids": {"type": "array", "items": {"type": "string"}},
+        "years": {"type": "array", "items": {"type": "integer"}},
     },
-    "required": ["passage_ids", "plan_ids"],
+    "required": ["passage_ids", "plan_ids", "years"],
     "additionalProperties": False,
 }
 
 
-def _extracted(message: anthropic.types.Message, runs: _ToolRuns, req: CopilotRequest) -> CopilotResponse:
-    """The picked passages word for word under one fixed line, each with its source; none picked is "not enough"."""
+def _picked(message: anthropic.types.Message) -> PickedIds:
     request_id = getattr(message, "_request_id", None)
-    if message.stop_reason != "end_turn":
+    if message.stop_reason != "end_turn":  # refusal, or cut off at max_tokens
         raise CopilotError("NotWhole", 200, message.stop_reason, request_id)
-    text = "".join(b.text for b in message.content if isinstance(b, anthropic.types.TextBlock))
+    raw = "".join(b.text for b in message.content if isinstance(b, anthropic.types.TextBlock))
     try:
-        picked = PickedIds.model_validate_json(text)
+        picked = PickedIds.model_validate_json(raw)
     except ValidationError as err:
         raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
+    for cause in filter(None, map(id_refusal, [*picked.passage_ids, *picked.plan_ids])):
+        raise CopilotError(cause, 200, message.stop_reason, request_id)
+    return picked
+
+
+def _extracted(picked: PickedIds, runs: _ToolRuns, req: CopilotRequest) -> CopilotResponse:
+    """The picked passages, plans and years that a tool returned, word for word from our data under one fixed line,
+    each with its source; an unknown id is dropped, and nothing left is the fixed "not enough evidence" answer."""
     corpus, lang = runs.corpus, req.lang
     by_id = {p.id: p for p in corpus.passages}
     plans = [i for i in dict.fromkeys(picked.plan_ids) if runs.listed and i in corpus.plan_names]
     shown = [runs.seen[i] for i in dict.fromkeys(picked.passage_ids) if i in runs.seen]
     shown += [by_id[f"plan-{i}"] for i in plans if by_id[f"plan-{i}"] not in shown]
-    if not shown:
-        return _response(
-            "insufficient_evidence", corpus.answers.insufficient[lang], set(), trace=runs.trace
-        ).model_copy(update={"engine": "claude", "model": MODEL})
+    years = [y for y in dict.fromkeys(picked.years) if y in runs.years]
+    if not shown and not years:
+        out = _response("insufficient_evidence", corpus.answers.insufficient[lang], set(), trace=runs.trace)
+        return out.model_copy(update=PICKED_BY)
     lines = [corpus.answers.extractive_head[lang], *(f"• {p.text[lang]}" for p in shown)]
+    citations = [_citation(corpus, p.id, p.source_id) for p in shown]
+    known = known_numbers([p.text[lang] for p in shown])
+    for year in years:
+        block, data = _year_block(corpus, year, lang)
+        lines += block
+        citations += _year_citations(corpus, year)
+        known |= known_numbers(data)
     cards = [AnswerCard(kind="passage", ref_id=p.id, title=p.title) for p in shown if not p.id.startswith("plan-")]
     cards += [AnswerCard(kind="plan", ref_id=i, title=corpus.plan_names[i]) for i in plans]
-    out = _response(
-        "grounded",
-        "\n".join(lines),
-        known_numbers([p.text[lang] for p in shown]),
-        [_citation(corpus, p.id, p.source_id) for p in shown],
-        cards,
-        runs.trace,
-    )
-    return out.model_copy(update={"engine": "claude", "model": MODEL})
+    return _response("grounded", "\n".join(lines), known, citations, cards, runs.trace).model_copy(update=PICKED_BY)
 
 
 def claude_answer(
     req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic, charge: Callable[[], bool]
 ) -> CopilotResponse:
-    """Member B's manual tool loop, so every tool result is ours and the number check sees all of them."""
+    """Member B's manual tool loop, so every tool result is ours; the model ends with ids only (D-177)."""
     mode = "Simple mode." if req.mode == "simple" else "Technical mode."
-    language = "Answer in Vietnamese." if req.lang == "vi" else "Answer in English."
     water = f" The farmer's water situation: {req.water}." if req.water else ""
     question = f"<question>{html.escape(req.question, quote=False)}</question>"
-    messages: list[dict[str, object]] = [{"role": "user", "content": f"{mode} {language}{water}\n\n{question}"}]
+    messages: list[dict[str, object]] = [{"role": "user", "content": f"{mode}{water}\n\n{question}"}]
     runs = _ToolRuns(corpus, req.lang)
-    extractive = MODE == "extractive"
-    system = f"{corpus.system}\n\n{corpus.extractive}" if extractive else corpus.system
-    schema = EXTRACTIVE_SCHEMA if extractive else ANSWER_SCHEMA
     for _ in range(MAX_TOOL_ROUNDS + 1):
         if not charge():  # each model call takes one of the shared calls (caps.py), not each answer
             raise ModelCallsFullError
-        message = _create(client, system, messages, schema)
+        message = _create(client, corpus.system, messages)
         request_id = getattr(message, "_request_id", None)
         if message.stop_reason != "tool_use":
             break
@@ -976,25 +935,7 @@ def claude_answer(
         messages.append({"role": "user", "content": [runs.reply(b, n, request_id) for n, b in enumerate(blocks)]})
     else:
         raise CopilotError("TooManyToolRounds", 200, "tool_use", request_id)
-    if extractive:
-        return _extracted(message, runs, req)
-    out, checked = _checked(message, runs.results)
-    seen = runs.seen
-    citations = [_citation(corpus, i, seen[i].source_id) for i in dict.fromkeys(out.passage_ids) if i in seen]
-    names = corpus.plan_names if runs.listed else {}
-    cards = [AnswerCard(kind="plan", ref_id=i, title=names[i]) for i in dict.fromkeys(out.plan_ids) if i in names]
-    grounded = out.status == "grounded" and bool(citations or cards or runs.results)
-    return CopilotResponse(
-        status="grounded" if grounded else "insufficient_evidence",
-        engine="claude",
-        model=MODEL,
-        answer=out.answer,
-        citations=citations,
-        cards=cards,
-        tool_trace=runs.trace,
-        numbers=checked,
-        missing_information=[_both(m) for m in out.missing_information],
-    )
+    return _extracted(_picked(message), runs, req)
 
 
 def answer(
