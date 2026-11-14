@@ -1,11 +1,15 @@
 {
-  "source": "UI-UX-SPEC section 3 (D-102, D-123). Changes need team approval recorded in the decision log.",
-  "runtime": ["react", "react-dom", "react-router-dom"],
+  "source": "UI-UX-SPEC section 3 (D-102, D-123); fonts and tools of the web app: D-155, D-157. Changes need team approval recorded in the decision log.",
+  "runtime": [
+    "react", "react-dom", "react-router-dom",
+    "@fontsource/be-vietnam-pro", "@fontsource/noto-serif-display", "@fontsource/jetbrains-mono"
+  ],
   "development": [
     "vite", "@vitejs/plugin-react", "typescript", "@types/react", "@types/react-dom", "@types/node",
     "tailwindcss", "postcss", "autoprefixer",
     "vitest", "jsdom", "@testing-library/react", "@testing-library/dom", "@playwright/test",
     "rollup-plugin-license",
-    "eslint", "@eslint/js", "typescript-eslint", "prettier"
+    "eslint", "@eslint/js", "typescript-eslint", "prettier",
+    "@axe-core/playwright", "@testing-library/user-event", "eslint-plugin-react-hooks", "globals", "sharp"
   ]
 }
