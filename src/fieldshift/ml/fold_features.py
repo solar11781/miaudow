@@ -79,15 +79,23 @@ def model_columns(weather: list[str], stored: list[str]) -> tuple[list[str], lis
     return [*weather, *(f"{c}_x_spring" for c in weather)], ["is_spring", *(f"ctx_{c}" for c in stored)]
 
 
-def make_fold_transform(stored: list[str]) -> Callable[[pd.DataFrame, pd.Index], pd.DataFrame]:
-    """The runner's fold_transform: rain anomaly, context means and season terms, all from years before the fold."""
+def make_fold_transform(
+    stored: list[str], month_rain: pd.DataFrame | None = None
+) -> Callable[[pd.DataFrame, pd.Index], pd.DataFrame]:
+    """The runner's fold_transform: rain anomaly, drought months (when month_rain is given), context means and season
+    terms, all from years before the fold. The result depends only on the data and the cutoff year, so it is cached."""
+    cache: dict[tuple[int, int], pd.DataFrame] = {}
 
     def transform(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
         before_year = int(df.loc[train_idx, "year"].max()) + 1
-        past = df.index[df["year"] < before_year]
-        out = add_precip_anom(df, past)
-        out = add_context_means(out, before_year, stored)
-        weather = [c for c in [*stored, FOLD_RAIN] if c in out.columns]
-        return add_season_terms(out, weather).replace([np.inf, -np.inf], np.nan)
+        key = (id(df), before_year)
+        if key not in cache:
+            out = add_precip_anom(df, df.index[df["year"] < before_year])
+            if month_rain is not None:
+                out = add_drought_months(out, month_rain, before_year)
+            out = add_context_means(out, before_year, stored)
+            weather = [c for c in [*stored, FOLD_RAIN, *DROUGHT_COLS] if c in out.columns]
+            cache[key] = add_season_terms(out, weather).replace([np.inf, -np.inf], np.nan)
+        return cache[key]
 
     return transform
