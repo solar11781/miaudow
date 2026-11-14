@@ -96,7 +96,7 @@ test('T14 sign-in on: /dang-nhap shows the notice first and loads Google only af
   expect(blocked).toEqual([]);
 });
 
-test('H6 H7 the sign-in pages use 17 px text and 44 px taps', async ({ page }) => {
+test('T6 T7 the sign-in pages use 17 px text and 44 px taps', async ({ page }) => {
   await signInOn(page);
   for (const url of ['/#/dang-nhap', '/#/da-luu', PLANS_URL]) {
     await page.goto(url);
@@ -157,7 +157,7 @@ test('T10 /dang-nhap does not scroll sideways once the Google button is shown', 
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test('UI-UX-SPEC 12c the saved answers page is reachable from the menu, the footer and the farmer start page', async ({
+test('T32 the saved answers page is reachable from the menu, the footer and the farmer start page', async ({
   page,
 }, info) => {
   await signInOn(page);
@@ -173,7 +173,7 @@ test('UI-UX-SPEC 12c the saved answers page is reachable from the menu, the foot
   }
 });
 
-test('UI-UX-SPEC 12c sign-in off: no saved answers link anywhere', async ({ page }) => {
+test('T14 sign-in off: no saved answers link anywhere', async ({ page }) => {
   for (const url of ['/#/nong-dan', '/#/can-bo']) {
     await page.goto(url);
     await page.waitForLoadState('networkidle');
@@ -181,7 +181,7 @@ test('UI-UX-SPEC 12c sign-in off: no saved answers link anywhere', async ({ page
   }
 });
 
-test('/da-luu with sign-in off says it is not available and offers no sign-in', async ({ page }) => {
+test('T14 sign-in off: /da-luu says it is not available and offers no sign-in', async ({ page }) => {
   await page.goto('/#/da-luu');
   await expect(page.getByText('Hiện chưa đăng nhập được', { exact: false })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Đăng nhập' })).toHaveCount(0);
