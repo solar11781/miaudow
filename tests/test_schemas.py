@@ -114,6 +114,15 @@ CONTRACT_FIELDS = {
     ],
     "RainCheck": ["months", "cc", "mean_imerg", "mean_power", "source_ids"],
     "HealthResponse": ["status", "artifacts"],
+    # inline object types of §11, named here
+    "SoilWetness": ["value", "normal"],
+    "ExposureYear": ["year", "shares", "soil_wetness"],
+    "Range80": ["low", "high"],
+    "Summary": ["min", "median", "max"],
+    "Legume": ["present", "crops", "principle_source_ids"],
+    "YearSpan": ["first", "last"],
+    "RainMonth": ["month", "imerg", "power"],
+    "ArtifactInfo": ["schema_version", "generated_at"],
 }
 RULE_CODES = ["heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold"]  # §11 RuleCode order
 PLAN_IDS = ["usual", "usual_p03", "cc1", "cc2", "cc3", "cc4"]  # §11 canonical plan order
@@ -436,3 +445,24 @@ def test_compare_request_years_are_ascending_inside_1995_2024(years: list[int]) 
 
 def test_compare_request_accepts_the_range_ends() -> None:
     s.CompareRequest.model_validate({"province": "nghe_an", "land": "dry", "years": [1995, 2024], "priority": "land"})
+
+
+def test_the_record_types_have_exactly_their_keys() -> None:
+    # §11: Text = Record<Lang, string>; shares = Record<RuleCode, Value | null>
+    assert list(s.Text.__annotations__) == ["vi", "en"]
+    assert list(s.RuleShares.__annotations__) == RULE_CODES
+
+
+def test_period_serializes_its_from_key_in_json() -> None:
+    # §11 Period { from, to }: the JSON key is `from` however the model is dumped
+    assert (
+        s.Period.model_validate({"from": "11-01", "to": "01-31"}).model_dump_json() == '{"from":"11-01","to":"01-31"}'
+    )
+
+
+@pytest.mark.parametrize("years", ['["2000"]', "[2000.0]"])
+def test_compare_request_takes_years_only_as_json_integers(years: str) -> None:
+    # 04-TECH-DESIGN §3: invalid input gets HTTP 422; years are whole years 1995-2024, not text or fractions
+    body = f'{{"province": "nghe_an", "land": "dry", "years": {years}, "priority": "income"}}'
+    with pytest.raises(ValidationError):
+        s.CompareRequest.model_validate_json(body)
