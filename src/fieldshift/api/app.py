@@ -1,11 +1,11 @@
 """FastAPI service (D-25, D-76, D-80; UI-UX-SPEC §11; 04-TECH-DESIGN §3). Reads precomputed artifacts only (NFR-01).
 
-It serves GET /api/past-years, POST /api/compare, GET /api/method and GET /api/health, and the privacy notice of the
-optional sign-in at /quyen-rieng-tu (UI-UX-SPEC §12c). The rules files and artifacts are read once when the app is
-created, so a broken or missing file stops the start instead of failing a farmer's request, and no request reads a
-file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
-generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
-every frontend route, so browser history routing and deep links work (D-102).
+It serves GET /api/past-years, POST /api/compare, GET /api/method and GET /api/health, the privacy notice of the
+optional sign-in at /quyen-rieng-tu (UI-UX-SPEC §12c), and that sign-in under /api/account (accounts.py; 503 while it
+is off). The rules files and artifacts are read once when the app is created, so a broken or missing file stops the
+start instead of failing a farmer's request, and no request reads a file. Invalid input gets HTTP 422 (04-TECH-DESIGN
+§3); an unexpected error gets a generic 500 without internals. The same service serves the built frontend
+(frontend/dist) and returns index.html for every frontend route, so browser history routing and deep links work (D-102).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
 
@@ -14,10 +14,12 @@ from __future__ import annotations
 import asyncio
 import html
 import json
+import os
 from pathlib import Path
-from typing import get_args
+from typing import Annotated, TypeVar, get_args
 
-from fastapi import FastAPI, Request
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
+from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -25,6 +27,15 @@ from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import ClientDisconnect
 
+from fieldshift.api.accounts import (
+    BIGINT_MAX,
+    Accounts,
+    GoogleUnreachableError,
+    NotSignedInError,
+    SavedAnswers,
+    SignInConfig,
+    accounts_from,
+)
 from fieldshift.engine.compare import compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
@@ -45,9 +56,12 @@ FRONTEND_ROUTES = (
     "/nguon",
 )  # UI-UX-SPEC §6; later-feature routes are added with them
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
-# bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that.
+# bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. A saved set of
+# answers is the same body without the province, so the same limit holds it.
 MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
+NO_STORE = {"cache-control": "no-store"}
+M = TypeVar("M", bound=BaseModel)
 
 
 def _artifact_versions(artifacts_dir: Path) -> HealthResponse:
@@ -69,12 +83,12 @@ def _respond(body: bytes) -> Response:
 
 
 def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
-    """Errors of the compare body, located under "body" as FastAPI locates them."""
+    """Errors of a request body, located under "body" as FastAPI locates them."""
     return RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in errors])
 
 
-async def _compare_request(request: Request) -> CompareRequest:
-    """The body as a CompareRequest; reading stops past MAX_BODY_BYTES, whatever content-length says, after
+async def _body(request: Request, model: type[M]) -> M:
+    """The body as a `model`; reading stops past MAX_BODY_BYTES, whatever content-length says, after
     BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422, and nothing logs a traceback)."""
     body = b""
     try:
@@ -88,7 +102,7 @@ async def _compare_request(request: Request) -> CompareRequest:
     except ClientDisconnect as err:
         raise _invalid([{"type": "incomplete", "loc": (), "msg": "client left before the body ended"}]) from err
     try:
-        return CompareRequest.model_validate_json(body)
+        return model.model_validate_json(body)
     except ValidationError as err:
         raise _invalid(err.errors()) from err
 
@@ -131,6 +145,86 @@ def _add_privacy_routes(app: FastAPI, page: bytes) -> None:
         return RedirectResponse("/quyen-rieng-tu", status_code=308)
 
 
+def _not_signed_in() -> HTTPException:
+    return HTTPException(401, "not signed in", headers={"WWW-Authenticate": "Bearer"})  # RFC 6750 §3
+
+
+def _bearer(request: Request) -> str:
+    scheme, _, value = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not value:
+        raise _not_signed_in()
+    return value
+
+
+def _private(model: BaseModel, status_code: int = 200) -> Response:
+    # RFC 6749 §5.1: responses with a token or the account's own data are never stored by a cache
+    return Response(_json(model), status_code=status_code, media_type="application/json", headers=NO_STORE)
+
+
+def _service(request: Request) -> Accounts:
+    """The sign-in service; 503 while sign-in is off (UI-UX-SPEC §12c: every farmer route works without it)."""
+    accounts = request.app.state.accounts
+    if accounts is None:
+        raise HTTPException(503, "sign-in is not available")
+    return accounts
+
+
+Service = Annotated[Accounts, Depends(_service)]
+
+
+def _signed_in(request: Request, service: Service) -> int:
+    try:
+        return service.account(_bearer(request))
+    except NotSignedInError as err:
+        raise _not_signed_in() from err
+
+
+AccountId = Annotated[int, Depends(_signed_in)]
+SetId = Annotated[int, PathParam(ge=1, le=BIGINT_MAX)]
+accounts_router = APIRouter(prefix="/api/account")
+
+
+@accounts_router.get("/config")
+def config_route(request: Request) -> Response:
+    accounts = request.app.state.accounts
+    client_id = accounts.client_id if accounts else None
+    return _respond(_json(SignInConfig(available=accounts is not None, client_id=client_id)))
+
+
+@accounts_router.post("/sign-in")
+def sign_in_route(request: Request, service: Service) -> Response:
+    try:
+        return _private(service.sign_in(_bearer(request)))
+    except NotSignedInError as err:
+        raise _not_signed_in() from err
+    except GoogleUnreachableError as err:
+        raise HTTPException(503, "google sign-in check is not reachable") from err
+
+
+@accounts_router.get("/saved")
+def saved_route(service: Service, account: AccountId) -> Response:
+    return _private(service.saved(account))
+
+
+@accounts_router.post("/saved")
+async def save_route(request: Request, service: Service, account: AccountId) -> Response:
+    answers = await _body(request, SavedAnswers)
+    return _private(await run_in_threadpool(service.save, account, answers), 201)
+
+
+@accounts_router.delete("/saved/{set_id}")
+def delete_set_route(set_id: SetId, service: Service, account: AccountId) -> Response:
+    if not service.delete(account, set_id):
+        raise HTTPException(404, "Not Found")  # also for another account's set: its existence is not revealed
+    return Response(status_code=204)
+
+
+@accounts_router.delete("")
+def delete_account_route(service: Service, account: AccountId) -> Response:
+    service.delete_account(account)
+    return Response(status_code=204)
+
+
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
@@ -160,7 +254,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     @app.post("/api/compare")
     async def compare_route(request: Request) -> Response:
-        body = await _compare_request(request)
+        body = await _body(request, CompareRequest)
         return _respond(_json(await run_in_threadpool(compare, body, compare_data)))
 
     @app.get("/api/method")
@@ -168,6 +262,8 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
         return _respond(method_body)
 
     _add_privacy_routes(app, privacy_body)
+    app.state.accounts = accounts_from(os.environ)  # None while sign-in is off
+    app.include_router(accounts_router)
 
     if (frontend / "index.html").exists():
         index = frontend / "index.html"
