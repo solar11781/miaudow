@@ -450,6 +450,15 @@ def _insufficient(req: CopilotRequest) -> str:
     )
 
 
+def clip(text: str, limit: int = 320) -> str:
+    """A long passage (a whole legal article) is cut at a sentence or word end; the citation links the full text."""
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    end = max(cut.rfind(". "), cut.rfind("; "))
+    return (cut[: end + 1] if end > limit // 2 else cut[: cut.rfind(" ")]).rstrip() + " …"
+
+
 def _citations(passages: list[dict]) -> list[Citation]:
     by_id = {p.passage_id: p for p in evidence.load_passages()}
     out = []
@@ -537,7 +546,7 @@ def deterministic(req: CopilotRequest) -> CopilotResponse:
             numbers=NumberCheck(checked=0, unverified=[]),
         )
     top = data["passages"][:3]
-    answer = "\n".join(f"• {p['text']}" for p in top)
+    answer = "\n".join(f"• {clip(p['text'])}" + (f" ({p['location']})" if p["location"] else "") for p in top)
     cards = [AnswerCard(kind="passage", ref_id=p["passage_id"], title=Text(vi=p["title"], en=p["title"])) for p in top]
     return CopilotResponse(
         status="reference_only",
