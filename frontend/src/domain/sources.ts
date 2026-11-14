@@ -103,8 +103,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     howRead: { vi: 'Đọc qua bản đăng trên caselaw.vn', en: 'Read via the caselaw.vn copy' },
     caveat: {
-      vi: 'Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ. 1 m³/ha bằng 0,1 mm nước trên ruộng.',
-      en: 'The standard does not say whether Nghệ An belongs to the central or northern region. 1 m³/ha equals 0.1 mm of water.',
+      vi: 'Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
+      en: 'The standard does not say whether Nghệ An belongs to the central or northern region.',
     },
   },
   'fao-tm3': {

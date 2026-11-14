@@ -493,6 +493,23 @@ def test_the_winter_model_passage_says_the_result_is_narrow_and_fragile() -> Non
     assert title["en"] not in spring.text["en"]
 
 
+def test_the_two_water_sources_are_never_combined_or_converted() -> None:
+    # D-64, D-68: TCVN 8641 (m³/ha) and FAO TM3 (mm) are separate facts, never compared; a unit conversion next to the
+    # FAO passage invites the comparison. UI-UX-SPEC §9: TCVN's measure is "nước phải tưới vào ruộng" (water to apply).
+    passages = copilot.load_corpus(REPO).passages
+    for p in passages:
+        for lang in ("vi", "en"):
+            text = p.text[lang]
+            assert not ("m³" in text and " mm" in text), (p.id, lang)
+            assert "0,1 mm" not in text, (p.id, lang)
+            assert "0.1 mm" not in text, (p.id, lang)
+    tcvn = next(p for p in passages if p.id == "water-tcvn")
+    assert "nước phải tưới" in tcvn.text["vi"]
+    assert "water to apply" in tcvn.text["en"]
+    assert "cần tưới" not in tcvn.title["vi"] + tcvn.text["vi"]
+    assert "need" not in tcvn.title["en"] + tcvn.text["en"]
+
+
 def test_the_grid_cell_size_is_the_audited_wording() -> None:
     nasa = next(p for p in copilot.load_corpus(REPO).passages if p.id == "nasa-power")
     assert "55 × 66 km" in nasa.text["vi"]  # noqa: RUF001 - frontend/src/i18n/vi.ts, the D-169 audit

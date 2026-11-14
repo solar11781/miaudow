@@ -21,4 +21,12 @@ describe('evidence claims', () => {
     expect(winter?.meaning.vi).toContain(vi.common.winterFragile);
     expect(winter?.meaning.en).toContain(en.common.winterFragile);
   });
+  // UI-UX-SPEC §9: TCVN 8641's measure is "nước phải tưới vào ruộng" (water to apply), not what the crop needs
+  it('use the standard term for the TCVN water', () => {
+    const { result } = renderHook(() => useClaims(), { wrapper });
+    const water = result.current.find((c) => c.id === 'water-rice-peanut');
+    expect(water?.conclusion.vi).toContain('nước phải tưới');
+    expect(water?.conclusion.en).toContain('water to apply');
+    expect(water?.conclusion.en).not.toContain('needs');
+  });
 });

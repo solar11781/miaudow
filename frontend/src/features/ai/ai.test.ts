@@ -28,7 +28,6 @@ describe('retrieval', () => {
     ['du lieu nasa la gi', 'nasa-power'],
     ['Ngưỡng rủi ro lấy từ đâu?', 'qd18'],
     ['lúa hè thu có lãi không', 'p03-summer'],
-    ['Lúa cần bao nhiêu nước?', 'water-units'],
     ['What is the NASA data?', 'nasa-power'],
   ])('finds the right passage for “%s”', (q, id) => {
     const hits = search(q);
@@ -76,7 +75,8 @@ describe('answers', () => {
     expect(a.lines.map((l) => l.ref?.sourceId)).toEqual(expect.arrayContaining(['tcvn8641', 'fao-tm3']));
   });
   it('names every TCVN 8641 spring row for rice, both regions, as rules/crops.yaml has them (D-68)', () => {
-    const vi = ask('Lúa cần bao nhiêu nước?').lines[0]?.text ?? '';
+    // the TCVN passage's own line (D-64: the FAO values are a separate passage)
+    const vi = ask('Lúa cần bao nhiêu nước?').lines.find((l) => l.ref?.sourceId === 'tcvn8641')?.text ?? '';
     for (const part of ['6.500–7.500 m³/ha (Trung bộ, lúa cấy', 'lúa gieo thẳng', '6.000–7.000 m³/ha (Bắc bộ'])
       expect(vi).toContain(part);
     expect(CROPS.rice.tcvn.map((r) => `${r.value.en} (${r.scope.en})`)).toEqual([
@@ -97,5 +97,29 @@ describe('model passages', () => {
     const winter = PASSAGES.find((p) => p.id === 'model-winter');
     expect(winter?.text.vi).toContain(vi.common.winterFragile);
     expect(winter?.text.en).toContain(en.common.winterFragile);
+  });
+});
+
+// D-64, D-68: TCVN 8641 (m³/ha) and FAO TM3 (mm) are separate facts, never combined, compared or converted;
+// UI-UX-SPEC §9: TCVN's measure is "nước phải tưới vào ruộng" (water to apply)
+describe('water passages', () => {
+  it('keep the two sources in separate passages, with no unit conversion', () => {
+    for (const p of PASSAGES)
+      for (const text of [p.text.vi, p.text.en]) {
+        expect(text.includes('m³') && text.includes(' mm'), p.id).toBe(false);
+        expect(text, p.id).not.toMatch(/0[,.]1 mm/);
+      }
+    const tcvn = PASSAGES.find((p) => p.id === 'water-tcvn');
+    const fao = PASSAGES.find((p) => p.id === 'water-fao');
+    expect(tcvn?.sources).toEqual(['tcvn8641']);
+    expect(fao?.sources).toEqual(['fao-tm3']);
+    expect(tcvn?.text.vi).toContain('nước phải tưới');
+    expect(tcvn?.text.en).toContain('water to apply');
+    expect(`${tcvn?.title.en} ${tcvn?.text.en}`).not.toContain('need');
+  });
+  it('answer a rice water question from one of the two', () => {
+    const hit = search('Lúa cần bao nhiêu nước?')[0];
+    expect(['water-tcvn', 'water-fao']).toContain(hit?.passage.id);
+    expect(hit && isStrong(hit)).toBe(true);
   });
 });

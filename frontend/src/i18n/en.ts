@@ -311,7 +311,7 @@ export const en: Messages = {
       weatherNote:
         'Share of Nghệ An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation',
-      waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha). 1 m³/ha is 0.1 mm.',
+      waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
       soilNote:
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',

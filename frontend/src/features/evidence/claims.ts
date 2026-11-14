@@ -194,8 +194,8 @@ export function useClaims(): Claim[] {
         topic: 'water',
         status: 'VERIFIED',
         conclusion: {
-          vi: 'Theo cùng một tiêu chuẩn Việt Nam, lúa vụ xuân cần tưới 6.500–7.500 m³/ha ở Trung bộ (lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha ở Bắc bộ, còn lạc khoảng 2.000 m³/ha.',
-          en: 'By the same Vietnamese standard, spring rice needs 6,500–7,500 m³/ha of irrigation in Trung bộ (transplanted or direct-seeded) and 6,000–7,000 m³/ha in Bắc bộ, peanut about 2,000 m³/ha.',
+          vi: 'Theo cùng một tiêu chuẩn Việt Nam, nước phải tưới cho lúa vụ xuân là 6.500–7.500 m³/ha ở Trung bộ (lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha ở Bắc bộ, cho lạc khoảng 2.000 m³/ha.',
+          en: 'By the same Vietnamese standard, the water to apply for spring rice is 6,500–7,500 m³/ha in Trung bộ (transplanted or direct-seeded) and 6,000–7,000 m³/ha in Bắc bộ, and for peanut about 2,000 m³/ha.',
         },
         meaning: {
           vi: 'Nếu ruộng hay thiếu nước, đây là con số để hỏi cán bộ thủy lợi về lịch tưới.',

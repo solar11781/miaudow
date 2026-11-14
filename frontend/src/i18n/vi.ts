@@ -302,7 +302,7 @@ export const vi = {
       weatherNote:
         'Phần đất trồng Nghệ An gặp điều kiện trong thời gian cây trên ruộng, nếu gieo đúng ngày của thử nghiệm 2020–21, từng năm bạn chọn.',
       water: 'Nước tưới',
-      waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha). 1 m³/ha bằng 0,1 mm.',
+      waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha).',
       soil: 'Độ ẩm đất NASA',
       soilNote:
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
