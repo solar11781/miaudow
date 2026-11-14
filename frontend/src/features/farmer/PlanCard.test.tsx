@@ -497,6 +497,16 @@ describe('card head water line', () => {
     expect(text).toContain('Đậu đen xanh lòng: nguồn không có số');
     expect(text).not.toContain('450');
   });
+  // second review of PR #54: without the rice note the head's range reads lower than the water a farmer needs
+  it("says the rice rows' shared TCVN note, short, right after the rice range", () => {
+    const { text } = line('usual');
+    const range = text.indexOf('6.000-7.500');
+    const note = text.indexOf('(Chỉ nước tưới dưỡng, không kể nước làm đất.)');
+    expect(note).toBeGreaterThan(range);
+    expect(note).toBeLessThan(text.indexOf('Đậu đen xanh lòng'));
+    expect(text).not.toContain('Tiêu chuẩn không nói');
+    expect(text.split('Chỉ nước tưới dưỡng')).toHaveLength(2);
+  });
   it('shows the one TCVN value of peanut (cc1), in English as given', () => {
     expect(line('cc1').values).toEqual(['2.000 m³/ha']);
     cleanup();

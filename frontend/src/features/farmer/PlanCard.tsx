@@ -143,6 +143,8 @@ function tcvnSharedNote(facts: WaterFact[]): WaterFact['note'] {
   return tcvn.length > 1 && first && tcvn.every((w) => w.note?.en === first.en) ? first : null;
 }
 
+const firstSentence = (text: string) => /^.*?[.!?](?=\s|$)/.exec(text)?.[0] ?? text;
+
 /** The per-year tables of a row behind one button (D-170). The content stays in the page and is hidden by screen-only
  * CSS, so print shows it (T35). */
 function YearsFold({ id, children }: { id: string; children: ReactNode }) {
@@ -449,7 +451,10 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
       <p data-testid={`card-${plan.id}-water-line`}>
         {t.farmer.summaryWaterLabel}:{' '}
         {plan.calendar.map((c, i) => {
-          const range = tcvnRange(plan.water.filter((w) => w.crop_key === c.crop_key));
+          const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
+          const range = tcvnRange(facts);
+          // the note's first sentence (rice: maintenance irrigation only); its region sentence is in the label
+          const note = range && tcvnSharedNote(facts);
           return (
             <span key={c.crop_key}>
               {i > 0 && ' · '}
@@ -459,6 +464,7 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
               ) : (
                 t.farmer.noFigure
               )}
+              {note && ` (${firstSentence(pick(note))})`}
             </span>
           );
         })}
