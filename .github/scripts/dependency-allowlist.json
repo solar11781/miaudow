@@ -11,7 +11,7 @@
     "vitest", "jsdom", "@testing-library/react", "@testing-library/dom", "@playwright/test",
     "rollup-plugin-license",
     "eslint", "@eslint/js", "typescript-eslint", "prettier",
-    "@axe-core/playwright", "@testing-library/user-event", "eslint-plugin-react-hooks", "globals", "sharp",
+    "@axe-core/playwright", "@testing-library/user-event", "eslint-plugin-react-hooks", "globals",
     "@types/three"
   ]
 }

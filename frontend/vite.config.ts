@@ -1,8 +1,9 @@
 /// <reference types="vitest/config" />
-import { cpSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
+import license from 'rollup-plugin-license';
 import { defineConfig, type Plugin } from 'vite';
 
 // B's canonical data files (frontend/data/canonical) feed the extras; the farmer flow and method page read /api.
@@ -24,10 +25,64 @@ function snapshotFiles(): Plugin {
   };
 }
 
+// Shipped as files, not as bundled modules, so the plugin does not list them: the fonts and the Cesium runtime files.
+const FILE_PACKAGES = [
+  { name: 'cesium', licenseFile: 'LICENSE.md' },
+  ...['be-vietnam-pro', 'jetbrains-mono', 'noto-serif-display'].map((n) => ({
+    name: `@fontsource/${n}`,
+    licenseFile: 'LICENSE',
+  })),
+];
+
+// Writes THIRD-PARTY-LICENSES.txt into the build output: the licence text of every package in the JavaScript bundle,
+// then the licence of each package in FILE_PACKAGES.
+function thirdPartyLicenses(): Plugin[] {
+  let outDir = '';
+  return [
+    {
+      name: 'third-party-licenses-dir',
+      configResolved: (config) => {
+        outDir = resolve(config.root, config.build.outDir);
+      },
+    },
+    // rollup's Plugin type differs slightly from vite's; the hooks used here are the same
+    license({
+      thirdParty: {
+        output: (dependencies) => {
+          const packages = dependencies.map(
+            (d) => `${d.name} ${d.version} (${d.license})
+
+${d.licenseText ?? '(no licence file in the package)'}`,
+          );
+          const files = FILE_PACKAGES.map(({ name, licenseFile }) => {
+            const dir = resolve('node_modules', name);
+            const { version, license: id } = JSON.parse(readFileSync(resolve(dir, 'package.json'), 'utf8')) as {
+              version: string;
+              license: string;
+            };
+            return `${name} ${version} (${id})
+
+${readFileSync(resolve(dir, licenseFile), 'utf8')}`;
+          });
+          mkdirSync(outDir, { recursive: true });
+          writeFileSync(
+            resolve(outDir, 'THIRD-PARTY-LICENSES.txt'),
+            [...packages, ...files].join(`
+
+${'-'.repeat(72)}
+
+`),
+          );
+        },
+      },
+    }) as unknown as Plugin,
+  ];
+}
+
 // Relative base so the built app also runs from a sub-folder or a static file host (hash routing, no server rewrites).
 export default defineConfig({
   base: './',
-  plugins: [react(), snapshotFiles()],
+  plugins: [react(), snapshotFiles(), thirdPartyLicenses()],
   resolve: { alias: { '@data': canonical } },
   server: { proxy: { '/api': api } },
   preview: { proxy: { '/api': api } },
