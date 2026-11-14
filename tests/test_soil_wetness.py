@@ -102,3 +102,16 @@ def test_the_exported_artifact_has_every_p02_crop_and_year():
         assert set(row) == keys | {"computed_by"}
         for field in ("value", "normal"):
             assert row[field] is None or 0.0 <= row[field] <= 1.0  # GWETROOT: 0 dry to 1 saturated (R-W12)
+
+
+def test_a_cell_without_soil_wetness_names_the_crop_and_cell() -> None:
+    # Python rules: errors name the input
+    cells = _cells()
+    cells[B] = cells[B].drop(columns="GWETROOT")
+    with pytest.raises(ValueError, match=r"cc1_summer_autumn_mung_bean cell \(19\.5, 105\.0\)"):
+        soil_wetness_rows(plan_crops([CC1]), cells, WEIGHTS, [2000])
+
+
+def test_years_may_be_any_iterable() -> None:
+    rows = soil_wetness_rows(plan_crops([CC1]), _cells(), WEIGHTS, (y for y in (2000, 2001)))
+    assert [r["year"] for r in rows] == [2000, 2001]
