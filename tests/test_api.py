@@ -12,7 +12,8 @@ from fastapi.testclient import TestClient
 
 from fieldshift.api.app import FRONTEND_ROUTES, create_app
 
-FIX = Path("tests/fixtures/artifacts")
+REPO = Path(__file__).resolve().parents[1]
+FIX = REPO / "tests" / "fixtures" / "artifacts"
 
 
 def test_health_lists_each_artifact_with_version_and_time() -> None:
@@ -54,4 +55,4 @@ def test_frontend_routes_return_index_html(tmp_path: Path) -> None:
 
 
 def test_start_command_turns_off_the_access_log() -> None:
-    assert "--no-access-log" in Path("Dockerfile").read_text(encoding="utf-8")
+    assert "--no-access-log" in (REPO / "Dockerfile").read_text(encoding="utf-8")
