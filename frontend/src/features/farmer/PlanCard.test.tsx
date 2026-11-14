@@ -1,12 +1,13 @@
 // UI-UX-SPEC section 14a test hooks with member B's row names (D-169): card-<plan id> and card-<plan id>-row-<row>.
 import { afterEach, describe, expect, it, vi as mock } from 'vitest';
 import { cleanup, fireEvent, render, within } from '@testing-library/react';
-import { SettingsProvider } from '../../app/settings';
+import { SettingsProvider, useSettings } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
 import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
 import { vi } from '../../i18n/vi';
+import { en } from '../../i18n/en';
 
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
@@ -299,6 +300,14 @@ describe('explain simply', () => {
     cleanup();
     mock.unstubAllGlobals();
   });
+  function ToEnglish() {
+    const { setLang } = useSettings();
+    return (
+      <button type="button" onClick={() => setLang('en')}>
+        to-en
+      </button>
+    );
+  }
   const card = (explain: boolean) => {
     const res = validateCompare(compare(), body);
     const plan = res.plans[2];
@@ -306,6 +315,7 @@ describe('explain simply', () => {
     render(
       <SettingsProvider>
         <ProvenanceProvider>
+          <ToEnglish />
           <PlanCard plan={plan} res={res} priority="income" explain={explain} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
@@ -346,6 +356,19 @@ describe('explain simply', () => {
         body: JSON.stringify({ answers: res.request, plan: plan.id, field: 'evidence', lang: 'vi' }),
       }),
     );
+  });
+  // review of PR #54: a reply in Vietnamese never stays under the English text
+  it('drops the reply and shows the button again when the language changes', async () => {
+    answer(200, { text: 'Lời dễ hiểu', ai_generated: true, model: 'claude-haiku-5-5' });
+    const { row } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.evidence) }));
+    expect(await row.findByText('Lời dễ hiểu')).not.toBeNull();
+    fireEvent.click(within(document.body).getByRole('button', { name: 'to-en' }));
+    expect(row.queryByText('Lời dễ hiểu')).toBeNull();
+    expect(row.queryByText(en.farmer.explain.aiLabel)).toBeNull();
+    expect(
+      row.getByRole('button', { name: new RegExp(`${en.farmer.explain.button}: ${en.farmer.whyParts.evidence}`) }),
+    ).not.toBeNull();
   });
   it.each([
     [502, 'refused'],
