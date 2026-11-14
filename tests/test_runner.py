@@ -184,3 +184,11 @@ def test_duplicate_series_year_rows_fail_loudly():
     df = pd.concat([df, df.iloc[[0]]], ignore_index=True)
     with pytest.raises(ValueError, match=r"s0.*2010"):
         run_rolling_origin(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
+
+
+def test_missing_input_feature_fails_loudly():
+    # Source: python rules "unknown data fails loudly": only fold-time features may be missing (03-ML-SPEC section 3)
+    df = _synthetic(n_series=3, years=range(2010, 2025))
+    df.loc[(df.series_id == "s1") & (df.year == 2020), "x"] = np.nan
+    with pytest.raises(ValueError, match=r"\['x'\]"):
+        run_rolling_origin(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
