@@ -15,7 +15,7 @@ const PLACES = [
 ];
 const DEFAULT_VIEW = { rx: 55, rz: -24 };
 
-export function Grid3D({ rule, year, selected, onSelect }: { rule: RuleCode; year: number; selected: string; onSelect: (id: string) => void }) {
+export function Grid3D({ rule, year, selected, onSelect, forceFlat = false }: { rule: RuleCode; year: number; selected: string; onSelect: (id: string) => void; forceFlat?: boolean }) {
   const t = useT();
   const f = useFormat();
   const { calm, lang } = useSettings();
@@ -24,7 +24,7 @@ export function Grid3D({ rule, year, selected, onSelect }: { rule: RuleCode; yea
   const [scale, setScale] = useState(1);
   const stage = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; rx: number; rz: number; moved: boolean } | null>(null);
-  const flat = !view3d || calm;
+  const flat = !view3d || calm || forceFlat;
 
   const box = useMemo(() => {
     const lons = geo.grid.map((c) => c.lon);
@@ -84,10 +84,12 @@ export function Grid3D({ rule, year, selected, onSelect }: { rule: RuleCode; yea
         aria-label={`${t.science.mapTitle}. ${flat ? t.science.flatHint : t.science.dragHint}`}
       >
         <div className={s.controls}>
-          <button type="button" onClick={() => setRot((r) => ({ ...r, rz: r.rz - 30 }))} disabled={flat} aria-label={t.science.rotateLeft}><Icon name="rotateL" size={18} /></button>
-          <button type="button" onClick={() => setRot((r) => ({ ...r, rz: r.rz + 30 }))} disabled={flat} aria-label={t.science.rotateRight}><Icon name="rotateR" size={18} /></button>
-          <button type="button" onClick={() => setRot(DEFAULT_VIEW)} disabled={flat} aria-label={t.science.reset}><Icon name="reset" size={18} /></button>
-          <button type="button" className={s.mode} aria-pressed={!flat} onClick={() => setView3d((v) => !v)} disabled={calm}>{flat ? t.science.view2d : t.science.view3d}</button>
+          {!forceFlat && <>
+            <button type="button" onClick={() => setRot((r) => ({ ...r, rz: r.rz - 30 }))} disabled={flat} aria-label={t.science.rotateLeft}><Icon name="rotateL" size={18} /></button>
+            <button type="button" onClick={() => setRot((r) => ({ ...r, rz: r.rz + 30 }))} disabled={flat} aria-label={t.science.rotateRight}><Icon name="rotateR" size={18} /></button>
+            <button type="button" onClick={() => setRot(DEFAULT_VIEW)} disabled={flat} aria-label={t.science.reset}><Icon name="reset" size={18} /></button>
+            <button type="button" className={s.mode} aria-pressed={!flat} onClick={() => setView3d((v) => !v)} disabled={calm}>{flat ? t.science.view2d : t.science.view3d}</button>
+          </>}
         </div>
         <div className={s.fit} style={{ transform: `scale(${scale})` }}>
           <div

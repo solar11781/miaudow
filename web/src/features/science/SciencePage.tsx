@@ -3,7 +3,7 @@ import { geo, hazards, model, YEARS, type MetricRow, type RiceSeason, type RuleC
 import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
-import { Grid3D } from './Grid3D';
+import { Observatory3D } from './Observatory3D';
 import { YearBars } from '../charts/YearBars';
 import { RiceHistoryChart } from '../charts/RiceHistoryChart';
 import { SkillChart, type SkillRow } from '../charts/SkillChart';
@@ -54,36 +54,21 @@ function GridSection() {
           ))}
         </div>
 
-        <div className={s.gridLayout}>
-          <div className={s.panel}>
-            <h2 id="grid-title" className="h3">{t.science.mapTitle}</h2>
-            <p className={s.panelLead}>{t.science.mapLead}</p>
-            <Grid3D rule={rule} year={year} selected={cell} onSelect={setCell} />
-            <div className={s.timeline}>
-              <button type="button" className={s.play} onClick={() => setPlaying((p) => !p)} aria-pressed={playing} disabled={calm && !playing}
-                aria-label={playing ? t.science.pause : t.science.play}>
-                <Icon name={playing ? 'pause' : 'play'} size={18} />
-              </button>
-              <div className={s.bars}>
-                <YearBars years={YEARS} values={hazards.year_level[rule]} color={info.color} selected={year}
-                  onSelect={(y) => { setPlaying(false); setYear(y); }} height={120} label={`${pick(info.name)} · ${t.science.shareOfFarmland}`} />
-              </div>
-            </div>
-            <label className={s.yearSelect}>
-              <span>{t.science.year}</span>
-              <select value={year} onChange={(e) => { setPlaying(false); setYear(Number(e.target.value)); }}>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </label>
+        <p className={s.panelLead}>{t.science.mapLead}</p>
+        <div className={s.observatory}>
+          <div className={s.stageCol}>
+            <h2 id="grid-title" className="visually-hidden">{t.science.mapTitle}</h2>
+            <Observatory3D rule={rule} year={year} selected={cell} onSelect={setCell} />
           </div>
 
-          <aside className={s.side}>
+          <aside className={s.side} aria-label={t.science.readingFor(year)}>
             <div className={s.kpi}>
               <p className={s.kpiLabel}>{pick(info.name)} · {info.article} · <span className="num">{year}</span></p>
               <SourceValue size="xl" {...refs.share(rule, year, share)} />
               <p className={s.kpiSub}>{t.science.shareOfFarmland}</p>
               <p className={s.quote}>“{info.quote}”</p>
               <p className={s.computed}>{pick(info.computed)}</p>
+              <p className={s.notForecast}>{t.common.notForecast}</p>
             </div>
             {sel && (
               <dl className={s.cellCard}>
@@ -94,6 +79,28 @@ function GridSection() {
               </dl>
             )}
           </aside>
+        </div>
+
+        <div className={s.timelineCard}>
+          <div className={s.timelineHead}>
+            <p className={s.timelineTitle}>{pick(info.name)} · {t.science.shareOfFarmland}, {YEARS[0]}–{YEARS[YEARS.length - 1]}</p>
+            <label className={s.yearSelect}>
+              <span>{t.science.year}</span>
+              <select value={year} onChange={(e) => { setPlaying(false); setYear(Number(e.target.value)); }}>
+                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className={s.timeline}>
+            <button type="button" className={s.play} onClick={() => setPlaying((p) => !p)} aria-pressed={playing} disabled={calm && !playing}
+              aria-label={playing ? t.science.pause : t.science.play}>
+              <Icon name={playing ? 'pause' : 'play'} size={18} />
+            </button>
+            <div className={s.bars}>
+              <YearBars years={YEARS} values={hazards.year_level[rule]} color={info.color} selected={year}
+                onSelect={(y) => { setPlaying(false); setYear(y); }} height={150} label={`${pick(info.name)} · ${t.science.shareOfFarmland}`} />
+            </div>
+          </div>
         </div>
 
         <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.science.tableCaption}>
