@@ -6,3 +6,6 @@ test-results
 *.local
 review-shots
 public/cesium/
+# mood photos without a recorded licence (pipeline/build_mood.mjs): kept on this machine only
+public/media/mood/
+src/data/generated/media.mood.json
