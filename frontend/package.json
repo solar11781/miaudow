@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:snapshot": "npm run build -- --mode snapshot --outDir dist-snapshot",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc -b",
     "lint": "eslint .",

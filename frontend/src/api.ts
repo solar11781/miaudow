@@ -360,6 +360,8 @@ export function validateMethod(raw: unknown): MethodResponse {
 
 // No app-level timeout on our calls (UI-UX-SPEC section 11): only member B's health and copilot calls pass one.
 async function call(path: string, init: RequestInit & { timeoutMs?: number } = {}): Promise<unknown> {
+  // the offline copy has no server: no live answer may appear under its notice
+  if (SNAPSHOT_MODE) throw new Error('the offline copy has no server');
   const ctrl = new AbortController();
   const timer = init.timeoutMs === undefined ? undefined : window.setTimeout(() => ctrl.abort(), init.timeoutMs);
   const outer = init.signal;
@@ -380,8 +382,71 @@ async function call(path: string, init: RequestInit & { timeoutMs?: number } = {
   }
 }
 
+// ---------------------------------------------------------------- demo-day snapshot (04-TECH-DESIGN section 9)
+
+/** True only in `npm run build:snapshot` (vite --mode snapshot): the product calls then read the saved real answers of
+ * scripts/build_snapshot.py (frontend/snapshot/, copied in by vite.config.ts) instead of /api, and every page says so. */
+export const SNAPSHOT_MODE = import.meta.env.MODE === 'snapshot';
+const SNAPSHOT_URL = `${import.meta.env.BASE_URL}snapshot/`;
+
+export interface SnapshotEntry {
+  land: CompareRequest['land'];
+  priority: CompareRequest['priority'];
+  years: number[];
+  file: string;
+}
+export interface SnapshotIndex {
+  commit: string;
+  made_at: string;
+  compare: SnapshotEntry[];
+}
+
+/** Answers the snapshot did not save; `saved` lists the ones it did. */
+export class SnapshotMissError extends Error {
+  constructor(readonly saved: SnapshotEntry[]) {
+    super('these answers are not in the offline copy');
+  }
+}
+
+const snapshotIndexShape = obj({
+  commit: str,
+  made_at: (v, at) => {
+    if (typeof v !== 'string' || Number.isNaN(Date.parse(v))) fail(at, 'not a date');
+  },
+  compare: arr(
+    obj({
+      land: oneOf(['dry', 'unsure']),
+      priority: oneOf(['income', 'stability', 'water', 'land']),
+      years: arr(num),
+      file: (v, at) => {
+        if (typeof v !== 'string' || !/^compare\/[a-z0-9_-]+\.json$/.test(v)) fail(at, 'not a file in compare/');
+      },
+    }),
+  ),
+});
+
+export function validateSnapshotIndex(raw: unknown): SnapshotIndex {
+  snapshotIndexShape(raw, 'snapshot');
+  return raw as SnapshotIndex;
+}
+
+async function fromSnapshot(file: string, signal?: AbortSignal): Promise<unknown> {
+  const res = await fetch(`${SNAPSHOT_URL}${file}`, { signal });
+  if (!res.ok) throw new ApiError(res.status, res.statusText);
+  return await res.json();
+}
+
+async function snapshotCompare(body: CompareRequest, signal?: AbortSignal): Promise<unknown> {
+  const index = validateSnapshotIndex(await fromSnapshot('index.json', signal));
+  const hit = index.compare.find((e) => sameRequest({ province: 'nghe_an', ...e }, body));
+  if (!hit) throw new SnapshotMissError(index.compare);
+  return fromSnapshot(hit.file, signal);
+}
+
 /** The method page's grid figure (UI-UX-SPEC section 11b item 4), served by our backend. */
-export const GRID_FIGURE_URL = '/api/figures/nghe_an_grid.svg';
+export const GRID_FIGURE_URL = SNAPSHOT_MODE
+  ? `${SNAPSHOT_URL}figures/nghe_an_grid.svg`
+  : '/api/figures/nghe_an_grid.svg';
 
 // the past-years response is kept in memory for the life of the page (section 11), never stored in the browser
 let pastYearsOnce: Promise<PastYearsResponse> | null = null;
@@ -389,15 +454,26 @@ let pastYearsOnce: Promise<PastYearsResponse> | null = null;
 export const api = {
   /** Shared by every screen of the page, so one screen leaving does not cancel it; callers ignore a late answer. */
   pastYears(): Promise<PastYearsResponse> {
-    pastYearsOnce ??= call('/past-years?province=nghe_an').then(validatePastYears);
+    pastYearsOnce ??= (SNAPSHOT_MODE ? fromSnapshot('past-years.json') : call('/past-years?province=nghe_an')).then(
+      validatePastYears,
+    );
     pastYearsOnce.catch(() => {
       pastYearsOnce = null;
     });
     return pastYearsOnce;
   },
   compare: async (body: CompareRequest, signal?: AbortSignal): Promise<CompareResponse> =>
-    validateCompare(await call('/compare', { method: 'POST', body: JSON.stringify(body), signal }), body),
-  method: async (signal?: AbortSignal): Promise<MethodResponse> => validateMethod(await call('/method', { signal })),
+    validateCompare(
+      await (SNAPSHOT_MODE
+        ? snapshotCompare(body, signal)
+        : call('/compare', { method: 'POST', body: JSON.stringify(body), signal })),
+      body,
+    ),
+  method: async (signal?: AbortSignal): Promise<MethodResponse> =>
+    validateMethod(await (SNAPSHOT_MODE ? fromSnapshot('method.json', signal) : call('/method', { signal }))),
+  /** The snapshot's index (saved answers, commit, time made); only in snapshot mode. */
+  snapshot: async (signal?: AbortSignal): Promise<SnapshotIndex> =>
+    validateSnapshotIndex(await fromSnapshot('index.json', signal)),
   health: (signal?: AbortSignal) => call('/health', { signal, timeoutMs: 4000 }) as Promise<Health>,
   copilot: (body: CopilotRequest, signal?: AbortSignal) =>
     call('/copilot', {
