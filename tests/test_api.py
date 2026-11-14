@@ -82,6 +82,14 @@ def test_method_answers(client: TestClient) -> None:
     MethodResponse.model_validate(r.json())
 
 
+def test_the_grid_figure_is_served_as_svg(client: TestClient) -> None:
+    # UI-UX-SPEC §11b item 4: the image artifacts/figures/nghe_an_grid.svg served by the backend (D-135)
+    r = client.get("/api/figures/nghe_an_grid.svg")
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "image/svg+xml"
+    assert r.content == (REPO / "artifacts" / "figures" / "nghe_an_grid.svg").read_bytes()
+
+
 def test_health_lists_each_artifact_with_version_and_time(client: TestClient) -> None:
     r = client.get("/api/health")
     assert r.status_code == 200
@@ -270,6 +278,7 @@ def test_endpoints_read_no_file_after_startup(tmp_path: Path) -> None:
     assert c.post("/api/compare", json=BODY).status_code == 200
     assert c.get("/api/method").status_code == 200
     assert c.get("/api/health").status_code == 200
+    assert c.get("/api/figures/nghe_an_grid.svg").status_code == 200
 
 
 def test_an_artifact_without_schema_version_stops_the_start_naming_the_file(tmp_path: Path) -> None:
@@ -284,6 +293,13 @@ def test_a_missing_artifact_stops_the_start_naming_the_file(tmp_path: Path) -> N
     root = copy_root(tmp_path)
     (root / "artifacts" / "hazard_labels.json").unlink()
     with pytest.raises(FileNotFoundError, match=r"hazard_labels\.json"):
+        create_app(root=root)
+
+
+def test_a_missing_figure_stops_the_start_naming_the_file(tmp_path: Path) -> None:
+    root = copy_root(tmp_path)
+    (root / "artifacts" / "figures" / "nghe_an_grid.svg").unlink()
+    with pytest.raises(FileNotFoundError, match=r"nghe_an_grid\.svg"):
         create_app(root=root)
 
 
@@ -368,6 +384,36 @@ def test_start_command_turns_off_the_access_log() -> None:
 def test_start_command_turns_off_the_server_header() -> None:
     # the test client runs the app without uvicorn, so only the start command can show the `server: uvicorn` header
     assert "--no-server-header" in (REPO / "Dockerfile").read_text(encoding="utf-8")
+
+
+# ---- privacy notice of the optional sign-in (UI-UX-SPEC §12c)
+
+
+def test_privacy_notice_states_what_is_stored_where_how_long_and_who_hosts(client: TestClient) -> None:
+    # §12c: what is stored (only Google's account id and the saved answers), where and who hosts it (a database on
+    # Railway, §12c; the Singapore region, §11 privacy settings), for how long; Google's branding page links this path
+    r = client.get("/quyen-rieng-tu")
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/html")
+    assert "set-cookie" not in r.headers
+    text = r.text
+    for fact in ("Google account id", "no name, email or picture", "Railway", "Singapore", "until you delete"):
+        assert fact in text, fact
+    assert '<html lang="vi">' in text
+    assert 'lang="en"' in text  # both languages on the one page Google links (H15)
+    assert "http" not in text  # no third-party resource on this page (H14)
+
+
+def test_privacy_notice_is_served_with_sign_in_off(tmp_path: Path) -> None:
+    # the link is registered with Google, so it answers whatever the server's sign-in settings are
+    assert TestClient(create_app(root=copy_root(tmp_path))).get("/quyen-rieng-tu").status_code == 200
+
+
+def test_the_english_privacy_path_redirects_permanently(client: TestClient) -> None:
+    # D-164: /privacy is a permanent redirect (308) to /quyen-rieng-tu
+    r = client.get("/privacy", follow_redirects=False)
+    assert r.status_code == 308
+    assert r.headers["location"] == "/quyen-rieng-tu"
 
 
 def test_no_response_sets_a_cookie(tmp_path: Path) -> None:

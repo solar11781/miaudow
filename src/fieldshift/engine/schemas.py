@@ -294,19 +294,27 @@ class Plan(Contract):
     why: Why
 
 
+def _years_ascending_in_range(years: list[int]) -> list[int]:
+    ascending = all(a < b for a, b in pairwise(years))
+    if not ascending or any(not FIRST_YEAR <= y <= LAST_YEAR for y in years):
+        raise ValueError(f"years must be strictly ascending within {FIRST_YEAR}-{LAST_YEAR}")
+    return years
+
+
+# the picked past years at a trust boundary: whole numbers only, at most the 30 years of 1995-2024 (UI-UX-SPEC §11
+# YearRow), never empty (§6b rules 3, 5)
+Years = Annotated[
+    list[StrictInt],
+    Field(min_length=1, max_length=LAST_YEAR - FIRST_YEAR + 1),
+    AfterValidator(_years_ascending_in_range),
+]
+
+
 class CompareRequest(Contract):
     province: Province
     land: Land
-    # the body is a trust boundary: whole numbers only, at most the 30 years of 1995-2024 (UI-UX-SPEC §11 YearRow)
-    years: list[StrictInt] = Field(min_length=1, max_length=LAST_YEAR - FIRST_YEAR + 1)  # UI-UX-SPEC §6b rules 3, 5
+    years: Years
     priority: Priority
-
-    @model_validator(mode="after")
-    def _years_ascending_in_range(self) -> Self:
-        ascending = all(a < b for a, b in pairwise(self.years))
-        if not ascending or any(not FIRST_YEAR <= y <= LAST_YEAR for y in self.years):
-            raise ValueError(f"years must be strictly ascending within {FIRST_YEAR}-{LAST_YEAR}")
-        return self
 
 
 class Interval(Contract):
