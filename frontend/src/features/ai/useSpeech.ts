@@ -21,6 +21,9 @@ function recognitionCtor(): RecognitionCtor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
+// Chrome and Edge fill the voice list late; without this wait the "no voice" note would flash on every load.
+const VOICE_LOAD_WAIT_MS = 1500;
+
 export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => void) {
   const Ctor = recognitionCtor();
   const canListen = Ctor !== null;
@@ -28,19 +31,27 @@ export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => voi
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>(() =>
     hasSynthesis ? window.speechSynthesis.getVoices() : [],
   );
+  const [voicesSettled, setVoicesSettled] = useState(voices.length > 0);
   // Chrome and Edge load voices late and announce it with voiceschanged.
   useEffect(() => {
     if (!hasSynthesis) return;
     const synth = window.speechSynthesis;
-    const update = () => setVoices(synth.getVoices());
-    update();
+    const update = () => {
+      setVoices(synth.getVoices());
+      setVoicesSettled(true);
+    };
+    if (synth.getVoices().length > 0) update();
     synth.addEventListener('voiceschanged', update);
-    return () => synth.removeEventListener('voiceschanged', update);
+    const timer = setTimeout(() => setVoicesSettled(true), VOICE_LOAD_WAIT_MS);
+    return () => {
+      synth.removeEventListener('voiceschanged', update);
+      clearTimeout(timer);
+    };
   }, [hasSynthesis]);
   // Never fall back to a voice of another language: it would misread the text.
   const voice = voices.find((v) => new RegExp('^' + lang + '([-_]|$)', 'i').test(v.lang)) ?? null;
   const canSpeak = voice !== null;
-  const noVoice = hasSynthesis && !canSpeak;
+  const noVoice = hasSynthesis && voicesSettled && !canSpeak;
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
