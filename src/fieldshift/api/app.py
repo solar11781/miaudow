@@ -49,7 +49,7 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.api.caps import TOO_MANY, ModelCallCaps, ModelCallsFullError, client_of
+from fieldshift.api.caps import TOO_MANY, ModelCallCaps, client_of
 from fieldshift.api.copilot import (
     COPILOT_LIMIT,
     CopilotRequest,
@@ -90,6 +90,7 @@ FILE_METHODS = ("GET", "HEAD")
 ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
+WEEK = {"cache-control": "public, max-age=604800"}  # performance audit 2026-11-15: media names carry no content hash
 # H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat,
 # and Google's sign-in script, frame and style of /dang-nhap and /da-luu (UI-UX-SPEC §12c), as Google's guidance names
 # them: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#content_security_policy
@@ -107,6 +108,10 @@ CSP = "; ".join(
         f"style-src 'self' 'unsafe-inline' {GSI}style",
         "font-src 'self'",
         "frame-ancestors 'none'",
+        # base-uri and form-action never fall back to default-src (https://www.w3.org/TR/CSP3/); no page uses a plugin
+        "base-uri 'none'",
+        "form-action 'self'",
+        "object-src 'none'",
     )
 )
 SECURITY_HEADERS = [
@@ -116,6 +121,8 @@ SECURITY_HEADERS = [
     # and the answers live after "#", which is never sent
     (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"content-security-policy", CSP.encode()),
+    # one year (MDN's example); no includeSubDomains or preload, since the parent domain's other subdomains are not ours
+    (b"strict-transport-security", b"max-age=31536000"),
 ]
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
 M = TypeVar("M", bound=BaseModel)
@@ -167,8 +174,12 @@ async def _body(request: Request, model: type[M]) -> M:
 
 
 async def _unprocessable(_: Request, exc: RequestValidationError) -> JSONResponse:
-    """Every 422 in FastAPI's shape with type, loc and msg only, so no route echoes the input back."""
-    detail = [{"type": e["type"], "loc": e["loc"], "msg": e["msg"]} for e in exc.errors()]
+    """Every 422 in FastAPI's shape with type, loc and msg only, so no route echoes the input back; an unknown key is
+    located at the object that holds it, since its name is the client's input."""
+    detail = [
+        {"type": e["type"], "loc": e["loc"][:-1] if e["type"] == "extra_forbidden" else e["loc"], "msg": e["msg"]}
+        for e in exc.errors()
+    ]
     return JSONResponse({"detail": detail}, status_code=422)
 
 
@@ -357,8 +368,6 @@ async def _copilot(
         caps, client = request.app.state.model_calls, client_of(request)
         charge = functools.partial(caps.take, client, "copilot")
         reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, charge, limiter=threads)
-    except ModelCallsFullError:
-        return _too_many()
     finally:
         slots.release()
     return _respond(_json(reply))
@@ -404,7 +413,9 @@ def _add_frontend(app: FastAPI, frontend: Path) -> None:
             raise HTTPException(404, "Not Found")
         if file is None or file == index:
             return FileResponse(index, headers=REVALIDATE)
-        return FileResponse(file, headers=IMMUTABLE if path.startswith("assets/") else None)
+        if path.startswith("assets/"):
+            return FileResponse(file, headers=IMMUTABLE)
+        return FileResponse(file, headers=WEEK if path.startswith("media/") else None)
 
 
 class SecurityHeaders:
