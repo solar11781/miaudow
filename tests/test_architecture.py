@@ -5,8 +5,6 @@ Written before arch_check.py. Run: pytest tests/test_architecture.py
 
 from pathlib import Path
 
-import pytest
-
 from arch_check import find_violations
 
 REPO = Path(__file__).resolve().parents[1]
@@ -74,6 +72,4 @@ def test_allowed_imports_pass(tmp_path: Path) -> None:
 
 def test_this_repository_follows_the_layer_rules() -> None:
     pkg = REPO / "src" / "fieldshift"
-    if not pkg.is_dir():
-        pytest.skip("src/fieldshift does not exist yet")
     assert find_violations(pkg) == []

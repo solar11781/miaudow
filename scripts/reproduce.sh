@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Rebuild every derived table from the original public downloads (CR-07, NFR-02). Run from the repository root.
-# Stages written during the event (hazard labels, models, artifacts) are added here then.
 set -euo pipefail
 export PYTHONPATH=src
 export PYTHONUTF8=1  # Windows consoles default to cp1252; the reports print Vietnamese names
@@ -41,6 +40,12 @@ python scripts/build_figures.py   # docs/figures: rice yield history and farmlan
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
 #     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.
 python scripts/download_imerg_monthly.py
+
+# 3c. Static snapshot of real API answers for the offline demo build (frontend/snapshot/, D-150).
+python scripts/build_snapshot.py
+
+# 3d. The docs/figures PNGs and png_sources.json are rendered by hand from the committed SVGs with headless Edge
+#     (command in docs/figures/README.md); no script does it.
 
 # 4. Tests.
 pytest -q
