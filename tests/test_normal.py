@@ -46,6 +46,29 @@ def test_missing_yield_in_window_gives_no_normal():
     assert n.iloc[5] == pytest.approx(7.0)
 
 
+def test_absent_year_in_window_gives_no_normal():
+    # Source: 03-ML-SPEC section 3 and D-72: "a normal exists only when that many past years exist"; mean3 needs t-3 to t-1
+    df = pd.DataFrame(
+        {"series_id": "A|0", "year": [2000, 2002, 2003, 2004, 2005], "yield_t_ha": [4.0, 5.0, 6.0, 7.0, 8.0]}
+    )
+    n = past_normal(df, "mean3")
+    assert n.iloc[:4].isna().all()  # 2003 and 2004 lack 2001 in their windows
+    assert n.iloc[4] == pytest.approx(6.0)  # 2005: mean of 2002, 2003, 2004
+
+
+def test_duplicate_series_year_or_index_fails_loudly():
+    # Source: 03-ML-SPEC section 3 (normal from years before the target year only): a second row of the same year would
+    # enter its own window; python rules: unknown data fails loudly
+    dup_year = pd.DataFrame(
+        {"series_id": "A|0", "year": [2000, 2001, 2002, 2003, 2003], "yield_t_ha": [4.0, 5.0, 6.0, 7.0, 9.0]}
+    )
+    with pytest.raises(ValueError, match="A\|0.*2003"):
+        past_normal(dup_year, "mean3")
+    dup_index = pd.concat([_s([4.0, 5.0, 6.0, 7.0], sid="A|0"), _s([1.0, 1.0, 1.0, 1.0], sid="B|0")])
+    with pytest.raises(ValueError, match="index"):
+        past_normal(dup_index, "mean3")
+
+
 def test_normal_restarts_in_each_series():
     df = pd.concat([_s([5.0, 5.0, 5.0], sid="A|0"), _s([8.0, 8.0, 8.0, 8.0], start=2003, sid="A|1")], ignore_index=True)
     n = past_normal(df, "mean3")
