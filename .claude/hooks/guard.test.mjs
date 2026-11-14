@@ -211,6 +211,50 @@ test('gh pr merge is no longer blocked by the static rules (the gate decides)', 
   allowed('gh pr merge 12 --merge');
 });
 
+test('a pull request merge in any other form is blocked, because the gate checks only the plain form', () => {
+  for (const cmd of [
+    'GH_DEBUG=1 gh pr merge 12 --squash',
+    'GH_REPO=o/r gh pr merge 12 --merge',
+    'env gh pr merge 12 --squash',
+    'env -i GH_TOKEN=x gh pr merge 12 --merge',
+    'command gh pr merge 12 --squash',
+    'gh.exe pr merge 12 --squash',
+    '/usr/bin/gh pr merge 12 --squash',
+    'C:\\tools\\gh.exe pr merge 12 --merge',
+    'bash -c "gh pr merge 12 --squash"',
+    'bash -c "gh pr merge 12 --merge"',
+    'powershell -Command "gh pr merge 12 --merge"',
+    'gh pr -R o/r merge 12 --squash',
+    'gh pr --repo o/r merge 12',
+    'gh api -X PUT repos/o/r/pulls/12/merge -f merge_method=squash',
+    'gh api graphql -f query="mutation { mergePullRequest(input: {}) { clientMutationId } }"',
+    'gh api graphql -f query="mutation { enablePullRequestAutoMerge(input: {}) { clientMutationId } }"',
+    'gh api -X POST repos/o/r/merges -f base=main -f head=feat/x',
+    'nice -n 5 gh pr merge 12 --squash',
+    'sudo -u root gh pr merge 12 --squash',
+    'env -u FOO gh pr merge 12 --squash',
+    'timeout 60 gh pr merge 12 --squash',
+    'echo 12 | xargs gh pr merge --squash',
+    'eval "gh pr merge 12 --squash"',
+    'bash -lc "gh pr merge 12 --squash"',
+    'pwsh -NoProfile -Command "gh pr merge 12 --squash"',
+    'cmd /c gh pr merge 12 --squash',
+    'Start-Process gh -ArgumentList "pr merge 12 --squash"',
+    'gh -R o/r pr merge 12 --merge',
+    'gh --% pr merge 12 --squash',
+    'g`h pr merge 12 --squash',
+  ]) blocked(cmd);
+  allowed('gh pr view 12 --json state');
+  allowed('gh pr create --title merge --body x');
+  allowed('gh pr create --title "switch the merge gate" --body-file b.md');
+  allowed('gh pr comment 5 --body-file gate.md');
+  allowed('gh pr checks 6 --watch');
+  allowed('gh api repos/o/r/pulls/12');
+  allowed('bash -c "gh pr view 12"');
+  allowed('git merge origin/main');
+  allowed('git commit -m "fix: tighten the merge gate"');
+});
+
 test('merge gate: changes to the shared queue are merged by a person only', () => {
   const pr = goodPr();
   pr.files = [{ path: 'src/a.py' }];

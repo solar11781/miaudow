@@ -112,10 +112,22 @@ function checkRm(args, shell) {
 
 const RM_WORDS = new Set(['rm', 'remove-item', 'ri', 'del', 'rd', 'rmdir', 'erase']);
 
+// Text that merges a pull request however the command is wrapped: `pr` followed only by options and then `merge`
+// (gh pr merge, gh pr -R x merge, pr merge inside quotes), and the merge calls of the GitHub API.
+const MERGE_TEXT = /\bpr\s+(?:-{1,2}\S+\s+(?:[^-\s]\S*\s+)?)*merge\b|\/pulls\/[^/\s]+\/merge\b|\/merges\b|mergePullRequest|enablePullRequestAutoMerge/i;
+const isPlainMerge = (seg) => seg[0] === 'gh' && seg[1] === 'pr' && seg[2] === 'merge';
+
 // Returns a reason string when the command must be blocked, or null when it may run.
 export function evaluate(command, { currentBranch = null, shell = 'bash' } = {}) {
+  // only the plain command `gh pr merge ...`, alone, reaches the merge gate (mergeRequest); any other text that would
+  // merge a pull request (behind a wrapper, a shell, eval, a path or the API) is blocked, whatever runs it
+  const segs = segments(tokenize(command));
+  if (MERGE_TEXT.test(command) && !(segs.length === 1 && isPlainMerge(segs[0]))) {
+    return 'merging a pull request in a form the merge gate cannot check; run gh pr merge <number> --merge alone ' +
+      '(if this is only text, such as a commit message, pass it from a file)';
+  }
   const state = { branch: currentBranch };
-  for (const seg of segments(tokenize(command))) {
+  for (const seg of segs) {
     let words = seg;
     while (words.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(words[0])) words = words.slice(1);
     if (!words.length) continue;
