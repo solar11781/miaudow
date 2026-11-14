@@ -140,8 +140,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     publisher: { vi: 'Trung tâm Nghiên cứu Langley của NASA', en: 'NASA Langley Research Center' },
     where: {
-      vi: '5 ô lưới phủ đất trồng Nghệ An, mỗi ô 0,5° × 0,625° (khoảng 50 km)',
-      en: '5 grid cells over Nghệ An farmland, each 0.5° × 0.625° (about 50 km)',
+      vi: '5 ô lưới phủ đất trồng Nghệ An, mỗi ô 0,5° × 0,625° (khoảng 55 × 66 km)',
+      en: '5 grid cells over Nghệ An farmland, each 0.5° × 0.625° (about 55 × 66 km)',
     },
     period: { vi: '1990–2024, theo ngày', en: '1990–2024, daily' },
     method: {
@@ -153,8 +153,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       en: 'Downloaded from the API on 14 Nov 2026; no missing value filled',
     },
     caveat: {
-      vi: 'Ô lưới 50 km làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
-      en: '50 km cells smooth out extremes; your own field is not measured.',
+      vi: 'Ô lưới khoảng 55 × 66 km làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
+      en: 'Cells of about 55 × 66 km smooth out extremes; your own field is not measured.',
     },
     url: 'https://power.larc.nasa.gov/',
     licence: { vi: 'Dữ liệu mở của NASA, cần trích dẫn', en: 'NASA open data, citation requested' },

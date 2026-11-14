@@ -283,7 +283,7 @@ export const en: Messages = {
     yearChipLegend: 'Gold line under each year: share of farmland meeting the drought (rain part) condition that year.',
     yearRowLabel: 'Share of Nghệ An farmland meeting each condition while crops were in the field',
     limitsTitle: 'Limits of these numbers',
-    cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghệ An farmland, each about 50 km across.`,
+    cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghệ An farmland, each about 55 × 66 km.`,
     limits: [
       'Grid values smooth out extremes; your own field is not measured.',
       'Official warnings weigh other factors too; this is a mechanical reading of the Decision’s tables.',
@@ -550,7 +550,7 @@ export const en: Messages = {
     claimNotMade: 'May not say “NASA weather improves the prediction”',
     limitsTitle: 'Known limits',
     limits: [
-      '50 km cells smooth out extremes (Zhang et al., 2011).',
+      'Cells of about 55 × 66 km smooth out extremes (Zhang et al., 2011).',
       'Heavy rain uses the 24-hour branch only; the 12-hour branch is not computable from daily data.',
       'Official warnings weigh humidity, wind and duration; this is a mechanical reading of the tables.',
       'Yields are province averages, mostly irrigated rice, not water-short fields.',

@@ -24,8 +24,8 @@ const STATIC: Passage[] = [
     keys: 'nasa power du lieu thoi tiet reanalysis merra ve tinh luoi 50 km',
     title: { vi: 'Dữ liệu NASA POWER là gì?', en: 'What is the NASA POWER data?' },
     text: {
-      vi: 'NASA POWER cho thời tiết theo ngày trên lưới ô khoảng 50 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
-      en: 'NASA POWER gives daily weather on a grid of about 50 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
+      vi: 'NASA POWER cho thời tiết theo ngày trên lưới ô, mỗi ô khoảng 55 × 66 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
+      en: 'NASA POWER gives daily weather on a grid of cells about 55 × 66 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
     },
   },
   {

@@ -274,7 +274,7 @@ export const vi = {
     yearChipLegend: 'Vạch vàng dưới mỗi năm: phần đất trồng gặp điều kiện hạn hán (phần lượng mưa) năm đó.',
     yearRowLabel: 'Phần đất trồng Nghệ An gặp điều kiện, trong thời gian có cây trên ruộng',
     limitsTitle: 'Giới hạn của các con số này',
-    cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 50 km.`,
+    cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
       'Giá trị trên ô lưới làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
       'Cảnh báo chính thức còn xét thêm yếu tố khác; đây là cách đọc máy móc các bảng của Quyết định.',
@@ -546,7 +546,7 @@ export const vi = {
     claimNotMade: 'Không được nói “thời tiết NASA giúp dự đoán tốt hơn”',
     limitsTitle: 'Giới hạn đã biết',
     limits: [
-      'Ô lưới 50 km làm mượt cực trị (Zhang và cộng sự, 2011).',
+      'Ô lưới khoảng 55 × 66 km làm mượt cực trị (Zhang và cộng sự, 2011).',
       'Mưa lớn chỉ tính nhánh 24 giờ; nhánh 12 giờ không tính được từ số liệu ngày.',
       'Cảnh báo chính thức còn xét độ ẩm, gió và thời gian; đây là cách đọc máy móc các bảng.',
       'Năng suất là trung bình tỉnh, phần lớn lúa có tưới; không phải ruộng thiếu nước.',

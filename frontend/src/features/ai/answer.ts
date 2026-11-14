@@ -112,8 +112,8 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   }
   lines.push({
     text: vi
-      ? 'Đây là năm đã qua, không phải dự báo. Số liệu từ ô lưới 50 km, không đo ruộng nhà bạn.'
-      : 'This is a past year, not a forecast. Values come from 50 km cells, not your field.',
+      ? 'Đây là năm đã qua, không phải dự báo. Số liệu từ ô lưới khoảng 55 × 66 km, không đo ruộng nhà bạn.'
+      : 'This is a past year, not a forecast. Values come from cells of about 55 × 66 km, not your field.',
   });
   return { type: 'year', lines, evidence: [], kinds: ['data', 'derived'] };
 }
