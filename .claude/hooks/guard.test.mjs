@@ -262,3 +262,58 @@ test('merge gate: changes to the shared queue are merged by a person only', () =
   pr.files.push({ path: '.autopilot/queue.md' });
   assert.match(checkMergeGate(pr, true), /queue/);
 });
+
+// Folders (team, 2026-11-14): the old checks stay as they are; one narrow exception lets a merge, rebase or push run
+// in another git checkout that is not on main, and a new block covers git -C into main. A stand-in says which branch
+// each folder is on; undefined = not a readable git checkout.
+const BRANCHES = { '/repo/main': 'main', '/repo/main/sub': 'main', '/repo/wt': 'feat/y' };
+const branchAt = (p) => BRANCHES[p.replaceAll('\\', '/').replace(/^[A-Za-z]:/, '')];
+const at = (currentBranch, shell = 'bash') => ({ currentBranch, shell, cwd: '/repo/main', branchAt });
+
+test('folders: a merge in a literal checkout that is not on main runs when the cd is certain', () => {
+  allowed('cd /repo/wt && git merge --no-edit origin/main', at('main'));
+  allowed('cd /repo/wt && git fetch -q origin && git merge -q --no-edit origin/main && git push -q', at('main'));
+  allowed('git -C /repo/wt merge origin/main', at('main'));
+  allowed('cd /repo/wt && git status', at('main'));
+});
+
+test('folders: anything less certain keeps the old check of the session folder', () => {
+  const s = at('main');
+  for (const cmd of [
+    'cd /repo/wt; git merge feat/x',
+    'cd /repo/wt || git merge feat/x',
+    'cd /repo/wt | cat && git merge feat/x',
+    'false && cd /repo/wt && git merge feat/x',
+    'cd /repo/wt && cd /repo/main && git merge feat/x',
+    'cd /repo/wt && pushd /repo/main && git merge feat/x',
+    'cd /repo/wt && builtin cd /repo/main && git merge feat/x',
+    'cd /repo/wt && (cd /repo/main && git merge feat/x)',
+    'cd /repo/wt && eval "cd /repo/main" && git merge feat/x',
+    'cd /repo/wt && git checkout main && git merge feat/x',
+    'cd /repo/wt && git -C /repo/main merge feat/x',
+    'cd /repo/wt && git --git-dir=/repo/main/.git merge feat/x',
+    'cd /repo/wt && git --git-dir /repo/main/.git merge feat/x',
+    'cd /repo/wt && GIT_DIR=/repo/main/.git git merge feat/x',
+    'cd $W && git merge feat/x',
+    'cd relative/wt && git merge feat/x',
+    'cd /repo/missing && git merge feat/x',
+    'cd /repo/main/sub && git merge feat/x',
+    'cd -P /repo/wt && git merge feat/x',
+    'git -C /repo/wt -C /repo/main merge feat/x',
+    'git -C /repo/main merge feat/x',
+    'git -C /repo/wt --git-dir=/repo/main/.git merge feat/x',
+    'GIT_DIR=/repo/main/.git git -C /repo/wt merge feat/x',
+  ]) blocked(cmd, s);
+  blocked('cd /repo/wt; git merge feat/x', at('main', 'powershell'));
+  blocked('Set-Location /repo/wt; git merge feat/x', at('main', 'powershell'));
+});
+
+test('folders: git -C into main or into an unreadable folder is now refused from any branch', () => {
+  blocked('git -C /repo/main merge feat/x', at('feat/y'));
+  blocked('git -C /repo/main push', at('feat/y'));
+  blocked('git -C $W merge origin/main', at('feat/y'));
+  allowed('git -C /repo/wt status', at('feat/y'));
+  allowed('git -C $W status', at('feat/y'));
+  allowed('git -C $W push -u origin feat/z', at('feat/y'));
+  allowed('git -C /repo/wt merge origin/main', at('feat/y'));
+});
