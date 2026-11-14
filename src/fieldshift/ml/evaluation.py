@@ -13,8 +13,10 @@ from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
+from lightgbm import LGBMRegressor
 from numpy.typing import ArrayLike
 from scipy import stats
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -184,3 +186,44 @@ def fit_ridge(x: ArrayLike, y: ArrayLike, alpha: float) -> Pipeline:
 
     # D-146: sklearn Lasso divides the squared error by 2n and Ridge does not, so the grid value becomes 2 n alpha
     return Pipeline([("scale", StandardScaler()), ("ridge", Ridge(alpha=2 * len(y) * alpha))]).fit(x, y)
+
+
+# ---------- secondary models M2, M3 (03-ML-SPEC section 6; team 2026-11-14) ----------
+# M3 random forest: Meroni et al. 2021 Table 4 (max depth 7 values from 10 to 40 in steps of 5; max features all or
+# sqrt; min samples split as 6 values in [0.2, 0.8], the count their table states); 100 trees fixed to keep the run short
+M3_GRID = [
+    {"max_depth": d, "max_features": f, "min_samples_split": round(s, 2)}
+    for d in range(10, 41, 5)
+    for f in (1.0, "sqrt")
+    for s in np.linspace(0.2, 0.8, 6)
+]
+RF_TREES = 100
+# M2 LightGBM: the parameters LightGBM's tuning guide names (num_leaves below 2^max_depth); its defaults 31 and 20 with
+# one step either side; max_depth 10, 20, 40 from Meroni et al. 2021's boosting grid; other settings at their defaults
+M2_GRID = [
+    {"num_leaves": nl, "min_data_in_leaf": md, "max_depth": d}
+    for nl in (15, 31, 63)
+    for md in (10, 20, 40)
+    for d in (10, 20, 40)
+]
+
+
+def fit_lgbm(x: ArrayLike, y: ArrayLike, params: dict, seed: int) -> LGBMRegressor:
+    """M2: LightGBM regression with a fixed seed, deterministic and silent."""
+    model = LGBMRegressor(
+        num_leaves=params["num_leaves"],
+        min_child_samples=params["min_data_in_leaf"],
+        max_depth=params["max_depth"],
+        random_state=seed,
+        deterministic=True,
+        force_row_wise=True,
+        n_jobs=1,
+        verbose=-1,
+    )
+    return model.fit(np.asarray(x), np.asarray(y))
+
+
+def fit_rf(x: ArrayLike, y: ArrayLike, params: dict, seed: int) -> RandomForestRegressor:
+    """M3: random forest regression with a fixed seed."""
+    model = RandomForestRegressor(n_estimators=RF_TREES, random_state=seed, n_jobs=-1, **params)
+    return model.fit(np.asarray(x), np.asarray(y))
