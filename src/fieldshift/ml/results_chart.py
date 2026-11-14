@@ -28,8 +28,6 @@ BACKGROUND = "#ffffff"
 TEXT = "#1a1a1a"
 MARK = "#1f4e79"
 ZERO = "#595959"
-# a white outline behind each number label, so the zero and interval lines never cut through it
-HALO = f' paint-order="stroke" stroke="{BACKGROUND}" stroke-width="4" stroke-linejoin="round"'
 
 # layout in px (routine choice, D-102)
 WIDTH = 960
@@ -38,6 +36,10 @@ COLUMN_X = 184
 COLUMN_W = 256
 PAD = 12
 LABEL_HALF_W = 64  # about half a "-0.52 [-1.98, -0.05]" label at 12 px, so a label stays inside its column
+# a white box behind each number label, so no line shows between its characters
+CHAR_W = 7.0  # a 12 px Arial digit advances 6.7 px (0.556 em), rounded up so the box covers each label
+LABEL_PAD = 3  # white margin left and right of the label
+LABEL_RISE, LABEL_DROP = 12, 4  # box from one font size above the baseline to below the brackets' 2.5 px drop
 ROW_H = 44
 TOP = 76
 
@@ -115,7 +117,13 @@ def _mark(key: tuple[str, str, str], skill: dict, column: int, y: float, scale: 
     parts.append(f'<circle cx="{cx:.1f}" cy="{y + 14:.1f}" r="4.5" fill="{MARK}"/>')
     left = COLUMN_X + column * COLUMN_W + LABEL_HALF_W
     label_x = min(max(cx, left), left + COLUMN_W - 2 * LABEL_HALF_W)
-    parts.append(svg_text(label_x, y + 34, _label(skill), f' font-size="12" text-anchor="middle"{HALO}'))
+    label = _label(skill)
+    box_w = len(label) * CHAR_W + 2 * LABEL_PAD
+    parts.append(
+        f'<rect x="{label_x - box_w / 2:.1f}" y="{y + 34 - LABEL_RISE:.1f}" width="{box_w:.1f}"'
+        f' height="{LABEL_RISE + LABEL_DROP}" fill="{BACKGROUND}"/>'
+    )
+    parts.append(svg_text(label_x, y + 34, label, ' font-size="12" text-anchor="middle"'))
     parts.append("</g>")
     return "".join(parts)
 
