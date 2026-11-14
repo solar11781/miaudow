@@ -8,6 +8,7 @@ export const vi = {
     title: 'Miaudow · Đồng lúa Nghệ An',
   },
   nav: {
+    tagline: 'Đồng lúa Nghệ An',
     home: 'Trang chủ',
     method: 'Phương pháp',
     farmer: 'Nông dân',
@@ -185,6 +186,8 @@ export const vi = {
       'Mô hình có thời tiết NASA đoán tốt hơn, với mức hơn nhỏ. Dự đoán lúa mùa được hiện cạnh số liệu thật.',
     // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
     honestyWinterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
+    vsBnw: 'so với BNW',
+    skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
     honestyCta: 'Xem bài kiểm tra',
     faqEyebrow: 'Bà con hỏi',
@@ -927,6 +930,30 @@ export const vi = {
     rainNotRun: 'Phép đối chiếu mưa chưa chạy.',
     notUsed: 'Bộ số liệu đã xem xét nhưng không dùng',
     noUserTest: 'Ứng dụng chưa được thử với nông dân.',
+  },
+  refs: {
+    anyCropWindow: 'thời gian có ít nhất một cây P-02 trên ruộng',
+    cropWindow: (crop: string, sow: string, harvest: string) =>
+      `thời gian ${crop} trên ruộng (${sow} → ${harvest}, theo P-02)`,
+    shareDetail: (article: string, quote: string, window: string) =>
+      `${article} QĐ 18/2021: “${quote}”. Áp cho từng ô NASA POWER trong ${window}; cộng trọng số đất trồng MODIS của các ô đạt ngưỡng. Tính toán của Miaudow, không phải số liệu chính thức.`,
+    cellDetail: (unit: string, share: string) =>
+      `Lượng đo của mỗi ô NASA POWER trong năm (${unit}); trọng số là phần đất trồng của ô theo bản đồ MODIS. ${share}`,
+    riceSeriesLabel: (span: string) => `Năng suất lúa Nghệ An so với bình thường, ${span}`,
+    riceSeason: { spring: 'xuân', summer_autumn: 'hè thu', winter: 'mùa' },
+    riceDetail: (season: string) => `Năng suất thật ÷ trung bình 3 năm trước − 1 (vụ ${season}).`,
+    predictionsLabel: 'Dự đoán ngoài mẫu lúa mùa, 2016–2024',
+    predictionsDetail:
+      'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
+    ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
+    ndviDetail:
+      'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi ngày 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
+    cropProfitLabel: (crop: string) => `Lãi ${crop}`,
+    cropProfitDetail: (profit: string, cost: string, price: string) =>
+      `Bảng 13: ${profit} nghìn đ/ha, đã trừ công. Chi phí ${cost} nghìn đ/ha; giá bán ${price} đ/kg lúc thu hoạch.`,
+    planProfitLabel: 'Lãi cả năm, ba vụ cộng lại',
+    planProfitSum: 'Bảng 13, phép cộng của Miaudow',
+    tcvnLabel: (crop: string) => `Mức tưới ${crop}`,
   },
   footer: {
     tagline: 'Từ kinh nghiệm đồng ruộng đến tri thức dữ liệu.',

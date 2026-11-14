@@ -117,7 +117,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
           <BrandMark />
           <span className={s.word}>
             <span className={s.name}>Miaudow</span>
-            <span className={s.tag}>Đồng lúa Nghệ An</span>
+            <span className={s.tag}>{t.nav.tagline}</span>
           </span>
         </Link>
         <nav className={s.nav} aria-label={t.nav.main}>
