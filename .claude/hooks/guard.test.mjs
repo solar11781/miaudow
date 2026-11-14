@@ -262,3 +262,31 @@ test('merge gate: changes to the shared queue are merged by a person only', () =
   pr.files.push({ path: '.autopilot/queue.md' });
   assert.match(checkMergeGate(pr, true), /queue/);
 });
+
+// The branch belongs to the folder a command runs in (team, 2026-11-14): `cd <dir>` and `git -C <dir>` move the check
+// to that folder's branch; a folder that cannot be read (a variable, a missing path) counts as unknown and is refused
+// for merges, rebases and pushes, so the hook only gets stricter where it cannot tell.
+const BRANCHES = { '/repo/main': 'main', '/repo/wt': 'feat/y' };
+const branchAt = (p) => BRANCHES[p.replaceAll('\\', '/').replace(/^[A-Za-z]:/, '')];
+const at = (currentBranch) => ({ currentBranch, cwd: '/repo/main', branchAt });
+
+test('rule 3b: the branch is the one of the folder the command runs in', () => {
+  allowed('cd /repo/wt && git merge origin/main', at('main'));
+  allowed('git -C /repo/wt merge --no-edit origin/main', at('main'));
+  allowed('cd /repo/wt && git rebase origin/main', at('main'));
+  allowed('cd /repo/wt && git push', at('main'));
+  blocked('cd /repo/main && git merge feat/x', at('feat/y'));
+  blocked('git -C /repo/main merge feat/x', at('feat/y'));
+  blocked('cd /repo/wt && cd /repo/main && git push', at('feat/y'));
+  blocked('git merge feat/x', at('main'));
+});
+
+test('rule 3c: a folder whose branch cannot be read is refused for merges, rebases and pushes', () => {
+  blocked('cd $W && git merge origin/main', at('feat/y'));
+  blocked('git -C $W merge origin/main', at('feat/y'));
+  blocked('cd /repo/missing && git rebase origin/main', at('feat/y'));
+  blocked('cd "$W" && git push', at('feat/y'));
+  allowed('cd $W && git status && git log --oneline -1', at('feat/y'));
+  allowed('cd $W && git push -u origin feat/z', at('feat/y'));
+  allowed('git -C $W pull', at('feat/y'));
+});
