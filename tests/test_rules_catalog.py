@@ -346,12 +346,16 @@ def test_p02_crops_dates_and_money_are_the_reported_values() -> None:
 
 
 SHORT_SPRING = re.compile(r"(?<!Đông )\b[Vv]ụ Xuân")  # GLOSSARY.md: the spring season is "Vụ Đông Xuân"
+SHORT_SPRING_ANY_CASE = re.compile(r"(?<!Đông )\bvụ xuân", re.IGNORECASE)
 
 
 def test_spring_season_is_named_as_the_glossary_names_it() -> None:
     for name in ("rotations.yaml", "method.yaml"):
         text = (RULES / name).read_text(encoding="utf-8")
         assert not SHORT_SPRING.search(text), name
+    for cell in method()["coverage"]:
+        if cell["axis"] != "water_tcvn":  # TCVN 8641 scopes keep the standard's own "vụ xuân" wording
+            assert not SHORT_SPRING_ANY_CASE.search(cell["text"]["vi"]), cell["row_key"]
 
 
 def test_plan_risks() -> None:
