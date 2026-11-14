@@ -68,3 +68,13 @@ def test_frontend_routes_return_index_html(tmp_path: Path) -> None:
 
 def test_start_command_turns_off_the_access_log() -> None:
     assert "--no-access-log" in (REPO / "Dockerfile").read_text(encoding="utf-8")
+
+
+def test_no_response_sets_a_cookie(tmp_path: Path) -> None:
+    # UI-UX-SPEC T14 (server side): no cookies set
+    (tmp_path / "index.html").write_text("<html>app</html>", encoding="utf-8")
+    c = TestClient(create_app(artifacts_dir=FIX, frontend_dir=tmp_path))
+    for path in ("/api/health", *FRONTEND_ROUTES):
+        r = c.get(path)
+        assert r.status_code == 200, path
+        assert "set-cookie" not in r.headers, path
