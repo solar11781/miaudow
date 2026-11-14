@@ -5,7 +5,7 @@
 # coverage: the UI-UX-SPEC §11b coverage table, one cell per row and axis (CoverageCell). Row keys name the crops of
 # each table row (routine naming).
 coverage:
-  - {row_key: rice_spring, crop: &rice_spring {vi: "Lúa vụ Xuân (CC5; cũng có trong đối chứng P-03)", en: "Spring rice (CC5; also in the P-03 control)"},
+  - {row_key: rice_spring, crop: &rice_spring {vi: "Lúa vụ Đông Xuân (CC5; cũng có trong đối chứng P-03)", en: "Spring rice (CC5; also in the P-03 control)"},
      axis: money, text: {vi: "Có cho CC5; dạng chữ cho P-03", en: "Yes for CC5; as text for P-03"},
      source_ids: [R-P02, R-P03]}
   - {row_key: rice_spring, crop: *rice_spring, axis: conditions,
