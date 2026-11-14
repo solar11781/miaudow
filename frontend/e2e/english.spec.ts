@@ -95,3 +95,19 @@ test('T31 in English, share copies the English link of that exact card', async (
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('#/farmer/plans?ruong=canal_end&nam=2010%2C2020&uutien=income&the=cc3');
 });
+
+test('T33 links inside English pages stay on English paths (science, observatory, assistant)', async ({ page }) => {
+  await page.goto('/#/science');
+  await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
+  await page.waitForLoadState('networkidle');
+  const hrefs = await page
+    .locator('a[href^="#/"]')
+    .evaluateAll((links) => links.map((a) => a.getAttribute('href') ?? ''));
+  expect(hrefs.length).toBeGreaterThan(0);
+  const vietnamese =
+    /^#\/(nong-dan|can-bo|khoa-hoc|phuong-phap|dai-quan-sat|bang-chung|tro-ly|dang-nhap|da-luu)(\/|\?|$)/;
+  expect(hrefs.filter((h) => vietnamese.test(h))).toEqual([]);
+  await page.locator('a[href^="#/observatory"]').first().click();
+  await expect(page).toHaveURL(/#\/observatory\?/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+});
