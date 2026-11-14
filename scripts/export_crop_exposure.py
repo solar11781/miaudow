@@ -24,9 +24,10 @@ in_mask = (weights_table["province_nso"] == PROVINCE) & (weights_table["method"]
 nghe_an = weights_table[in_mask & (weights_table["farmland_weight"] > 0)]
 weights = {(round(r.lat, 6), round(r.lon, 6)): float(r.farmland_weight) for r in nghe_an.itertuples()}
 cells, _unmatched = load_cells("data/raw/power", "data/raw/power_t2m", POWER_CACHE_FILES)
-missing = [c for c in weights if c not in cells or "T2M" not in cells[c]]  # T2M: its own cache (D-72)
+NEEDED = ("PRECTOTCORR", "T2M_MAX", "T2M", "GWETROOT")  # the rules (05 section 4b) and soil wetness (section 4d)
+missing = [c for c in weights if c not in cells or any(col not in cells[c] for col in NEEDED)]
 if missing:
-    raise ValueError(f"no cached POWER series (or no T2M) for the weighted {PROVINCE} cells {missing}")
+    raise ValueError(f"cached POWER series missing or without {NEEDED} for the weighted {PROVINCE} cells {missing}")
 crops = plan_crops(yaml.safe_load(Path("rules/rotations.yaml").read_text(encoding="utf-8")))
 gates = json.loads(Path("artifacts/gates.json").read_text(encoding="utf-8"))  # written by run_primary_test.py
 for name, rows, field in (
