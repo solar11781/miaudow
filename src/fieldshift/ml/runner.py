@@ -65,8 +65,12 @@ def run_rolling_origin(
     fold_transform(df, train_idx) -> df adds fold-time features (e.g. add_precip_anom) from training rows only.
     Returns {"predictions": DataFrame (same rows only), "metrics": dict}.
     """
-    if not alphas:
+    if len(alphas) == 0:
         raise ValueError("a penalty grid is required (no default without a decision)")
+    dup = df.duplicated(["series_id", "year"], keep=False)
+    if dup.any():
+        bad = df.loc[dup, ["series_id", "year"]].drop_duplicates().to_dict("records")
+        raise ValueError(f"more than one row per series and year: {bad}")
     if df["anom"].isna().any():
         raise ValueError("rows without an anomaly (no normal) must be dropped before the run (03-ML-SPEC §3)")
     data = df.reset_index(drop=True)
@@ -78,6 +82,10 @@ def run_rolling_origin(
         if len(test_idx) == 0:
             continue
         d = fold_transform(data, train_idx) if fold_transform else data
+        # a test row without fold-time features (no past normal) is not scored (03-ML-SPEC section 3)
+        test_idx = test_idx[d.loc[test_idx, m1_cols].notna().all(axis=1).to_numpy()]
+        if len(test_idx) == 0:
+            continue
         a_m1, res_m1 = _tune(data, train_idx, m1_cols, alphas, fold_transform)
         a_bnw, _ = _tune(data, train_idx, list(context_cols), alphas, fold_transform)
         m1 = ev.fit_ridge(d.loc[train_idx, m1_cols].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), alpha=a_m1)
