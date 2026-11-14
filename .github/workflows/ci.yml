@@ -137,7 +137,7 @@ jobs:
       - name: format
         run: npx prettier --check .
       - name: type check
-        run: npx tsc --noEmit -p .
+        run: npm run typecheck
       - name: unit tests
         run: npx vitest run
       - name: build
