@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ART } from '../../data/art';
 import { YEARS } from '../../data';
 import { yearShare } from '../../domain/hazards';
 import { CROPS, PLANS, planHasLegume, planProfitMillion } from '../../domain/plans';
@@ -131,14 +132,13 @@ export function OfficerPage() {
       <section className={`band ${s.hero}`} aria-labelledby="officer-title">
         <div className={`container ${s.heroGrid}`}>
           <div className="stack" style={{ ['--gap' as string]: 'var(--s-5)' }}>
-            <p className="eyebrow">{t.officer.eyebrow}</p>
             <h1 id="officer-title" className="display" style={{ fontSize: 'var(--t-h1)' }}>{t.officer.title}</h1>
             <p className="lead">{t.officer.lead}</p>
             <dl className={s.scope}>
               {t.officer.scope.map((x) => <div key={x.label}><dt>{x.label}</dt><dd>{x.value}</dd></div>)}
             </dl>
           </div>
-          <div className={s.heroPhoto}><Media slug="do-luong-lam-son-communal-house" sizes="(min-width: 900px) 420px, 92vw" priority /></div>
+          <div className={s.heroPhoto}><Media slug={ART.officer.slug} sizes="(min-width: 900px) 420px, 92vw" priority decorative /></div>
         </div>
       </section>
 

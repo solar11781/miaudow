@@ -9,6 +9,7 @@ import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { useSpeech } from './useSpeech';
+import { CoreTag } from '../../design-system/CoreTag';
 import s from './assistant.module.css';
 
 type Engine = 'checking' | 'server' | 'browser';
@@ -200,9 +201,9 @@ export function AssistantPage() {
       <section className={`band ${s.page}`} aria-labelledby="ai-title">
         <div className={`container ${s.grid}`}>
           <div className={s.intro}>
-            <p className="eyebrow">{t.copilot.eyebrow}</p>
             <h1 id="ai-title" className={`display ${s.title}`}>{t.copilot.title}</h1>
             <p className="lead">{t.copilot.lead}</p>
+            <CoreTag core="copilot" />
             <ol className={s.pipeline} aria-label={t.copilot.pipelineLabel}>
               {t.copilot.pipeline.map((step, i) => <li key={step}><span>{i + 1}</span>{step}</li>)}
             </ol>

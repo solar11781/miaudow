@@ -76,6 +76,11 @@ export const RULES: Record<RuleCode, RuleInfo> = {
 /** Rules shown to farmers, in a fixed order (the consecutive drought reading is shown next to "any 2" on the cards). */
 export const FARMER_RULES: RuleCode[] = ['drought_rain_any2', 'heat', 'heavy_rain', 'cold'];
 
+/** A plain reading of a farmland share for farmers: none, a few places (under a third), many places (under two
+ * thirds), almost everywhere. The number itself is always shown beside the word and opens its source. */
+export type Reach = 'none' | 'few' | 'many' | 'most';
+export const reachOf = (share: number): Reach => (share <= 0 ? 'none' : share < 1 / 3 ? 'few' : share < 2 / 3 ? 'many' : 'most');
+
 const at = (series: number[] | undefined, year: number) => {
   const i = yearIndex(year);
   const v = i < 0 || !series ? undefined : series[i];

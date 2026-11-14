@@ -2,13 +2,16 @@ import { StepShell, useFarmer } from './FarmerLayout';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { YEARS } from '../../data';
-import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
+import { FARMER_RULES, reachOf, RULES, yearShare } from '../../domain/hazards';
+import type { IconName } from '../../design-system/Icon';
 import { riceYear } from '../../domain/rice';
 import { MAX_YEARS, toggleYear } from '../../domain/farmerState';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useT } from '../../app/settings';
 import s from './farmer.module.css';
+
+const RULE_ICON: Partial<Record<string, IconName>> = { drought_rain_any2: 'crack', heat: 'sun', heavy_rain: 'rain', cold: 'snow' };
 
 function YearRow({ year }: { year: number }) {
   const t = useT();
@@ -25,10 +28,12 @@ function YearRow({ year }: { year: number }) {
       <ul className={s.hzList}>
         {FARMER_RULES.map((rule) => {
           const v = yearShare(rule, year);
+          const level = reachOf(v);
           return (
-            <li key={rule} className={s.hz}>
-              <span className={s.hzName}><i style={{ background: RULES[rule].color }} />{pick(RULES[rule].name)}</span>
-              <span className={s.bar} aria-hidden="true"><i style={{ width: `${Math.max(2, v * 100)}%`, background: RULES[rule].color }} /></span>
+            <li key={rule} className={s.hz} data-reach={level}>
+              <Icon name={RULE_ICON[rule] ?? 'sun'} size={22} />
+              <span className={s.hzName}>{pick(RULES[rule].short)}</span>
+              <span className={s.hzWord}>{t.farmer.reach[level]}</span>
               <SourceValue {...refs.share(rule, year, v)} />
             </li>
           );

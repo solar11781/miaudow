@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { CoreTag } from '../../design-system/CoreTag';
 import { analogsOf, anomalyOf, CLIMATE_ML, type Analog, type FeatureDriver, type MethodEvaluation } from '../../data/climateMl';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
@@ -20,8 +21,8 @@ export function ClimateMlSection({ year, setYear }: { year: number; setYear: (y:
     <section className="band surface-paper" aria-labelledby="ml-title" style={{ paddingTop: 0 }}>
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-6)' }}>
         <Reveal className={s.colHead}>
-          <p className="eyebrow">{t.climateMl.eyebrow}</p>
           <h2 id="ml-title" className="h1">{t.climateMl.title} <span className="num">{year}</span></h2>
+          <CoreTag core="climate" />
           <p className="lead">{t.climateMl.lead(BASE)}</p>
         </Reveal>
         {analogs.length ? (
