@@ -1,0 +1,32 @@
+[
+  {
+    "id":"nasa-power-origin","source_id":"NASA_POWER","title":"NASA POWER — sources and methodology",
+    "url":"https://power.larc.nasa.gov/docs/tutorials/parameters/",
+    "claim_vi":"Các biến bức xạ mặt trời dựa trên quan sát vệ tinh và các biến khí tượng dựa trên dữ liệu mô hình đồng hóa. Không phải đo trực tiếp trên thửa ruộng.",
+    "keywords":["nasa","power","đo","mô hình","khí tượng","thời tiết","vệ tinh"]
+  },
+  {
+    "id":"chirps-v3-method","source_id":"CHIRPS_V3","title":"CHIRPS v3 methodology and resolution",
+    "url":"https://www.nature.com/articles/s41597-026-07096-4",
+    "claim_vi":"CHIRPS v3 kết hợp thông tin từ vệ tinh và quan trắc trạm để tạo chuỗi ước lượng mưa trên lưới 0,05°, từ năm 1981 đến gần hiện tại.",
+    "keywords":["chirps","mưa","hạn","precipitation","vệ tinh","trạm"]
+  },
+  {
+    "id":"hls-resolution","source_id":"NASA_HLS","title":"Harmonized Landsat Sentinel-2 data products",
+    "url":"https://hls.gsfc.nasa.gov/data-products/",
+    "claim_vi":"NASA HLS hài hòa quan sát Landsat và Sentinel-2 trên lưới 30 m để hỗ trợ nghiên cứu biến động bề mặt đất theo thời gian. Đây không phải cảm biến độ ẩm đất trực tiếp.",
+    "keywords":["hls","sentinel","landsat","ảnh","ruộng","vệ tinh","ndvi","cây trồng"]
+  },
+  {
+    "id":"sen2-bands","source_id":"SENTINEL_2","title":"Sentinel-2 L2A spectral bands",
+    "url":"https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Data/S2L2A.html",
+    "claim_vi":"Sentinel-2 L2A cung cấp phản xạ bề mặt ở các kênh có độ phân giải 10, 20 và 60 m. Các chỉ số thực vật được suy ra từ phổ phản xạ, không phải chẩn đoán cây trồng đã xác minh tại ruộng.",
+    "keywords":["sentinel","2","ảnh","ndvi","sâu bệnh","thiếu nước","bề mặt","màu xanh"]
+  },
+  {
+    "id":"stats-rice","source_id":"NSO_VN","title":"Vietnam Statistics Office — agricultural data",
+    "url":"https://www.nso.gov.vn/so-lieu-thong-ke/",
+    "claim_vi":"Cơ quan thống kê Việt Nam công bố bảng diện tích, năng suất và sản lượng lúa theo địa phương. Số thống kê địa phương không đại diện trực tiếp cho một thửa ruộng.",
+    "keywords":["năng suất","thống kê","lúa","sản lượng","diện tích","địa phương"]
+  }
+]

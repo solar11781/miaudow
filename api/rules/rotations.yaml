@@ -1,0 +1,64 @@
+# Vetted agronomic recommendation rulebook. Without a cited full-text paper, no field-specific risk claims.
+schema_version: "1.0"
+project: MIAUDOW
+ruleset_status: NEEDS_P02_P03_FULLTEXT_VERIFICATION
+source_documents:
+  - id: P02_UNVERIFIED
+    title: "Trial P-02 — supplied prototype claim, full text not present"
+    verification: pending
+    approved_for_recommendation: false
+  - id: P03_UNVERIFIED
+    title: "Trial P-03 — supplied prototype claim, full text not present"
+    verification: pending
+    approved_for_recommendation: false
+rotations:
+  - id: r1
+    title: "Lúa - Đậu đen - Khoai lang"
+    crops: [rice, blackbean, sweetpotato]
+    evidence_refs: [P02_UNVERIFIED]
+    status: illustrative_unverified
+    seasons_vi: ["Lúa", "Đậu đen", "Khoai lang"]
+    calendar_months: [[1, 5], [6, 8], [9, 12]]
+    risk_lines: []
+  - id: r2
+    title: "Lúa xuân - Lúa hè thu"
+    crops: [rice, rice_summer]
+    evidence_refs: [P03_UNVERIFIED]
+    status: illustrative_unverified
+    seasons_vi: ["Lúa xuân", "Lúa hè thu"]
+    calendar_months: [[1, 5], [6, 9]]
+    risk_lines: []
+  - id: r3
+    title: "Lạc - Đậu xanh - Ngô"
+    crops: [peanut, mungbean, maize]
+    evidence_refs: [P02_UNVERIFIED]
+    status: illustrative_unverified
+    seasons_vi: ["Lạc", "Đậu xanh", "Ngô"]
+    calendar_months: [[2, 5], [6, 8], [9, 12]]
+    risk_lines: []
+  - id: r4
+    title: "Ớt - Đậu tương - Ngô sinh khối"
+    crops: [chilli, soy, biomass_maize]
+    evidence_refs: [P02_UNVERIFIED]
+    status: illustrative_unverified
+    seasons_vi: ["Ớt", "Đậu tương", "Ngô sinh khối"]
+    calendar_months: [[2, 5], [6, 9], [10, 12]]
+    risk_lines: []
+  - id: r5
+    title: "Ngô - Vừng đen - Bí đỏ"
+    crops: [maize, sesame, pumpkin]
+    evidence_refs: [P02_UNVERIFIED]
+    status: illustrative_unverified
+    seasons_vi: ["Ngô", "Vừng đen", "Bí đỏ"]
+    calendar_months: [[2, 5], [6, 8], [9, 12]]
+    risk_lines: []
+  - id: r6
+    title: "Ngô sinh khối - Ngô sinh khối - Khoai lang"
+    crops: [biomass_maize, biomass_maize, sweetpotato]
+    evidence_refs: [P02_UNVERIFIED]
+    status: illustrative_unverified
+    seasons_vi: ["Ngô sinh khối", "Ngô sinh khối", "Khoai lang"]
+    calendar_months: [[2, 4], [5, 7], [8, 11]]
+    risk_lines: []
+# Before showing any crop-specific risk in the UI: require text, supporting source,
+# document location (page/table), spatial context, and agronomist review.

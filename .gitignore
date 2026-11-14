@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# Node
+node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+web/review-shots/
+# Secrets: only the .example file is committed
+api/.env
+.env
+# Caches that the pipelines rebuild
+data/cache/
