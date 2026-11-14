@@ -11,7 +11,10 @@ import copy
 import json
 import re
 import xml.etree.ElementTree as ET
+from itertools import pairwise
 from pathlib import Path
+
+import pytest
 
 from fieldshift.ml.results_chart import results_chart_svg
 
@@ -178,14 +181,32 @@ def test_committed_svg_has_no_minus_zero() -> None:
     assert "-0.00" not in (REPO / "artifacts" / "figures" / "results_chart.svg").read_text(encoding="utf-8")
 
 
-def test_every_number_label_has_a_white_halo_so_lines_never_cut_it() -> None:
+def test_every_number_label_sits_on_a_white_rectangle_so_no_line_shows_through_it() -> None:
     marks = _marks(results_chart_svg(METRICS))
     for key, g in marks.items():
         (label,) = g.findall(f"{SVG_NS}text")
-        halo = {k: label.get(k) for k in ("paint-order", "stroke", "stroke-width", "stroke-linejoin")}
-        assert halo == {
-            "paint-order": "stroke",
-            "stroke": "#ffffff",
-            "stroke-width": "4",
-            "stroke-linejoin": "round",
-        }, key
+        (box,) = g.findall(f"{SVG_NS}rect")
+        children = list(g)
+        assert children.index(box) < children.index(label), key  # drawn first, so it lies behind the text
+        assert box.get("fill") == "#ffffff", key
+        x, y, w, h = (float(box.get(k)) for k in ("x", "y", "width", "height"))
+        tx, ty = float(label.get("x")), float(label.get("y"))
+        assert x + w / 2 == pytest.approx(tx, abs=0.11), key  # centred on the middle-anchored label
+        # 12 px: DejaVu Sans digits advance 0.636 em, the widest common sans-serif fallback (Arial 0.556 em); Arial
+        # capitals rise 0.716 em and brackets drop 0.21 em (font metrics)
+        assert w >= len(label.text) * 0.636 * 12, key
+        assert y <= ty - 0.716 * 12, key
+        assert y + h >= ty + 0.21 * 12, key
+        dot = g.find(f"{SVG_NS}circle")
+        assert y >= float(dot.get("cy")) + float(dot.get("r")), key  # the rectangle never hides the dot
+
+
+def test_number_label_boxes_of_one_row_never_overlap() -> None:
+    rows: dict[tuple[str, str], list[tuple[float, float]]] = {}
+    for (season, model, _), g in _marks(results_chart_svg(METRICS)).items():
+        box = g.find(f"{SVG_NS}rect")
+        x, w = float(box.get("x")), float(box.get("width"))
+        rows.setdefault((season, model), []).append((x, x + w))
+    for key, spans in rows.items():
+        spans.sort()
+        assert all(a[1] <= b[0] for a, b in pairwise(spans)), key
