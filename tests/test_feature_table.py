@@ -124,3 +124,16 @@ def test_risk_level_features_give_one_row_per_label_with_the_three_shares():
     assert len(risk) == 2  # the Mekong summer-autumn row has no window (D-37)
     assert set(risk.columns) == {"province_nso", "season", "year", "risk_heavy_rain", "risk_heat", "risk_cold"}
     assert (risk[["risk_heavy_rain", "risk_heat", "risk_cold"]] == 0.0).all(axis=None)
+
+
+def test_a_window_beyond_the_daily_data_is_skipped_with_a_reason():
+    # Source: the spec of this builder (rows that cannot be built are returned in a skipped list with a reason, never
+    # silently dropped); the toy weather ends on 31 Dec 2020, so P spring 2020 moved 7 months later (Sep 2020 - Jan
+    # 2021) is not covered, while 2010 (Sep 2010 - Jan 2011) is
+    labels = _labels().assign(year=[2010, 2020, 2010])
+    table, skipped = build_feature_table(labels, _weights(), _cells(), REGIONS, shift=(7, 7))
+    assert list(table.loc[table.province_nso == "P", "year"]) == [2010]
+    assert list(skipped.loc[skipped.province_nso == "P", "year"]) == [2020]
+    assert "not cover" in skipped.loc[skipped.province_nso == "P", "reason"].iloc[0]
+    rain = build_cell_month_rain(labels, _weights(), _cells(), REGIONS, shift=(7, 7))
+    assert 2020 not in set(rain.loc[rain.province_nso == "P", "year"])
