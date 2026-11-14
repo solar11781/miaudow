@@ -76,6 +76,9 @@ export function MonthBar({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
           <span key={i}>{i + 1}</span>
         ))}
       </div>
+      <p className={s.axis} aria-hidden="true">
+        {t.farmer.monthAxis}
+      </p>
       <ul className={s.dates} aria-label={t.farmer.datesAsReported}>
         {segs.map(({ span }) => {
           const shown = `${dateRange(span.sow_from ?? '', span.sow_to ?? '')} → ${dateRange(span.harvest_from ?? '', span.harvest_to ?? '')}`;

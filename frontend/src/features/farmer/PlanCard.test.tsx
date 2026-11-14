@@ -131,3 +131,14 @@ describe('money definition', () => {
     expect(text).not.toContain(vi.farmer.definitionPlain.p02);
   });
 });
+
+// walkthrough 2026-11-14: the month numbers under the calendar bar say what they are
+describe('calendar axis', () => {
+  afterEach(cleanup);
+  it('is labelled with the word month', () => {
+    const id = renderCard();
+    expect(document.querySelector(`[data-testid="card-${id}-row-calendar"]`)?.textContent).toContain(
+      vi.farmer.monthAxis,
+    );
+  });
+});
