@@ -160,6 +160,19 @@ def test_compare_rejects_an_invalid_body(client: TestClient, change: dict, secre
     rejected(client.post("/api/compare", json={**BODY, **change}), secret)
 
 
+def test_compare_never_echoes_an_unknown_key_name(client: TestClient) -> None:
+    # the security audit of 2026-11-15: an extra key came back in loc; loc stops at the object that holds it
+    r = client.post("/api/compare", json={**BODY, "zz_secret_key<b>": 1})
+    rejected(r, "zz_secret_key")
+    assert r.json()["detail"] == [{"type": "extra_forbidden", "loc": ["body"], "msg": "Extra inputs are not permitted"}]
+
+
+def test_compare_keeps_the_loc_of_a_known_field(client: TestClient) -> None:
+    r = client.post("/api/compare", json={**BODY, "land": "zz"})
+    rejected(r)
+    assert [item["loc"] for item in r.json()["detail"]] == [["body", "land"]]
+
+
 @pytest.mark.parametrize("field", ["province", "land", "years", "priority"])
 def test_compare_rejects_a_missing_field(client: TestClient, field: str) -> None:
     rejected(client.post("/api/compare", json={k: v for k, v in BODY.items() if k != field}))

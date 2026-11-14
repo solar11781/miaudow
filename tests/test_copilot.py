@@ -266,6 +266,16 @@ def test_an_invalid_body_gets_422_without_echo_or_call(
     assert api.requests == []
 
 
+def test_an_unknown_key_name_is_never_echoed(monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]) -> None:
+    # the security audit of 2026-11-15: an extra key came back in loc; loc stops at the object that holds it
+    api = fake_api()
+    r = app_client(monkeypatch).post("/api/copilot", json={**WATER_Q, "zz_secret_key<b>": 1})
+    assert r.status_code == 422
+    assert "zz_secret_key" not in r.text
+    assert r.json()["detail"] == [{"type": "extra_forbidden", "loc": ["body"], "msg": "Extra inputs are not permitted"}]
+    assert api.requests == []
+
+
 def test_the_longest_question_fits_the_body_limit() -> None:
     # Vietnamese letters take up to 3 bytes in UTF-8 and JSON.stringify keeps them as they are (frontend api.ts)
     body = {"question": "ẫ" * QUESTION_MAX_CHARS, "mode": "technical", "lang": "vi", "water": "high_field"}

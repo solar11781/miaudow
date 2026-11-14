@@ -169,8 +169,12 @@ async def _body(request: Request, model: type[M]) -> M:
 
 
 async def _unprocessable(_: Request, exc: RequestValidationError) -> JSONResponse:
-    """Every 422 in FastAPI's shape with type, loc and msg only, so no route echoes the input back."""
-    detail = [{"type": e["type"], "loc": e["loc"], "msg": e["msg"]} for e in exc.errors()]
+    """Every 422 in FastAPI's shape with type, loc and msg only, so no route echoes the input back; an unknown key is
+    located at the object that holds it, since its name is the client's input."""
+    detail = [
+        {"type": e["type"], "loc": e["loc"][:-1] if e["type"] == "extra_forbidden" else e["loc"], "msg": e["msg"]}
+        for e in exc.errors()
+    ]
     return JSONResponse({"detail": detail}, status_code=422)
 
 
