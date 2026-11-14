@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from datetime import date
 from pathlib import Path
 
@@ -19,7 +19,7 @@ PAUSE_S = 1.0  # routine pacing after each new request; not a documented POWER l
 
 
 def download_cells(
-    cells,
+    cells: Iterable[tuple[float, float]],
     period: tuple[date, date],
     cache_dir: Path | str,
     fetch_json: Callable[[str], dict] = _http_fetch_json,

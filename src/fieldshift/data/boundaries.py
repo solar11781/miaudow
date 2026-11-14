@@ -19,6 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 from shapely.geometry import shape
+from shapely.geometry.base import BaseGeometry
 from shapely.ops import unary_union
 
 # Names whose spelling cannot be matched by normalization alone (source in the module docstring).
@@ -55,7 +56,7 @@ def match_boundary_name(shape_name: str, admin_csv: Path | str) -> str:
     return table[key]
 
 
-def province_geometries(geojson_path: Path | str, admin_csv: Path | str) -> dict:
+def province_geometries(geojson_path: Path | str, admin_csv: Path | str) -> dict[str, BaseGeometry]:
     """One shapely geometry per NSO province (shapes of the same province are merged)."""
     features = json.loads(Path(geojson_path).read_text(encoding="utf-8"))["features"]
     parts: dict[str, list] = {}

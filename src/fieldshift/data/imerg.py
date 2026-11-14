@@ -9,6 +9,7 @@ The responses are stored unchanged; parsing and the monthly totals belong to the
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 
 BASE_URL = "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGM.07"
 HALF_DLAT = 0.25  # POWER cell half height (farmland_weights.POWER_DLAT / 2)
@@ -39,7 +40,7 @@ def cell_pixel_ranges(lat: float, lon: float) -> tuple[tuple[int, int], tuple[in
     )
 
 
-def box_for_cells(cells) -> tuple[int, int, int, int]:
+def box_for_cells(cells: Iterable[tuple[float, float]]) -> tuple[int, int, int, int]:
     """(lat0, lat1, lon0, lon1) inclusive index box covering every cell."""
     ranges = [cell_pixel_ranges(lat, lon) for lat, lon in cells]
     if not ranges:
