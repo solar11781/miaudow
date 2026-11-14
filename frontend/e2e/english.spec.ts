@@ -22,7 +22,7 @@ const ENGLISH = [
 
 test('T33 an English path opens the plan cards in English with the answers kept', async ({ page }) => {
   await page.goto(`/#/farmer/plans${ANSWERS}`);
-  await expect(page.getByRole('heading', { level: 1, name: 'Compare 6 ways of farming' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Compare 6 plans' })).toBeVisible();
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   // links inside the app use the English paths and keep the answers
@@ -37,7 +37,7 @@ test('T33 the language switch opens the same page under the other path with the 
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
   await page.getByRole('button', { name: /Switch to English/ }).click();
   await expect(page).toHaveURL(new RegExp(`#/farmer/plans\\${ANSWERS}$`));
-  await expect(page.getByRole('heading', { level: 1, name: 'Compare 6 ways of farming' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Compare 6 plans' })).toBeVisible();
   await page.getByRole('button', { name: /Chuyển sang tiếng Việt/ }).click();
   await expect(page).toHaveURL(new RegExp(`#/nong-dan/phuong-an\\${ANSWERS}$`));
   await expect(page.getByRole('heading', { level: 1, name: 'So sánh 6 cách trồng' })).toBeVisible();
