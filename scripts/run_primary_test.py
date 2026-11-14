@@ -114,15 +114,21 @@ gates += [
 choice = compare_normal_methods(table[table["season"].isin(ev.ML_SEASONS)].reset_index(drop=True), min(ev.TEST_YEARS))
 m3e, t5e = (f"{choice['mse'][m]:.4f}" for m in ("mean3", "trend5"))
 m3v, t5v = m3e.replace(".", ","), t5e.replace(".", ",")  # Vietnamese decimal comma
+better = {s: min(errors, key=errors.get) for s, errors in choice["mse_by_season"].items()}
+season_vi = {"spring": "vụ xuân", "winter": "vụ mùa"}
+method_vi = {"mean3": "trung bình 3 năm", "trend5": "đường xu hướng 5 năm"}
+method_en = {"mean3": "the 3-year mean", "trend5": "the 5-year trend"}
+per_season_vi = "; ".join(f"{season_vi[s]}: {method_vi[m]} tốt hơn" for s, m in better.items())
+per_season_en = "; ".join(f"{s} rice: {method_en[m]} was better" for s, m in better.items())
 reports = [
     {
         "id": "E-010",
         "title": bilingual("Cách tính năng suất bình thường", "How the normal yield is computed"),
         "text": bilingual(
             f"Trung bình 3 năm trước được chọn, vì sai số nhỏ hơn đường xu hướng 5 năm trên các năm 2011-2015 "
-            f"({m3v} so với {t5v}). Riêng vụ xuân, đường xu hướng sai số nhỏ hơn; vụ mùa thì ngược lại.",
+            f"({m3v} so với {t5v}). Theo từng vụ: {per_season_vi}.",
             f"The mean of the 3 previous years was chosen: its error was smaller than the 5-year trend's on "
-            f"2011-2015 ({m3e} against {t5e}). For spring rice alone the trend was better; for winter rice, the mean.",
+            f"2011-2015 ({m3e} against {t5e}). Per season: {per_season_en}.",
         ),
         "source_ids": ["E-010"],
     },
