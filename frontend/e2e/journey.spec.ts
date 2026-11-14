@@ -262,6 +262,12 @@ test('T6 no visible text is smaller than 17 px (H6)', async ({ page }) => {
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     const small = await page.evaluate(() => {
+      // SVG text is drawn at its font size times the scale of its drawing (rendered width / viewBox width)
+      const scaleOf = (el: Element) => {
+        const svg = el.closest('svg');
+        const box = svg?.viewBox.baseVal;
+        return svg && box && box.width ? svg.getBoundingClientRect().width / box.width : 1;
+      };
       const out: string[] = [];
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -272,11 +278,7 @@ test('T6 no visible text is smaller than 17 px (H6)', async ({ page }) => {
         if (cs.display === 'none' || cs.visibility === 'hidden') continue;
         const r = el.getBoundingClientRect();
         if (!r.width || !r.height) continue;
-        // SVG text is drawn at its font size times the scale of its drawing (rendered width / viewBox width)
-        const svg = el.closest('svg');
-        const box = svg?.viewBox.baseVal;
-        const scale = svg && box && box.width ? svg.getBoundingClientRect().width / box.width : 1;
-        const px = parseFloat(cs.fontSize) * scale;
+        const px = parseFloat(cs.fontSize) * scaleOf(el);
         if (px < 16.995) out.push(`${px.toFixed(2)}px ${n.textContent.trim().slice(0, 30)}`);
       }
       return out.slice(0, 8);
