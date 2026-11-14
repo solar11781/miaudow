@@ -1,0 +1,87 @@
+# The five official rules (05-DATA-CONTRACTS §6c; D-58, D-79). Source R-A01: Quyết định 18/2021/QĐ-TTg, level 1 of
+# each article, quoted word for word including the decision's own spelling ("°c", "oc"); 03-ML-SPEC §5a names the
+# parts used. The English side is our translation and says so. Labels use the decision's own terms (Art. 5.17,
+# 5.18, 5.21, 5.22); the two drought readings follow D-58. Labels and translations are drafts for the copy review.
+- code: heavy_rain
+  label: {vi: "Mưa lớn", en: "Heavy rain"}
+  rule_text:
+    vi: "Rủi ro thiên tai cấp độ 1 khi dự báo lượng mưa từ 100 mm đến 200 mm trong 24 giờ hoặc từ 50 mm đến 100 mm
+      trong 12 giờ, kéo dài từ 1 ngày đến 2 ngày ở khu vực trung du, miền núi, đồng bằng, ven biển trên phạm vi dưới
+      1/2 số huyện, xã của 1 tỉnh hoặc nhiều tỉnh không liền kề."
+    en: "Our translation: Disaster risk level 1 when the forecast rainfall is from 100 mm to 200 mm in 24 hours or from
+      50 mm to 100 mm in 12 hours, lasting from 1 day to 2 days in midland, mountain, plain and coastal areas, over
+      less than 1/2 of the districts and communes of 1 province or of several provinces that do not border each other."
+  article: "Art. 44.1"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: heat
+  label: {vi: "Nắng nóng", en: "Heat"}
+  rule_text:
+    vi: "a) Dự báo đợt nắng nóng với nhiệt độ cao nhất trong ngày từ 35°c đến 37°c, kéo dài từ 3 ngày trở lên;\n\
+      b) Dự báo đợt nắng nóng với nhiệt độ cao nhất trong ngày từ trên 37oc đến 39°c, kéo dài từ 3 ngày tới 25 ngày ở
+      khu vực Bắc Bộ, Trung Bộ hoặc kéo dài từ 3 ngày tới 10 ngày ở khu vực Tây Nguyên, Nam Bộ;\n\
+      c) Dự báo đợt nắng nóng với nhiệt độ cao nhất trong ngày từ trên 39°c đến 41 °C, kéo dài từ 3 ngày đến 5 ngày ở
+      khu vực Bắc Bộ, Trung Bộ;\n\
+      d) Dự báo đợt nắng nóng với nhiệt độ cao nhất trong ngày trên 41°C, kéo dài từ 3 ngày đến 5 ngày ở khu vực Trung
+      Bộ."
+    en: "Our translation: a) A forecast heat spell with a daily maximum temperature from 35°C to 37°C, lasting 3 days
+      or more;\n\
+      b) A forecast heat spell with a daily maximum temperature above 37°C to 39°C, lasting from 3 to 25 days in Bắc
+      Bộ and Trung Bộ, or from 3 to 10 days in Tây Nguyên and Nam Bộ;\n\
+      c) A forecast heat spell with a daily maximum temperature above 39°C to 41°C, lasting from 3 to 5 days in Bắc Bộ
+      and Trung Bộ;\n\
+      d) A forecast heat spell with a daily maximum temperature above 41°C, lasting from 3 to 5 days in Trung Bộ."
+  article: "Art. 47.1"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: drought_rain_consecutive
+  label: {vi: "Hạn hán (phần lượng mưa), 2 tháng liền nhau", en: "Drought (rain part), 2 months in a row"}
+  rule_text: &drought_text
+    vi: "a) Dự báo tình trạng thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng
+      đến 3 tháng và thiếu hụt nguồn nước mặt trong khu vực từ 20% đến 50% so với trung bình nhiều năm ở các khu vực
+      Trung Bộ, Tây Nguyên, Nam Bộ;\n\
+      b) Dự báo tình trạng thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến
+      3 tháng và thiếu hụt nguồn nước mặt trong khu vực từ trên 50% đến 70% so với trung bình nhiều năm ở khu vực Bắc
+      Bộ;\n\
+      c) Dự báo tình trạng thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ trên 3 tháng
+      đến 5 tháng và thiếu hụt nguồn nước mặt trong khu vực từ 20% đến 50% so với trung bình nhiều năm ở các khu vực Bắc
+      Bộ, Trung Bộ."
+    en: "Our translation: a) A forecast shortfall of the monthly rain total of more than 50% against the long-term
+      average, lasting from 2 to 3 months, and a shortfall of surface water in the area of 20% to 50% against the
+      long-term average, in Trung Bộ, Tây Nguyên and Nam Bộ;\n\
+      b) A forecast shortfall of the monthly rain total of more than 50% against the long-term average, lasting from 2
+      to 3 months, and a shortfall of surface water in the area of above 50% to 70% against the long-term average, in
+      Bắc Bộ;\n\
+      c) A forecast shortfall of the monthly rain total of more than 50% against the long-term average, lasting from
+      above 3 to 5 months, and a shortfall of surface water in the area of 20% to 50% against the long-term average,
+      in Bắc Bộ and Trung Bộ."
+  article: "Art. 48.1"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: drought_rain_any2
+  label: {vi: "Hạn hán (phần lượng mưa), 2 tháng bất kỳ", en: "Drought (rain part), any 2 months"}
+  rule_text: *drought_text
+  article: "Art. 48.1"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: cold
+  label: {vi: "Rét hại", en: "Damaging cold"}
+  rule_text:
+    vi: "a) Dự báo đợt rét hại với nhiệt độ không khí trung bình ngày từ trên 8°c đến 13°c, kéo dài từ trên 5 ngày đến
+      10 ngày ở vùng đồng bằng Bắc Bộ, Bắc Trung Bộ, Trung Trung Bộ hoặc kéo dài trên 10 ngày ở vùng núi, trung du Bắc
+      Bộ;\n\
+      d) Dự báo đợt rét hại với nhiệt độ không khí trung bình ngày từ 8°c trở xuống, kéo dài từ 3 ngày đến 5 ngày ở
+      vùng đồng bằng Bắc Bộ, Bắc Trung Bộ, Trung Trung Bộ."
+    en: "Our translation: a) A forecast damaging cold spell with a daily mean air temperature above 8°C to 13°C,
+      lasting from more than 5 days to 10 days in the plains of Bắc Bộ, Bắc Trung Bộ and Trung Trung Bộ, or more than
+      10 days in the mountains and midlands of Bắc Bộ;\n\
+      d) A forecast damaging cold spell with a daily mean air temperature of 8°C or below, lasting from 3 to 5 days in
+      the plains of Bắc Bộ, Bắc Trung Bộ and Trung Trung Bộ."
+  article: "Art. 53.1 a, d"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
