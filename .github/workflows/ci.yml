@@ -84,6 +84,19 @@ jobs:
     if: needs.changes.outputs.python == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # throwaway PostgreSQL 18, as the Railway database image, for tests/test_accounts.py; never the Railway database
+    services:
+      postgres:
+        # exact patch version and digest (Docker Hub, read 2026-11-14), as the Dockerfile pins its base image
+        image: postgres:18.7@sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b
+        env:
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:test@127.0.0.1:5432/postgres
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
