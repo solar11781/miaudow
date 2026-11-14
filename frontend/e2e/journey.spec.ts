@@ -217,6 +217,8 @@ for (const url of [
   '/#/dai-quan-sat?canh=insight',
   '/#/bang-chung',
   '/#/tro-ly',
+  '/#/dang-nhap',
+  '/#/da-luu',
 ]) {
   test(`T7 T8 no WCAG 2.2 AA violations on ${url}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -245,6 +247,8 @@ test('T10 the page never scrolls sideways', async ({ page }) => {
     '/#/dai-quan-sat?canh=satellites',
     '/#/bang-chung',
     '/#/tro-ly',
+    '/#/dang-nhap',
+    '/#/da-luu',
   ]) {
     await page.goto(url);
     await page.waitForTimeout(400);
@@ -256,7 +260,16 @@ test('T10 the page never scrolls sideways', async ({ page }) => {
 });
 
 test('T6 no visible text is smaller than 17 px (H6)', async ({ page }) => {
-  for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/dai-quan-sat?canh=analysis', '/#/bang-chung', '/#/tro-ly']) {
+  for (const url of [
+    '/#/',
+    PLANS_URL,
+    '/#/can-bo',
+    '/#/dai-quan-sat?canh=analysis',
+    '/#/bang-chung',
+    '/#/tro-ly',
+    '/#/dang-nhap',
+    '/#/da-luu',
+  ]) {
     await page.goto(url);
     await page.reload();
     await page.waitForLoadState('networkidle');

@@ -23,12 +23,13 @@ import urllib.request
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from http import HTTPStatus
+from typing import Literal
 
 import psycopg
 from google.auth import exceptions, transport
 from google.oauth2 import id_token
 
-from fieldshift.engine.schemas import Contract, Land, Priority, Years
+from fieldshift.engine.schemas import Contract, Priority, Years
 
 LOG = logging.getLogger(__name__)
 SCHEMA = (
@@ -50,6 +51,11 @@ SAVED_SETS_MAX = 20  # D-165: an account keeps at most 20 saved sets; a 21st sav
 # D-164: Google's key answer was 2447 bytes (measured 2026-11-14); 64 KiB leaves room for many more keys
 KEYS_MAX_BYTES = 65536
 KEYS_RETRY_SECONDS = 30  # D-164: a short pause after a failed download, so repeated requests fail fast with 503
+# the farmer's own field answer in member B's names (D-169), so a saved set reopens as that answer; "reliable" (an
+# irrigated field) gets no compare (UI-UX-SPEC §6b rule 4), so it is never saved
+FieldAnswer = Literal["high_field", "canal_end", "water_short", "ask"]
+# rows of the first API (PR #48) kept the compare request's land; they read as the answers the page reopened them as
+LEGACY_LAND = {"dry": "water_short", "unsure": "ask"}
 MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
 NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
 
@@ -71,9 +77,9 @@ class GoogleUnreachableError(Exception):
 
 
 class SavedAnswers(Contract):
-    """One saved set: the answers of steps 1-3 (UI-UX-SPEC §6b), checked like the compare request."""
+    """One saved set: the answers of steps 1-3 (UI-UX-SPEC §6b), years and priority checked like the compare request."""
 
-    land: Land
+    land: FieldAnswer
     years: Years
     priority: Priority
 
@@ -237,7 +243,9 @@ class Accounts:
             found = conn.execute(
                 "SELECT id, land, years, priority FROM saved_answers WHERE account_id = %s ORDER BY id", (account,)
             ).fetchall()
-        return SavedList(saved=[SavedSet(id=i, land=land, years=y, priority=p) for i, land, y, p in found])
+        return SavedList(
+            saved=[SavedSet(id=i, land=LEGACY_LAND.get(land, land), years=y, priority=p) for i, land, y, p in found]
+        )
 
     def save(self, sub: str, answers: SavedAnswers) -> SavedSet:
         """Save a set for the account of `sub` in one transaction that first locks the account row, so parallel saves

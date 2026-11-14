@@ -477,18 +477,39 @@ def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
         c.post("/api/compare"),
     ):
         assert r.headers["x-content-type-options"] == "nosniff"
-        assert r.headers["referrer-policy"] == "no-referrer"
+        # Google's guide for the sign-in script: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
+        # (origin only to other sites; the answers live after "#", which is never sent)
+        assert r.headers["referrer-policy"] == "strict-origin-when-cross-origin"
         csp = r.headers["content-security-policy"]
         assert "frame-ancestors 'none'" in csp
         assert "default-src 'self'" in csp
 
 
-def test_the_csp_allows_only_the_d167_outside_origins(tmp_path: Path) -> None:
+# Google's CSP guidance for Sign In with Google:
+# https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#content_security_policy
+GSI_CSP = {
+    "script-src": "https://accounts.google.com/gsi/client",
+    "frame-src": "https://accounts.google.com/gsi/",
+    "connect-src": "https://accounts.google.com/gsi/",
+    "style-src": "https://accounts.google.com/gsi/style",
+}
+
+
+def test_the_csp_allows_only_the_d167_and_google_sign_in_outside_origins(tmp_path: Path) -> None:
     csp = built_frontend(tmp_path).get("/").headers["content-security-policy"]
     outside = set(re.findall(r"https://[^\s;]+", csp))
-    assert outside == {"https://gibs.earthdata.nasa.gov", "https://eyes.nasa.gov"}  # D-167 exception, /dai-quan-sat
+    # D-167 exception on /dai-quan-sat, and the sign-in exception of UI-UX-SPEC §12c and H14 on /dang-nhap and /da-luu
+    assert outside == {"https://gibs.earthdata.nasa.gov", "https://eyes.nasa.gov", *GSI_CSP.values()}
+
+
+def test_the_csp_names_each_google_sign_in_address_in_its_own_directive(tmp_path: Path) -> None:
+    csp = built_frontend(tmp_path).get("/").headers["content-security-policy"]
+    directives = {d.split()[0]: d.split()[1:] for d in csp.split("; ")}
+    for name, address in GSI_CSP.items():
+        assert address in directives[name], name
+    assert directives["default-src"] == ["'self'"]
     # Knockout, bundled in Cesium, runs (0,eval)('this') when the observatory chunk loads (security review 2026-11-14)
-    assert "script-src 'self' 'unsafe-eval';" in csp
+    assert "script-src 'self' 'unsafe-eval' https://accounts.google.com/gsi/client;" in csp
 
 
 def test_start_command_turns_off_the_access_log() -> None:

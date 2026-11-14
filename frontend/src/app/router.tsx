@@ -52,6 +52,14 @@ export const router = createHashRouter([
         path: 'tro-ly',
         lazy: async () => ({ Component: (await import('../features/ai/AssistantPage')).AssistantPage }),
       },
+      {
+        path: 'dang-nhap',
+        lazy: async () => ({ Component: (await import('../features/account/SignInPage')).SignInPage }),
+      },
+      {
+        path: 'da-luu',
+        lazy: async () => ({ Component: (await import('../features/account/SavedPage')).SavedPage }),
+      },
       { path: 'hoi', element: <Navigate to="/tro-ly" replace /> },
       { path: '*', element: <NotFound /> },
     ],

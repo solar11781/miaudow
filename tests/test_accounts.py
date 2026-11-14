@@ -41,7 +41,8 @@ REPO = Path(__file__).resolve().parents[1]
 CLIENT_ID = "test-client.apps.googleusercontent.com"
 GOOGLE_CERTS = "https://www.googleapis.com/oauth2/v1/certs"  # google-auth 2.62.2, google/oauth2/id_token.py
 GOOGLE_CACHE = "public, max-age=23762, must-revalidate, no-transform"  # Google's header on GOOGLE_CERTS, 2026-11-14
-ANSWERS = {"land": "dry", "years": [1995, 2007, 2013], "priority": "income"}
+# the farmer's own field answer (member B's names, D-169), so a saved set reopens as that answer
+ANSWERS = {"land": "canal_end", "years": [1995, 2007, 2013], "priority": "income"}
 ROUTES = [
     ("post", "/api/account/sign-in"),
     ("get", "/api/account/saved"),
@@ -225,7 +226,7 @@ def test_an_unreachable_database_at_start_turns_sign_in_off(
     with caplog.at_level(logging.DEBUG):
         c = TestClient(create_app(root=REPO))
     assert c.get("/api/health").status_code == 200
-    assert c.post("/api/compare", json={"province": "nghe_an", **ANSWERS}).status_code == 200
+    assert c.post("/api/compare", json={**ANSWERS, "province": "nghe_an", "land": "dry"}).status_code == 200
     assert c.get("/api/account/config").json() == {"available": False, "client_id": None}
     for method, path in ROUTES:
         assert getattr(c, method)(path).json() == {"detail": "sign-in is not available"}, path
@@ -514,7 +515,7 @@ def test_saved_sets_round_trip(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)
     assert c.get("/api/account/saved", headers=me).json() == {"saved": []}
-    second = {"land": "unsure", "years": list(range(1995, 2025)), "priority": "stability"}
+    second = {"land": "ask", "years": list(range(1995, 2025)), "priority": "stability"}
     made = [c.post("/api/account/saved", headers=me, json=answers) for answers in (ANSWERS, second)]
     assert [r.status_code for r in made] == [201, 201]
     ids = [r.json()["id"] for r in made]
@@ -522,6 +523,24 @@ def test_saved_sets_round_trip(on: str, keys: dict, fetched: list) -> None:
     listed = c.get("/api/account/saved", headers=me)
     assert listed.json() == {"saved": [{"id": ids[0], **ANSWERS}, {"id": ids[1], **second}]}  # D-150: several sets
     assert listed.headers["cache-control"] == "no-store"
+
+
+def test_rows_saved_by_the_first_api_list_with_the_field_answer_they_reopen_as(
+    on: str, keys: dict, fetched: list
+) -> None:
+    # PR #48 stored the compare request's land ("dry", "unsure") and production holds such rows (security review of
+    # PR #53); they read as the answers the page reopened them as, while a new save takes only the field answers
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    with psycopg.connect(on) as conn:
+        conn.execute(
+            "INSERT INTO saved_answers (account_id, land, years, priority)"
+            " SELECT id, land, ARRAY[2010], 'income' FROM account, (VALUES ('dry'), ('unsure')) AS old (land)"
+        )
+    listed = c.get("/api/account/saved", headers=me)
+    assert listed.status_code == 200, listed.text
+    assert [s["land"] for s in listed.json()["saved"]] == ["water_short", "ask"]
+    assert c.post("/api/account/saved", headers=me, json={**ANSWERS, "land": "dry"}).status_code == 422
 
 
 def test_saved_sets_survive_a_restart_and_the_schema_is_kept(on: str, keys: dict, fetched: list) -> None:
@@ -535,6 +554,8 @@ def test_saved_sets_survive_a_restart_and_the_schema_is_kept(on: str, keys: dict
     "body",
     [
         {**ANSWERS, "land": "irrigated"},  # §6b rule 4: irrigated never gets plans
+        {**ANSWERS, "land": "reliable"},  # member B's name for it: no compare, so nothing to save
+        {**ANSWERS, "land": "dry"},  # the compare request's land, not the farmer's answer
         {**ANSWERS, "priority": "zz-secret"},
         {**ANSWERS, "years": [2007, 1995]},  # strictly ascending
         {**ANSWERS, "years": [1994]},  # within 1995-2024
@@ -551,6 +572,14 @@ def test_saved_answers_follow_the_compare_request_rules(on: str, keys: dict, fet
     no_echo(r, 422)
     assert all(set(item) == {"type", "loc", "msg"} for item in r.json()["detail"])
     assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
+
+
+@pytest.mark.parametrize("land", ["high_field", "canal_end", "water_short", "ask"])
+def test_each_field_answer_with_plans_is_saved_as_given(on: str, keys: dict, fetched: list, land: str) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    assert c.post("/api/account/saved", headers=me, json={**ANSWERS, "land": land}).status_code == 201
+    assert [s["land"] for s in c.get("/api/account/saved", headers=me).json()["saved"]] == [land]
 
 
 def test_saved_answers_over_the_body_limit_are_422(on: str, keys: dict, fetched: list) -> None:
@@ -776,7 +805,7 @@ def test_farmer_routes_set_no_cookie_and_call_no_network_with_sign_in_on(
 
     monkeypatch.setattr(socket.socket, "connect", local_only)
     c = TestClient(create_app(root=REPO))
-    body = {"province": "nghe_an", **ANSWERS}
+    body = {**ANSWERS, "province": "nghe_an", "land": "dry"}
     for r in (c.get("/api/health"), c.get("/api/past-years", params={"province": "nghe_an"})):
         assert r.status_code == 200
         assert "set-cookie" not in r.headers
