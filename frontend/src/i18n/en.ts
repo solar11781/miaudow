@@ -300,6 +300,16 @@ export const en: Messages = {
     plansLead:
       'Cards are in a fixed order, not ranked. The first two are current practice, as two different studies describe it.',
     yourPriority: 'Your priority',
+    priorityLine: {
+      income: (usual: string, source: string) =>
+        `Profit added over the year (our addition) for this plan and for current practice (${usual}), in the same trial (${source}):`,
+      land: (usual: string, source: string) =>
+        `Care for the land for this plan and for current practice (${usual}), in the same trial (${source}):`,
+      perYear: (usual: string, source: string) =>
+        `The values in this row are per crop and per past year. Compare this row with the same row on the current practice card (${usual}) from the same trial (${source}).`,
+      thisPlan: 'this plan',
+      usualPlan: 'current practice',
+    },
     jumpTo: 'Go to card',
     current: 'Current practice',
     bare: 'Bare field',
@@ -719,6 +729,8 @@ export const en: Messages = {
     missing: 'What the app does not know about your field:',
     readAloud: 'Read aloud',
     stopReading: 'Stop reading',
+    noVoice:
+      'This device has no English reading voice. On Android: Settings → Text-to-speech → install English. On Windows: Settings → Time & language → Speech.',
     howFound: 'How the copilot found this',
     numbersChecked: (n: number, bad: number) =>
       bad
