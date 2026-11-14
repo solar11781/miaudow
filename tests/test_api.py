@@ -357,6 +357,11 @@ def test_start_command_turns_off_the_access_log() -> None:
     assert "--no-access-log" in (REPO / "Dockerfile").read_text(encoding="utf-8")
 
 
+def test_start_command_turns_off_the_server_header() -> None:
+    # the test client runs the app without uvicorn, so only the start command can show the `server: uvicorn` header
+    assert "--no-server-header" in (REPO / "Dockerfile").read_text(encoding="utf-8")
+
+
 def test_no_response_sets_a_cookie(tmp_path: Path) -> None:
     # UI-UX-SPEC T14 (server side): no cookies set
     (tmp_path / "index.html").write_text("<html>app</html>", encoding="utf-8")
