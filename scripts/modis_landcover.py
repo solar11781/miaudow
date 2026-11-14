@@ -1,6 +1,6 @@
 """Download NASA MODIS MCD12C1 v061 yearly land cover, keep a Vietnam subset, delete the global file.
 
-Why: farmland-weighted province weather (DECISION-LOG D-26, D-27) needs the cropland share per 0.05 deg square for every
+Why: farmland-weighted province weather (D-26, D-27) needs the cropland share per 0.05 deg square for every
 harvest year. Each global file is about 1.24 GB; we keep only a box around Vietnam (all 17 IGBP percent layers), so the
 whole 2001-2024 series fits in a few MB. Provenance (granule id, URL, sha256 of the original file) is appended to
 data/MANIFEST.csv so anyone can re-download and verify.
