@@ -47,9 +47,9 @@
       en: "The farmers' own control structure in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
     evidence: &p02_why_evidence
       vi: "Một thử nghiệm tại xã Lưu Sơn, huyện Đô Lương, \"từ tháng 6 năm 2020 đến tháng 6 năm 2021\" (tr. 45); mỗi cây
-        trồng một ô 1.000 m2 trong một vụ, không lặp lại."
+        trồng một ô 1000 m2 trong một vụ, không lặp lại."
       en: "One trial in Lưu Sơn commune, Đô Lương district, from June 2020 to June 2021 (p. 45); one unreplicated plot of
-        1,000 m2 per crop and season."
+        1000 m2 per crop and season."
     benefits:
       vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
       en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
@@ -107,8 +107,8 @@
         inefficient, water-short rice land in Nghệ An province; our translation) by Trịnh Đức Toàn et al., 2023, in Lưu
         Sơn commune, Đô Lương district (p. 2)."
     evidence:
-      vi: "Một năm, từ tháng 6/2020 đến tháng 6/2021; mỗi cây trồng một ô 1.000 m2, không lặp lại (tr. 2)."
-      en: "One year, June 2020 to June 2021; one unreplicated plot of 1,000 m2 per crop (p. 2)."
+      vi: "Một năm, từ tháng 6/2020 đến tháng 6/2021; mỗi cây trồng một ô 1000 m2, không lặp lại (tr. 2)."
+      en: "One year, June 2020 to June 2021; one unreplicated plot of 1000 m2 per crop (p. 2)."
     benefits:
       vi: "Bài báo không nêu lợi ích riêng của cơ cấu đối chứng này."
       en: "The paper states no benefit of this control structure."
@@ -152,6 +152,11 @@
     flags:
       cc1_summer_autumn_mung_bean: *table4_flag
   risks:
+    - &p02_cost
+      text:
+        vi: "Bài báo ghi: \"Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.\" (tr. 48)"
+        en: "The paper says: \"The total cost of growing peanut and chili F1 is usually 2 - 3 times that of growing rice\" (p. 48; our translation)."
+      source_ids: [R-P02]
     - &p03_market
       text:
         vi: "Một thử nghiệm khác của cùng nhóm tác giả tại cùng xã, vụ Hè Thu 2020: \"Tuy nhiên đầu ra tiêu thụ cho cây
@@ -194,8 +199,8 @@
       en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
     evidence: *p02_why_evidence
     benefits:
-      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên. Bài báo cũng ghi: \"Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.\" (tr. 48)"
-      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above. The paper also says: \"The total cost of growing peanut and chili F1 is usually 2 - 3 times that of growing rice\" (p. 48; our translation)."
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
     gaps: *p02_why_gaps
   study_type: *p02_study
   limitations: *p02_limitations
@@ -226,6 +231,7 @@
     price_year: "2020-21"
     flags: {}
   risks:
+    - *p02_cost
     - *p03_market
     - &fodder_contracts
       text:
@@ -244,8 +250,8 @@
       en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Lưu Sơn commune, Đô Lương district."
     evidence: *p02_why_evidence
     benefits:
-      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên. Bài báo cũng ghi: \"Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.\" (tr. 48)"
-      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above. The paper also says: \"The total cost of growing peanut and chili F1 is usually 2 - 3 times that of growing rice\" (p. 48; our translation)."
+      vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
+      en: "The net profit of each crop is in Table 13 of the paper (p. 50); see the money row above."
     gaps: *p02_why_gaps
   study_type: *p02_study
   limitations: *p02_limitations
