@@ -34,15 +34,22 @@ G1_MIN_PROVINCES = {"spring": 40, "winter": 40, "autumn": 25}  # D-71; summer-au
 G4_COVERAGE = (0.70, 0.90)  # G4: the 80% interval covers 70-90% of held-out outcomes (team choice, D-48)
 
 
-def _skill(pred: pd.DataFrame, model: str, ref: str, seed: int, n_boot: int) -> dict:
-    value = ev.skill_score(pred["y"], pred[model], pred[ref])
+SKILLS = {"skill": ev.skill_score, "mae_skill": ev.mae_skill}  # MSE-based (primary) or MAE-based (sensitivity b)
+
+
+def _skill(pred: pd.DataFrame, model: str, ref: str, seed: int, n_boot: int, stat: str) -> dict:
+    value = SKILLS[stat](pred["y"], pred[model], pred[ref])
     frame = pd.DataFrame({"year": pred["year"], "y": pred["y"], "pred": pred[model], "base": pred[ref]})
-    low, high = ev.year_bootstrap_ci(frame, "skill", n_boot=n_boot, seed=seed)
+    low, high = ev.year_bootstrap_ci(frame, stat, n_boot=n_boot, seed=seed)
     return {"value": value, "ci90_low": low, "ci90_high": high}
 
 
-def metric_row(pred: pd.DataFrame, model: str, seed: int, n_boot: int = ev.BOOTSTRAP_DRAWS) -> dict:
+def metric_row(
+    pred: pd.DataFrame, model: str, seed: int, n_boot: int = ev.BOOTSTRAP_DRAWS, stat: str = "skill"
+) -> dict:
     """Errors, out-of-sample R2, skill against each reference with its year-bootstrap 90% CI, and interval coverage.
+
+    stat: "skill" (1 - MSE ratio) or "mae_skill" (1 - MAE ratio, sensitivity b of 03-ML-SPEC section 7).
 
     pred: one row per scored test row with year, y and the predictions of every model and reference (same rows).
     """
@@ -51,7 +58,10 @@ def metric_row(pred: pd.DataFrame, model: str, seed: int, n_boot: int = ev.BOOTS
         "rmse": ev.rmse(pred["y"], pred[model]),
         "mae": ev.mae(pred["y"], pred[model]),
         "r2_oos": ev.r2_oos(pred["y"], pred[model]),
-        **{f"skill_vs_{ref}": None if ref == model else _skill(pred, model, ref, seed, n_boot) for ref in REFERENCES},
+        **{
+            f"skill_vs_{ref}": None if ref == model else _skill(pred, model, ref, seed, n_boot, stat)
+            for ref in REFERENCES
+        },
         "coverage_80": ev.coverage(pred["y"], pred["lo80"], pred["hi80"]) if with_interval else None,
         "n_rows": len(pred),
         "n_test_years": int(pred["year"].nunique()),
