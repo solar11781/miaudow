@@ -276,6 +276,16 @@ def test_an_unknown_key_name_is_never_echoed(monkeypatch: pytest.MonkeyPatch, fa
     assert api.requests == []
 
 
+def test_a_full_cap_answers_with_the_deterministic_engine() -> None:
+    # the security audit of 2026-11-15: a full cap of model calls gives the fixed sourced answers, not a 429
+    corpus = copilot.load_corpus(REPO)
+    req = copilot.CopilotRequest(**WATER_Q)
+    out = copilot.answer(req, corpus, anthropic.Anthropic(api_key=KEY), lambda: False)
+    assert out == copilot.deterministic(req, corpus)
+    assert out.engine == "deterministic"
+    assert out.model is None
+
+
 def test_the_longest_question_fits_the_body_limit() -> None:
     # Vietnamese letters take up to 3 bytes in UTF-8 and JSON.stringify keeps them as they are (frontend api.ts)
     body = {"question": "ẫ" * QUESTION_MAX_CHARS, "mode": "technical", "lang": "vi", "water": "high_field"}

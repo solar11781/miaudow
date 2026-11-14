@@ -1,7 +1,8 @@
 """Abuse caps shared by the two routes that call the Claude API with the same key, POST /api/copilot and
 POST /api/explain (the two security passes of PR #55; D-173). In memory, so they restart with the server. Each model
 call takes one call of its client's hour, which both routes share, and one of its route's own day, so one route cannot
-drain the other; a refused call is not counted and answers 429 with a fixed detail. A fixed answer takes nothing.
+drain the other; a refused call is not counted: the explain route answers 429 with a fixed detail, the copilot its
+deterministic answer (security audit 2026-11-15). A fixed answer takes nothing.
 """
 
 from __future__ import annotations
@@ -19,10 +20,6 @@ PER_DAY = 1500  # D-173: a routine abuse limit per route and day against the tea
 HOUR, DAY = 3600.0, 86400.0
 TOO_MANY = "Too Many Requests"
 Pool = Literal["copilot", "explain"]
-
-
-class ModelCallsFullError(Exception):
-    """The client's hour or the route's day is full; the route answers 429 with TOO_MANY."""
 
 
 def client_of(request: Request) -> str:

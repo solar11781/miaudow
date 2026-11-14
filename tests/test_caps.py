@@ -1,6 +1,7 @@
 """Tests for the shared abuse caps of the two model routes, POST /api/copilot and POST /api/explain (written before
 the code). Spec: D-173 (the team's 30 USD key limit; a routine abuse limit of 20 model calls per client per hour and
-1,500 per day, in memory, answering 429 with a fixed detail), the two security passes of PR #55 (the client is
+1,500 per day, in memory, answering 429 with a fixed detail; the security audit of 2026-11-15: the copilot answers
+with its deterministic engine instead, so farmers keep getting sourced answers), the two security passes of PR #55 (the client is
 Railway's X-Real-IP, never a client-sent X-Forwarded-For entry; each route has its own daily pool; model calls are
 counted, not requests, and fixed answers without a model call do not count).
 """
@@ -90,6 +91,17 @@ def calls(c: TestClient, n: int, path: str, body: dict, ip: str = "203.0.113.7",
     return [c.post(path, json=body, headers=headers).status_code for _ in range(n)]
 
 
+def engines(c: TestClient, n: int, ip: str = "203.0.113.7", forwarded: str = "") -> list[str]:
+    """The engine of each of n copilot answers; each must be a 200."""
+    headers = {"x-real-ip": ip, **({"x-forwarded-for": forwarded} if forwarded else {})}
+    out = []
+    for _ in range(n):
+        r = c.post("/api/copilot", json=COPILOT, headers=headers)
+        assert r.status_code == 200, r.text
+        out.append(r.json()["engine"])
+    return out
+
+
 def with_both(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     """The app with the copilot (and its key) and the explain endpoint both on."""
     app_client(monkeypatch)
@@ -108,9 +120,9 @@ def test_explain_and_copilot_share_the_client_cap_and_the_farmer_routes_keep_wor
     over = c.post("/api/explain", json=EXPLAIN, headers={"x-real-ip": "203.0.113.7"})
     assert over.status_code == 429
     assert over.json() == {"detail": "Too Many Requests"}
-    assert calls(c, 1, "/api/copilot", COPILOT) == [429]
-    assert calls(c, 1, "/api/copilot", COPILOT, forwarded="203.0.113.99") == [429]  # a forwarded entry changes nothing
-    assert calls(c, 1, "/api/copilot", COPILOT, "203.0.113.8") != [429]  # another client
+    assert engines(c, 1) == ["deterministic"]  # the copilot falls back to its sourced fixed answers
+    assert engines(c, 1, forwarded="203.0.113.99") == ["deterministic"]  # a forwarded entry changes nothing
+    assert engines(c, 1, "203.0.113.8") == ["claude"]  # another client
     assert c.post("/api/compare", json=ANSWERS).status_code == 200
     assert c.get("/api/past-years", params={"province": "nghe_an"}).status_code == 200
     assert c.get("/api/health").status_code == 200
@@ -121,7 +133,7 @@ def test_each_question_takes_one_model_call(monkeypatch: pytest.MonkeyPatch, fak
     c = with_both(monkeypatch)
     assert calls(c, PER_CLIENT_PER_HOUR, "/api/copilot", COPILOT) == [200] * PER_CLIENT_PER_HOUR
     assert len(api.requests) == PER_CLIENT_PER_HOUR  # one call per question: the server retrieves, the model picks
-    assert calls(c, 1, "/api/copilot", COPILOT) == [429]
+    assert engines(c, 1) == ["deterministic"]
     assert len(api.requests) == PER_CLIENT_PER_HOUR
     assert c.post("/api/compare", json=ANSWERS).status_code == 200
 
@@ -140,8 +152,8 @@ def test_the_copilot_cannot_drain_the_explain_pool(
     monkeypatch.setattr(caps, "PER_DAY", 2)
     fake_api(*NO_NUMBER)
     c = with_both(monkeypatch)
-    assert calls(c, 1, "/api/copilot", COPILOT, "203.0.113.1") == [200]
-    assert calls(c, 1, "/api/copilot", COPILOT, "203.0.113.2") == [200]
-    assert calls(c, 1, "/api/copilot", COPILOT, "203.0.113.3") == [429]  # the copilot's day is full, for every client
+    assert engines(c, 1, "203.0.113.1") == ["claude"]
+    assert engines(c, 1, "203.0.113.2") == ["claude"]
+    assert engines(c, 1, "203.0.113.3") == ["deterministic"]  # the copilot's day is full, for every client
     assert calls(c, 1, "/api/explain", EXPLAIN, "203.0.113.4") != [429]  # the explain pool is its own
     assert c.post("/api/compare", json=ANSWERS).status_code == 200

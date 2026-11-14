@@ -49,7 +49,7 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.api.caps import TOO_MANY, ModelCallCaps, ModelCallsFullError, client_of
+from fieldshift.api.caps import TOO_MANY, ModelCallCaps, client_of
 from fieldshift.api.copilot import (
     COPILOT_LIMIT,
     CopilotRequest,
@@ -367,8 +367,6 @@ async def _copilot(
         caps, client = request.app.state.model_calls, client_of(request)
         charge = functools.partial(caps.take, client, "copilot")
         reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, charge, limiter=threads)
-    except ModelCallsFullError:
-        return _too_many()
     finally:
         slots.release()
     return _respond(_json(reply))
