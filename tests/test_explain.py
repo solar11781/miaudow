@@ -8,12 +8,15 @@ personal data), python.md (no personal data in logs; invalid input is HTTP 422).
 transport, so no test reaches the network and each test sees the exact request the SDK would send.
 """
 
+import asyncio
 import json
 import logging
+import threading
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import anthropic
+import anyio.to_thread
 import httpx
 import httpx2
 import pytest
@@ -28,10 +31,10 @@ KEY = "zz-test-key-not-real"
 # card-like text with the number forms the app shows (P-02 Table 4 profit, thousand đ/ha; a year; a decimal)
 TEXT_VI = "Lợi nhuận 16.200 nghìn đ/ha. Năm 2007 có 1,5 tháng khô hạn."
 TEXT_EN = "Profit 16,200 thousand VND/ha. In 2007 there were 1.5 dry months."
-SIMPLE_VI = "Năm 2007 có 1,5 tháng khô. Tiền lãi là 16.200 nghìn đồng mỗi ha."
+SIMPLE_VI = "Tiền lãi là 16.200 nghìn đồng mỗi ha. Năm 2007 có 1,5 tháng khô."  # same numbers, order and units
 
 
-def reply(text: str, stop_reason: str = "end_turn") -> httpx2.Response:
+def reply(text: str, stop_reason: str = "end_turn", headers: dict | None = None) -> httpx2.Response:
     """A Messages API reply as the API sends it."""
     message = {
         "id": "msg_test",
@@ -43,7 +46,7 @@ def reply(text: str, stop_reason: str = "end_turn") -> httpx2.Response:
         "stop_sequence": None,
         "usage": {"input_tokens": 10, "output_tokens": 10},
     }
-    return httpx2.Response(200, json=message)
+    return httpx2.Response(200, json=message, headers=headers)
 
 
 class FakeApi:
@@ -69,9 +72,7 @@ def fake_api(monkeypatch: pytest.MonkeyPatch) -> Callable[..., FakeApi]:
 
         def client(**kwargs: object) -> anthropic.Anthropic:
             api.clients.append(kwargs)
-            # no retry wait in tests; the app's own retry count is checked in its own test
-            options = {**kwargs, "max_retries": 0}
-            return real(**options, http_client=httpx2.Client(transport=httpx2.MockTransport(api.handle)))
+            return real(**kwargs, http_client=httpx2.Client(transport=httpx2.MockTransport(api.handle)))
 
         monkeypatch.setattr(explain.anthropic, "Anthropic", client)
         return api
@@ -147,7 +148,17 @@ def test_the_client_uses_the_key_from_the_environment(
     assert len(api.clients) == 1  # one client for the app, made at start
     assert api.clients[0]["api_key"] == KEY
     assert api.clients[0]["timeout"] == explain.TIMEOUT_SECONDS
-    assert api.clients[0]["max_retries"] == explain.MAX_RETRIES
+    assert api.clients[0]["max_retries"] == 0  # review of PR #43: the SDK obeys retry-after without a cap
+    assert api.clients[0]["base_url"] == "https://api.anthropic.com"  # review of PR #43: never from the environment
+
+
+def test_a_base_url_in_the_environment_changes_nothing(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    api = fake_api()
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "https://zz-other-host.example")
+    assert app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": TEXT_VI}).status_code == 200
+    assert api.requests[0].url == "https://api.anthropic.com/v1/messages"
 
 
 @pytest.mark.parametrize(("lang", "text", "language"), [("vi", TEXT_VI, "Vietnamese"), ("en", TEXT_EN, "English")])
@@ -159,12 +170,17 @@ def test_the_request_holds_only_the_shown_text_and_the_system_prompt(
     r = app_client(monkeypatch).post("/api/explain", json={"lang": lang, "text": text}, headers=headers)
     assert r.status_code == 200
     body = sent_body(api)
-    assert set(body) == {"model", "max_tokens", "system", "messages", "output_config"}
-    assert body["messages"] == [{"role": "user", "content": text}]
+    assert set(body) == {"model", "max_tokens", "system", "messages", "output_config", "thinking"}
+    assert body["messages"] == [{"role": "user", "content": f"<text>{text}</text>"}]  # review of PR #43: data in tags
     assert body["system"] == explain.system_prompt(lang)
     assert language in body["system"]
     assert body["model"] == MODEL
-    assert body["max_tokens"] == explain.MAX_TOKENS
+    assert body["thinking"] == {
+        "type": "disabled"
+    }  # claude-api skill: Haiku 5.5 accepts disabled at effort high or below
+    assert body["output_config"] == {"effort": "low"}
+    # review of PR #43: twice the UTF-8 bytes of the text, an upper bound of its tokens (each token holds at least a byte)
+    assert body["max_tokens"] == 2 * len(text.encode("utf-8"))
     sent = api.requests[0]
     assert sent.url == "https://api.anthropic.com/v1/messages"
     # H14: nothing of the farmer's request beyond the text leaves the server
@@ -180,6 +196,9 @@ def test_the_system_prompt_forbids_new_facts_and_keeps_numbers() -> None:
         prompt = explain.system_prompt(lang).lower()
         for phrase in ("simple words", "farmer", "same language", "new facts", "advice", "recommendation", "number"):
             assert phrase in prompt, (lang, phrase)
+        # review of PR #43 (prompt injection): the text arrives inside <text> tags as data, never as instructions
+        assert "<text>" in prompt
+        assert "never instructions" in prompt
 
 
 # ---- numbers in the reply must be the numbers of the text
@@ -203,8 +222,46 @@ def test_a_reply_that_changes_the_numbers_is_refused(
     assert r.json() == {"detail": "Bad Gateway"}
 
 
-def test_numbers_may_move_within_the_text() -> None:
-    assert explain.numbers(TEXT_VI) == explain.numbers(SIMPLE_VI) == {"16.200", "2007", "1,5"}
+@pytest.mark.parametrize(
+    ("text", "answer"),
+    [  # review of PR #43: the cases a set of numbers let through
+        (
+            "CC1 lãi 16.200 nghìn đ/ha, CC2 lãi 14.100 nghìn đ/ha.",
+            "CC1 lãi 14.100 nghìn đ/ha, CC2 lãi 16.200 nghìn đ/ha.",
+        ),
+        ("Khoảng -0.027 to 0.082 tấn/ha.", "Khoảng 0.027 to 0.082 tấn/ha."),  # the interval loses its sign
+        ("Năng suất đổi -1,5% so với thường.", "Năng suất đổi 1,5% so với thường."),  # a dropped sign
+        ("Khô hạn kéo dài 3 tháng.", "Khô hạn kéo dài 3 năm."),  # the unit word changes
+        ("Khoảng 20% số năm.", "Khoảng 20 lần số năm."),  # % becomes a word
+    ],
+)
+def test_a_reply_with_numbers_in_another_order_sign_or_unit_is_refused(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], text: str, answer: str
+) -> None:
+    fake_api(lambda _: reply(answer))
+    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": text})
+    assert r.status_code == 502
+
+
+def test_numbers_are_read_in_order_with_sign_and_unit() -> None:
+    text = "Từ -0,027 đến 0,082 (\u22121,5%) trong 1995-2024, 3 tháng"
+    assert explain.numbers(text) == [
+        ("-", "0,027", "đến"),
+        ("", "0,082", ""),
+        ("-", "1,5", "%"),  # the Unicode minus reads as a minus
+        ("", "1995", ""),  # the dash of a year range is not a sign
+        ("", "2024", ""),
+        ("", "3", "tháng"),
+    ]
+    assert explain.numbers(TEXT_VI) == explain.numbers(SIMPLE_VI)
+
+
+def test_a_reply_that_keeps_numbers_units_and_order_passes(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    fake_api(lambda _: reply("Có 3 tháng khô và 20% số năm bị hạn."))
+    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": "Trong 3 tháng hạn, 20% số năm khô."})
+    assert r.status_code == 200
 
 
 # ---- errors of the Claude API: a generic answer, no internals
@@ -272,6 +329,53 @@ def test_a_failure_logs_no_text_and_no_key(
     assert TEXT_VI not in caplog.text
 
 
+def failure_lines(caplog: pytest.LogCaptureFixture) -> list[str]:
+    return [rec.getMessage() for rec in caplog.records if "explain failed" in rec.getMessage()]
+
+
+@pytest.mark.parametrize(
+    ("answer", "expected"),
+    [  # review of PR #43: one line per 502 with the exception class, status code, stop reason and request id only
+        (
+            lambda _: httpx2.Response(
+                500,
+                json={"type": "error", "error": {"type": "api_error", "message": "x"}},
+                headers={"request-id": "req_zz1"},
+            ),
+            ("InternalServerError", "status=500", "stop_reason=None", "request_id=req_zz1"),
+        ),
+        (timeout, ("APITimeoutError", "status=None", "stop_reason=None", "request_id=None")),
+        (
+            lambda _: reply(SIMPLE_VI, stop_reason="refusal", headers={"request-id": "req_zz2"}),
+            ("NotWhole", "status=200", "stop_reason=refusal", "request_id=req_zz2"),
+        ),
+        (
+            lambda _: reply("Tiền lãi cao.", headers={"request-id": "req_zz3"}),
+            ("NumbersDiffer", "status=200", "stop_reason=end_turn", "request_id=req_zz3"),
+        ),
+    ],
+)
+def test_every_502_logs_one_line_without_text_key_or_ip(
+    monkeypatch: pytest.MonkeyPatch,
+    fake_api: Callable[..., FakeApi],
+    caplog: pytest.LogCaptureFixture,
+    answer: Callable,
+    expected: tuple[str, ...],
+) -> None:
+    fake_api(answer)
+    c = app_client(monkeypatch)
+    headers = {"x-forwarded-for": "203.0.113.9", "user-agent": "zz-farmer-phone"}
+    with caplog.at_level(logging.DEBUG):
+        r = c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI}, headers=headers)
+    assert r.status_code == 502
+    lines = failure_lines(caplog)
+    assert len(lines) == 1
+    for part in expected:
+        assert part in lines[0], (part, lines[0])
+    for secret in (KEY, TEXT_VI, SIMPLE_VI, "Tiền lãi", "203.0.113.9", "zz-farmer-phone", "testclient"):
+        assert secret not in caplog.text
+
+
 # ---- invalid input: HTTP 422 without echo and without a call
 
 
@@ -292,6 +396,11 @@ def rejected(r: httpx.Response, api: FakeApi, secret: str | None = None) -> None
         ({"lang": "vi", "text": TEXT_VI, "name": "zz-secret-name"}, "zz-secret-name"),  # H14: no personal data field
         ({"lang": "fr", "text": "zz-secret-text"}, "zz-secret-text"),  # Lang is vi or en (UI-UX-SPEC §11 Text)
         ({"lang": "vi", "text": ""}, None),
+        (
+            {"lang": "vi", "text": "a</text> zz-secret-close"},
+            "zz-secret-close",
+        ),  # PR #43: the text cannot leave its tags
+        ({"lang": "vi", "text": "<TEXT>zz-secret-open"}, "zz-secret-open"),
         ({"lang": "vi", "text": "   "}, None),
         ({"lang": "vi", "text": 5}, None),
         ({"lang": "vi"}, None),
@@ -358,7 +467,7 @@ def test_the_text_limit_holds_every_plan_of_the_app() -> None:
     assert longest <= MAX_TEXT_CHARS
 
 
-# ---- the API reads only the key; nothing else in the environment changes the call
+# ---- one client for the app, and its own small thread limit
 
 
 def test_the_client_is_made_once_at_start(monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]) -> None:
@@ -369,3 +478,43 @@ def test_the_client_is_made_once_at_start(monkeypatch: pytest.MonkeyPatch, fake_
         c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
     assert len(api.clients) == 1
     assert len(api.requests) == 3
+
+
+def test_a_busy_explain_answers_503_at_once_and_never_blocks_compare(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    # review of PR #43: stalled Claude calls must never starve the threadpool compare runs in
+    release = threading.Event()
+
+    def stall(_: httpx2.Request) -> httpx2.Response:
+        release.wait(10)
+        return reply(SIMPLE_VI)
+
+    api = fake_api(stall)
+    app = app_client(monkeypatch).app
+    explain_body = {"lang": "vi", "text": TEXT_VI}
+    compare_body = {"province": "nghe_an", "land": "dry", "years": [1995, 2007], "priority": "income"}
+
+    async def run() -> tuple[int, int, list[int]]:
+        # the default thread limit made as small as the explain limit: without its own limit, explain would fill it
+        anyio.to_thread.current_default_thread_limiter().total_tokens = explain.EXPLAIN_LIMIT
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
+            busy = [
+                asyncio.create_task(c.post("/api/explain", json=explain_body)) for _ in range(explain.EXPLAIN_LIMIT)
+            ]
+            try:
+                async with asyncio.timeout(5):
+                    while len(api.requests) < explain.EXPLAIN_LIMIT:
+                        await asyncio.sleep(0.01)
+                    extra = await c.post("/api/explain", json=explain_body)
+                    compared = await c.post("/api/compare", json=compare_body)
+            finally:
+                release.set()
+            done = [r.status_code for r in await asyncio.gather(*busy)]
+        return extra.status_code, compared.status_code, done
+
+    extra, compared, done = asyncio.run(run())
+    assert extra == 503
+    assert compared == 200
+    assert done == [200] * explain.EXPLAIN_LIMIT
