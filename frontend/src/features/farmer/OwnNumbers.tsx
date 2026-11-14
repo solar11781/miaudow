@@ -96,7 +96,8 @@ export function OwnNumbers({
   const yieldIds = items.flatMap((i) => i.yield.source_ids);
   const total = result.total;
   return (
-    <div className={s.fold}>
+    // a test hook of its own, so the money row's total stays the only unmarked div of the row (priority-line T37)
+    <div className={s.fold} data-testid={`card-${planId}-your-numbers`}>
       <button
         type="button"
         className={s.foldButton}
