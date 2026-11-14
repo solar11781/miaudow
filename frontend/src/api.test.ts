@@ -107,6 +107,23 @@ describe('requests', () => {
       expect.objectContaining({ method: 'POST', body: JSON.stringify(body) }),
     );
   });
+  // UI-UX-SPEC section 11: "There is no app-level timeout"; the browser's own network behaviour applies
+  it('sets no app-level timeout on the product calls', async () => {
+    vi.useFakeTimers();
+    const signals: (AbortSignal | null | undefined)[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_: string, init: RequestInit) => {
+        signals.push(init.signal);
+        return new Promise<Response>(() => undefined);
+      }),
+    );
+    void api.compare(body);
+    void api.method();
+    await vi.advanceTimersByTimeAsync(10 * 60 * 1000);
+    expect(signals.map((s) => s?.aborted)).toEqual([false, false]);
+    vi.useRealTimers();
+  });
   it('turns a non-2xx status into an ApiError', async () => {
     vi.stubGlobal(
       'fetch',

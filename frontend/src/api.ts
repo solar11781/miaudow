@@ -358,9 +358,10 @@ export function validateMethod(raw: unknown): MethodResponse {
 
 // ---------------------------------------------------------------- requests
 
+// No app-level timeout on our calls (UI-UX-SPEC section 11): only member B's health and copilot calls pass one.
 async function call(path: string, init: RequestInit & { timeoutMs?: number } = {}): Promise<unknown> {
   const ctrl = new AbortController();
-  const timer = window.setTimeout(() => ctrl.abort(), init.timeoutMs ?? 20000);
+  const timer = init.timeoutMs === undefined ? undefined : window.setTimeout(() => ctrl.abort(), init.timeoutMs);
   const outer = init.signal;
   outer?.addEventListener('abort', () => ctrl.abort(), { once: true });
   try {
