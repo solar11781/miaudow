@@ -189,10 +189,12 @@ def penalty_report(at_edge: dict[str, float]) -> dict:
         "id": EXPERIMENT,
         "title": bilingual("Mức phạt của mô hình ở đầu thang", "Model penalty at an end of the grid"),
         "text": bilingual(
-            f"Mức phạt được chọn nằm ở một đầu thang của D-110 trong {m1} số năm kiểm tra với M1 và {bnw} với mô hình "
-            "không dùng thời tiết; mô hình này có thể yếu hơn mức nó đạt được với thang rộng hơn.",
-            f"The chosen penalty was at an end of the D-110 grid in {m1} of the test years for M1 and in {bnw} for the "
-            "no-weather model, which may therefore be weaker than a wider grid would allow.",
+            "Mức phạt được chọn nằm ở một đầu thang mức phạt của Meroni và cộng sự 2021 (đã đổi cho hồi quy ridge) "
+            f"trong {m1} số năm kiểm tra với M1 và {bnw} với mô hình không dùng thời tiết; khi đó thang có thể đã giới hạn "
+            "việc chọn mức phạt tốt nhất cho mô hình ấy.",
+            f"The chosen penalty was at an end of the Meroni et al. 2021 penalty grid (rescaled for ridge) in {m1} of "
+            f"the test years for M1 and in {bnw} for the no-weather model; there, the grid may have limited the choice "
+            "of that model's best penalty.",
         ),
         "source_ids": [EXPERIMENT],
     }
