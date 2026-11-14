@@ -2,6 +2,7 @@
 // the farmer's answers go to our own server only, in the POST body (D-92). Every response is checked before a screen
 // uses it ("Validation in src/api.ts"); a response that fails the check is an error, never shown.
 import type { Bilingual } from './domain/provenance';
+import type { Land } from './domain/farmerState';
 import {
   COVERAGE_AXES,
   EXPLAIN_KEYS,
@@ -13,6 +14,7 @@ import {
   type MethodResponse,
   type PastYearsResponse,
   type Plan,
+  type PlanId,
   type Stability,
 } from './types';
 
@@ -356,10 +358,38 @@ export function validateMethod(raw: unknown): MethodResponse {
   return res;
 }
 
+// ---------------------------------------------------------------- optional google sign-in (UI-UX-SPEC §12c)
+
+/** Whether sign-in is on, and the public Google client id the sign-in page starts Google's button with. */
+export type SignInConfig = { available: true; client_id: string } | { available: false; client_id: null };
+/** One saved set: the answers of steps 1-3 (accounts.py SavedAnswers), the field as the farmer answered it; an
+ * irrigated field gets no plans, so it is never saved. */
+export type SavedAnswers = Pick<CompareRequest, 'years' | 'priority'> & { land: SavedLand };
+export type SavedLand = Exclude<Land, 'reliable'>;
+export interface SavedSet extends SavedAnswers {
+  id: number;
+}
+
+const savedSet = obj({
+  id: num,
+  land: oneOf(['high_field', 'canal_end', 'water_short', 'ask']),
+  years: arr(num),
+  priority: oneOf(['income', 'stability', 'water', 'land']),
+});
+
+export function validateSignInConfig(raw: unknown): SignInConfig {
+  obj({ available: bool, client_id: nullable(str) })(raw, 'account config');
+  const res = raw as SignInConfig;
+  if (res.available !== (res.client_id !== null)) fail('account config', 'client_id must be set exactly when on');
+  return res;
+}
+
 // ---------------------------------------------------------------- requests
 
 // No app-level timeout on our calls (UI-UX-SPEC section 11): only member B's health and copilot calls pass one.
 async function call(path: string, init: RequestInit & { timeoutMs?: number } = {}): Promise<unknown> {
+  // the offline copy has no server: no live answer may appear under its notice
+  if (SNAPSHOT_MODE) throw new Error('the offline copy has no server');
   const ctrl = new AbortController();
   const timer = init.timeoutMs === undefined ? undefined : window.setTimeout(() => ctrl.abort(), init.timeoutMs);
   const outer = init.signal;
@@ -374,30 +404,108 @@ async function call(path: string, init: RequestInit & { timeoutMs?: number } = {
       const body: unknown = await res.json().catch(() => ({}));
       throw new ApiError(res.status, isObj(body) && typeof body.detail === 'string' ? body.detail : res.statusText);
     }
-    return await res.json();
+    return res.status === 204 ? null : await res.json();
   } finally {
     window.clearTimeout(timer);
   }
 }
 
+// ---------------------------------------------------------------- demo-day snapshot (04-TECH-DESIGN section 9)
+
+/** True only in `npm run build:snapshot` (vite --mode snapshot): the product calls then read the saved real answers of
+ * scripts/build_snapshot.py (frontend/snapshot/, copied in by vite.config.ts) instead of /api, and every page says so. */
+export const SNAPSHOT_MODE = import.meta.env.MODE === 'snapshot';
+const SNAPSHOT_URL = `${import.meta.env.BASE_URL}snapshot/`;
+
+export interface SnapshotEntry {
+  land: CompareRequest['land'];
+  priority: CompareRequest['priority'];
+  years: number[];
+  file: string;
+}
+export interface SnapshotIndex {
+  commit: string;
+  made_at: string;
+  compare: SnapshotEntry[];
+}
+
+/** Answers the snapshot did not save; `saved` lists the ones it did. */
+export class SnapshotMissError extends Error {
+  constructor(readonly saved: SnapshotEntry[]) {
+    super('these answers are not in the offline copy');
+  }
+}
+
+const snapshotIndexShape = obj({
+  commit: str,
+  made_at: (v, at) => {
+    if (typeof v !== 'string' || Number.isNaN(Date.parse(v))) fail(at, 'not a date');
+  },
+  compare: arr(
+    obj({
+      land: oneOf(['dry', 'unsure']),
+      priority: oneOf(['income', 'stability', 'water', 'land']),
+      years: arr(num),
+      file: (v, at) => {
+        if (typeof v !== 'string' || !/^compare\/[a-z0-9_-]+\.json$/.test(v)) fail(at, 'not a file in compare/');
+      },
+    }),
+  ),
+});
+
+export function validateSnapshotIndex(raw: unknown): SnapshotIndex {
+  snapshotIndexShape(raw, 'snapshot');
+  return raw as SnapshotIndex;
+}
+
+async function fromSnapshot(file: string, signal?: AbortSignal): Promise<unknown> {
+  const res = await fetch(`${SNAPSHOT_URL}${file}`, { signal });
+  if (!res.ok) throw new ApiError(res.status, res.statusText);
+  return await res.json();
+}
+
+async function snapshotCompare(body: CompareRequest, signal?: AbortSignal): Promise<unknown> {
+  const index = validateSnapshotIndex(await fromSnapshot('index.json', signal));
+  const hit = index.compare.find((e) => sameRequest({ province: 'nghe_an', ...e }, body));
+  if (!hit) throw new SnapshotMissError(index.compare);
+  return fromSnapshot(hit.file, signal);
+}
+
 /** The method page's grid figure (UI-UX-SPEC section 11b item 4), served by our backend. */
-export const GRID_FIGURE_URL = '/api/figures/nghe_an_grid.svg';
+export const GRID_FIGURE_URL = SNAPSHOT_MODE
+  ? `${SNAPSHOT_URL}figures/nghe_an_grid.svg`
+  : '/api/figures/nghe_an_grid.svg';
 
 // the past-years response is kept in memory for the life of the page (section 11), never stored in the browser
 let pastYearsOnce: Promise<PastYearsResponse> | null = null;
+let configOnce: Promise<SignInConfig> | null = null;
+
+// the Google ID token goes only in this header, never in an address or the browser's storage (H14)
+const bearer = (token: string) => ({ Authorization: `Bearer ${token}` });
 
 export const api = {
   /** Shared by every screen of the page, so one screen leaving does not cancel it; callers ignore a late answer. */
   pastYears(): Promise<PastYearsResponse> {
-    pastYearsOnce ??= call('/past-years?province=nghe_an').then(validatePastYears);
+    pastYearsOnce ??= (SNAPSHOT_MODE ? fromSnapshot('past-years.json') : call('/past-years?province=nghe_an')).then(
+      validatePastYears,
+    );
     pastYearsOnce.catch(() => {
       pastYearsOnce = null;
     });
     return pastYearsOnce;
   },
   compare: async (body: CompareRequest, signal?: AbortSignal): Promise<CompareResponse> =>
-    validateCompare(await call('/compare', { method: 'POST', body: JSON.stringify(body), signal }), body),
-  method: async (signal?: AbortSignal): Promise<MethodResponse> => validateMethod(await call('/method', { signal })),
+    validateCompare(
+      await (SNAPSHOT_MODE
+        ? snapshotCompare(body, signal)
+        : call('/compare', { method: 'POST', body: JSON.stringify(body), signal })),
+      body,
+    ),
+  method: async (signal?: AbortSignal): Promise<MethodResponse> =>
+    validateMethod(await (SNAPSHOT_MODE ? fromSnapshot('method.json', signal) : call('/method', { signal }))),
+  /** The snapshot's index (saved answers, commit, time made); only in snapshot mode. */
+  snapshot: async (signal?: AbortSignal): Promise<SnapshotIndex> =>
+    validateSnapshotIndex(await fromSnapshot('index.json', signal)),
   health: (signal?: AbortSignal) => call('/health', { signal, timeoutMs: 4000 }) as Promise<Health>,
   copilot: (body: CopilotRequest, signal?: AbortSignal) =>
     call('/copilot', {
@@ -406,7 +514,82 @@ export const api = {
       signal,
       timeoutMs: 90000,
     }) as Promise<CopilotResponse>,
+  account: {
+    config(): Promise<SignInConfig> {
+      configOnce ??= call('/account/config').then(validateSignInConfig);
+      configOnce.catch(() => {
+        configOnce = null;
+      });
+      return configOnce;
+    },
+    signIn: async (token: string): Promise<void> => {
+      await call('/account/sign-in', { method: 'POST', headers: bearer(token) });
+    },
+    saved: async (token: string, signal?: AbortSignal): Promise<SavedSet[]> => {
+      const raw = await call('/account/saved', { headers: bearer(token), signal });
+      obj({ saved: arr(savedSet) })(raw, 'saved');
+      return (raw as { saved: SavedSet[] }).saved;
+    },
+    save: async (token: string, answers: SavedAnswers): Promise<SavedSet> => {
+      const raw = await call('/account/saved', {
+        method: 'POST',
+        body: JSON.stringify(answers),
+        headers: bearer(token),
+      });
+      savedSet(raw, 'saved set');
+      return raw as SavedSet;
+    },
+    remove: async (token: string, id: number): Promise<void> => {
+      await call(`/account/saved/${id}`, { method: 'DELETE', headers: bearer(token) });
+    },
+    deleteAccount: async (token: string): Promise<void> => {
+      await call('/account', { method: 'DELETE', headers: bearer(token) });
+    },
+  },
 };
+
+// ---------------------------------------------------------------- explain simply (FR-15, D-165, D-172)
+
+export type WhyPart = 'why' | 'evidence' | 'benefits' | 'gaps';
+/** The body of POST /api/explain (src/fieldshift/api/explain.py): the server takes the text from its own answer. */
+export interface ExplainRequest {
+  answers: CompareRequest;
+  plan: PlanId;
+  field: WhyPart;
+  lang: 'vi' | 'en';
+}
+export interface ExplainResponse {
+  text: string;
+  ai_generated: true;
+  model: string;
+}
+
+const explainShape = obj({
+  text: str,
+  ai_generated: (v, at) => {
+    if (v !== true) fail(at, 'not true');
+  },
+  model: str,
+});
+
+/** Whether the feature is on: the server answers 503 while off before it reads the body, so an empty body gets 503
+ * (off) or 422 (on) and never reaches the model. Any other outcome counts as off. */
+export async function explainOn(signal?: AbortSignal): Promise<boolean> {
+  try {
+    await call('/explain', { method: 'POST', body: '{}', signal });
+    return false;
+  } catch (e) {
+    return e instanceof ApiError && e.status === 422;
+  }
+}
+
+export async function explainSimply(body: ExplainRequest, signal?: AbortSignal): Promise<ExplainResponse> {
+  const raw = await call('/explain', { method: 'POST', body: JSON.stringify(body), signal });
+  explainShape(raw, 'explain');
+  const res = raw as ExplainResponse;
+  if (!res.text.trim()) fail('explain.text', 'empty');
+  return res;
+}
 
 // ---------------------------------------------------------------- member B's copilot contract (its own backend)
 

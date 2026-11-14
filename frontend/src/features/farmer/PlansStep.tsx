@@ -4,26 +4,31 @@ import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { api } from '../../api';
+import { api, explainOn, SnapshotMissError, type SavedAnswers, type SnapshotEntry } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
-import { compareRequest, serializeFarmerState } from '../../domain/farmerState';
+import { compareRequest, serializeFarmerState, type Land } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
-import { usePick, useT } from '../../app/settings';
+import { SaveAnswers } from '../account/SaveAnswers';
+import { usePick, useSettings, useT, type Lang } from '../../app/settings';
+import { pathFor, useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
-/** Builds the absolute link that opens exactly this card with the current answers (the answers stay in the fragment). */
-function cardUrl(search: URLSearchParams) {
+/** Builds the absolute link that opens exactly this card with the current answers (the answers stay in the fragment),
+ * under the path of the language it is shared in (D-174). */
+export function cardUrl(search: URLSearchParams, lang: Lang) {
   const base = `${window.location.origin}${window.location.pathname}`;
-  return `${base}#/nong-dan/phuong-an?${search.toString()}`;
+  return `${base}#${pathFor('/nong-dan/phuong-an', lang)}?${search.toString()}`;
 }
 
 function Cards({ res }: { res: CompareResponse }) {
   const t = useT();
   const pick = usePick();
+  const { lang } = useSettings();
   const { state, update } = useFarmer();
   const [focused, setFocused] = useState(state.plan);
+  const [explain] = useApi(explainOn, 'explain-on'); // asked once per screen; hidden unless the server says on
 
   useEffect(() => {
     if (!state.plan) return;
@@ -37,7 +42,7 @@ function Cards({ res }: { res: CompareResponse }) {
 
   const share = useCallback(
     async (plan: Plan) => {
-      const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id }));
+      const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id }), lang);
       try {
         if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
           await navigator.share({ title: `Miaudow · ${pick(plan.name)}`, text: t.farmer.shareHelp, url });
@@ -49,7 +54,7 @@ function Cards({ res }: { res: CompareResponse }) {
         return false;
       }
     },
-    [state, pick, t],
+    [state, pick, t, lang],
   );
 
   return (
@@ -80,6 +85,7 @@ function Cards({ res }: { res: CompareResponse }) {
             res={res}
             priority={res.request.priority}
             focused={focused === p.id}
+            explain={explain.status === 'ok' && explain.data}
             onShare={share}
           />
         ))}
@@ -88,19 +94,51 @@ function Cards({ res }: { res: CompareResponse }) {
   );
 }
 
+/** Offline copy only: these answers were not saved, so no cards; the saved answer sets are listed instead. */
+function SnapshotMiss({ saved }: { saved: SnapshotEntry[] }) {
+  const t = useT();
+  return (
+    <div className={s.note} role="alert" data-testid="snapshot-miss">
+      <Icon name="alert" size={20} />
+      <div>
+        <p>{t.snapshot.missing}</p>
+        <ul className={s.noteList}>
+          {saved.map((e) => (
+            <li key={e.file}>
+              {t.snapshot.saved(
+                e.land === 'dry' ? t.snapshot.landDry : t.farmer.lands.ask.title,
+                e.years.join(', '),
+                t.farmer.prios[e.priority].title,
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 function Compare({ body }: { body: CompareRequest }) {
   const [res, retry] = useApi((signal) => api.compare(body, signal), JSON.stringify(body));
-  return res.status === 'ok' ? <Cards res={res.data} /> : <LoadState state={res} retry={retry} />;
+  if (res.status === 'ok') return <Cards res={res.data} />;
+  if (res.status === 'error' && res.error instanceof SnapshotMissError) return <SnapshotMiss saved={res.error.saved} />;
+  return <LoadState state={res} retry={retry} />;
 }
+
+/** The answers a farmer can save: only with plans to see, so never an irrigated field. */
+const savable = (land: Land | null, body: CompareRequest | null): SavedAnswers | null =>
+  body && land && land !== 'reliable' ? { land, years: body.years, priority: body.priority } : null;
 
 export function PlansStep() {
   const t = useT();
   const { state, search } = useFarmer();
+  const local = useLocalTo();
   const [years, retryYears] = useApi(api.pastYears, 'past-years');
   // picked years are checked against the past-years response before any compare request (UI-UX-SPEC section 6b)
   const offered = years.status === 'ok' ? years.data.years.map((y) => y.year) : [];
   const body =
     years.status === 'ok' ? compareRequest({ ...state, years: state.years.filter((y) => offered.includes(y)) }) : null;
+  const saved = savable(state.land, body);
   return (
     <StepShell step={4} title={t.farmer.plansTitle} help={t.farmer.plansLead} wide>
       <div className={s.plansMeta}>
@@ -110,7 +148,7 @@ export function PlansStep() {
               {y}
             </span>
           ))}
-          <Link to={{ pathname: '/nong-dan/nam', search }} className={s.editLink} viewTransition>
+          <Link to={local({ pathname: '/nong-dan/nam', search })} className={s.editLink} viewTransition>
             {t.farmer.yearsTitle}
           </Link>
         </div>
@@ -120,6 +158,8 @@ export function PlansStep() {
             {t.farmer.yourPriority}: <strong>{t.farmer.prios[state.priority].title}</strong>
           </p>
         )}
+        {/* next to the answers, not after the six cards (walkthrough of PR #53) */}
+        {saved && <SaveAnswers key={JSON.stringify(saved)} answers={saved} />}
       </div>
       {/* one notice box instead of four (walkthrough 2026-11-14); each card repeats its warnings (H17) */}
       <div className={s.note}>
@@ -142,7 +182,7 @@ export function PlansStep() {
         <p className={s.note}>
           <Icon name="alert" size={20} />
           {t.farmer.needAnswers}{' '}
-          <Link to={{ pathname: '/nong-dan/ruong', search }} className={s.editLink}>
+          <Link to={local({ pathname: '/nong-dan/ruong', search })} className={s.editLink}>
             {t.farmer.restart}
           </Link>
         </p>

@@ -14,12 +14,14 @@ import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { RainStrip } from '../charts/RainStrip';
 import { TwoSources } from '../charts/TwoSources';
 import { NdviChart } from '../charts/NdviChart';
+import { useLocalTo } from '../../app/paths';
 import s from './science.module.css';
 
 const SCIENCE_RULES: RuleCode[] = ['drought_rain_any2', 'drought_rain_consecutive', 'heat', 'heavy_rain', 'cold'];
 
 function GridSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
   const t = useT();
+  const local = useLocalTo();
   const pick = usePick();
   const f = useFormat();
   const refs = useRefs();
@@ -48,7 +50,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
           <p className="eyebrow">{t.science.eyebrow}</p>
           <h1 className={`display ${s.pageTitle}`}>{t.science.title}</h1>
           <p className="lead">{t.science.lead}</p>
-          <Link to={`/dai-quan-sat?canh=analysis&nam=${year}`} className={s.globeLink}>
+          <Link to={local(`/dai-quan-sat?canh=analysis&nam=${year}`)} className={s.globeLink}>
             <Icon name="globe" size={20} />
             {t.science.globeCta}
             <Icon name="arrowRight" size={18} />
@@ -214,6 +216,7 @@ const CELLS = ['19.0_105.0', '19.0_105.625', '18.5_105.625', '19.5_105.0', '19.5
 /** One shared year: the rain strip, the two rain sources and the greenness follow the observatory's year. */
 function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) => void }) {
   const t = useT();
+  const local = useLocalTo();
   const refs = useRefs();
   const [cell, setCell] = useState(CELLS[0] as string);
   const q = new URLSearchParams({ q: t.climate.askYearQ(year), hoi: '1' }).toString();
@@ -226,7 +229,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
             {t.climate.sectionTitle} · <span className="num">{year}</span>
           </h2>
           <p className="lead">{t.climate.sectionLead}</p>
-          <Link className={s.askLink} to={`/tro-ly?${q}`} viewTransition>
+          <Link className={s.askLink} to={local(`/tro-ly?${q}`)} viewTransition>
             <Icon name="spark" size={18} />
             {t.climate.askYear(year)}
           </Link>
@@ -304,13 +307,14 @@ function RiceSection() {
 /** The model results live on the method page, read from our API (D-166), so this page shows no second copy. */
 function MethodLink() {
   const t = useT();
+  const local = useLocalTo();
   return (
     <section className="band surface-paper" aria-labelledby="skill-title">
       <div className={`container ${s.colHead}`}>
         <h2 id="skill-title" className="h1">
           {t.science.skillTitle}
         </h2>
-        <Link to="/phuong-phap" className={s.askLink}>
+        <Link to={local('/phuong-phap')} className={s.askLink}>
           <Icon name="arrowRight" size={18} />
           {t.science.toMethod}
         </Link>

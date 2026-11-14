@@ -11,6 +11,8 @@ const channel = process.env.CI ? {} : { channel: 'msedge' };
 
 export default defineConfig({
   testDir: './e2e',
+  // the offline demo build has its own config and server (playwright.snapshot.config.ts)
+  testIgnore: 'snapshot.spec.ts',
   timeout: 45_000,
   fullyParallel: false,
   workers: 1,

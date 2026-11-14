@@ -10,6 +10,7 @@ import { isScene, SCENES, type Scene, type SceneId } from './scenes';
 import type { Globe, Overlay } from './globe';
 import { cellYear } from './cellClimate';
 import s from './earth.module.css';
+import { useLocalTo } from '../../app/paths';
 
 const EYES = eyesJson as unknown as { links: { id: string; url: string }[] };
 const eyesUrl = (id: string) => EYES.links.find((l) => l.id === id)?.url;
@@ -129,6 +130,7 @@ function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: ()
 
 export function EarthPage() {
   const t = useT();
+  const local = useLocalTo();
   const { calm } = useSettings();
   const st = useObservatoryState();
   const supported = useMemo(() => typeof window !== 'undefined' && hasWebGL(), []);
@@ -187,7 +189,7 @@ export function EarthPage() {
         ) : (
           <div className={s.fallback}>
             <p>{calm ? t.earth.calmNote : t.earth.noWebgl}</p>
-            <Link to={`/khoa-hoc?nam=${st.year}`} className={s.fallbackLink}>
+            <Link to={local(`/khoa-hoc?nam=${st.year}`)} className={s.fallbackLink}>
               {t.earth.openScience}
               <Icon name="arrowRight" size={18} />
             </Link>
@@ -498,6 +500,7 @@ function CellMetric({
   insight: boolean;
 }) {
   const t = useT();
+  const local = useLocalTo();
   const f = useFormat();
   const v = cellYear(cell, year);
   const ask = new URLSearchParams({ q: t.earth.askQ(year), hoi: '1', nam: String(year) }).toString();
@@ -511,11 +514,11 @@ function CellMetric({
             {t.common.notForecast}. {t.earth.insightLimits}
           </p>
           <div className={s.insightLinks}>
-            <Link to={`/tro-ly?${ask}`} className={s.askBtn}>
+            <Link to={local(`/tro-ly?${ask}`)} className={s.askBtn}>
               <Icon name="spark" size={18} />
               {t.earth.ask}
             </Link>
-            <Link to={`/khoa-hoc?nam=${year}`} className={s.srcLink}>
+            <Link to={local(`/khoa-hoc?nam=${year}`)} className={s.srcLink}>
               {t.earth.openScience}
               <Icon name="arrowRight" size={16} />
             </Link>

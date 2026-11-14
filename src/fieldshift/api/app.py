@@ -6,8 +6,10 @@ GET /api/figures/nghe_an_grid.svg (UI-UX-SPEC §11b item 4), the privacy notice 
 files and artifacts are read once when the app is created, so a broken or missing file stops the start instead of
 failing a farmer's request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API
 (FR-15), is the one stated exception to NFR-01: off by default, it answers 503 until it is turned on, and also while
-its own thread limit is full (explain.py). Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
-generic 500 without internals. The same service serves the built frontend (frontend/dist): every built file, and index.html
+its own thread limit is full (explain.py). POST /api/copilot, member B's copilot (copilot.py, D-172), follows the same
+rules: it answers 503 unless FIELDSHIFT_COPILOT is 1 and while its own thread limit is full, and it calls the Claude
+API only when ANTHROPIC_API_KEY is set; without the key it answers from our own data. Invalid input gets HTTP 422
+(04-TECH-DESIGN §3); an unexpected error gets a generic 500 without internals. The same service serves the built frontend (frontend/dist): every built file, and index.html
 for any other path outside /api (D-102, D-166).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
@@ -15,6 +17,7 @@ Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no
 from __future__ import annotations
 
 import asyncio
+import functools
 import html
 import json
 import logging
@@ -46,11 +49,30 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.api.explain import EXPLAIN_LIMIT, ExplainError, ExplainRequest, claude_client, explain, shown_text
+from fieldshift.api.caps import TOO_MANY, ModelCallCaps, ModelCallsFullError, client_of
+from fieldshift.api.copilot import (
+    COPILOT_LIMIT,
+    CopilotRequest,
+    Corpus,
+    copilot_client,
+    copilot_on,
+    load_corpus,
+)
+from fieldshift.api.copilot import answer as copilot_answer
+from fieldshift.api.explain import (
+    EXPLAIN_LIMIT,
+    PLACEHOLDER,
+    PROMPT,
+    ExplainError,
+    ExplainRequest,
+    claude_client,
+    explain,
+    shown_text,
+)
 from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
-from fieldshift.engine.rules import PrivacyTexts, load_privacy_texts
+from fieldshift.engine.rules import PrivacyTexts, load_privacy_texts, load_prompt
 from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, HealthResponse, Land, Priority, Province
 from fieldshift.paths import project_root
 
@@ -68,24 +90,31 @@ FILE_METHODS = ("GET", "HEAD")
 ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
-# H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat.
+# H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat,
+# and Google's sign-in script, frame and style of /dang-nhap and /da-luu (UI-UX-SPEC §12c), as Google's guidance names
+# them: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#content_security_policy
 # Inline style attributes are React style props; data: and blob: images, blob: workers and eval are Cesium's.
+GSI = "https://accounts.google.com/gsi/"
 CSP = "; ".join(
     (
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval'",  # D-170: Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
+        # D-170: Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
+        f"script-src 'self' 'unsafe-eval' {GSI}client",
         "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov",
-        "connect-src 'self' https://gibs.earthdata.nasa.gov",
-        "frame-src https://eyes.nasa.gov",
+        f"connect-src 'self' https://gibs.earthdata.nasa.gov {GSI}",
+        f"frame-src https://eyes.nasa.gov {GSI}",
         "worker-src 'self' blob:",
-        "style-src 'self' 'unsafe-inline'",
+        f"style-src 'self' 'unsafe-inline' {GSI}style",
         "font-src 'self'",
         "frame-ancestors 'none'",
     )
 )
 SECURITY_HEADERS = [
     (b"x-content-type-options", b"nosniff"),
-    (b"referrer-policy", b"no-referrer"),
+    # Google's sign-in script needs the origin: "a Referrer-Policy of strict-origin-when-cross-origin is recommended"
+    # (https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid); other sites get our origin only,
+    # and the answers live after "#", which is never sent
+    (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"content-security-policy", CSP.encode()),
 ]
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
@@ -275,10 +304,16 @@ async def _bad_gateway(_: Request, exc: ExplainError) -> JSONResponse:
     return JSONResponse({"detail": "Bad Gateway"}, status_code=502)
 
 
+def _too_many() -> JSONResponse:
+    """The shared cap of model calls is full (caps.py): a fixed detail that echoes nothing."""
+    return JSONResponse({"detail": TOO_MANY}, status_code=429)
+
+
 async def _explain(
     request: Request,
     compare_data: CompareData,
     claude: Anthropic | None,
+    template: str,
     slots: anyio.CapacityLimiter,
     threads: anyio.CapacityLimiter,
 ) -> Response:
@@ -292,11 +327,49 @@ async def _explain(
     except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     try:
+        if not request.app.state.model_calls.take(client_of(request), "explain"):
+            return _too_many()
         answer = await anyio.to_thread.run_sync(compare, body.answers, compare_data, limiter=threads)
-        reply = await anyio.to_thread.run_sync(explain, shown_text(body, answer), body.lang, claude, limiter=threads)
+        reply = await anyio.to_thread.run_sync(
+            explain, shown_text(body, answer), body.lang, claude, template, limiter=threads
+        )
     finally:
         slots.release()
     return _respond(_json(reply))
+
+
+async def _copilot(
+    request: Request,
+    corpus: Corpus | None,
+    claude: Anthropic | None,
+    slots: anyio.CapacityLimiter,
+    threads: anyio.CapacityLimiter,
+) -> Response:
+    """As _explain: 503 while off or while every slot is taken (without waiting), the work on its own limiter."""
+    if corpus is None:
+        return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+    body = await _body(request, CopilotRequest)
+    try:
+        slots.acquire_nowait()
+    except anyio.WouldBlock:
+        return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+    try:
+        caps, client = request.app.state.model_calls, client_of(request)
+        charge = functools.partial(caps.take, client, "copilot")
+        reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, charge, limiter=threads)
+    except ModelCallsFullError:
+        return _too_many()
+    finally:
+        slots.release()
+    return _respond(_json(reply))
+
+
+def _health_body(health: HealthResponse, corpus: Corpus | None, claude: Anthropic | None) -> bytes:
+    """The health answer; while the copilot is on it names its engine, which member B's page reads to call it."""
+    if corpus is None:
+        return _json(health)
+    engine = {"engine": "deterministic" if claude is None else "claude", "configured": claude is not None}
+    return json.dumps({**health.model_dump(mode="json"), "copilot": engine}).encode()
 
 
 def _read_every_year_row(compare_data: CompareData) -> None:
@@ -356,7 +429,6 @@ class SecurityHeaders:
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
-    health_body = _json(_artifact_versions(base / "artifacts"))
     past_body = {province: _json(past_years(province, base)) for province in get_args(Province)}
     method_body = _json(method(base))
     privacy_body = _privacy_page(load_privacy_texts(base))
@@ -364,11 +436,16 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     compare_data = load_compare_data(base)
     _read_every_year_row(compare_data)
     claude = claude_client(os.environ)
+    explain_prompt = load_prompt(base, PROMPT, (PLACEHOLDER,))
     explain_slots, explain_threads = anyio.CapacityLimiter(EXPLAIN_LIMIT), anyio.CapacityLimiter(EXPLAIN_LIMIT)
+    corpus = load_corpus(base) if copilot_on(os.environ) else None
+    copilot_claude = copilot_client(os.environ)
+    copilot_slots, copilot_threads = anyio.CapacityLimiter(COPILOT_LIMIT), anyio.CapacityLimiter(COPILOT_LIMIT)
+    health_body = _health_body(_artifact_versions(base / "artifacts"), corpus, copilot_claude)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
-    app.add_exception_handler(ExplainError, _bad_gateway)
+    app.add_exception_handler(ExplainError, _bad_gateway)  # also the copilot's CopilotError
     app.add_exception_handler(Exception, _internal_error)
     app.add_middleware(SecurityHeaders)
 
@@ -387,7 +464,11 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     @app.post("/api/explain")
     async def explain_route(request: Request) -> Response:
-        return await _explain(request, compare_data, claude, explain_slots, explain_threads)
+        return await _explain(request, compare_data, claude, explain_prompt, explain_slots, explain_threads)
+
+    @app.post("/api/copilot")
+    async def copilot_route(request: Request) -> Response:
+        return await _copilot(request, corpus, copilot_claude, copilot_slots, copilot_threads)
 
     @app.get("/api/method")
     def method_route() -> Response:
@@ -400,6 +481,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     _add_privacy_routes(app, privacy_body)
     app.state.accounts = accounts_from(os.environ)  # None while sign-in is off
     app.state.account_limiter = anyio.CapacityLimiter(ACCOUNT_THREADS)
+    app.state.model_calls = ModelCallCaps()  # one cap for both model routes: they share the key (caps.py)
     app.include_router(accounts_router)
 
     if (frontend / "index.html").exists():
