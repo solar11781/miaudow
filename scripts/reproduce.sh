@@ -13,7 +13,10 @@ for t in E06.13 E06.14 E06.15 E06.16 E06.17 E06.18 E06.19 E06.20 E06.21 E06.22 E
 done
 python scripts/build_crop_stats.py   # retrieval dates from data/MANIFEST.csv (sha256 match)
 
-# 2. NASA MODIS land cover 2001-2015 (Earthdata login) and the fixed farmland mask.
+# 2. Province boundaries (recorded URL and sha256 in data/MANIFEST.csv), NASA MODIS land cover 2001-2015
+#    (Earthdata login: EARTHDATA_TOKEN) and the fixed farmland mask.
+BOUNDARIES=data/raw/boundaries/geoBoundaries-VNM-ADM1_simplified.geojson
+[ -f "$BOUNDARIES" ] || python scripts/fetch_recorded.py "$BOUNDARIES"
 pip install pyhdf==0.11.7
 python scripts/modis_landcover.py 2001 2015
 python scripts/build_cell_weights.py
