@@ -47,7 +47,8 @@ def test_missing_yield_in_window_gives_no_normal():
 
 
 def test_absent_year_in_window_gives_no_normal():
-    # Source: 03-ML-SPEC section 3 and D-72: "a normal exists only when that many past years exist"; mean3 needs t-3 to t-1
+    # Source: 03-ML-SPEC section 3 and D-72: "a normal exists only when that many past years exist";
+    # mean3 needs t-3 to t-1
     df = pd.DataFrame(
         {"series_id": "A|0", "year": [2000, 2002, 2003, 2004, 2005], "yield_t_ha": [4.0, 5.0, 6.0, 7.0, 8.0]}
     )
