@@ -8,10 +8,10 @@ from __future__ import annotations
 import json
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal, Self, TypeVar
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, model_validator
 
 from fieldshift.engine.schemas import (
     FIRST_YEAR,
@@ -26,6 +26,9 @@ from fieldshift.engine.schemas import (
 )
 
 HAZARD_LABELS = "hazard_labels.json"
+M = TypeVar("M", bound=BaseModel)
+CROP_ROW_PLANS = ("usual", "cc1", "cc2", "cc3", "cc4")  # §4b: no usual_p03 (P-03 reports no dates)
+CROP_ROW_SEASONS = ("spring", "summer_autumn", "autumn_winter")  # §4b: the P-02 crop seasons
 
 
 class HazardRow(BaseModel):
@@ -37,15 +40,28 @@ class HazardRow(BaseModel):
     plan_id: str | None
     crop_key: str | None
     season: SeasonCode | None
-    months: list[int]
+    months: list[Annotated[int, Field(ge=1, le=12)]]
     field_dates: list[tuple[MonthDay, MonthDay]]
     year: int = Field(ge=FIRST_YEAR, le=LAST_YEAR)
     rule: RuleCode
     share_farmland: float | None = Field(ge=0, le=1)
-    n_cells: int
+    n_cells: int = Field(ge=0)
     threshold_source_id: SourceId
     values_source_ids: list[SourceId]
     computed_by: SourceId
+
+    @model_validator(mode="after")
+    def _fields_of_its_level(self) -> Self:
+        keys = (self.plan_id, self.crop_key, self.season)
+        if self.level == "year" and keys != (None, None, None):
+            raise ValueError(f"year row {self.year} {self.rule}: plan_id, crop_key and season must be null")
+        if self.level == "crop" and (
+            self.plan_id not in CROP_ROW_PLANS or self.crop_key is None or self.season not in CROP_ROW_SEASONS
+        ):
+            raise ValueError(f"crop row {self.crop_key} {self.year}: plan_id, crop_key or season not of a P-02 crop")
+        if any(sow > harvest for sow, harvest in self.field_dates):
+            raise ValueError(f"row {self.year} {self.rule}: a sowing date after its harvest date {self.field_dates}")
+        return self
 
 
 def hazard_rows(root: Path) -> list[HazardRow]:
@@ -70,7 +86,7 @@ def load_rules(root: Path) -> list[Rule]:
     """The five official rules of rules/conditions.yaml (§6c) in RuleCode order; `article` is not an API field."""
     by_code: dict[str, Rule] = {}
     for entry in _read_entries(root, "conditions.yaml"):
-        rule = Rule.model_validate({k: v for k, v in entry.items() if k != "article"})
+        rule = _checked("conditions.yaml", Rule, {k: v for k, v in entry.items() if k != "article"})
         if rule.code in by_code:
             raise ValueError(f"rules/conditions.yaml: {rule.code} is listed twice")
         by_code[rule.code] = rule
@@ -84,7 +100,7 @@ def load_sources(root: Path) -> dict[SourceId, SourceFacts]:
     """Source facts of rules/sources.yaml (§8) by id."""
     facts: dict[SourceId, SourceFacts] = {}
     for entry in _read_entries(root, "sources.yaml"):
-        item = SourceFacts.model_validate(entry)
+        item = _checked("sources.yaml", SourceFacts, entry)
         if item.id in facts:
             raise ValueError(f"rules/sources.yaml: {item.id} is listed twice")
         facts[item.id] = item
@@ -98,3 +114,10 @@ def pick_sources(facts: dict[SourceId, SourceFacts], ids: Iterable[SourceId]) ->
     if missing:
         raise ValueError(f"rules/sources.yaml: no entry for {missing}")
     return {sid: facts[sid] for sid in used}
+
+
+def _checked(name: str, model: type[M], entry: dict[str, object]) -> M:
+    try:
+        return model.model_validate(entry)
+    except ValidationError as err:
+        raise ValueError(f"rules/{name}: {err}") from err
