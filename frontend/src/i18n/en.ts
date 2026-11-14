@@ -360,7 +360,7 @@ export const en: Messages = {
       nsoCredit: 'Rice yield: statistics of the National Statistics Office.',
     },
     noneListed: 'The sources list no risk to weigh.',
-    localReview: 'Check these with farmers or agricultural officers where you live before you change.',
+    localReview: 'Check these with farmers or agricultural experts where you live before you change.',
     whyParts: { why: 'Why', evidence: 'Evidence', benefits: 'Benefits', gaps: 'Gaps' },
     explain: {
       button: 'Explain simply',

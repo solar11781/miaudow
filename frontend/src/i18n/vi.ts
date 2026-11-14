@@ -352,7 +352,7 @@ export const vi = {
       nsoCredit: 'Năng suất lúa: số liệu của Cục Thống kê.',
     },
     noneListed: 'Nguồn không nêu điều cần cân nhắc.',
-    localReview: 'Hãy hỏi nông dân hoặc cán bộ nông nghiệp nơi bạn sống về những điều này trước khi thay đổi.',
+    localReview: 'Hãy hỏi nông dân hoặc chuyên gia nông nghiệp nơi bạn sống về những điều này trước khi thay đổi.',
     whyParts: { why: 'Vì sao', evidence: 'Bằng chứng', benefits: 'Lợi ích', gaps: 'Điều chưa biết' },
     explain: {
       button: 'Giải thích dễ hiểu',
