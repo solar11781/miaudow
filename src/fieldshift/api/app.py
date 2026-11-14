@@ -5,7 +5,7 @@ are read once when the app is created, so a broken or missing file stops the sta
 request, and no request reads a file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
 generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
 every frontend route, so browser history routing and deep links work (D-102).
-Run: uvicorn fieldshift.api.app:app --no-access-log (D-92: no request log).
+Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
 
 from __future__ import annotations
