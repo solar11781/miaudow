@@ -6,6 +6,8 @@ import { compareRequest, parseFarmerState, serializeFarmerState, toggleYear, MAX
 import { planById, planProfitMillion, PLANS } from './plans';
 import { riceSummary, riceYear, seasonStatus } from './rice';
 import { SOURCES } from './sources';
+import { en as enText } from '../i18n/en';
+import { vi as viText } from '../i18n/vi';
 
 const plan = (id: Parameters<typeof planById>[0]) => {
   const p = planById(id);
@@ -187,5 +189,14 @@ describe('month bar of an api plan', () => {
   it('writes a date range as day/month', () => {
     expect(dateRange('01-17', '01-18')).toBe('17/1–18/1');
     expect(dateRange('05-17', '05-17')).toBe('17/5');
+  });
+});
+
+// D-165: the winter weather result is "narrow" and "fragile" wherever it appears, in the method report's words; the
+// E-018 title is common.winterFragile (src/i18n/i18n.test.ts)
+describe('E-012 source sheet', () => {
+  it('says the winter result is narrow and fragile', () => {
+    expect(SOURCES.e012.caveat.vi).toContain(viText.common.winterFragile);
+    expect(SOURCES.e012.caveat.en).toContain(enText.common.winterFragile);
   });
 });

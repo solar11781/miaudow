@@ -255,7 +255,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
   );
 }
 
-function RiceSection() {
+export function RiceSection() {
   const t = useT();
   const refs = useRefs();
   const [season, setSeason] = useState<RiceSeason>('winter');
@@ -284,6 +284,12 @@ function RiceSection() {
         </Reveal>
         <Reveal className={s.chartCard}>
           <RiceHistoryChart season={season} />
+          {season === 'winter' && status === 'shown' && (
+            <p className={s.notice}>
+              <Icon name="alert" size={18} />
+              {t.common.winterFragile}
+            </p>
+          )}
           <div className="cluster">
             <SourceValue {...refs.riceSeries(season)} />
             {status === 'shown' && <SourceValue {...refs.ricePredictionSeries()} />}

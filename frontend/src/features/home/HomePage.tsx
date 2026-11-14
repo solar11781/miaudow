@@ -133,8 +133,8 @@ function Hero() {
   );
 }
 
-/** One statement, one photograph, two sourced numbers. */
-function Problem() {
+/** The trial land in the paper's own words, one photograph, one study's money with its own definition (D-52, D-160). */
+export function Problem() {
   const t = useT();
   const f = useFormat();
   const refs = useRefs();
@@ -154,7 +154,7 @@ function Problem() {
   });
 
   return (
-    <section ref={root} className={`${s.problem} surface-forest grain`} aria-labelledby="problem-title">
+    <section ref={root} id="ch-2" className={`${s.problem} surface-forest grain`} aria-labelledby="problem-title">
       <div className={s.problemPhoto} data-clip>
         <Media
           slug={ART.problem.slug}
@@ -167,31 +167,17 @@ function Problem() {
           {t.home.problemTitle}
         </h2>
         <p className="lead">{t.home.problemLead}</p>
-        <div className={s.pair}>
-          {rice && (
-            <div className={s.pairItem}>
-              <SourceValue size="xl" {...refs.cropProfit(rice)}>
-                <CountUp text={f.million(rice.profit)} />
-                <span className={s.unit}>{t.common.millionPerHa}</span>
-              </SourceValue>
-              <span>{t.home.riceSpring}</span>
-            </div>
-          )}
-          <div className={s.pairItem}>
-            <SourceValue
-              size="xl"
-              sourceId="p03"
-              kind="study"
-              value={`${f.n(1.16, 2)} ${t.common.millionPerHa}`}
-              label={t.home.riceSummer}
-              detail={t.home.riceSummerDetail}
-            >
-              <CountUp text={f.n(1.16, 2)} />
+        {/* one study's money only: the second paper defines profit differently (D-52) */}
+        {rice && (
+          <div className={s.money}>
+            <SourceValue size="xl" {...refs.cropProfit(rice)}>
+              <CountUp text={f.million(rice.profit)} />
               <span className={s.unit}>{t.common.millionPerHa}</span>
             </SourceValue>
-            <span>{t.home.riceSummer}</span>
+            <span className={s.moneyLabel}>{t.home.riceSpring}</span>
+            <span className={s.moneyDefinition}>{t.farmer.definitionPlain.p02}</span>
           </div>
-        </div>
+        )}
         <p className={s.note}>{t.home.trialNote}</p>
       </div>
     </section>
@@ -468,7 +454,7 @@ function Honesty() {
               <p>{c.body}</p>
               {c.key === 'winter' && (
                 <p>
-                  <strong>{t.home.honestyWinterFragile}</strong>
+                  <strong>{t.common.winterFragile}</strong>
                 </p>
               )}
               {c.skill !== undefined && (

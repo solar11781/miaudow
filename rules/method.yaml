@@ -76,10 +76,12 @@ explain_terms:
   - key: ndvi
     title: {vi: "Chỉ số thực vật (NDVI)", en: "Vegetation index (NDVI)"}
     text:
-      vi: "NDVI được tính từ ánh sáng nhìn thấy và ánh sáng cận hồng ngoại mà cây phản xạ. Không dùng: tín hiệu cây
-        trồng trong vụ sẽ làm lộ kết quả vào đầu vào của mô hình."
-      en: "NDVI is calculated from the visible and near-infrared light reflected by vegetation. Not used: an in-season
-        vegetation signal would leak the outcome into the model inputs."
+      vi: "NDVI được tính từ ánh sáng nhìn thấy và ánh sáng cận hồng ngoại mà cây phản xạ. Không dùng trong mô hình năng
+        suất: tín hiệu cây trồng trong vụ sẽ làm lộ kết quả vào đầu vào của mô hình. Trang Khoa học chỉ hiện NDVI MODIS
+        quanh Lưu Sơn dưới dạng biểu đồ độ xanh."
+      en: "NDVI is calculated from the visible and near-infrared light reflected by vegetation. Not used in the yield
+        model: an in-season vegetation signal would leak the outcome into the model inputs. The science page shows MODIS
+        NDVI around Lưu Sơn only as a chart of greenness."
     source_ids: [R-N08]  # D-165: NASA's NDVI definition page
   - key: frost
     title: {vi: "Sương muối", en: "Frost"}
@@ -120,11 +122,9 @@ datasets_not_used:
   - dataset: Landsat
     reason:
       vi: "Phản xạ bề mặt Level-2 Collection 2 từ ngày 22/8/1982; HLS Landsat 30 m từ ngày 11/4/2013. Không dùng: phản
-        xạ của cây và NDVI là tín hiệu cây trồng trong vụ, sẽ làm lộ kết quả vào đầu vào của mô hình; không con số nào
-        trong ứng dụng cần đến chúng."
+        xạ của cây và NDVI là tín hiệu cây trồng trong vụ, sẽ làm lộ kết quả vào đầu vào của mô hình."
       en: "Level-2 surface reflectance Collection 2 from 22 August 1982; HLS Landsat 30 m from 11 April 2013. Not used:
-        vegetation reflectance and NDVI are in-season crop signals that would leak the outcome into the model inputs;
-        no number in this app needs them."
+        vegetation reflectance and NDVI are in-season crop signals that would leak the outcome into the model inputs."
     source_ids: [R-N07]
   - dataset: VIIRS
     reason:
@@ -135,11 +135,13 @@ datasets_not_used:
     source_ids: [R-N07]
   - dataset: Sentinel-2 (ESA)
     reason:
-      vi: "Có trong NASA HLS Sentinel-2 30 m từ ngày 28/11/2015. Không dùng: tín hiệu cây trồng trong vụ sẽ làm lộ kết
-        quả vào đầu vào của mô hình; bắt đầu từ năm 2015."
-      en: "Available as NASA HLS Sentinel-2 30 m from 28 November 2015. Not used: an in-season crop signal would leak the
-        outcome into the model inputs; it starts in 2015."
-    source_ids: [R-N07]
+      vi: "Có trong NASA HLS Sentinel-2 30 m từ ngày 28/11/2015. Không dùng trong mô hình: tín hiệu cây trồng trong vụ
+        sẽ làm lộ kết quả vào đầu vào của mô hình; bắt đầu từ năm 2015. Chỉ hiện thành ảnh độ xanh (NDVI) ở trang Đài
+        quan sát."
+      en: "Available as NASA HLS Sentinel-2 30 m from 28 November 2015. Not used in the model: an in-season crop signal
+        would leak the outcome into the model inputs; it starts in 2015. Shown only as greenness (NDVI) images on the
+        observatory page."
+    source_ids: [R-N07, R-D06]  # R-D06: the Copernicus Sentinel-2 L2A images on the observatory page
   - dataset: GLDAS
     reason:
       vi: "Mô hình bề mặt đất Noah 0,25 độ: phiên bản 2.0 từ 1/1/1948 đến 31/12/2014, phiên bản 2.1 từ 1/1/2000. Không

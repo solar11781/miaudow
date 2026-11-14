@@ -83,7 +83,7 @@ function Ladder({ plan }: { plan: Plan }) {
                 sourceId="p03"
                 kind="study"
                 value={pick(plan.textOnly.profitNote)}
-                label={t.officer.colMoney}
+                label={t.officer.p03Money}
               />
             )
           )}

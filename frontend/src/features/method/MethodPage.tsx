@@ -180,7 +180,12 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
           </li>
         ))}
       </ul>
-      {claim && <p className={s.notice}>{t.method.weatherClaim}</p>}
+      {claim && (
+        <p className={s.notice}>
+          {t.method.weatherClaim}
+          {season === 'winter' && ` ${t.common.winterFragile}.`}
+        </p>
+      )}
     </div>
   );
 }

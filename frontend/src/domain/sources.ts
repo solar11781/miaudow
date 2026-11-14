@@ -1,4 +1,6 @@
 import type { SourceId, SourceRecord } from './provenance';
+import { en } from '../i18n/en';
+import { vi } from '../i18n/vi';
 
 // The source registry. Text here describes the sources; it adds no new findings.
 export const SOURCES: Record<SourceId, SourceRecord> = {
@@ -103,8 +105,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     howRead: { vi: 'Đọc qua bản đăng trên caselaw.vn', en: 'Read via the caselaw.vn copy' },
     caveat: {
-      vi: 'Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ. 1 m³/ha bằng 0,1 mm nước trên ruộng.',
-      en: 'The standard does not say whether Nghệ An belongs to the central or northern region. 1 m³/ha equals 0.1 mm of water.',
+      vi: 'Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
+      en: 'The standard does not say whether Nghệ An belongs to the central or northern region.',
     },
   },
   'fao-tm3': {
@@ -228,6 +230,43 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     url: 'https://doi.org/10.5067/MODIS/MOD13Q1.061',
     licence: { vi: 'Dữ liệu mở của NASA', en: 'NASA open data' },
   },
+  // REFERENCES R-D06; facts from data/canonical/catalog.json sentinel2_l2a_do_luong_vi
+  sentinel2: {
+    id: 'sentinel2',
+    registerId: 'R-D06',
+    kind: 'data',
+    short: 'Copernicus Sentinel-2 L2A',
+    title: {
+      vi: 'ESA Copernicus Sentinel-2 Mức 2A (MSI), qua Element 84 Earth Search v1',
+      en: 'ESA Copernicus Sentinel-2 Level-2A (MSI), via Element 84 Earth Search v1',
+    },
+    publisher: {
+      vi: 'ESA Copernicus (nơi sản xuất); Element 84 Earth Search v1, lưu trên AWS Open Data',
+      en: 'ESA Copernicus (producer); Element 84 Earth Search v1, hosted by AWS Open Data',
+    },
+    where: { vi: 'Huyện Đô Lương (cũ), điểm ảnh 20 m', en: 'Former Đô Lương district, 20 m pixels' },
+    period: {
+      vi: '6/2020–6/2021 và 1/2023–12/2024, các ngày có mây dưới 60%',
+      en: 'June 2020 – June 2021 and January 2023 – December 2024, dates with cloud cover below 60%',
+    },
+    method: {
+      vi: 'Ảnh ghép NDVI theo mùa, nhóm tự xử lý; điểm ảnh mây hoặc thiếu số liệu bị loại, không điền thay',
+      en: 'Seasonal NDVI composites processed by the team; cloudy or missing pixels are excluded, never filled',
+    },
+    howRead: {
+      vi: 'Đọc qua Earth Search v1 ngày 14/11/2026',
+      en: 'Read through Earth Search v1 on 14 Nov 2026',
+    },
+    caveat: {
+      vi: 'Điểm ảnh 20 m trộn nhiều thửa ruộng; NDVI là độ xanh, không phải năng suất, bệnh hay độ ẩm đất.',
+      en: '20 m pixels mix fields; NDVI is greenness, not yield, disease or soil moisture.',
+    },
+    url: 'https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a',
+    licence: {
+      vi: 'Truy cập tự do, đầy đủ và mở theo Quy định (EU) số 377/2014; “Contains modified Copernicus Sentinel data 2020-2024”',
+      en: 'Free, full and open access under Regulation (EU) No 377/2014; “Contains modified Copernicus Sentinel data 2020-2024”',
+    },
+  },
   modis: {
     id: 'modis',
     registerId: 'R-N02',
@@ -317,8 +356,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       en: 'Results recorded in metrics.json and gates.json',
     },
     caveat: {
-      vi: 'Lúa vụ Đông Xuân không vượt mô hình bỏ thời tiết, nên dự đoán lúa vụ Đông Xuân không được hiện. Lúa vụ Mùa vượt qua, nhưng chỉ hơn một chút.',
-      en: 'Spring rice did not beat the no-weather model, so spring predictions are not shown. Winter rice passed by a small margin.',
+      vi: `Lúa vụ Đông Xuân không vượt mô hình bỏ thời tiết, nên dự đoán lúa vụ Đông Xuân không được hiện. Lúa vụ Mùa vượt qua, nhưng chỉ hơn một chút. ${vi.common.winterFragile}.`,
+      en: `Spring rice did not beat the no-weather model, so spring predictions are not shown. Winter rice passed by a small margin. ${en.common.winterFragile}.`,
     },
   },
   e010: {

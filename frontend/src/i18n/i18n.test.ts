@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { en } from './en';
 import { vi } from './vi';
+import method from '../../snapshot/method.json';
 
 type Node = unknown;
 
@@ -37,5 +38,12 @@ describe('translations', () => {
     expect(vi.farmer.cost).toContain('Tổng chi');
     for (const label of [vi.farmer.rows.money, vi.farmer.profit, vi.farmer.cost]) expect(label).toContain('thử nghiệm');
     for (const label of [en.farmer.rows.money, en.farmer.profit, en.farmer.cost]) expect(label).toContain('trial');
+  });
+  // D-165: wherever the winter weather result appears, it says "narrow" and "fragile" in the method report's words
+  // (src/fieldshift/ml/reports.py winter_claim_report, the E-018 report of the method response)
+  it('words the winter result as the method report title', () => {
+    const report = method.reports.find((r) => r.id === 'E-018');
+    expect(vi.common.winterFragile).toBe(report?.title.vi);
+    expect(en.common.winterFragile).toBe(report?.title.en);
   });
 });

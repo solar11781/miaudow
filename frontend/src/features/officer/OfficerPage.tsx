@@ -18,7 +18,7 @@ import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { EvidenceDesk } from './EvidenceDesk';
 import s from './officer.module.css';
 
-function Matrix() {
+export function Matrix() {
   const t = useT();
   const { lang } = useSettings();
   const pick = usePick();
@@ -49,17 +49,25 @@ function Matrix() {
                   <span className={s.planSrc}>{SOURCES[p.source].short}</span>
                 </th>
                 <td>
+                  {/* each study with its own label and definition, never one yearly framing for both (D-52) */}
                   {total !== null ? (
-                    <SourceValue {...refs.planProfit(p, total)} showSource={SOURCES.p02.short} />
+                    <>
+                      <SourceValue {...refs.planProfit(p, total)} showSource={SOURCES.p02.short} />
+                      <span className={s.cellNote}>{t.farmer.definitionPlain.p02}</span>
+                    </>
                   ) : (
                     p.textOnly && (
-                      <SourceValue
-                        sourceId="p03"
-                        kind="study"
-                        value={pick(p.textOnly.profitNote)}
-                        label={t.officer.colMoney}
-                        showSource="Trịnh Đức Toàn và cs. 2023 (bài 2)"
-                      />
+                      <>
+                        <span className={s.cellNote}>{t.officer.p03Money}</span>
+                        <SourceValue
+                          sourceId="p03"
+                          kind="study"
+                          value={pick(p.textOnly.profitNote)}
+                          label={t.officer.p03Money}
+                          showSource={SOURCES.p03.short}
+                        />
+                        <span className={s.cellNote}>{t.farmer.definitionPlain.p03}</span>
+                      </>
                     )
                   )}
                   {p.crops.length > 0 && (

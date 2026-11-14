@@ -232,7 +232,7 @@ def test_the_two_statements_hidden_by_the_audit_are_not_in_the_corpus() -> None:
             assert "1981" not in text  # D-169: "NASA POWER ... since 1981" has no source
             for word in ("đạm", "nitrogen", "nito", "họ đậu", "legume"):  # D-169: the legume passage, misattributed
                 assert word not in text.lower(), (p.id, word)
-        assert p.source_id in REGISTER_IDS
+        assert set(p.source_ids) <= REGISTER_IDS
 
 
 # ---- invalid input: 422 without echo and without a call
@@ -500,6 +500,47 @@ def test_a_forecast_or_guarded_question_never_reaches_the_model(
     assert out["engine"] == "deterministic"
     assert out["status"] == "insufficient_evidence"
     assert api.requests == []
+
+
+def test_the_winter_model_passage_says_the_result_is_narrow_and_fragile() -> None:
+    # D-165: wherever the winter weather result appears it says "narrow" and "fragile", in the method report's words
+    reports = json.loads((REPO / "artifacts" / "metrics.json").read_text(encoding="utf-8"))["reports"]
+    title = next(r["title"] for r in reports if r["id"] == "E-018")  # src/fieldshift/ml/reports.py winter report
+    winter = next(p for p in copilot.load_corpus(REPO).passages if p.id == "model-winter")
+    for lang in ("vi", "en"):
+        assert title[lang] in winter.text[lang]
+    spring = next(p for p in copilot.load_corpus(REPO).passages if p.id == "model-spring")
+    assert title["en"] not in spring.text["en"]
+
+
+def test_the_winter_model_answer_cites_the_fragile_claim_sources(det: TestClient) -> None:
+    # the winter passage carries the E-018 sentence, so it cites that report's own sources (artifacts/metrics.json,
+    # src/fieldshift/ml/reports.py: E-012, E-018, E-008) next to the gate figure's E-012
+    reports = json.loads((REPO / "artifacts" / "metrics.json").read_text(encoding="utf-8"))["reports"]
+    report_ids = next(r["source_ids"] for r in reports if r["id"] == "E-018")
+    out = ask(det, "Mô hình dự đoán lúa vụ Mùa có tốt không?")
+    winter = [c for c in out["citations"] if c["passage_id"].startswith("model-winter")]
+    assert winter[0]["source_id"] == "E-012"
+    assert {c["source_id"] for c in winter} == {"E-012", *report_ids}
+    assert {"E-018", "E-008"} <= {c["source_id"] for c in winter}
+    assert len({c["passage_id"] for c in out["citations"]}) == len(out["citations"])  # React keys (AssistantPage)
+
+
+def test_the_two_water_sources_are_never_combined_or_converted() -> None:
+    # D-64, D-68: TCVN 8641 (m³/ha) and FAO TM3 (mm) are separate facts, never compared; a unit conversion next to the
+    # FAO passage invites the comparison. UI-UX-SPEC §9: TCVN's measure is "nước phải tưới vào ruộng" (water to apply).
+    passages = copilot.load_corpus(REPO).passages
+    for p in passages:
+        for lang in ("vi", "en"):
+            text = p.text[lang]
+            assert not ("m³" in text and " mm" in text), (p.id, lang)
+            assert "0,1 mm" not in text, (p.id, lang)
+            assert "0.1 mm" not in text, (p.id, lang)
+    tcvn = next(p for p in passages if p.id == "water-tcvn")
+    assert "nước phải tưới" in tcvn.text["vi"]
+    assert "water to apply" in tcvn.text["en"]
+    assert "cần tưới" not in tcvn.title["vi"] + tcvn.text["vi"]
+    assert "need" not in tcvn.title["en"] + tcvn.text["en"]
 
 
 def test_the_grid_cell_size_is_the_audited_wording() -> None:
