@@ -34,6 +34,11 @@ def _rules(name: str) -> object:
     return yaml.safe_load(Path(RULES, name).read_text(encoding="utf-8"))
 
 
+def _mid(label: str) -> str:
+    """A label inside a sentence: its first letter lower case ("Vụ Đông Xuân" -> "vụ Đông Xuân")."""
+    return label[:1].lower() + label[1:]
+
+
 def _count(n: int) -> tuple[str, str]:
     """(vi, en) of a whole number with the thousands separator of each language."""
     en = f"{n:,}"
@@ -138,8 +143,8 @@ def drought_readings_report(readings: pd.DataFrame) -> dict:
         for s in ("spring", "autumn", "winter")
         if (readings["season"] == s).any()
     ]
-    by_vi = "; ".join(f"{label['vi']}: {txt[0]}" for label, txt in parts)
-    by_en = "; ".join(f"{label['en']} {txt[1]}" for label, txt in parts)
+    by_vi = "; ".join(f"{_mid(label['vi'])}: {txt[0]}" for label, txt in parts)
+    by_en = "; ".join(f"{_mid(label['en'])} {txt[1]}" for label, txt in parts)
     return {
         "id": "E-014",
         "title": bilingual("Hai cách đọc quy tắc hạn hán", "Two readings of the drought rule"),
@@ -152,7 +157,7 @@ def drought_readings_report(readings: pd.DataFrame) -> dict:
             f'The drought rule is computed in two readings, "{ce}" and "{ae}", with months of rain more than {pct} '
             f"below the {normal} normal. Each reading is computed per NASA POWER cell, then as a share of the "
             f"province's farmland. Over the province rice seasons with NSO rice yield data {first}-{last} (the rows "
-            f"of the model's training table), within each season's window, the two shares differ in {total[1]} "
+            f"of the model's training table), within each season's window, the two shares differ in {total[1]} province seasons "
             f"({by_en}), and in {nghe_an[1]} Nghệ An seasons.",
         ),
         "source_ids": ["E-014", "R-A01"],
@@ -183,16 +188,17 @@ def heavy_rain_check_report(heavy_rain_years: set[int], damage_years: set[int], 
         ),
         "text": bilingual(
             f"Nghệ An {first}-{last}. Năm mưa lớn: năm có tỉ lệ đất trồng đạt quy tắc mưa lớn chính thức, khi cây của "
-            "thử nghiệm ở ngoài ruộng, lớn hơn 0 (cách hiểu của chúng tôi). Thiệt hại lúa do lũ được ghi nhận: các "
-            "bản ghi lũ, lũ quét và lụt của DesInventar có diện tích lúa bị hư hại; các bản ghi bão không được tính. "
+            "thử nghiệm ở ngoài ruộng, lớn hơn 0 (cách hiểu của chúng tôi). Thiệt hại lúa do lũ được ghi nhận: chỉ tính "
+            "các bản ghi lũ, lũ quét và lụt của DesInventar có diện tích lúa bị hư hại; các loại bản ghi khác, như "
+            "lốc tố, lốc kèm mưa đá và bão, không được tính. "
             f"Cả hai: {both} năm; chỉ mưa lớn: {rain_only}; chỉ có thiệt hại được ghi nhận: {damage_only}; không có "
             f"cả hai: {neither}; trùng nhau ở {both + neither} trong {n} năm. Với cùng số năm mỗi loại, chỉ do ngẫu "
             f"nhiên đã có khoảng {chance_vi} trong {n} năm trùng nhau, nên phép kiểm tra này không xác nhận các năm "
             "mưa lớn. DesInventar chỉ dùng để kiểm tra; các bản ghi của nó không được hiển thị.",
             f"Nghệ An {first}-{last}. Heavy-rain year: a year whose share of farmland meeting the official heavy-rain "
-            "rule, while a trial crop was in the field, is above 0 (our reading). Recorded rice flood damage: the "
-            "DesInventar flood, flash flood and inundation records with rice area damaged; storm records are not "
-            f"counted. Both in {both} years; heavy rain only in {rain_only}; recorded damage only in {damage_only}; "
+            "rule, while a trial crop was in the field, is above 0 (our reading). Recorded rice flood damage: only the "
+            "DesInventar flood, flash flood and inundation records with rice area damaged count; other record types, "
+            f"such as cyclone, hailstorm and storm, are left out. Both in {both} years; heavy rain only in {rain_only}; recorded damage only in {damage_only}; "
             f"neither in {neither}; they agree in {both + neither} of {n} years. With the same numbers of years of "
             f"each kind, chance alone gives about {chance_en} of {n} years in agreement, so this check does not "
             "validate the heavy-rain years. DesInventar is used for this check only; its records are not shown.",

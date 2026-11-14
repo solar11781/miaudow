@@ -104,9 +104,9 @@ def test_drought_readings_report_counts_the_seasons_whose_shares_differ():
     # farmland shares per row; they differ in 2 of 5: Nghe An spring 2001 (0.2 vs 0.5) and Ha Tinh winter 2001 (0 vs 1)
     item = drought_readings_report(_readings([1.0, 0.2, 0.0, 0.0, 0.0], [1.0, 0.5, 0.0, 0.0, 1.0]))
     en, vi = item["text"]["en"], item["text"]["vi"]
-    assert "differ in 2 of 5" in en
-    assert "Spring season 1 of 2; Summer-autumn season 0 of 1; Winter season 1 of 2" in en  # method.yaml labels
-    assert "Vụ Đông Xuân: 1 trong 2" in vi
+    assert "differ in 2 of 5 province seasons" in en
+    assert "(spring season 1 of 2; summer-autumn season 0 of 1; winter season 1 of 2)" in en  # method.yaml labels
+    assert "(vụ Đông Xuân: 1 trong 2" in vi
     assert "1 of 3 Nghệ An seasons" in en
     assert "2 trong 5" in vi
     assert '"Drought (rain part), 2 months in a row"' in en  # conditions.yaml labels of the two readings
@@ -141,8 +141,9 @@ def test_heavy_rain_check_report_gives_agreement_counts_and_the_chance_agreement
     assert "agree in 3 of 5 years" in en
     assert "about 2.6 of 5" in en
     assert "2,6" in vi
-    assert "flood, flash flood and inundation records with rice area damaged" in en
-    assert "storm records are not counted" in en
+    assert "only the DesInventar flood, flash flood and inundation records with rice area damaged count" in en
+    assert "cyclone, hailstorm and storm, are left out" in en
+    assert "lốc tố, lốc kèm mưa đá và bão" in vi
     assert "above 0 (our reading)" in en
     assert "2003" not in en  # no DesInventar year is shown (D-54: never republish its data)
     assert item["id"] == "E-016"
