@@ -1,5 +1,5 @@
 # generated data from member B's pipeline: kept byte for byte as built, not hand-formatted
 data/canonical/
-src/data/generated/
+src/data/generated/media.json
 # real API answers written by scripts/build_snapshot.py: kept byte for byte as built, not hand-formatted
 snapshot/
