@@ -35,10 +35,10 @@ LABEL_X = 16
 COLUMN_X = 184
 COLUMN_W = 256
 PAD = 12
-LABEL_HALF_W = 64  # about half a "-0.52 [-1.98, -0.05]" label at 12 px, so a label stays inside its column
 # a white box behind each number label, so no line shows between its characters
-CHAR_W = 7.0  # a 12 px Arial digit advances 6.7 px (0.556 em), rounded up so the box covers each label
+CHAR_W = 7.7  # 12 px DejaVu Sans digits advance 7.63 px (0.636 em), the widest common sans-serif (Arial 6.7 px)
 LABEL_PAD = 3  # white margin left and right of the label
+LABEL_HALF_W = (len("-0.52 [-1.98, -0.05]") * CHAR_W + 2 * LABEL_PAD) / 2  # a widest label's box stays in its column
 LABEL_RISE, LABEL_DROP = 12, 4  # box from one font size above the baseline to below the brackets' 2.5 px drop
 ROW_H = 44
 TOP = 76
