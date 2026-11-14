@@ -141,7 +141,7 @@ datasets_not_used:
       en: "Available as NASA HLS Sentinel-2 30 m from 28 November 2015. Not used in the model: an in-season crop signal
         would leak the outcome into the model inputs; it starts in 2015. Shown only as greenness (NDVI) images on the
         observatory page."
-    source_ids: [R-N07]
+    source_ids: [R-N07, R-D06]  # R-D06: the Copernicus Sentinel-2 L2A images on the observatory page
   - dataset: GLDAS
     reason:
       vi: "Mô hình bề mặt đất Noah 0,25 độ: phiên bản 2.0 từ 1/1/1948 đến 31/12/2014, phiên bản 2.1 từ 1/1/2000. Không

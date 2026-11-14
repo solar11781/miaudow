@@ -266,6 +266,20 @@
        en: "A province average yield, mostly irrigation-served rice; not the yield of one field."}
   url: "https://pxweb.nso.gov.vn/pxweb/en/"
   nso_credit: true
+- id: R-D06
+  citation:
+    vi: "ESA Copernicus Sentinel-2 Mức 2A (MSI), qua Element 84 Earth Search v1 (bộ sentinel-2-l2a, lưu trên AWS Open Data); thông báo pháp lý: Copernicus Sentinel Data Legal Notice"
+    en: "ESA Copernicus Sentinel-2 Level-2A (MSI), via Element 84 Earth Search v1 (collection sentinel-2-l2a, hosted by AWS Open Data); legal notice: Copernicus Sentinel Data Legal Notice"
+  study_type: {vi: "Ảnh vệ tinh của ESA Copernicus (dữ liệu mở)", en: "ESA Copernicus satellite images (open data)"}
+  place_years: {vi: "Huyện Đô Lương (cũ); 6/2020-6/2021 và 1/2023-12/2024",
+                en: "Former Đô Lương district; 2020-06 to 2021-06 and 2023-01 to 2024-12"}
+  read_status: "READ (collection page, legal notice)"
+  full_text_read: false
+  limitations:
+    - {vi: "Điểm ảnh 20 m trộn nhiều thửa ruộng; NDVI là độ xanh, không phải năng suất.",
+       en: "20 m pixels mix fields; NDVI is greenness, not yield."}
+  url: "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a"
+  nso_credit: false
 - id: R-E06
   citation: {vi: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786",
              en: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786"}

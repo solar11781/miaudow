@@ -26,6 +26,7 @@ describe('source seal', () => {
     ['chirps-v3', 'R-D05'],
     ['modis-ndvi', 'R-N11'],
     ['nasa-power', 'R-N01'],
+    ['sentinel2', 'R-D06'], // REFERENCES R-D06: the observatory's Copernicus Sentinel-2 L2A images
   ] as const)('shows the register id of %s (%s) in its sheet', async (id, registerId) => {
     render(
       <SettingsProvider>

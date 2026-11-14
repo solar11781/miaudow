@@ -358,6 +358,9 @@ function OverlayPicker({ st }: { st: ObservatoryState }) {
         </label>
       )}
       {st.overlay !== 'none' && <p className={s.small}>{t.earth.overlays[st.overlay].note(st.year)}</p>}
+      {st.overlay === 's2' && (
+        <SourceValue sourceId="sentinel2" kind="data" value={t.common.source} label={t.earth.overlays.s2.name} />
+      )}
     </>
   );
 }

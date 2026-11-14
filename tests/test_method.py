@@ -172,6 +172,10 @@ def test_the_ndvi_texts_say_what_the_app_shows(resp: dict) -> None:
     assert "Không dùng trong mô hình" in sentinel["vi"]
     assert "observatory page" in sentinel["en"]
     assert "Đài quan sát" in sentinel["vi"]
+    # REFERENCES R-D06: the Copernicus Sentinel-2 L2A images the observatory page shows, next to the CMR date (R-N07)
+    sentinel_ids = next(d["source_ids"] for d in resp["datasets_not_used"] if d["dataset"] == "Sentinel-2 (ESA)")
+    assert sentinel_ids == ["R-N07", "R-D06"]
+    assert resp["sources"]["R-D06"]["url"] == "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a"
     landsat = reasons["Landsat"]
     assert "no number in this app" not in landsat["en"]
     assert "không con số nào" not in landsat["vi"]
