@@ -162,6 +162,29 @@ def test_crops_are_the_eleven_crop_ids() -> None:
             assert crop["legume_source_ids"], crop["crop_id"]
 
 
+# USDA GRIN-Global taxon pages (R-B01): Fabaceae is the legume family; every other family is not
+CROP_FAMILIES = {
+    "rice": "Poaceae",  # Oryza sativa, id 26077
+    "peanut": "Fabaceae",  # Arachis hypogaea, id 3785
+    "mung_bean": "Fabaceae",  # Vigna radiata, id 41629
+    "maize_grain": "Poaceae",  # Zea mays, id 42207
+    "maize_biomass": "Poaceae",  # Zea mays, id 42207
+    "soybean": "Fabaceae",  # Glycine max, id 17711
+    "sweet_potato": "Convolvulaceae",  # Ipomoea batatas, id 20142
+    "black_bean": "Fabaceae",  # Vigna unguiculata Biflora Group, id 467840; name from Đỗ Tất Lợi (R-B02)
+    "black_sesame": "Pedaliaceae",  # Sesamum indicum, id 33749
+    "chili": "Solanaceae",  # Capsicum annuum 8904, Capsicum frutescens 8913
+    "pumpkin": "Cucurbitaceae",  # Cucurbita moschata, id 12601
+}
+
+
+def test_legume_flags_follow_the_grin_family_and_cite_it() -> None:
+    for crop in read("crops.yaml"):
+        assert crop["is_legume"] is (CROP_FAMILIES[crop["crop_id"]] == "Fabaceae"), crop["crop_id"]
+        assert "R-B01" in crop["legume_source_ids"], crop["crop_id"]
+    assert "R-B02" in by_id(read("crops.yaml"), "crop_id")["black_bean"]["legume_source_ids"]
+
+
 def test_water_facts_are_the_cited_values_only() -> None:
     for crop in read("crops.yaml"):
         facts = crop["water_facts"]
@@ -236,6 +259,9 @@ def test_plans_are_the_six_canonical_ids_in_order() -> None:
         assert is_text(plan["name"])
         for field in ("source_ids", "land_archetypes", "limitations"):  # §7: every rule has these
             assert plan[field], (plan["id"], field)
+        for line in plan["limitations"]:
+            assert is_text(line), plan["id"]  # UI-UX-SPEC §11: displayed text is a Text in both languages
+            assert not re.search(r"\bD-\d", line["vi"] + line["en"]), line  # no internal decision labels on screen
         assert plan["study_type"]
 
 
@@ -259,6 +285,10 @@ def test_crop_keys_ids_and_dates() -> None:
             assert span["variety"] is None or is_text(span["variety"])
 
 
+# P-03 running text, pp. [4] and [5]: the authors' term, season name and units for the rice control
+P03_CONTROL_TEXT = ("vụ đông xuân 2021", "5,36 triệu đồng/ha", "1,16 triệu/ha", "hiệu quả kinh tế")
+
+
 def test_p02_money_per_crop() -> None:
     for plan_id, plan in plans().items():
         money = plan["reported_economics"]
@@ -268,6 +298,8 @@ def test_p02_money_per_crop() -> None:
             assert money["source_id"] == "R-P03"
             assert "Lợi nhuận = GR - Tổng chi phí vật chất" in money["definition"]["vi"]  # P-03 p.3
             assert is_text(money["text_only"])
+            for fragment in P03_CONTROL_TEXT:
+                assert fragment in money["text_only"]["vi"], fragment
             assert "profit_per_crop" not in money  # §7: no per-crop money list for P-03
             continue
         assert money["source_id"] == "R-P02"
@@ -313,6 +345,21 @@ def test_plan_risks() -> None:
             assert is_text(risk["text"])
             cited |= set(risk["source_ids"])
         assert ("R-G06" in cited) is (plan_id in NO_RICE_PLANS), plan_id
+
+
+# R-C13, VietNamNet 31/08/2020, words of Hoàng Nghĩa Hiếu, vice chair of the Nghệ An People's Committee
+R_C13_QUOTE = (
+    "Chúng tôi chủ trương những vùng trồng ngô sinh khối làm thức ăn xanh cho bò phải có hợp đồng thu mua với các đơn "
+    "vị bao tiêu sản phẩm."
+)
+
+
+def test_the_fodder_contract_risk_quotes_its_source() -> None:
+    risks = [r for plan in plans().values() for r in plan["risks"] if "R-C13" in r["source_ids"]]
+    assert risks
+    for risk in risks:
+        assert R_C13_QUOTE in " ".join(risk["text"]["vi"].split()), risk
+        assert "our translation" in risk["text"]["en"]
 
 
 # ---- method.yaml (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b)
@@ -398,7 +445,7 @@ def test_coverage_agrees_with_the_rules_files() -> None:
 
 # ---- sources.yaml (05-DATA-CONTRACTS §8; H5)
 
-CATALOG = ("conditions.yaml", "crops.yaml", "rotations.yaml", "method.yaml")
+CATALOG = ("calendar.yaml", "conditions.yaml", "crops.yaml", "rotations.yaml", "method.yaml")
 
 
 def artifact_ids() -> set[str]:
