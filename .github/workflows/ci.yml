@@ -143,11 +143,8 @@ jobs:
       - name: build
         run: npm run build
       # the saved snapshot ships only in the offline demo build (04-TECH-DESIGN section 9), never in the deployed one
-      - name: snapshot only in the demo build
-        run: |
-          test ! -e dist/snapshot
-          npm run build:snapshot
-          test -f dist-snapshot/snapshot/index.json
+      - name: snapshot not in the deployed build
+        run: test ! -e dist/snapshot
       - name: dependency audit (shipped packages)
         run: npm audit --omit=dev --audit-level=high
       - id: pw
@@ -167,3 +164,6 @@ jobs:
         run: pip install -r requirements.lock && pip install --no-deps .
       - name: browser tests (360 x 740)
         run: npx playwright install --with-deps chromium && npx playwright test
+      # builds dist-snapshot and serves it statically, with no backend, as on demo day
+      - name: browser tests of the offline demo build (360 x 740)
+        run: npx playwright test -c playwright.snapshot.config.ts && test -f dist-snapshot/snapshot/index.json
