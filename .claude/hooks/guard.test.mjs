@@ -211,6 +211,31 @@ test('gh pr merge is no longer blocked by the static rules (the gate decides)', 
   allowed('gh pr merge 12 --merge');
 });
 
+test('a pull request merge in any other form is blocked, because the gate checks only the plain form', () => {
+  for (const cmd of [
+    'GH_DEBUG=1 gh pr merge 12 --squash',
+    'GH_REPO=o/r gh pr merge 12 --merge',
+    'env gh pr merge 12 --squash',
+    'env -i GH_TOKEN=x gh pr merge 12 --merge',
+    'command gh pr merge 12 --squash',
+    'gh.exe pr merge 12 --squash',
+    '/usr/bin/gh pr merge 12 --squash',
+    'C:\\tools\\gh.exe pr merge 12 --merge',
+    'bash -c "gh pr merge 12 --squash"',
+    'bash -c "gh pr merge 12 --merge"',
+    'powershell -Command "gh pr merge 12 --merge"',
+    'gh pr -R o/r merge 12 --squash',
+    'gh pr --repo o/r merge 12',
+    'gh api -X PUT repos/o/r/pulls/12/merge -f merge_method=squash',
+    'gh api graphql -f query="mutation { mergePullRequest(input: {}) { clientMutationId } }"',
+  ]) blocked(cmd);
+  allowed('gh pr view 12 --json state');
+  allowed('gh pr create --title merge --body x');
+  allowed('gh api repos/o/r/pulls/12');
+  allowed('bash -c "gh pr view 12"');
+  allowed('git merge origin/main');
+});
+
 test('merge gate: changes to the shared queue are merged by a person only', () => {
   const pr = goodPr();
   pr.files = [{ path: 'src/a.py' }];
