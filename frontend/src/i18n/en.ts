@@ -179,8 +179,14 @@ export const en: Messages = {
     stepsTitle: 'Tap, look, compare, then talk with the officer',
     steps: [
       { title: 'What is your field like?', body: 'High field, canal end, or reliable water. One tap.' },
-      { title: 'What happened in past years?', body: 'Pick the dry or cold years you remember and look back with NASA data.' },
-      { title: 'What matters most to your family?', body: 'Income, stability, water or soil. Only highlighted, never ranked.' },
+      {
+        title: 'What happened in past years?',
+        body: 'Pick the dry or cold years you remember and look back with NASA data.',
+      },
+      {
+        title: 'What matters most to your family?',
+        body: 'Income, stability, water or soil. Only highlighted, never ranked.',
+      },
       { title: 'See and compare the plans', body: 'A 12-month calendar, profit, water, soil and what to ask next.' },
     ],
     obsEyebrow: '06 · Observatory',
@@ -311,7 +317,8 @@ export const en: Messages = {
       water: 'Irrigation',
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha). 1 m³/ha is 0.1 mm.',
       soil: 'NASA soil wetness',
-      soilNote: 'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
+      soilNote:
+        'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
       land: 'Care for the land',
       checks: 'Weigh this (quoted from sources)',
       why: 'Why this plan is here',

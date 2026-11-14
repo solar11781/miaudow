@@ -197,7 +197,8 @@ export const vi = {
     honestyTitle: 'Chúng tôi nói rõ cả khi mô hình không thắng',
     honestyLead:
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
-    honestySpring: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
+    honestySpring:
+      'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
     honestyWinter:
       'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
     // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
@@ -430,7 +431,11 @@ export const vi = {
     lineageTitle: 'Đường đi của một con số',
     lineage: [
       { kind: 'data', title: 'NASA POWER', body: 'Mưa và nhiệt độ theo ngày, 1990–2024, 5 ô lưới' },
-      { kind: 'derived', title: 'Ngưỡng của QĐ 18/2021', body: 'Áp từng ngưỡng cho từng ô, trong thời gian cây trên ruộng' },
+      {
+        kind: 'derived',
+        title: 'Ngưỡng của QĐ 18/2021',
+        body: 'Áp từng ngưỡng cho từng ô, trong thời gian cây trên ruộng',
+      },
       { kind: 'derived', title: 'Trọng số MODIS', body: 'Cộng trọng số đất trồng của các ô đạt ngưỡng' },
       { kind: 'derived', title: 'Phần đất trồng', body: 'Con số hiện trên thẻ, kèm dấu nguồn' },
     ],
