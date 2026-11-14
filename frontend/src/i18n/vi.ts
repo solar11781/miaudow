@@ -30,6 +30,8 @@ export const vi = {
   },
   common: {
     notForecast: 'Năm đã qua, không phải dự báo',
+    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
+    winterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     support:
       'Ứng dụng giúp bạn xem và so sánh. Nó không thay thế kinh nghiệm của bạn và lời khuyên của cán bộ khuyến nông.',
     dataLine: 'Dữ liệu: NASA POWER · CHIRPS v3 · NASA MODIS · Cục Thống kê · Trịnh Đức Toàn và cs. (2023)',
@@ -149,17 +151,13 @@ export const vi = {
       },
     ],
     problemEyebrow: '02 · Nỗi lo mùa vụ',
-    problemTitle: 'Trên ruộng cao, cuối kênh, lúa vụ Hè Thu gần như không có lãi',
+    // lời của bài báo về đất (D-160)
+    problemTitle: 'Đất lúa kém hiệu quả, thường xuyên khô hạn',
+    // rules/rotations.yaml `usual` why.evidence (P-02 tr. 45)
     problemLead:
-      'Hai nghiên cứu ở xã Lưu Sơn, Đô Lương ghi lại điều nhiều gia đình đã biết: khi nước không về kịp, công sức một vụ lúa có thể chẳng còn lại bao nhiêu.',
-    studyLand: 'đất lúa kém hiệu quả, thường xuyên khô hạn',
+      'Một thử nghiệm tại xã Lưu Sơn, huyện Đô Lương, “từ tháng 6 năm 2020 đến tháng 6 năm 2021” (tr. 45); mỗi cây trồng một ô 1.000 m² trong một vụ, không lặp lại.',
     studyLandBy: 'Cách bài báo của Trịnh Đức Toàn và cộng sự (2023) gọi đất thử nghiệm',
-    quote: 'gần như không có lợi nhuận',
-    quoteBy: 'Trịnh Đức Toàn và cs. (2023), về lúa vụ Hè Thu năm 2020 ở Lưu Sơn',
     riceSpring: 'lãi lúa vụ Đông Xuân 2021 trên ô thử nghiệm',
-    riceSummer: 'lãi lúa vụ Hè Thu 2020 trên ô đối chứng',
-    riceSummerDetail:
-      'Bài báo ghi: “gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha”. Lợi nhuận ở bài này chỉ trừ chi phí vật chất.',
     trialNote:
       'Kết quả của một ô ruộng trong một năm (2020–2021), giá bán lúc thu hoạch năm đó. Không phải tiền lãi dự kiến trên ruộng nhà bạn.',
     climateEyebrow: '03 · Mưa nắng 34 năm',
@@ -201,8 +199,6 @@ export const vi = {
       'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
     honestyWinter:
       'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
-    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
-    honestyWinterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     vsBnw: 'so với BNW',
     skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
@@ -306,7 +302,7 @@ export const vi = {
       weatherNote:
         'Phần đất trồng Nghệ An gặp điều kiện trong thời gian cây trên ruộng, nếu gieo đúng ngày của thử nghiệm 2020–21, từng năm bạn chọn.',
       water: 'Nước tưới',
-      waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha). 1 m³/ha bằng 0,1 mm.',
+      waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha).',
       soil: 'Độ ẩm đất NASA',
       soilNote:
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
@@ -420,7 +416,9 @@ export const vi = {
     matrixLead:
       'Mỗi ô ghi giá trị, loại bằng chứng và nguồn. Ô trống nghĩa là nguồn không có số liệu; Miaudow không điền thay.',
     colPlan: 'Cách trồng',
-    colMoney: 'Lãi cả năm',
+    colMoney: 'Lãi trong thử nghiệm',
+    p03Money:
+      'Chỉ lúa vụ Hè Thu 2020, trong bài báo thứ hai của Trịnh Đức Toàn và cs. (2023); không phải tổng của một năm',
     colWeather: 'Thời tiết',
     colWater: 'Nước tưới',
     colLand: 'Đất',

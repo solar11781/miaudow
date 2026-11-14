@@ -32,6 +32,8 @@ export const en: Messages = {
   },
   common: {
     notForecast: 'Past years, not a forecast',
+    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
+    winterFragile: 'The winter rice weather result is narrow and fragile',
     support:
       'This app helps you look and compare. It does not replace your own judgement or your extension officer’s advice.',
     dataLine: 'Data: NASA POWER · CHIRPS v3 · NASA MODIS · National Statistics Office · Trịnh Đức Toàn et al. (2023)',
@@ -151,18 +153,14 @@ export const en: Messages = {
       },
     ],
     problemEyebrow: '02 · The season worry',
-    problemTitle: 'On high fields at the canal end, summer-autumn rice makes almost no profit',
+    // the paper's own land words (D-160), in the translation rules/rotations.yaml and the officer page use
+    problemTitle: 'Low-return (inefficient) rice land, often in drought',
+    // rules/rotations.yaml `usual` why.evidence (P-02 p. 45)
     problemLead:
-      'Two studies in Lưu Sơn commune, Đô Lương recorded what many families already know: when the water does not arrive in time, little is left of a season’s work.',
-    studyLand: 'đất lúa kém hiệu quả, thường xuyên khô hạn',
+      'One trial in Lưu Sơn commune, Đô Lương district, from June 2020 to June 2021 (p. 45); one unreplicated plot of 1,000 m² per crop and season.',
     studyLandBy:
-      'How the paper by Trịnh Đức Toàn et al. (2023) names the trial land: “low-return (inefficient) rice land, often in drought”',
-    quote: 'almost no profit',
-    quoteBy: 'Trịnh Đức Toàn et al. (2023), on summer-autumn rice in 2020 in Lưu Sơn (our translation)',
+      'How the paper by Trịnh Đức Toàn et al. (2023) names the trial land: “đất lúa kém hiệu quả, thường xuyên khô hạn” (our translation above)',
     riceSpring: 'profit of spring rice 2021 on the trial plot',
-    riceSummer: 'profit of summer-autumn rice 2020 on the control plot',
-    riceSummerDetail:
-      'The paper says: “almost no profit, the economic return only reaches 1.16 million/ha” (our translation). Profit in this paper subtracts material costs only.',
     trialNote:
       'Results of one plot in one year (2020–2021), at that harvest’s prices. Not the profit to expect on your field.',
     climateEyebrow: '03 · 34 years of rain',
@@ -204,8 +202,6 @@ export const en: Messages = {
       'NASA weather did not help predict better than the model without weather. No spring rice prediction is shown.',
     honestyWinter:
       'The model with NASA weather predicts better, by a small margin. Winter rice predictions are shown next to the real values.',
-    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
-    honestyWinterFragile: 'The winter rice weather result is narrow and fragile',
     vsBnw: 'vs BNW',
     skillVsBnw: 'skill vs BNW',
     honestySummer: 'Too few provinces have data to test it, so only the real values are shown.',
@@ -315,7 +311,7 @@ export const en: Messages = {
       weatherNote:
         'Share of Nghệ An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation',
-      waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha). 1 m³/ha is 0.1 mm.',
+      waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
       soilNote:
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
@@ -427,7 +423,8 @@ export const en: Messages = {
     matrixLead:
       'Each cell gives the value, the kind of evidence and the source. An empty cell means the source has no value; Miaudow does not fill it in.',
     colPlan: 'Plan',
-    colMoney: 'Yearly profit',
+    colMoney: 'Profit in the trial',
+    p03Money: 'Summer-autumn rice 2020 only, in the second paper of Trịnh Đức Toàn et al. (2023); not a yearly sum',
     colWeather: 'Weather',
     colWater: 'Irrigation',
     colLand: 'Soil',

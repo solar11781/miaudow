@@ -141,9 +141,8 @@ function Heritage() {
   );
 }
 
-function Problem() {
+export function Problem() {
   const t = useT();
-  const f = useFormat();
   const refs = useRefs();
   const rice = PLANS.find((p) => p.id === 'cc5')?.crops[0];
   return (
@@ -154,36 +153,20 @@ function Problem() {
           <h2 id="problem-title" className="h1">
             {t.home.problemTitle}
           </h2>
-          <p className="lead">{t.home.problemLead}</p>
           <p className={s.studyLand}>
-            <span>“{t.home.studyLand}”</span>
             <small>{t.home.studyLandBy}</small>
           </p>
+          <p className="lead">{t.home.problemLead}</p>
         </Reveal>
+        {/* one study's money only: the second paper defines profit differently (D-52) */}
         <Reveal className={s.problemSide} delay={100}>
-          <figure className={s.quote}>
-            <blockquote>{t.home.quote}</blockquote>
-            <figcaption>{t.home.quoteBy}</figcaption>
-          </figure>
-          <div className={s.stats}>
-            {rice && (
-              <div className={s.stat}>
-                <SourceValue size="lg" {...refs.cropProfit(rice)} />
-                <span>{t.home.riceSpring}</span>
-              </div>
-            )}
+          {rice && (
             <div className={s.stat}>
-              <SourceValue
-                size="lg"
-                sourceId="p03"
-                kind="study"
-                value={`${f.n(1.16, 2)} ${t.common.millionPerHa}`}
-                label={t.home.riceSummer}
-                detail={t.home.riceSummerDetail}
-              />
-              <span>{t.home.riceSummer}</span>
+              <SourceValue size="lg" {...refs.cropProfit(rice)} />
+              <span>{t.home.riceSpring}</span>
+              <span>{t.farmer.definitionPlain.p02}</span>
             </div>
-          </div>
+          )}
           <p className={s.trialNote}>{t.home.trialNote}</p>
         </Reveal>
       </div>
@@ -421,7 +404,7 @@ function Honesty() {
               <p>{c.body}</p>
               {c.key === 'winter' && (
                 <p>
-                  <strong>{t.home.honestyWinterFragile}</strong>
+                  <strong>{t.common.winterFragile}</strong>
                 </p>
               )}
               {c.skill !== undefined && c.key !== 'summer' && (

@@ -26,7 +26,8 @@ export type SourceId =
   | 'e010'
   | 'zhang2011'
   | 'chirps-v3'
-  | 'modis-ndvi';
+  | 'modis-ndvi'
+  | 'sentinel2';
 
 export interface SourceRecord {
   id: SourceId;

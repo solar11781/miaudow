@@ -8,6 +8,7 @@ import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
 import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
+import { SOURCES } from '../../domain/sources';
 
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
@@ -65,6 +66,20 @@ describe('card warnings', () => {
     const card = document.querySelector(`[data-testid="card-${id}"]`)?.textContent ?? '';
     for (const line of [vi.farmer.trialNote, vi.common.notForecast, vi.common.support]) expect(card).toContain(line);
     expect(card).toContain(vi.farmer.priceYearNotStated); // the fixture plan states no price year
+  });
+});
+
+// D-64, D-68 and UI-UX-SPEC section 9 water row: the card shows TCVN 8641 (m³/ha) and FAO (mm) values as separate
+// facts; the spec lists no unit conversion, and one next to the FAO values invites the comparison
+describe('water units', () => {
+  afterEach(cleanup);
+  it('carry no conversion between the two sources, on the card or in the TCVN source sheet', () => {
+    const id = renderCard();
+    const card = document.querySelector(`[data-testid="card-${id}"]`)?.textContent ?? '';
+    expect(card).toContain(vi.farmer.rows.waterNote);
+    for (const text of [card, vi.farmer.rows.waterNote, en.farmer.rows.waterNote])
+      expect(text).not.toMatch(/0[,.]1 mm/);
+    for (const text of Object.values(SOURCES.tcvn8641.caveat)) expect(text).not.toMatch(/0[,.]1 mm/);
   });
 });
 

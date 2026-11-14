@@ -51,6 +51,7 @@ from fieldshift.engine.rules import (
     load_plans,
     load_prompt,
     load_sources,
+    metrics_file,
 )
 from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, Contract, PlanId, SourceFacts, SourceId, Text
 
@@ -60,6 +61,9 @@ QUESTION_MAX_CHARS = 300
 MAX_TOKENS = 1024  # routine choice: a list of at most a dozen candidate ids as JSON
 EFFORT = "low"  # the explain endpoint's effort; the server has already found the candidates
 SEARCH_LIMIT = 3  # member B's deterministic answer quotes the top 3 passages
+# the method report that qualifies a season's model result (D-165: the winter result is "narrow" and "fragile"; E-018 is
+# src/fieldshift/ml/reports.py winter_claim_report)
+SEASON_REPORTS = {"winter": "E-018"}
 # member B's search (frontend/src/features/ai/retrieve.ts, kept by the D-169 audit): BM25 with k1 1.4 and b 0.72, and
 # an answer only when the top hit reaches both floors (its MIN_SCORE and MIN_COVERAGE)
 K1, B = 1.4, 0.72
@@ -128,7 +132,7 @@ class CopilotError(ExplainError):
 @dataclass(frozen=True)
 class Passage:
     id: str
-    source_id: SourceId
+    source_ids: tuple[SourceId, ...]  # the first is the passage's own; more when it carries a report sentence
     keys: str
     title: Text
     text: Text
@@ -313,7 +317,7 @@ def load_corpus(root: Path) -> Corpus:
     sources = load_sources(root)
     crops = load_crops(root)
     plans = load_plans(root)
-    passages = [Passage(p.id, p.source_id, p.keys, p.title, p.text) for p in texts.passages]
+    passages = [Passage(p.id, (p.source_id,), p.keys, p.title, p.text) for p in texts.passages]
     tool_plans: list[dict[str, object]] = []
     for plan in plans:
         money = plan.reported_economics
@@ -333,7 +337,7 @@ def load_corpus(root: Path) -> Corpus:
                 lang: texts.answers.plan_money[lang].format(unit=unit[lang], parts=parts[lang]) for lang in ("vi", "en")
             }
         keys = " ".join(f"{crops[s.crop_id].name['vi']} {crops[s.crop_id].name['en']}" for s in plan.seasons)
-        passages.append(Passage(f"plan-{plan.id}", money.source_id, f"{plan.id} {keys} lai co cau", plan.name, text))
+        passages.append(Passage(f"plan-{plan.id}", (money.source_id,), f"{plan.id} {keys} lai co cau", plan.name, text))
         tool_plans.append(
             {
                 "plan_id": plan.id,
@@ -351,22 +355,29 @@ def load_corpus(root: Path) -> Corpus:
     for rule in shown.rules:
         rule_passage = Passage(
             f"rule-{rule.code.replace('_', '-')}",
-            rule.threshold_source_id,
+            (rule.threshold_source_id,),
             f"{rule.label['vi']} {rule.label['en']} nguong",
             rule.label,
             rule.rule_text,
         )
         passages.append(rule_passage)
     seasons = load_card_texts(root).season_labels
+    reports = {r.id: r for r in metrics_file(root).reports}
     for gate in gate_rows(root):
         if gate.gate == "G2":
             label = seasons[gate.season].label
             title: Text = {lang: texts.answers.model_title[lang].format(season=label[lang]) for lang in ("vi", "en")}
             keys = f"{label['vi']} {label['en']} mo hinh du doan model skill"
-            passages.append(Passage(f"model-{gate.season}", gate.source_ids[0], keys, title, gate.detail))
+            report = reports[SEASON_REPORTS[gate.season]] if gate.season in SEASON_REPORTS else None
+            text = {
+                lang: f"{gate.detail[lang]} {report.title[lang]}." if report else gate.detail[lang]
+                for lang in ("vi", "en")
+            }
+            ids = tuple(dict.fromkeys([gate.source_ids[0], *(report.source_ids if report else [])]))
+            passages.append(Passage(f"model-{gate.season}", ids, keys, title, text))
     years = {y.year: {code: (v.value if v else None) for code, v in y.shares.items()} for y in shown.years}
     year_sources = [shown.rules[0].threshold_source_id, *shown.rules[0].values_source_ids, shown.rules[0].computed_by]
-    missing = {p.source_id for p in passages} - set(sources) | set(year_sources) - set(sources)
+    missing = {sid for p in passages for sid in p.source_ids} - set(sources) | set(year_sources) - set(sources)
     if missing:
         raise ValueError(f"rules/copilot.yaml: source ids not in rules/sources.yaml: {sorted(missing)}")
     return Corpus(
@@ -502,6 +513,12 @@ def _citation(corpus: Corpus, passage_id: str, source_id: SourceId) -> Citation:
     return Citation(passage_id=passage_id, source_id=source_id, title=facts.citation, location=None, url=facts.url)
 
 
+def _passage_citations(corpus: Corpus, p: Passage) -> list[Citation]:
+    """One citation per source of the passage; each extra source gets its own id, as the year citations do."""
+    first, *more = p.source_ids
+    return [_citation(corpus, p.id, first), *(_citation(corpus, f"{p.id}-{sid}", sid) for sid in more)]
+
+
 def _clip(text: str, limit: int = 320) -> str:
     """Member B's clip: a long passage is cut at a sentence or word end; the citation names the full source."""
     if len(text) <= limit:
@@ -576,7 +593,7 @@ def deterministic(req: CopilotRequest, corpus: Corpus) -> CopilotResponse:
     if not hits:
         return _response("insufficient_evidence", said.insufficient[lang], set(), trace=trace)
     answer = "\n".join(f"• {_clip(p.text[lang])}" for p in hits)
-    citations = [_citation(corpus, p.id, p.source_id) for p in hits]
+    citations = [c for p in hits for c in _passage_citations(corpus, p)]
     cards = [AnswerCard(kind="passage", ref_id=p.id, title=p.title) for p in hits]
     known = known_numbers([p.text[lang] for p in hits])
     return _response("reference_only", answer, known, citations, cards, trace)
@@ -712,7 +729,7 @@ def _shown(picked: PickedIds, found: list[Candidate], req: CopilotRequest, corpu
             known |= known_numbers(data)
             continue
         lines.append(f"• {p.text[lang]}")
-        citations.append(_citation(corpus, p.id, p.source_id))
+        citations += _passage_citations(corpus, p)
         known |= known_numbers(p.text[lang])
         plan = p.id.removeprefix("plan-")
         if plan in corpus.plan_names:
