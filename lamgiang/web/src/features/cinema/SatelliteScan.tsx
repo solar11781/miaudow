@@ -6,7 +6,7 @@ import { useEffect, useId, useMemo, useRef, useState, type JSX, type RefObject }
 import { useFormat, useSettings } from '../../app/settings';
 import { geo } from '../../data';
 import { Icon } from '../../design-system/Icon';
-import { EASE, gsap, useCinema } from '../../motion/cinema';
+import { EASE, gsap, useCinema, ScrollTrigger } from '../../motion/cinema';
 import { EARTH, Earth, FlagIcon, Satellite, SceneDefs, Space, type FlagKind } from './parts';
 import s from './SatelliteScan.module.css';
 
@@ -221,7 +221,7 @@ function buildTimeline(scope: HTMLElement, n: Fmt, rest: Record<Craft['key'], Re
   master.add(loop, 0);
   // autoRound: false, or GSAP rounds the dash offset (a px value) to 0 or 1 and the border pops in instead of tracing.
   master.from(q('[data-outline]'), { strokeDashoffset: 1, fillOpacity: 0, autoRound: false, duration: a.tOut - a.tIn + 0.6, ease: EASE.calm }, a.tIn - 0.3);
-  master.from(q('[data-place]'), { autoAlpha: 0, y: 10, duration: 1.2, ease: EASE.calm }, a.tOut);
+  master.from(q('[data-place]'), { opacity: 0, y: 10, duration: 1.2, ease: EASE.calm }, a.tOut);
 
   // When the motion is reverted (lite mode, reduced motion, unmount) the readout goes back to the still frame.
   gsap.context(() => () => {
@@ -376,8 +376,16 @@ export function SatelliteScan({ labels, className }: { labels: SatelliteScanLabe
   useCinema(root, () => {
     if (!root.current) return;
     const tl = buildTimeline(root.current, f.n, rest, narrow ? FLEET.narrow : FLEET.wide);
-    tl.paused(pausedRef.current);
     timeline.current = tl;
+    // play only while on screen, and never against the visitor's pause
+    const onScreen = () => ScrollTrigger.isInViewport(root.current as Element);
+    tl.paused(pausedRef.current || !onScreen());
+    ScrollTrigger.create({
+      trigger: root.current,
+      start: 'top bottom',
+      end: 'bottom top',
+      onToggle: (self) => { if (!pausedRef.current) tl.paused(!self.isActive); },
+    });
   }, [f, rest, narrow]);
 
   const toggle = () => {

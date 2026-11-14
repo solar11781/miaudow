@@ -91,3 +91,10 @@
   .settingsFarmer { gap: 4px; }
   .chip { padding: 0 .5rem; }
 }
+
+/* wide but not wide enough for every label: the switch and the tagline keep their names for screen readers only */
+@media (min-width: 1260px) and (max-width: 1599.98px) {
+  .settings .switch > span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .tag { display: none; }
+  .link { padding: 0 0.65rem; }
+}

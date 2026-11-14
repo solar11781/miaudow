@@ -35,8 +35,8 @@ export function Media({ slug, narrow, sizes, priority, className, decorative, dr
     <span className={[s.frame, className].filter(Boolean).join(' ')} style={{ backgroundColor: m.dominant }}>
       <img className={s.ph} src={m.placeholder} alt="" aria-hidden="true" style={{ objectPosition: pos }} />
       <picture>
-        {narrow && <source media={phone} type="image/avif" srcSet={set(narrow, 'avif')} sizes="100vw" />}
-        {narrow && <source media={phone} type="image/webp" srcSet={set(narrow, 'webp')} sizes="100vw" />}
+        {narrow && <source media={phone} type="image/avif" srcSet={set(narrow, 'avif')} sizes={sizes} />}
+        {narrow && <source media={phone} type="image/webp" srcSet={set(narrow, 'webp')} sizes={sizes} />}
         <source type="image/avif" srcSet={set(slug, 'avif')} sizes={sizes} />
         <source type="image/webp" srcSet={set(slug, 'webp')} sizes={sizes} />
         <img
