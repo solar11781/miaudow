@@ -3,13 +3,14 @@
 # Season.label (§7b).
 #
 # coverage: the UI-UX-SPEC §11b coverage table, one cell per row and axis (CoverageCell). Row keys name the crops of
-# each table row (routine naming).
+# each table row (routine naming). The P-03 study is named by first author and year (D-160) with words of its title
+# ("công thức luân canh"; English as in rotations.yaml), since P-02 has the same first author and year (R-P02, R-P03).
 coverage:
-  - {row_key: rice_spring, crop: &rice_spring {vi: "Lúa vụ Đông Xuân (CC5; cũng có trong đối chứng P-03)", en: "Spring rice (CC5; also in the P-03 control)"},
-     axis: money, text: {vi: "Có cho CC5; dạng chữ cho P-03", en: "Yes for CC5; as text for P-03"},
+  - {row_key: rice_spring, crop: &rice_spring {vi: "Lúa vụ Đông Xuân (CC5; cũng có trong đối chứng của Trịnh Đức Toàn và cs 2023, “công thức luân canh”)", en: "Spring rice (CC5; also in the control of Trịnh Đức Toàn et al. 2023, “rotation formulas”)"},
+     axis: money, text: {vi: "Có cho CC5; dạng chữ cho Trịnh Đức Toàn và cs 2023, “công thức luân canh”", en: "Yes for CC5; as text for Trịnh Đức Toàn et al. 2023, “rotation formulas”"},
      source_ids: [R-P02, R-P03]}
   - {row_key: rice_spring, crop: *rice_spring, axis: conditions,
-     text: {vi: "Có cho CC5; không cho P-03 (không có ngày gieo)", en: "Yes for CC5; no for P-03 (no dates)"},
+     text: {vi: "Có cho CC5; không cho Trịnh Đức Toàn và cs 2023, “công thức luân canh” (không có ngày gieo)", en: "Yes for CC5; no for Trịnh Đức Toàn et al. 2023, “rotation formulas” (no dates)"},
      source_ids: [E-019, R-A01]}
   - {row_key: rice_spring, crop: *rice_spring, axis: rice_history, text: &yes {vi: "Có", en: "Yes"}, source_ids: [R-D01]}
   - {row_key: rice_spring, crop: *rice_spring, axis: model,
@@ -19,10 +20,10 @@ coverage:
      text: {vi: "Có (các dòng Trung bộ và Bắc bộ)", en: "Yes (Trung bộ and Bắc bộ rows)"}, source_ids: [R-W15]}
   - {row_key: rice_spring, crop: *rice_spring, axis: water_fao, text: *yes, source_ids: [R-M02]}
 
-  - {row_key: rice_summer_autumn, crop: &rice_sa {vi: "Lúa vụ Hè Thu (đối chứng P-03)", en: "Summer-autumn rice (P-03 control)"},
-     axis: money, text: {vi: "Dạng chữ (định nghĩa của P-03)", en: "As text (P-03 definition)"}, source_ids: [R-P03]}
+  - {row_key: rice_summer_autumn, crop: &rice_sa {vi: "Lúa vụ Hè Thu (đối chứng của Trịnh Đức Toàn và cs 2023, “công thức luân canh”)", en: "Summer-autumn rice (control of Trịnh Đức Toàn et al. 2023, “rotation formulas”)"},
+     axis: money, text: {vi: "Dạng chữ (định nghĩa của Trịnh Đức Toàn và cs 2023, “công thức luân canh”)", en: "As text (the definition of Trịnh Đức Toàn et al. 2023, “rotation formulas”)"}, source_ids: [R-P03]}
   - {row_key: rice_summer_autumn, crop: *rice_sa, axis: conditions,
-     text: {vi: "Không (P-03 không có ngày gieo)", en: "No (P-03 gives no dates)"}, source_ids: [R-P03]}
+     text: {vi: "Không (Trịnh Đức Toàn và cs 2023, “công thức luân canh” không có ngày gieo)", en: "No (Trịnh Đức Toàn et al. 2023, “rotation formulas” gives no dates)"}, source_ids: [R-P03]}
   - {row_key: rice_summer_autumn, crop: *rice_sa, axis: rice_history, text: *yes, source_ids: [R-D01]}
   - {row_key: rice_summer_autumn, crop: *rice_sa, axis: model,
      text: {vi: "Không bao giờ (không qua được kiểm tra G1)", en: "Never (G1 fails)"}, source_ids: [E-012]}
