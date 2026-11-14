@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import anthropic
-from pydantic import BaseModel, Field, StringConstraints, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
 
 from fieldshift.api.caps import ModelCallsFullError
 from fieldshift.api.explain import (
@@ -75,8 +75,20 @@ FIELD_CLAIMS = re.compile(
     r"(?<!\w)(sẽ|sắp|sang năm|năm sau|năm tới|vụ sau|vụ tới|mùa sau|mùa tới|tương lai|ngày mai|tối ưu|khuyên|"
     r"lựa chọn tốt|nên trồng|nên chọn|bạn nên|bác nên|tốt nhất|hay nhất|lời nhất|lãi nhất|chắc chắn|đảm bảo|"
     r"will|won't|going to|gonna|future|next (year|season|crop)|tomorrow|optimal|most profitable|recommend\w*|"
-    r"advise\w*|can produce|should|best|guarantee\w*)(?!\w)"
+    r"advise\w*|can produce|should|best|guarantee\w*|"
+    # third pass of PR #55: phrases only, since our own passages hold "hơn" and "your field"
+    r"if you|nếu bác|nếu bạn|expect\w*|switch\w*|chuyển sang|kế tiếp|coming (seasons?|years?)|mất mùa|"
+    r"hợp lý nhất|an toàn nhất|safest|safe bet|more than|less than|lãi hơn|ít hơn)(?!\w)"
 )
+# third pass of PR #55: yield, area and money words the explain list lacks; a number with one of them must have that
+# very unit in a tool result, never only a unit-less token
+STRICT_UNITS = frozenset(
+    ("tonnes", "tonne", "tons", "ton", "tạ", "yến", "sào", "hectare", "hectares", "dollars", "dollar", "usd")
+)
+COPILOT_UNITS = UNITS | STRICT_UNITS
+# third pass of PR #55: a safer option the team may switch to; "extractive" shows only the passages the model picks
+MODE: Literal["generative", "extractive"] = "generative"
+EXTRACTIVE_PROMPT = "copilot_extractive"  # rules/prompts/copilot_extractive.md, added to the system prompt in that mode
 # security review of PR #55: numbers written in words escape the digit check, so each must also be in a tool result;
 # "năm" (five, also "year") counts only before another number word or a unit (number_words)
 NUMBER_WORDS = frozenset(
@@ -250,6 +262,7 @@ class Corpus:
     plans: list[dict[str, object]]  # what the list_plans tool returns, per language below
     plan_names: dict[PlanId, Text]
     system: str  # rules/prompts/copilot.md
+    extractive: str  # rules/prompts/copilot_extractive.md
 
 
 # ---------------------------------------------------------------- search (port of member B's normalize.ts, retrieve.ts)
@@ -483,6 +496,7 @@ def load_corpus(root: Path) -> Corpus:
         plans=tool_plans,
         plan_names={p.id: p.name for p in plans},
         system=load_prompt(root, PROMPT),
+        extractive=load_prompt(root, EXTRACTIVE_PROMPT),
     )
 
 
@@ -628,7 +642,7 @@ def known_numbers(value: object) -> set[Number]:
         if isinstance(item, int):
             found.add(("-" if item < 0 else "", str(abs(item)), ""))
         else:
-            found |= set(numbers(_units_spelled(item)))
+            found |= set(numbers(_units_spelled(item), COPILOT_UNITS))
     return found
 
 
@@ -637,15 +651,17 @@ def unit_words(value: object) -> set[str]:
     words = set(_keep_accents(_units_spelled(" ".join(_strings(value)))).split()) | {
         w.lower() for w in _units_spelled(" ".join(_strings(value))).split()
     }
-    return {u for u in UNITS if u in words or (u == "%" and "%" in " ".join(_strings(value)))}
+    return {u for u in COPILOT_UNITS if u in words or (u == "%" and "%" in " ".join(_strings(value)))}
 
 
 def check_numbers(text: str, known: set[Number], units: set[str]) -> NumberCheck:
     """A number passes when the same digits with the same sign are a token of a tool result with the same unit, or a
     token without a unit and the answer adds no unit or one the tool results name (second pass of PR #55)."""
-    found = numbers(_units_spelled(text))
+    found = numbers(_units_spelled(text), COPILOT_UNITS)
     unverified = [
-        f"{s}{d}" for s, d, u in found if (s, d, u) not in known and not ((s, d, "") in known and (not u or u in units))
+        f"{s}{d}"
+        for s, d, u in found
+        if (s, d, u) not in known and not ((s, d, "") in known and (not u or (u in units and u not in STRICT_UNITS)))
     ]
     return NumberCheck(checked=len(found), unverified=unverified)
 
@@ -780,7 +796,9 @@ def copilot_client(environ: Mapping[str, str]) -> anthropic.Anthropic | None:
     return anthropic.Anthropic(api_key=key, base_url=BASE_URL, timeout=TIMEOUT_SECONDS, max_retries=MAX_RETRIES)
 
 
-def _create(client: anthropic.Anthropic, system: str, messages: list[dict[str, object]]) -> anthropic.types.Message:
+def _create(
+    client: anthropic.Anthropic, system: str, messages: list[dict[str, object]], schema: dict[str, object]
+) -> anthropic.types.Message:
     try:
         message = client.messages.create(
             model=MODEL,
@@ -788,7 +806,7 @@ def _create(client: anthropic.Anthropic, system: str, messages: list[dict[str, o
             system=system,
             tools=TOOLS,  # type: ignore[arg-type]
             thinking=THINKING,  # type: ignore[arg-type]
-            output_config={"effort": EFFORT, "format": {"type": "json_schema", "schema": ANSWER_SCHEMA}},
+            output_config={"effort": EFFORT, "format": {"type": "json_schema", "schema": schema}},
             messages=messages,  # type: ignore[arg-type]
         )
     except anthropic.APIStatusError as err:
@@ -862,14 +880,75 @@ def _checked(message: anthropic.types.Message, results: list[dict[str, object]])
     except ValidationError as err:
         raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
     written = "\n".join([out.answer, *out.missing_information])
-    checked = check_numbers(written, known_numbers(results), unit_words(results))
-    if checked.unverified:
-        raise CopilotError("NumbersUnverified", 200, message.stop_reason, request_id)
+    cause = refusal(written, results)
+    if cause:
+        raise CopilotError(cause, 200, message.stop_reason, request_id)
+    return out, check_numbers(written, known_numbers(results), unit_words(results))
+
+
+def refusal(written: str, results: object) -> str | None:
+    """Why a model-written text is refused, or None: a number or number word no tool returned, or a forecast,
+    ranking or advice phrase (CLAUDE.md scientific boundaries; the three security passes of PR #55)."""
+    if check_numbers(written, known_numbers(results), unit_words(results)).unverified:
+        return "NumbersUnverified"
     if number_words(written) - number_words(" ".join(_strings(results))):
-        raise CopilotError("NumberWordsUnverified", 200, message.stop_reason, request_id)
+        return "NumberWordsUnverified"
     if FIELD_CLAIMS.search(_keep_accents(written)):
-        raise CopilotError("FieldClaim", 200, message.stop_reason, request_id)
-    return out, checked
+        return "FieldClaim"
+    return None
+
+
+class PickedIds(BaseModel):
+    """The extractive mode's whole answer: ids only, so no model-written sentence reaches the farmer."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    passage_ids: list[str]
+    plan_ids: list[str]
+
+
+EXTRACTIVE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "passage_ids": {"type": "array", "items": {"type": "string"}},
+        "plan_ids": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["passage_ids", "plan_ids"],
+    "additionalProperties": False,
+}
+
+
+def _extracted(message: anthropic.types.Message, runs: _ToolRuns, req: CopilotRequest) -> CopilotResponse:
+    """The picked passages word for word under one fixed line, each with its source; none picked is "not enough"."""
+    request_id = getattr(message, "_request_id", None)
+    if message.stop_reason != "end_turn":
+        raise CopilotError("NotWhole", 200, message.stop_reason, request_id)
+    text = "".join(b.text for b in message.content if isinstance(b, anthropic.types.TextBlock))
+    try:
+        picked = PickedIds.model_validate_json(text)
+    except ValidationError as err:
+        raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
+    corpus, lang = runs.corpus, req.lang
+    by_id = {p.id: p for p in corpus.passages}
+    plans = [i for i in dict.fromkeys(picked.plan_ids) if runs.listed and i in corpus.plan_names]
+    shown = [runs.seen[i] for i in dict.fromkeys(picked.passage_ids) if i in runs.seen]
+    shown += [by_id[f"plan-{i}"] for i in plans if by_id[f"plan-{i}"] not in shown]
+    if not shown:
+        return _response(
+            "insufficient_evidence", corpus.answers.insufficient[lang], set(), trace=runs.trace
+        ).model_copy(update={"engine": "claude", "model": MODEL})
+    lines = [corpus.answers.extractive_head[lang], *(f"• {p.text[lang]}" for p in shown)]
+    cards = [AnswerCard(kind="passage", ref_id=p.id, title=p.title) for p in shown if not p.id.startswith("plan-")]
+    cards += [AnswerCard(kind="plan", ref_id=i, title=corpus.plan_names[i]) for i in plans]
+    out = _response(
+        "grounded",
+        "\n".join(lines),
+        known_numbers([p.text[lang] for p in shown]),
+        [_citation(corpus, p.id, p.source_id) for p in shown],
+        cards,
+        runs.trace,
+    )
+    return out.model_copy(update={"engine": "claude", "model": MODEL})
 
 
 def claude_answer(
@@ -882,10 +961,13 @@ def claude_answer(
     question = f"<question>{html.escape(req.question, quote=False)}</question>"
     messages: list[dict[str, object]] = [{"role": "user", "content": f"{mode} {language}{water}\n\n{question}"}]
     runs = _ToolRuns(corpus, req.lang)
+    extractive = MODE == "extractive"
+    system = f"{corpus.system}\n\n{corpus.extractive}" if extractive else corpus.system
+    schema = EXTRACTIVE_SCHEMA if extractive else ANSWER_SCHEMA
     for _ in range(MAX_TOOL_ROUNDS + 1):
         if not charge():  # each model call takes one of the shared calls (caps.py), not each answer
             raise ModelCallsFullError
-        message = _create(client, corpus.system, messages)
+        message = _create(client, system, messages, schema)
         request_id = getattr(message, "_request_id", None)
         if message.stop_reason != "tool_use":
             break
@@ -894,6 +976,8 @@ def claude_answer(
         messages.append({"role": "user", "content": [runs.reply(b, n, request_id) for n, b in enumerate(blocks)]})
     else:
         raise CopilotError("TooManyToolRounds", 200, "tool_use", request_id)
+    if extractive:
+        return _extracted(message, runs, req)
     out, checked = _checked(message, runs.results)
     seen = runs.seen
     citations = [_citation(corpus, i, seen[i].source_id) for i in dict.fromkeys(out.passage_ids) if i in seen]

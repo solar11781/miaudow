@@ -390,6 +390,7 @@ class CopilotAnswers(Entry):
     no_value: Text
     plan_money: Text
     model_title: Text
+    extractive_head: Text
 
 
 class CopilotTexts(Entry):

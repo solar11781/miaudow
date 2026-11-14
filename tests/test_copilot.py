@@ -644,3 +644,117 @@ def test_the_fixed_answers_are_never_filtered(det: TestClient, question: str) ->
     assert out["engine"] == "deterministic"
     if "sau" in question:  # the fixed forecast answer itself names the coming season ("mùa tới")
         assert copilot.FIELD_CLAIMS.search(copilot._keep_accents(out["answer"]))
+
+
+# ---- third security pass of PR #55: yield units, phrase patterns, honest answers, the extractive option
+
+
+def texts(lang: str, *ids: str) -> list[str]:
+    corpus = copilot.load_corpus(REPO)
+    return [p.text[lang] for p in corpus.passages if p.id in ids]
+
+
+PASSAGES = ("water-tcvn", "p03-summer", "plan-cc1", "nasa-power", "p02-design")
+
+
+@pytest.mark.parametrize(
+    ("lang", "answer"),
+    [
+        ("en", "Expect about 5 tonnes per hectare on your field"),
+        ("en", "Your plot yields 44 tonnes per ha"),
+        ("vi", "Nếu bác trồng lạc, ruộng bác thu 25.980 nghìn đồng/ha"),
+        ("en", "If you plant peanut you get 25,980 thousand VND/ha"),
+        ("en", "Peanut earns more than summer rice in P-03, so switch"),
+        ("vi", "Lạc lãi hơn lúa hè thu nhiều"),
+        ("vi", "Đợt hạn kế tiếp ruộng bác mất mùa"),
+        ("en", "Coming seasons look drier, expect losses on your plot"),
+        ("vi", "Bác trồng lạc là hợp lý nhất"),
+        ("en", "Peanut is the safest bet for your field"),
+        ("vi", "Nếu bạn chuyển sang lạc thì ít hơn rủi ro."),
+        ("vi", "Lạc an toàn nhất."),
+        ("en", "Peanut is less than rice in water, a safe bet."),
+        ("en", "In the coming years rice dries."),
+    ],
+)
+def test_the_third_pass_examples_are_refused(lang: str, answer: str) -> None:
+    assert copilot.refusal(answer, texts(lang, *PASSAGES)) is not None
+
+
+@pytest.mark.parametrize(
+    ("lang", "answer"),
+    [
+        ("vi", "Theo TCVN 8641:2011, lúa vụ xuân cần tưới dưỡng 6.500–7.500 m³/ha."),  # noqa: RUF001 - as written
+        ("en", "Under TCVN 8641:2011, spring rice needs 6,500–7,500 m³/ha of maintenance irrigation."),  # noqa: RUF001
+        ("vi", "Nghiên cứu P-03 ghi lúa hè thu năm 2020 lãi 1,16 triệu đồng/ha."),
+        ("en", "Study P-03 records 2020 summer rice profit of 1.16 million VND/ha."),
+        ("vi", "Trong thử nghiệm, lạc lãi 25.980 nghìn đồng/ha."),
+        ("vi", "Đây là năm đã qua, không phải dự báo. Số theo ô lưới mô hình, không đo tại ruộng."),
+        ("en", "A past year, not a forecast. Model grid values, not measured on a farm."),
+        ("vi", "Miaudow không chọn cách trồng thay gia đình bạn."),
+        ("en", "Miaudow does not choose a plan for your family."),
+        ("vi", "Miaudow dùng 5 ô có đất trồng ở Nghệ An. Ô lưới không đo ruộng nhà bạn."),
+        ("en", "Miaudow uses the 5 cells with farmland in Nghệ An. Grid cells do not measure your field."),
+    ],
+)
+def test_honest_answers_still_pass(lang: str, answer: str) -> None:
+    corpus = copilot.load_corpus(REPO)
+    notes = [corpus.answers.year_note[lang], corpus.answers.plans_head[lang]]
+    assert copilot.refusal(answer, [*texts(lang, *PASSAGES), *notes]) is None
+
+
+def test_a_yield_unit_must_be_the_unit_of_the_tool_result() -> None:
+    results = ["There were 44 trial rows and 5 cells, in tonnes and hectares."]
+    known, units = copilot.known_numbers(results), copilot.unit_words(results)
+    for text in ("44 tonnes per ha", "5 tons", "5 tạ", "5 yến", "5 sào", "44 hectares", "5 usd", "5 dollars"):
+        assert copilot.check_numbers(text, known, units).unverified, text
+    assert copilot.check_numbers("5 cells", known, units).unverified == []
+
+
+def final_ids(passage_ids: list[str], plan_ids: list[str] | None = None, **extra: object) -> httpx2.Response:
+    out = {"passage_ids": passage_ids, "plan_ids": plan_ids or [], **extra}
+    return message([{"type": "text", "text": json.dumps(out)}], "end_turn")
+
+
+@pytest.fixture
+def extractive(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(copilot, "MODE", "extractive")
+
+
+def test_the_mode_is_generative_until_the_team_decides() -> None:
+    assert copilot.MODE == "generative"
+
+
+@pytest.mark.usefixtures("extractive")
+def test_the_extractive_mode_shows_the_picked_passages_verbatim(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    api = fake_api(*SEARCH, lambda _: final_ids(["water-tcvn", "zz-not-returned"]))
+    out = ask(app_client(monkeypatch), WATER_Q["question"])
+    corpus = copilot.load_corpus(REPO)
+    tcvn = next(p for p in corpus.passages if p.id == "water-tcvn")
+    assert out["answer"] == f"{corpus.answers.extractive_head['vi']}\n• {tcvn.text['vi']}"
+    assert [c["passage_id"] for c in out["citations"]] == ["water-tcvn"]
+    assert [c["ref_id"] for c in out["cards"]] == ["water-tcvn"]
+    assert out["engine"] == "claude"
+    assert out["status"] == "grounded"
+    schema = sent(api)["output_config"]["format"]["schema"]
+    assert "answer" not in schema["properties"]  # the model writes no sentence
+
+
+@pytest.mark.usefixtures("extractive")
+def test_the_extractive_mode_refuses_model_text(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    fake_api(*SEARCH, lambda _: final_ids(["water-tcvn"], answer="Ruộng nhà bạn sẽ đạt 6 tấn/ha."))
+    assert app_client(monkeypatch).post("/api/copilot", json=WATER_Q).status_code == 502
+
+
+@pytest.mark.usefixtures("extractive")
+def test_the_extractive_mode_with_nothing_picked_says_so(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
+) -> None:
+    fake_api(*SEARCH, lambda _: final_ids(["zz-not-returned"]))
+    out = ask(app_client(monkeypatch), WATER_Q["question"], "en")
+    assert out["status"] == "insufficient_evidence"
+    assert out["answer"] == copilot.load_corpus(REPO).answers.insufficient["en"]
+    assert out["citations"] == []

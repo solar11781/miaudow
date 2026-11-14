@@ -1,0 +1,1 @@
+Extractive mode: write no answer sentence. Return only the passage_ids of search_evidence results and the plan ids of list_plans results that answer the question; the app shows those passages word for word with their sources. If none of them answers the question, return empty lists.

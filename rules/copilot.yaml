@@ -94,6 +94,7 @@ answers:
   plan_money:
     vi: "Theo nghiên cứu, tiền lãi của từng cây ({unit}): {parts}."
     en: "In the study, the profit of each crop ({unit}): {parts}."
+  extractive_head: {vi: "Các nguồn này trả lời câu hỏi của bạn:", en: "These sources answer your question:"}
   model_title:
     vi: "Mô hình dự đoán lúa ({season}) có tốt không?"
     en: "Is the rice model ({season}) any good?"
