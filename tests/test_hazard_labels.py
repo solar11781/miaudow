@@ -162,9 +162,17 @@ def test_the_exported_artifact_has_every_p02_crop_year_and_rule() -> None:
     assert set(doc) == {"schema_version", "generated_at", "freeze_commit", "rows"}  # §4b
 
 
-def test_a_sowing_range_fails_loudly():
+def test_a_sowing_range_fails_loudly() -> None:
     # 03-ML-SPEC section 5a: P-02 reports one sowing date per crop, so a range in the rules file is an input error
     ranged = _plan("cc1", [("cc1_spring_peanut", "spring", "01-18", "05-12", "05-12")])
     ranged["seasons"][0]["sow_to"] = "01-25"
     with pytest.raises(ValueError, match="cc1_spring_peanut"):
         plan_crops([ranged])
+
+
+def test_a_rain_gap_in_the_normal_years_names_its_cell() -> None:
+    # Python rules: errors name the input; the 1991-2020 rain normal needs every day (03-ML-SPEC section 5a, D-118)
+    gap = _cell()
+    gap.loc["2000-07-01", "PRECTOTCORR"] = np.nan
+    with pytest.raises(ValueError, match=r"cell \(19\.0, 105\.0\)"):
+        hazard_label_rows(plan_crops([CC1]), {(19.0, 105.0): gap}, {(19.0, 105.0): 1.0}, [2000])
