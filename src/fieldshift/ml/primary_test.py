@@ -117,7 +117,7 @@ def bilingual(vi: str, en: str) -> dict:
     return {"vi": vi, "en": en}
 
 
-def _num(x: float) -> tuple[str, str]:
+def decimal_text(x: float) -> tuple[str, str]:
     """(vi, en) of a number with 3 decimals; Vietnamese writes a decimal comma."""
     en = f"{x:.3f}"
     return en.replace(".", ","), en
@@ -198,10 +198,10 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
     """Detail text of G2, G3 or G4 (drafts for the copy review; form of G2 from 03-ML-SPEC section 8)."""
     if gate == "G2":
         (v0, e0), (vl0, el0), (vh0, eh0) = (
-            _num(national["skill_vs_b0"][k]) for k in ("value", "ci90_low", "ci90_high")
+            decimal_text(national["skill_vs_b0"][k]) for k in ("value", "ci90_low", "ci90_high")
         )
         (v1, e1), (vl1, el1), (vh1, eh1) = (
-            _num(national["skill_vs_bnw"][k]) for k in ("value", "ci90_low", "ci90_high")
+            decimal_text(national["skill_vs_bnw"][k]) for k in ("value", "ci90_low", "ci90_high")
         )
         return bilingual(
             f"Mức hơn dự báo trung bình nhiều năm {v0} (khoảng tin cậy 90%: {vl0} đến {vh0}); "
@@ -210,7 +210,7 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
             f"skill {e1} (90% CI {el1} to {eh1}) against the no-weather model.",
         )
     if gate == "G3":
-        (v, e), (vl, el), (vh, eh) = (_num(pilot["skill_vs_b2"][k]) for k in ("value", "ci90_low", "ci90_high"))
+        (v, e), (vl, el), (vh, eh) = (decimal_text(pilot["skill_vs_b2"][k]) for k in ("value", "ci90_low", "ci90_high"))
         return bilingual(
             f"Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước {v} (khoảng tin cậy 90%: {vl} đến {vh}).",
             f"Nghe An, Ha Tinh, Thanh Hoa: skill {e} (90% CI {el} to {eh}) against persistence.",
