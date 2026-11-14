@@ -176,3 +176,16 @@ def test_minus_zero_prints_as_zero() -> None:
 
 def test_committed_svg_has_no_minus_zero() -> None:
     assert "-0.00" not in (REPO / "artifacts" / "figures" / "results_chart.svg").read_text(encoding="utf-8")
+
+
+def test_every_number_label_has_a_white_halo_so_lines_never_cut_it() -> None:
+    marks = _marks(results_chart_svg(METRICS))
+    for key, g in marks.items():
+        (label,) = g.findall(f"{SVG_NS}text")
+        halo = {k: label.get(k) for k in ("paint-order", "stroke", "stroke-width", "stroke-linejoin")}
+        assert halo == {
+            "paint-order": "stroke",
+            "stroke": "#ffffff",
+            "stroke-width": "4",
+            "stroke-linejoin": "round",
+        }, key
