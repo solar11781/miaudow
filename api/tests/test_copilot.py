@@ -83,7 +83,13 @@ def test_year_outside_the_data_abstains():
 
 @pytest.mark.parametrize(
     ("token", "readings"),
-    [("6.500", {6.5, 6500.0}), ("6,500", {6.5, 6500.0}), ("25,98", {25.98}), ("2.066,7", {2066.7}), ("1,234.5", {1234.5})],
+    [
+        ("6.500", {6.5, 6500.0}),
+        ("6,500", {6.5, 6500.0}),
+        ("25,98", {25.98}),
+        ("2.066,7", {2066.7}),
+        ("1,234.5", {1234.5}),
+    ],
 )
 def test_parse_number_reads_both_styles(token, readings):
     assert readings <= copilot.parse_number(token) | readings and copilot.parse_number(token) & readings
@@ -123,11 +129,29 @@ class FakeClient:
 
 def scripted(final_answer: str, plan_ids=("cc1",)):
     return [
-        reply("tool_use", [block(type="tool_use", id="t1", name="compare_plans", input={"water": "canal_end", "years": []})]),
-        reply("end_turn", [block(type="text", text=json.dumps({
-            "status": "grounded", "answer": final_answer, "passage_ids": [], "plan_ids": list(plan_ids),
-            "years": [], "missing_information": ["Giá bán năm nay ở xã bạn"],
-        }, ensure_ascii=False))]),
+        reply(
+            "tool_use",
+            [block(type="tool_use", id="t1", name="compare_plans", input={"water": "canal_end", "years": []})],
+        ),
+        reply(
+            "end_turn",
+            [
+                block(
+                    type="text",
+                    text=json.dumps(
+                        {
+                            "status": "grounded",
+                            "answer": final_answer,
+                            "passage_ids": [],
+                            "plan_ids": list(plan_ids),
+                            "years": [],
+                            "missing_information": ["Giá bán năm nay ở xã bạn"],
+                        },
+                        ensure_ascii=False,
+                    ),
+                )
+            ],
+        ),
     ]
 
 
@@ -177,10 +201,25 @@ def test_refusal_falls_back_and_says_so(with_key):
 def test_tool_input_errors_go_back_to_the_model_as_errors(with_key):
     script = [
         reply("tool_use", [block(type="tool_use", id="t1", name="climate_year", input={"year": 1980})]),
-        reply("end_turn", [block(type="text", text=json.dumps({
-            "status": "insufficient_evidence", "answer": "Chưa đủ dữ liệu để kết luận.", "passage_ids": [],
-            "plan_ids": [], "years": [], "missing_information": [],
-        }, ensure_ascii=False))]),
+        reply(
+            "end_turn",
+            [
+                block(
+                    type="text",
+                    text=json.dumps(
+                        {
+                            "status": "insufficient_evidence",
+                            "answer": "Chưa đủ dữ liệu để kết luận.",
+                            "passage_ids": [],
+                            "plan_ids": [],
+                            "years": [],
+                            "missing_information": [],
+                        },
+                        ensure_ascii=False,
+                    ),
+                )
+            ],
+        ),
     ]
     fake = FakeClient(script)
     res = copilot.answer(CopilotRequest(question="Năm 1980 thế nào?"), client_factory=lambda key: fake)

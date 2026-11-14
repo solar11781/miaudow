@@ -1,0 +1,24 @@
+# Python lint and format rules of MIAUDOW 2.0 (api/, pipeline/, scripts/).
+# CI: .venv\Scripts\ruff check api pipeline scripts && .venv\Scripts\ruff format --check api pipeline scripts
+target-version = "py313"
+line-length = 120
+extend-exclude = ["web", "reference", "assets", "data"]
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "PL"]
+ignore = [
+  "E501",     # the formatter wraps code; long strings (bilingual copy, quotes) are allowed
+  "PLR0913",  # record builders take many keyword fields by design (one per MetricRecord field)
+  "PLR0915",  # catalog builders are long lists of datasets
+  "PLR0911",  # small dispatchers return early per case
+  "PLR0912",  # branchy validators
+  "PLC0415",  # local imports keep optional dependencies lazy
+  "PLR0917",  # same as PLR0913, for positional arguments
+  "PLR2004",  # domain constants (years 1991-2020, thresholds, HTTP codes) read better inline next to their source
+]
+
+[lint.per-file-ignores]
+"pipeline/build_canonical.py" = ["E402"]  # sys.path set before importing miaudow_api
+
+[lint.isort]
+known-first-party = ["miaudow_api"]

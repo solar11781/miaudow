@@ -14,6 +14,7 @@ years are never a forecast and NASA POWER values are never called field measurem
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import os
@@ -40,18 +41,53 @@ YEARS = range(1995, 2025)
 MAX_TOOL_ROUNDS = 4
 FALLBACK_MODELS = ("claude-opus-5-5", "claude-opus-5", "claude-fable-5-1", "claude-sonnet-5-5")
 WATER_WORDS = (
-    ("cuoi kenh", "canal_end"), ("canal end", "canal_end"), ("end of the canal", "canal_end"),
-    ("ruong cao", "high_field"), ("high field", "high_field"),
-    ("chu dong nuoc", "reliable"), ("du nuoc", "reliable"), ("reliable water", "reliable"),
-    ("thieu nuoc", "water_short"), ("kho han", "water_short"), ("water short", "water_short"), ("lack water", "water_short"),
+    ("cuoi kenh", "canal_end"),
+    ("canal end", "canal_end"),
+    ("end of the canal", "canal_end"),
+    ("ruong cao", "high_field"),
+    ("high field", "high_field"),
+    ("chu dong nuoc", "reliable"),
+    ("du nuoc", "reliable"),
+    ("reliable water", "reliable"),
+    ("thieu nuoc", "water_short"),
+    ("kho han", "water_short"),
+    ("water short", "water_short"),
+    ("lack water", "water_short"),
 )
 PLAN_WORDS = (
-    "nen trong", "trong gi", "trong cay gi", "cach trong", "co cau", "phuong an", "luan canh", "nhung cach",
-    "what to grow", "what should i grow", "which crop", "which plan", "crop plan", "rotation", "plans",
+    "nen trong",
+    "trong gi",
+    "trong cay gi",
+    "cach trong",
+    "co cau",
+    "phuong an",
+    "luan canh",
+    "nhung cach",
+    "what to grow",
+    "what should i grow",
+    "which crop",
+    "which plan",
+    "crop plan",
+    "rotation",
+    "plans",
 )
 FORECAST_WORDS = (
-    "ngay mai", "tuan sau", "tuan toi", "thang sau", "nam sau", "nam toi", "mua toi", "vu toi", "du bao", "sap toi",
-    "tomorrow", "next week", "next month", "next year", "next season", "forecast",
+    "ngay mai",
+    "tuan sau",
+    "tuan toi",
+    "thang sau",
+    "nam sau",
+    "nam toi",
+    "mua toi",
+    "vu toi",
+    "du bao",
+    "sap toi",
+    "tomorrow",
+    "next week",
+    "next month",
+    "next year",
+    "next season",
+    "forecast",
 )
 YEAR_RE = re.compile(r"\b(19\d\d|20\d\d)\b")
 NUM_RE = re.compile(r"(?<![\w])[-−]?\d[\d.,]*")
@@ -93,9 +129,14 @@ def tool_search_evidence(query: str, lang: str) -> dict:
         "reason": res.reason,
         "passages": [
             {
-                "passage_id": h.passage.passage_id, "source_id": h.passage.source_id, "kind": h.passage.kind,
-                "title": _pick(h.passage.title, lang), "text": _pick(h.passage.text, lang), "location": h.passage.location,
-                "validation_status": h.passage.validation_status, "score": round(h.score, 3),
+                "passage_id": h.passage.passage_id,
+                "source_id": h.passage.source_id,
+                "kind": h.passage.kind,
+                "title": _pick(h.passage.title, lang),
+                "text": _pick(h.passage.text, lang),
+                "location": h.passage.location,
+                "validation_status": h.passage.validation_status,
+                "score": round(h.score, 3),
             }
             for h in res.hits
         ],
@@ -104,9 +145,14 @@ def tool_search_evidence(query: str, lang: str) -> dict:
 
 def _compact(rec: Any, lang: str) -> dict:
     return {
-        "metric_id": rec.metric_id, "value": rec.value, "unit": rec.unit, "validation_status": rec.validation_status,
-        "time_window": f"{rec.time_window.start}..{rec.time_window.end}", "source_id": rec.source_id,
-        "is_forecast": rec.is_forecast, "is_field_measurement": rec.is_field_measurement,
+        "metric_id": rec.metric_id,
+        "value": rec.value,
+        "unit": rec.unit,
+        "validation_status": rec.validation_status,
+        "time_window": f"{rec.time_window.start}..{rec.time_window.end}",
+        "source_id": rec.source_id,
+        "is_forecast": rec.is_forecast,
+        "is_field_measurement": rec.is_field_measurement,
         "limitations": [_pick(x, lang) for x in rec.limitations][:2],
     }
 
@@ -114,9 +160,13 @@ def _compact(rec: Any, lang: str) -> dict:
 def tool_climate_year(year: int, lang: str) -> dict:
     if year not in YEARS:
         raise ValueError(f"year {year} outside {YEARS.start}-{YEARS.stop - 1}")
-    recs = climate.year_summary(year) + climate.hazard_shares(year)
-    return {"year": year, "records": [_compact(r, lang) for r in recs], "thresholds": canonical.load("climate.json")["thresholds"],
-            "note": "Past year, not a forecast. NASA POWER grid values, farmland-weighted; not measured on a farm."}
+    recs = {r.metric_id: r for r in climate.year_summary(year) + climate.hazard_shares(year)}.values()
+    return {
+        "year": year,
+        "records": [_compact(r, lang) for r in recs],
+        "thresholds": canonical.load("climate.json")["thresholds"],
+        "note": "Past year, not a forecast. NASA POWER grid values, farmland-weighted; not measured on a farm.",
+    }
 
 
 def tool_compare_plans(water: str | None, years: list[int], lang: str) -> dict:
@@ -124,11 +174,21 @@ def tool_compare_plans(water: str | None, years: list[int], lang: str) -> dict:
     return {
         "plans": [
             {
-                "plan_id": p.plan_id, "name": _pick(p.name, lang), "is_usual": p.is_usual, "trial_period": p.trial_period,
+                "plan_id": p.plan_id,
+                "name": _pick(p.name, lang),
+                "is_usual": p.is_usual,
+                "trial_period": p.trial_period,
                 "applicability": _pick(p.applicability, lang),
                 "crops": [f"{_pick(x.crop_name, lang)} ({x.season}, {x.sow}->{x.harvest})" for x in p.seasons],
-                "records": [_compact(r, lang) | {"limitations": []} for r in p.records if not r.metric_id.startswith("hazard_share")],
-                "risk_lines": [{"text": _pick(r.text, lang), "source_id": r.source_id, "location": r.location} for r in p.risk_lines],
+                "records": [
+                    _compact(r, lang) | {"limitations": []}
+                    for r in p.records
+                    if not r.metric_id.startswith("hazard_share")
+                ],
+                "risk_lines": [
+                    {"text": _pick(r.text, lang), "source_id": r.source_id, "location": r.location}
+                    for r in p.risk_lines
+                ],
                 "limitations": [_pick(x, lang) for x in p.limitations],
                 "questions_for_officer": [_pick(x, lang) for x in p.questions_for_officer],
             }
@@ -184,10 +244,15 @@ TOOLS: list[dict] = [
             "type": "object",
             "properties": {
                 "water": {
-                    "type": "string", "enum": ["canal_end", "high_field", "reliable", "water_short", "unknown"],
+                    "type": "string",
+                    "enum": ["canal_end", "high_field", "reliable", "water_short", "unknown"],
                     "description": "The farmer's water situation if the question says it, else unknown.",
                 },
-                "years": {"type": "array", "items": {"type": "integer"}, "description": "Past years to show, may be empty."},
+                "years": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "Past years to show, may be empty.",
+                },
             },
             "required": ["water", "years"],
             "additionalProperties": False,
@@ -247,10 +312,8 @@ def parse_number(tok: str) -> set[float]:
         if any(len(g) != 3 for g in parts[0].lstrip("-").split(thousands)[1:]):
             continue
         s = parts[0].replace(thousands, "") + (("." + parts[1]) if len(parts) == 2 else "")
-        try:
+        with contextlib.suppress(ValueError):
             out.add(float(s))
-        except ValueError:
-            pass
     return out
 
 
@@ -283,7 +346,9 @@ def check_numbers(answer: str, known: set[float], question: str) -> NumberCheck:
     unverified = []
     for tok in tokens:
         tol = 0.5 * 10 ** (-_decimals(tok)) + 1e-9
-        ok = any(abs(v - k * sc) <= max(tol, abs(k * sc) * 1e-9) for v in parse_number(tok) for k in allowed for sc in SCALES)
+        ok = any(
+            abs(v - k * sc) <= max(tol, abs(k * sc) * 1e-9) for v in parse_number(tok) for k in allowed for sc in SCALES
+        )
         if not ok:
             unverified.append(tok)
     return NumberCheck(checked=len(tokens), unverified=unverified)
@@ -307,7 +372,10 @@ METRIC_WORDS = {
     "cold_days": ("Số ngày lạnh dưới 13 °C", "Days at 13 °C or less"),
     "longest_dry_spell": ("Đợt khô dài nhất", "Longest dry spell"),
     "drought_rain_months": ("Số tháng thiếu mưa quá nửa", "Months with under half the usual rain"),
-    "hazard_share_drought_rain_any2": ("Đất trồng gặp điều kiện hạn (phần mưa)", "Farmland meeting the drought (rain) rule"),
+    "hazard_share_drought_rain_any2": (
+        "Đất trồng gặp điều kiện hạn (phần mưa)",
+        "Farmland meeting the drought (rain) rule",
+    ),
     "hazard_share_heat": ("Đất trồng gặp điều kiện nắng nóng", "Farmland meeting the heat rule"),
     "hazard_share_heavy_rain": ("Đất trồng gặp điều kiện mưa lớn", "Farmland meeting the heavy-rain rule"),
     "hazard_share_cold": ("Đất trồng gặp điều kiện rét hại", "Farmland meeting the damaging-cold rule"),
@@ -317,7 +385,11 @@ UNIT_WORDS = {"mm": ("mm", "mm"), "days": ("ngày", "days"), "months": ("tháng"
 
 def _year_answer(req: CopilotRequest, year: int, data: dict) -> str:
     vi = _vi(req)
-    lines = [f"Năm {year} ở đất trồng Nghệ An, theo số liệu NASA POWER:" if vi else f"{year} on Nghệ An farmland, from NASA POWER data:"]
+    lines = [
+        f"Năm {year} ở đất trồng Nghệ An, theo số liệu NASA POWER:"
+        if vi
+        else f"{year} on Nghệ An farmland, from NASA POWER data:"
+    ]
     for r in data["records"]:
         words = METRIC_WORDS.get(r["metric_id"])
         if not words or r["value"] is None:
@@ -328,44 +400,54 @@ def _year_answer(req: CopilotRequest, year: int, data: dict) -> str:
             unit = UNIT_WORDS.get(r["unit"], (r["unit"], r["unit"]))[0 if vi else 1]
             val = f"{_fmt(r['value'], vi, 0 if r['unit'] != 'mm' else 0)} {unit}"
         lines.append(f"• {words[0 if vi else 1]}: {val}")
-    lines.append("Đây là năm đã qua, không phải dự báo. Số theo ô lưới mô hình, không đo tại ruộng."
-                 if vi else "A past year, not a forecast. Model grid values, not measured on a farm.")
+    lines.append(
+        "Đây là năm đã qua, không phải dự báo. Số theo ô lưới mô hình, không đo tại ruộng."
+        if vi
+        else "A past year, not a forecast. Model grid values, not measured on a farm."
+    )
     return "\n".join(lines)
 
 
 def _plans_answer(req: CopilotRequest, water: str | None, data: dict) -> str:
     vi = _vi(req)
-    head = ("Miaudow không chọn cách trồng thay gia đình bạn. Sáu cách trồng dưới đây đã được thử một năm (2020–2021) "
-            "trên đất lúa thiếu nước ở Lưu Sơn, Đô Lương:"
-            if vi else
-            "Miaudow does not choose a plan for your family. The six plans below were tried for one year (2020–2021) "
-            "on water-short rice land in Lưu Sơn, Đô Lương:")
+    head = (
+        "Miaudow không chọn cách trồng thay gia đình bạn. Sáu cách trồng dưới đây đã được thử một năm (2020–2021) "
+        "trên đất lúa thiếu nước ở Lưu Sơn, Đô Lương:"
+        if vi
+        else "Miaudow does not choose a plan for your family. The six plans below were tried for one year (2020–2021) "
+        "on water-short rice land in Lưu Sơn, Đô Lương:"
+    )
     lines = [head]
     for p in data["plans"]:
         lines.append(f"• {p['name']}")
     if water and data["plans"]:
         lines.append(data["plans"][0]["applicability"])
-    if data["missing_information"]:
-        lines.append(("Ứng dụng chưa biết: " if vi else "What the app cannot know: ") + "; ".join(data["missing_information"][:4]))
-    lines.append("Mở từng thẻ bên dưới để xem tiền lãi trong thử nghiệm, nước tưới, giới hạn và câu hỏi nên mang tới cán bộ khuyến nông."
-                 if vi else "Open each card below for the trial profit, water, limits and the questions to take to the extension officer.")
+    lines.append(
+        "Mở từng thẻ bên dưới để xem tiền lãi trong thử nghiệm, nước tưới, giới hạn và câu hỏi nên mang tới cán bộ khuyến nông."
+        if vi
+        else "Open each card below for the trial profit, water, limits and the questions to take to the extension officer."
+    )
     return "\n".join(lines)
 
 
 def _forecast_answer(req: CopilotRequest) -> str:
-    return ("Miaudow không có dự báo thời tiết hay dự báo mùa vụ. Ứng dụng chỉ cho xem những năm đã qua, và năm đã qua "
-            "không phải dự báo. Hãy hỏi đài khí tượng thủy văn tỉnh hoặc cán bộ khuyến nông về mùa tới."
-            if _vi(req) else
-            "Miaudow has no weather or season forecast. It only shows past years, and past years are not a forecast. Ask "
-            "the provincial hydro-meteorological station or the extension officer about the coming season.")
+    return (
+        "Miaudow không có dự báo thời tiết hay dự báo mùa vụ. Ứng dụng chỉ cho xem những năm đã qua, và năm đã qua "
+        "không phải dự báo. Hãy hỏi đài khí tượng thủy văn tỉnh hoặc cán bộ khuyến nông về mùa tới."
+        if _vi(req)
+        else "Miaudow has no weather or season forecast. It only shows past years, and past years are not a forecast. Ask "
+        "the provincial hydro-meteorological station or the extension officer about the coming season."
+    )
 
 
 def _insufficient(req: CopilotRequest) -> str:
-    return ("Chưa đủ dữ liệu để kết luận. Kho bằng chứng của Miaudow chưa có tài liệu đủ liên quan đến câu hỏi này. "
-            "Hãy hỏi cán bộ khuyến nông của xã."
-            if _vi(req) else
-            "Not enough evidence to conclude. Miaudow's evidence library has nothing relevant enough to this question. "
-            "Please ask the commune's extension officer.")
+    return (
+        "Chưa đủ dữ liệu để kết luận. Kho bằng chứng của Miaudow chưa có tài liệu đủ liên quan đến câu hỏi này. "
+        "Hãy hỏi cán bộ khuyến nông của xã."
+        if _vi(req)
+        else "Not enough evidence to conclude. Miaudow's evidence library has nothing relevant enough to this question. "
+        "Please ask the commune's extension officer."
+    )
 
 
 def _citations(passages: list[dict]) -> list[Citation]:
@@ -374,7 +456,9 @@ def _citations(passages: list[dict]) -> list[Citation]:
     for item in passages:
         p = by_id.get(item["passage_id"])
         if p:
-            out.append(Citation(passage_id=p.passage_id, source_id=p.source_id, title=p.title, location=p.location, url=p.url))
+            out.append(
+                Citation(passage_id=p.passage_id, source_id=p.source_id, title=p.title, location=p.location, url=p.url)
+            )
     return out
 
 
@@ -387,38 +471,84 @@ def deterministic(req: CopilotRequest) -> CopilotResponse:
     kind = intent(req.question)
     trace: list[ToolCall] = []
     if kind == "forecast":
-        return CopilotResponse(status="insufficient_evidence", engine="deterministic", model=None, answer=_forecast_answer(req),
-                               citations=[], cards=[], tool_trace=[], numbers=NumberCheck(checked=0, unverified=[]))
+        return CopilotResponse(
+            status="insufficient_evidence",
+            engine="deterministic",
+            model=None,
+            answer=_forecast_answer(req),
+            citations=[],
+            cards=[],
+            tool_trace=[],
+            numbers=NumberCheck(checked=0, unverified=[]),
+        )
     if kind == "plans":
         water = req.water or infer_water(req.question)
         data = tool_compare_plans(water, [], lang)
         trace.append(ToolCall(tool="compare_plans", input={"water": water or "unknown", "years": []}, ok=True))
         answer = _plans_answer(req, water, data)
-        return CopilotResponse(status="grounded", engine="deterministic", model=None, answer=answer, citations=[],
-                               cards=_plan_cards(data), tool_trace=trace, numbers=NumberCheck(checked=0, unverified=[]),
-                               missing_information=[Text(vi=m, en=m) for m in data["missing_information"]])
+        return CopilotResponse(
+            status="grounded",
+            engine="deterministic",
+            model=None,
+            answer=answer,
+            citations=[],
+            cards=_plan_cards(data),
+            tool_trace=trace,
+            numbers=NumberCheck(checked=0, unverified=[]),
+            missing_information=[Text(vi=m, en=m) for m in data["missing_information"]],
+        )
     if kind == "year":
         year = int(YEAR_RE.search(req.question).group(1))  # type: ignore[union-attr]
         if year not in YEARS:
-            return CopilotResponse(status="insufficient_evidence", engine="deterministic", model=None,
-                                   answer=_insufficient(req), citations=[], cards=[], tool_trace=[],
-                                   numbers=NumberCheck(checked=0, unverified=[]))
+            return CopilotResponse(
+                status="insufficient_evidence",
+                engine="deterministic",
+                model=None,
+                answer=_insufficient(req),
+                citations=[],
+                cards=[],
+                tool_trace=[],
+                numbers=NumberCheck(checked=0, unverified=[]),
+            )
         data = tool_climate_year(year, lang)
         trace.append(ToolCall(tool="climate_year", input={"year": year}, ok=True))
         card = AnswerCard(kind="year", ref_id=str(year), title=Text(vi=f"Năm {year}", en=str(year)))
-        return CopilotResponse(status="grounded", engine="deterministic", model=None, answer=_year_answer(req, year, data),
-                               citations=[], cards=[card], tool_trace=trace, numbers=NumberCheck(checked=0, unverified=[]))
+        return CopilotResponse(
+            status="grounded",
+            engine="deterministic",
+            model=None,
+            answer=_year_answer(req, year, data),
+            citations=[],
+            cards=[card],
+            tool_trace=trace,
+            numbers=NumberCheck(checked=0, unverified=[]),
+        )
     data = tool_search_evidence(req.question, lang)
     trace.append(ToolCall(tool="search_evidence", input={"query": req.question}, ok=True))
     if data["abstained"] or not data["passages"]:
-        return CopilotResponse(status="insufficient_evidence", engine="deterministic", model=None, answer=_insufficient(req),
-                               citations=[], cards=[], tool_trace=trace, numbers=NumberCheck(checked=0, unverified=[]))
+        return CopilotResponse(
+            status="insufficient_evidence",
+            engine="deterministic",
+            model=None,
+            answer=_insufficient(req),
+            citations=[],
+            cards=[],
+            tool_trace=trace,
+            numbers=NumberCheck(checked=0, unverified=[]),
+        )
     top = data["passages"][:3]
     answer = "\n".join(f"• {p['text']}" for p in top)
     cards = [AnswerCard(kind="passage", ref_id=p["passage_id"], title=Text(vi=p["title"], en=p["title"])) for p in top]
-    return CopilotResponse(status="reference_only", engine="deterministic", model=None, answer=answer,
-                           citations=_citations(top), cards=cards, tool_trace=trace,
-                           numbers=NumberCheck(checked=0, unverified=[]))
+    return CopilotResponse(
+        status="reference_only",
+        engine="deterministic",
+        model=None,
+        answer=answer,
+        citations=_citations(top),
+        cards=cards,
+        tool_trace=trace,
+        numbers=NumberCheck(checked=0, unverified=[]),
+    )
 
 
 # ---------------------------------------------------------------------------------------------------- claude
@@ -436,7 +566,9 @@ def _run_tool(name: str, args: dict, lang: str) -> dict:
         return tool_climate_year(int(args["year"]), lang)
     if name == "compare_plans":
         water = args.get("water")
-        return tool_compare_plans(None if water in (None, "unknown") else water, [int(y) for y in args.get("years", [])], lang)
+        return tool_compare_plans(
+            None if water in (None, "unknown") else water, [int(y) for y in args.get("years", [])], lang
+        )
     raise ValueError(f"unknown tool {name}")
 
 
@@ -458,8 +590,13 @@ def claude_answer(req: CopilotRequest, client: Any, model: str) -> CopilotRespon
     response = None
     for _ in range(MAX_TOOL_ROUNDS + 1):
         response = create(
-            model=model, max_tokens=4000, system=SYSTEM, tools=TOOLS, messages=messages,
-            output_config={"effort": "medium", "format": {"type": "json_schema", "schema": ANSWER_SCHEMA}}, **extra,
+            model=model,
+            max_tokens=4000,
+            system=SYSTEM,
+            tools=TOOLS,
+            messages=messages,
+            output_config={"effort": "medium", "format": {"type": "json_schema", "schema": ANSWER_SCHEMA}},
+            **extra,
         )
         log.info("copilot claude request_id=%s stop=%s", getattr(response, "_request_id", None), response.stop_reason)
         if response.stop_reason == "refusal":
@@ -484,8 +621,14 @@ def claude_answer(req: CopilotRequest, client: Any, model: str) -> CopilotRespon
                 seen_passages |= {p["passage_id"]: p for p in out["passages"]}
             if block.name == "compare_plans" and ok:
                 plans_data = out
-            tool_results.append({"type": "tool_result", "tool_use_id": block.id, "content": json.dumps(out, ensure_ascii=False),
-                                 **({} if ok else {"is_error": True})})
+            tool_results.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": json.dumps(out, ensure_ascii=False),
+                    **({} if ok else {"is_error": True}),
+                }
+            )
         messages.append({"role": "user", "content": tool_results})
     else:
         raise ProviderError("too_many_tool_rounds")
@@ -505,13 +648,26 @@ def claude_answer(req: CopilotRequest, client: Any, model: str) -> CopilotRespon
     citations = _citations([seen_passages[i] for i in out["passage_ids"] if i in seen_passages])
     cards: list[AnswerCard] = []
     known_plans = {p["plan_id"]: p for p in (plans_data or {}).get("plans", [])}
-    cards += [AnswerCard(kind="plan", ref_id=i, title=Text(vi=known_plans[i]["name"], en=known_plans[i]["name"]))
-              for i in out["plan_ids"] if i in known_plans]
-    cards += [AnswerCard(kind="year", ref_id=str(y), title=Text(vi=f"Năm {y}", en=str(y))) for y in out["years"] if y in YEARS]
+    cards += [
+        AnswerCard(kind="plan", ref_id=i, title=Text(vi=known_plans[i]["name"], en=known_plans[i]["name"]))
+        for i in out["plan_ids"]
+        if i in known_plans
+    ]
+    cards += [
+        AnswerCard(kind="year", ref_id=str(y), title=Text(vi=f"Năm {y}", en=str(y))) for y in out["years"] if y in YEARS
+    ]
     status = "grounded" if out["status"] == "grounded" and (citations or cards or trace) else "insufficient_evidence"
-    return CopilotResponse(status=status, engine="claude", model=model, answer=out["answer"], citations=citations,
-                           cards=cards, tool_trace=trace, numbers=numbers,
-                           missing_information=[Text(vi=m, en=m) for m in out["missing_information"]])
+    return CopilotResponse(
+        status=status,
+        engine="claude",
+        model=model,
+        answer=out["answer"],
+        citations=citations,
+        cards=cards,
+        tool_trace=trace,
+        numbers=numbers,
+        missing_information=[Text(vi=m, en=m) for m in out["missing_information"]],
+    )
 
 
 class ProviderError(RuntimeError):
@@ -525,7 +681,9 @@ def answer(req: CopilotRequest, client_factory: Callable[[str], Any] | None = No
     try:
         import anthropic  # noqa: PLC0415 - imported only when a key is configured
 
-        client = client_factory(key) if client_factory else anthropic.Anthropic(api_key=key, timeout=60.0, max_retries=2)
+        client = (
+            client_factory(key) if client_factory else anthropic.Anthropic(api_key=key, timeout=60.0, max_retries=2)
+        )
         try:
             return claude_answer(req, client, model)
         except anthropic.NotFoundError as exc:
@@ -541,6 +699,9 @@ def answer(req: CopilotRequest, client_factory: Callable[[str], Any] | None = No
     except ProviderError as exc:
         log.warning("copilot provider error: %s", exc)
         fallback = deterministic(req)
-        note = ("Claude chưa trả lời được lúc này, nên đây là câu trả lời ghép từ dữ liệu."
-                if req.lang == "vi" else "Claude could not answer right now, so this answer is assembled from the data.")
+        note = (
+            "Claude chưa trả lời được lúc này, nên đây là câu trả lời ghép từ dữ liệu."
+            if req.lang == "vi"
+            else "Claude could not answer right now, so this answer is assembled from the data."
+        )
         return fallback.model_copy(update={"status": "provider_error", "answer": f"{note}\n\n{fallback.answer}"})

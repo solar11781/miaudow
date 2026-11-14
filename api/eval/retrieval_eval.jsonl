@@ -1,0 +1,73 @@
+{"id": "a01", "question": "Lúa hè thu trên ruộng thiếu nước lãi bao nhiêu?", "lang": "vi", "answerable": true, "gold": ["plan-usual_p03-money"], "split": "dev"}
+{"id": "a02", "question": "lua he thu lai bao nhieu", "lang": "vi_plain", "answerable": true, "gold": ["plan-usual_p03-money"], "split": "test"}
+{"id": "a03", "question": "Cơ cấu CC2 gồm những cây gì?", "lang": "vi", "answerable": true, "gold": ["plan-cc2-overview"], "split": "dev"}
+{"id": "a04", "question": "co cau cc4 trong cay gi", "lang": "vi_plain", "answerable": true, "gold": ["plan-cc4-overview"], "split": "test"}
+{"id": "a05", "question": "Lạc L20 vụ Đông Xuân lãi bao nhiêu trong thử nghiệm P-02?", "lang": "vi", "answerable": true, "gold": ["plan-cc1-money"], "split": "dev"}
+{"id": "a06", "question": "Tổng chi phí trồng ớt chỉ thiên là bao nhiêu?", "lang": "vi", "answerable": true, "gold": ["plan-cc2-money", "risk-r-p02-tr-48"], "split": "test"}
+{"id": "a07", "question": "Bí đỏ trong CC3 lãi bao nhiêu?", "lang": "vi", "answerable": true, "gold": ["plan-cc3-money"], "split": "dev"}
+{"id": "a08", "question": "bi do co cau cc3 lai bao nhieu", "lang": "vi_plain", "answerable": true, "gold": ["plan-cc3-money"], "split": "test"}
+{"id": "a09", "question": "Cộng cả năm cơ cấu CC4 lãi bao nhiêu?", "lang": "vi", "answerable": true, "gold": ["plan-cc4-year-total"], "split": "dev"}
+{"id": "a10", "question": "Trồng ngô sinh khối có cần hợp đồng thu mua không?", "lang": "vi", "answerable": true, "gold": ["risk-r-c13-bai-bao-vietnamnet-ngay-31-08-2020"], "split": "test"}
+{"id": "a11", "question": "ngo sinh khoi co can hop dong bao tieu khong", "lang": "vi_plain", "answerable": true, "gold": ["risk-r-c13-bai-bao-vietnamnet-ngay-31-08-2020"], "split": "dev"}
+{"id": "a12", "question": "Có được chuyển đổi cây trồng trên đất lúa trong vùng quy hoạch lúa chất lượng cao không?", "lang": "vi", "answerable": true, "gold": ["risk-r-g06-dieu-6-khoan-1-diem-c-va-d", "doc-nd112-2024-17"], "split": "test"}
+{"id": "a13", "question": "Đất lúa sau khi chuyển đổi cơ cấu cây trồng có còn được thống kê là đất trồng lúa không?", "lang": "vi", "answerable": true, "gold": ["risk-r-g06-dieu-6-khoan-4", "doc-nd112-2024-20"], "split": "dev"}
+{"id": "a14", "question": "Kế hoạch chuyển đổi cơ cấu cây trồng của tỉnh ban hành trước ngày nào?", "lang": "vi", "answerable": true, "gold": ["risk-r-g27-dieu-7-khoan-1", "doc-nd112-2024-21"], "split": "test"}
+{"id": "a15", "question": "Đậu tương và vừng có dễ bán ở địa phương không?", "lang": "vi", "answerable": true, "gold": ["risk-r-p03-phan-ket-qua-vu-he-thu-2020"], "split": "dev"}
+{"id": "a16", "question": "dau tuong vung co de ban khong", "lang": "vi_plain", "answerable": true, "gold": ["risk-r-p03-phan-ket-qua-vu-he-thu-2020"], "split": "test"}
+{"id": "a17", "question": "Lúa cần tưới bao nhiêu nước theo TCVN 8641?", "lang": "vi", "answerable": true, "gold": ["water-rice-tcvn"], "split": "dev"}
+{"id": "a18", "question": "lac can tuoi bao nhieu nuoc", "lang": "vi_plain", "answerable": true, "gold": ["water-peanut-tcvn", "water-peanut-fao"], "split": "test"}
+{"id": "a19", "question": "How much water does grain maize need according to FAO?", "lang": "en", "answerable": true, "gold": ["water-maize-grain-fao"], "split": "dev"}
+{"id": "a20", "question": "Khoai lang cần tưới bao nhiêu nước?", "lang": "vi", "answerable": true, "gold": ["water-sweet-potato-tcvn"], "split": "test"}
+{"id": "a21", "question": "Có số liệu nước tưới cho đậu xanh không?", "lang": "vi", "answerable": true, "gold": ["water-mung-bean-tcvn", "water-mung-bean-fao", "coverage-not-listed-crops"], "split": "dev"}
+{"id": "a22", "question": "Cây nào là cây họ đậu?", "lang": "vi", "answerable": true, "gold": ["legumes"], "split": "test"}
+{"id": "a23", "question": "which crops are legumes", "lang": "en", "answerable": true, "gold": ["legumes"], "split": "dev"}
+{"id": "a24", "question": "Mưa lớn cấp độ 1 theo Quyết định 18/2021 là bao nhiêu mm?", "lang": "vi", "answerable": true, "gold": ["rule-heavy-rain", "doc-qd18-2021-198", "doc-qd18-2021-34"], "split": "test"}
+{"id": "a25", "question": "nang nong cap do 1 la bao nhieu do", "lang": "vi_plain", "answerable": true, "gold": ["rule-heat", "doc-qd18-2021-216"], "split": "dev"}
+{"id": "a26", "question": "Rét hại cấp độ 1 khi nhiệt độ trung bình ngày bao nhiêu?", "lang": "vi", "answerable": true, "gold": ["rule-cold", "doc-qd18-2021-235"], "split": "test"}
+{"id": "a27", "question": "Hạn hán theo Điều 48 tính thế nào?", "lang": "vi", "answerable": true, "gold": ["rule-drought-rain-consecutive", "rule-drought-rain-any2", "doc-qd18-2021-220"], "split": "dev"}
+{"id": "a28", "question": "What is the heat rule in Decision 18/2021?", "lang": "en", "answerable": true, "gold": ["rule-heat", "doc-qd18-2021-216"], "split": "test"}
+{"id": "a29", "question": "Năm 2010 ở Nghệ An có hạn không?", "lang": "vi", "answerable": true, "gold": ["hazards-2010", "climate-2010"], "split": "dev"}
+{"id": "a30", "question": "nam 2015 mua bao nhieu", "lang": "vi_plain", "answerable": true, "gold": ["climate-2015"], "split": "test"}
+{"id": "a31", "question": "How much rain fell in Nghe An in 2020?", "lang": "en", "answerable": true, "gold": ["climate-2020"], "split": "dev"}
+{"id": "a32", "question": "Năm 2024 có bao nhiêu ngày nóng từ 35 độ?", "lang": "vi", "answerable": true, "gold": ["climate-2024"], "split": "test"}
+{"id": "a33", "question": "Năm 2008 rét hại thế nào?", "lang": "vi", "answerable": true, "gold": ["hazards-2008", "climate-2008"], "split": "dev"}
+{"id": "a34", "question": "Năm 1998 bao nhiêu phần đất trồng gặp nắng nóng?", "lang": "vi", "answerable": true, "gold": ["hazards-1998"], "split": "test"}
+{"id": "a35", "question": "Dữ liệu NASA POWER có phải đo tại ruộng không?", "lang": "vi", "answerable": true, "gold": ["dataset-nasa-power-daily", "src-r-n01"], "split": "dev"}
+{"id": "a36", "question": "nasa power la gi", "lang": "vi_plain", "answerable": true, "gold": ["src-r-n01", "dataset-nasa-power-daily", "term-data-types"], "split": "test"}
+{"id": "a37", "question": "Độ ẩm đất GWETROOT là gì?", "lang": "vi", "answerable": true, "gold": ["term-soil-moisture", "src-r-w12", "dataset-e020-soil-wetness", "src-e-020"], "split": "dev"}
+{"id": "a38", "question": "Ứng dụng có dùng ảnh Sentinel-2 không?", "lang": "vi", "answerable": true, "gold": ["dataset-sentinel2-l2a", "src-x-sentinel2-l2a"], "split": "test"}
+{"id": "a39", "question": "Có dùng chỉ số NDVI không?", "lang": "vi", "answerable": true, "gold": ["term-ndvi", "dataset-modis-mod13q1-ndvi"], "split": "dev"}
+{"id": "a40", "question": "Mô hình dự đoán lúa vụ Đông Xuân có tốt không?", "lang": "vi", "answerable": true, "gold": ["model-spring", "model-error-spring"], "split": "test"}
+{"id": "a41", "question": "mo hinh lua vu mua co duoc hien khong", "lang": "vi_plain", "answerable": true, "gold": ["model-winter", "model-error-winter"], "split": "dev"}
+{"id": "a42", "question": "Is there a model for summer-autumn rice?", "lang": "en", "answerable": true, "gold": ["model-summer-autumn"], "split": "test"}
+{"id": "a43", "question": "Thử nghiệm P-02 làm ở đâu, mỗi cây mấy ô?", "lang": "vi", "answerable": true, "gold": ["src-r-p02", "plan-usual-why", "limits-r-p02", "dataset-study-p02", "plan-cc1-why"], "split": "dev"}
+{"id": "a44", "question": "Giới hạn của nghiên cứu P-02 là gì?", "lang": "vi", "answerable": true, "gold": ["limits-r-p02", "src-r-p02"], "split": "test"}
+{"id": "a45", "question": "Lợi nhuận trong P-03 có trừ công lao động không?", "lang": "vi", "answerable": true, "gold": ["limits-r-p03", "src-r-p03", "plan-usual_p03-money", "dataset-study-p03"], "split": "dev"}
+{"id": "a46", "question": "Cách làm quen của người dân trong P-02 là gì?", "lang": "vi", "answerable": true, "gold": ["plan-usual-overview", "plan-usual-why"], "split": "test"}
+{"id": "a47", "question": "Sương muối có được xét không?", "lang": "vi", "answerable": true, "gold": ["term-frost"], "split": "dev"}
+{"id": "a48", "question": "chirps la gi", "lang": "vi_plain", "answerable": true, "gold": ["dataset-chirps-v3-monthly", "src-x-chirps-v3"], "split": "test"}
+{"id": "a49", "question": "trong so dat trong modis la gi", "lang": "vi_plain", "answerable": true, "gold": ["dataset-modis-farmland-weights", "src-r-n02"], "split": "dev"}
+{"id": "a50", "question": "Năng suất lúa của tỉnh lấy từ đâu?", "lang": "vi", "answerable": true, "gold": ["dataset-nso-rice-yield", "src-r-d01"], "split": "test"}
+{"id": "a51", "question": "What does the 1991-2020 climate normal mean?", "lang": "en", "answerable": true, "gold": ["src-r-a15"], "split": "dev"}
+{"id": "a52", "question": "Đợt khô dài nhất năm 2019 là bao nhiêu ngày?", "lang": "vi", "answerable": true, "gold": ["climate-2019"], "split": "test"}
+{"id": "a53", "question": "Đậu đen trong cơ cấu của người dân lãi bao nhiêu?", "lang": "vi", "answerable": true, "gold": ["plan-usual-money"], "split": "dev"}
+{"id": "a54", "question": "What is the profit of chili in plan CC2?", "lang": "en", "answerable": true, "gold": ["plan-cc2-money"], "split": "test"}
+{"id": "a55", "question": "Cân bằng nước có được tính không?", "lang": "vi", "answerable": true, "gold": ["term-water-balance"], "split": "dev"}
+{"id": "u01", "question": "Thời tiết ngày mai ở Đô Lương thế nào?", "lang": "vi", "answerable": false, "gold": [], "category": "forecast", "split": "dev"}
+{"id": "u02", "question": "Tuần tới có mưa không?", "lang": "vi", "answerable": false, "gold": [], "category": "forecast", "split": "test"}
+{"id": "u03", "question": "Will it rain next week in Nghe An?", "lang": "en", "answerable": false, "gold": [], "category": "forecast", "split": "dev"}
+{"id": "u04", "question": "Giá lúa ở Thanh Hóa hôm nay bao nhiêu?", "lang": "vi", "answerable": false, "gold": [], "category": "price_other_province", "split": "test"}
+{"id": "u05", "question": "Giá phân bón ở Hà Tĩnh hiện nay?", "lang": "vi", "answerable": false, "gold": [], "category": "price_other_province", "split": "dev"}
+{"id": "u06", "question": "What is the price of coffee in Dak Lak today?", "lang": "en", "answerable": false, "gold": [], "category": "price_other_province", "split": "test"}
+{"id": "u07", "question": "Cơ cấu nào tốt nhất cho ruộng nhà tôi?", "lang": "vi", "answerable": false, "gold": [], "category": "rank_plans", "split": "dev"}
+{"id": "u08", "question": "xep hang cac co cau giup toi", "lang": "vi_plain", "answerable": false, "gold": [], "category": "rank_plans", "split": "test"}
+{"id": "u09", "question": "Which plan is best for me?", "lang": "en", "answerable": false, "gold": [], "category": "rank_plans", "split": "dev"}
+{"id": "u10", "question": "Cách nấu phở bò ngon?", "lang": "vi", "answerable": false, "gold": [], "category": "unrelated", "split": "test"}
+{"id": "u11", "question": "Đội bóng nào vô địch World Cup 2022?", "lang": "vi", "answerable": false, "gold": [], "category": "unrelated", "split": "dev"}
+{"id": "u12", "question": "Mua xe máy Honda ở đâu rẻ?", "lang": "vi", "answerable": false, "gold": [], "category": "unrelated", "split": "test"}
+{"id": "u13", "question": "How do I fix my laptop screen?", "lang": "en", "answerable": false, "gold": [], "category": "unrelated", "split": "dev"}
+{"id": "u14", "question": "Cách nuôi tôm thẻ chân trắng?", "lang": "vi", "answerable": false, "gold": [], "category": "unrelated", "split": "test"}
+{"id": "u15", "question": "Lãi suất ngân hàng Agribank tháng này là bao nhiêu?", "lang": "vi", "answerable": false, "gold": [], "category": "unrelated", "split": "dev"}
+{"id": "u16", "question": "lam sao de hoc tieng anh nhanh", "lang": "vi_plain", "answerable": false, "gold": [], "category": "unrelated", "split": "test"}
+{"id": "u17", "question": "Có nên trồng sầu riêng ở Đắk Lắk không?", "lang": "vi", "answerable": false, "gold": [], "category": "other_province", "split": "dev"}
+{"id": "u18", "question": "Who won the election in the United States?", "lang": "en", "answerable": false, "gold": [], "category": "unrelated", "split": "test"}

@@ -7,3 +7,4 @@ numpy==2.5.3
 pandas==3.0.5
 PyYAML==6.0.3
 anthropic==2.3.0
+shapely==2.2.0
