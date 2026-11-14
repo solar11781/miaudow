@@ -152,7 +152,8 @@ export function mergeRequest(command) {
   else if (has('--admin')) problem = 'no --admin (it bypasses checks)';
   else if (has('--delete-branch', '-d')) problem = 'no --delete-branch (branches are kept)';
   else if (has('--auto')) problem = 'no --auto (merge only after the gate passes now)';
-  else if (!has('--squash', '-s') || has('--merge', '-m', '--rebase', '-r')) problem = 'use --squash only';
+  // normal merges only (team, 2026-11-14): main keeps every branch commit; squash and rebase would rewrite them
+  else if (!has('--merge', '-m') || has('--squash', '-s', '--rebase', '-r')) problem = 'use --merge only';
   return { pr, problem };
 }
 
