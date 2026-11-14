@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from typing import get_args
+from typing import TypeVar, get_args
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -23,7 +23,7 @@ from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import ClientDisconnect
 
-from fieldshift.engine.compare import compare, load_compare_data
+from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
 from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, HealthResponse, Land, Priority, Province
@@ -45,6 +45,7 @@ FRONTEND_ROUTES = (
 # bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that.
 MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
+Body = TypeVar("Body", bound=BaseModel)
 
 
 def _artifact_versions(artifacts_dir: Path) -> HealthResponse:
@@ -66,26 +67,26 @@ def _respond(body: bytes) -> Response:
 
 
 def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
-    """Errors of the compare body, located under "body" as FastAPI locates them."""
+    """Errors of a request body, located under "body" as FastAPI locates them."""
     return RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in errors])
 
 
-async def _compare_request(request: Request) -> CompareRequest:
-    """The body as a CompareRequest; reading stops past MAX_BODY_BYTES, whatever content-length says, after
+async def _read_body(request: Request, model: type[Body], limit: int) -> Body:
+    """The body as `model`; reading stops past `limit` bytes, whatever content-length says, after
     BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422, and nothing logs a traceback)."""
     body = b""
     try:
         async with asyncio.timeout(BODY_TIMEOUT_SECONDS):
             async for chunk in request.stream():
                 body += chunk
-                if len(body) > MAX_BODY_BYTES:
-                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {MAX_BODY_BYTES} bytes"}])
+                if len(body) > limit:
+                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {limit} bytes"}])
     except TimeoutError as err:
         raise _invalid([{"type": "timeout", "loc": (), "msg": f"body not sent in {BODY_TIMEOUT_SECONDS} s"}]) from err
     except ClientDisconnect as err:
         raise _invalid([{"type": "incomplete", "loc": (), "msg": "client left before the body ended"}]) from err
     try:
-        return CompareRequest.model_validate_json(body)
+        return model.model_validate_json(body)
     except ValidationError as err:
         raise _invalid(err.errors()) from err
 
@@ -100,6 +101,16 @@ async def _internal_error(_: Request, __: Exception) -> JSONResponse:
     return JSONResponse({"detail": "Internal Server Error"}, status_code=500)
 
 
+def _read_every_year_row(compare_data: CompareData) -> None:
+    """Compare once with every year, so a missing year row stops the start, not a farmer's request."""
+    every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
+    for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
+        request = CompareRequest(
+            province=province, land=get_args(Land)[0], years=every_year, priority=get_args(Priority)[0]
+        )
+        compare(request, compare_data)
+
+
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
@@ -107,12 +118,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     past_body = {province: _json(past_years(province, base)) for province in get_args(Province)}
     method_body = _json(method(base))
     compare_data = load_compare_data(base)
-    every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
-    for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
-        request = CompareRequest(
-            province=province, land=get_args(Land)[0], years=every_year, priority=get_args(Priority)[0]
-        )
-        compare(request, compare_data)
+    _read_every_year_row(compare_data)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
@@ -128,7 +134,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     @app.post("/api/compare")
     async def compare_route(request: Request) -> Response:
-        body = await _compare_request(request)
+        body = await _read_body(request, CompareRequest, MAX_BODY_BYTES)
         return _respond(_json(await run_in_threadpool(compare, body, compare_data)))
 
     @app.get("/api/method")
