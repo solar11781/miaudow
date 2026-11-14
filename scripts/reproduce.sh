@@ -29,6 +29,7 @@ python scripts/choose_normal.py   # E-010: the normal-yield method, before the f
 python scripts/run_primary_test.py   # E-012: references and M1, writes artifacts/metrics.json and gates.json
 python scripts/export_risk_table.py   # artifacts/risk_table.json for the app (05-DATA-CONTRACTS section 5)
 python scripts/run_secondary_models.py   # E-013 M2 LightGBM, E-017 M3 random forest (secondary, method page)
+python scripts/run_sensitivity.py   # E-018 sensitivity runs a-c, E-008 windows and centroid cells
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
 #     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.
