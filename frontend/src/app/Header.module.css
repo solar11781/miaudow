@@ -2,7 +2,8 @@
   position: sticky; top: 0; z-index: 40; padding-top: env(safe-area-inset-top, 0px);
   transition: box-shadow var(--d-med) var(--ease-out), background-color var(--d-med) var(--ease-out);
 }
-.paper { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.2) blur(12px); -webkit-backdrop-filter: saturate(1.2) blur(12px); }
+/* opaque, so no scrolled text reads through the sticky header */
+.paper { background: var(--bg); }
 .overlay:not(.scrolled) { background-color: transparent; }
 .overlay:not(.scrolled) .nav { background: rgba(8, 20, 11, .35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .scrolled { box-shadow: 0 1px 0 var(--line), 0 12px 30px -24px rgba(8, 20, 11, .45); }
