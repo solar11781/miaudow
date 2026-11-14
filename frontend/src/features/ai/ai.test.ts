@@ -3,7 +3,7 @@ import { answer, type Fmt } from './answer';
 import { normalize } from './normalize';
 import { isStrong, search } from './retrieve';
 import { yearShare } from '../../domain/hazards';
-import { PLANS } from '../../domain/plans';
+import { CROPS, PLANS } from '../../domain/plans';
 
 const f: Fmt = {
   pct: (v) => `${Math.round(v * 100)}%`,
@@ -71,6 +71,15 @@ describe('answers', () => {
     expect(a.type).toBe('evidence');
     expect(a.lines.every((l) => l.ref)).toBe(true);
     expect(a.lines.map((l) => l.ref?.sourceId)).toEqual(expect.arrayContaining(['tcvn8641', 'fao-tm3']));
+  });
+  it('names every TCVN 8641 spring row for rice, both regions, as rules/crops.yaml has them (D-68)', () => {
+    const vi = ask('Lúa cần bao nhiêu nước?').lines[0]?.text ?? '';
+    for (const part of ['6.500–7.500 m³/ha (Trung bộ, lúa cấy', 'lúa gieo thẳng', '6.000–7.000 m³/ha (Bắc bộ']) expect(vi).toContain(part);
+    expect(CROPS.rice.tcvn.map((r) => `${r.value.en} (${r.scope.en})`)).toEqual([
+      '6,500–7,500 (Trung bộ, transplanted rice, spring season)',
+      '6,500–7,500 (Trung bộ, direct-seeded rice, spring season)',
+      '6,000–7,000 (Bắc bộ, spring season)',
+    ]);
   });
   it('only shows numbers that exist in the data', () => {
     const a = ask('Năm 2015 thế nào?', 'en');

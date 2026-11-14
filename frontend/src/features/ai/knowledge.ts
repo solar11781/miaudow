@@ -69,8 +69,8 @@ const STATIC: Passage[] = [
     id: 'water-units', kind: 'standard', sources: ['tcvn8641', 'fao-tm3'], keys: 'nuoc tuoi m3 ha mm tcvn fao nhu cau nuoc lua lac ngo',
     title: { vi: 'Lúa và các cây khác cần bao nhiêu nước?', en: 'How much water do rice and other crops need?' },
     text: {
-      vi: 'Theo TCVN 8641:2011, lúa xuân vùng Trung bộ cần tưới dưỡng 6.500–7.500 m³/ha; ngô 2.000–2.500; lạc và đậu tương khoảng 2.000; khoai lang 1.200–1.400 m³/ha. FAO ước tính thô nhu cầu nước cả vụ: lúa 450–700 mm, lạc 500–700, ngô 500–800. 1 m³/ha bằng 0,1 mm. Tiêu chuẩn không nói Nghệ An thuộc vùng nào.',
-      en: 'Under TCVN 8641:2011, central-region spring rice needs 6,500–7,500 m³/ha of maintenance irrigation; maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. FAO’s rough seasonal water need: rice 450–700 mm, peanut 500–700, maize 500–800. 1 m³/ha is 0.1 mm. The standard does not say which region Nghệ An is in.',
+      vi: 'Theo TCVN 8641:2011, lúa vụ xuân cần tưới dưỡng 6.500–7.500 m³/ha (Trung bộ, lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha (Bắc bộ); ngô 2.000–2.500; lạc và đậu tương khoảng 2.000; khoai lang 1.200–1.400 m³/ha. FAO ước tính thô nhu cầu nước cả vụ: lúa 450–700 mm, lạc 500–700, ngô 500–800. 1 m³/ha bằng 0,1 mm. Tiêu chuẩn không nói Nghệ An thuộc vùng nào.',
+      en: 'Under TCVN 8641:2011, spring rice needs 6,500–7,500 m³/ha of maintenance irrigation (Trung bộ, transplanted or direct-seeded) and 6,000–7,000 m³/ha (Bắc bộ); maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. FAO’s rough seasonal water need: rice 450–700 mm, peanut 500–700, maize 500–800. 1 m³/ha is 0.1 mm. The standard does not say which region Nghệ An is in.',
     },
   },
   {

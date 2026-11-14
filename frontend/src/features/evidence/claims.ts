@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { model, YEARS } from '../../data';
 import { yearShare } from '../../domain/hazards';
-import { PLANS, type PlanCrop } from '../../domain/plans';
+import { CROPS, PLANS, type PlanCrop } from '../../domain/plans';
 import type { Bilingual, SourceRef } from '../../domain/provenance';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, useSettings } from '../../app/settings';
@@ -104,9 +104,9 @@ export function useClaims(): Claim[] {
       },
       {
         id: 'water-rice-peanut', topic: 'water', status: 'VERIFIED',
-        conclusion: { vi: 'Theo cùng một tiêu chuẩn Việt Nam, lúa cấy vụ xuân ở Trung bộ cần tưới 6.500–7.500 m³/ha, còn lạc khoảng 2.000 m³/ha.', en: 'By the same Vietnamese standard, transplanted spring rice in the central region needs 6,500–7,500 m³/ha of irrigation, peanut about 2,000 m³/ha.' },
+        conclusion: { vi: 'Theo cùng một tiêu chuẩn Việt Nam, lúa vụ xuân cần tưới 6.500–7.500 m³/ha ở Trung bộ (lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha ở Bắc bộ, còn lạc khoảng 2.000 m³/ha.', en: 'By the same Vietnamese standard, spring rice needs 6,500–7,500 m³/ha of irrigation in Trung bộ (transplanted or direct-seeded) and 6,000–7,000 m³/ha in Bắc bộ, peanut about 2,000 m³/ha.' },
         meaning: { vi: 'Nếu ruộng hay thiếu nước, đây là con số để hỏi cán bộ thủy lợi về lịch tưới.', en: 'If your field often lacks water, these are the numbers to raise with the irrigation officer.' },
-        refs: [refs.tcvn(rice, vi ? '6.500–7.500' : '6,500–7,500'), refs.tcvn(peanut, vi ? 'khoảng 2.000' : 'about 2,000')],
+        refs: [...CROPS.rice.tcvn, ...CROPS.peanut.tcvn].map((r, i) => refs.tcvn(i < CROPS.rice.tcvn.length ? rice : peanut, r)),
         location: { vi: 'TCVN 8641:2011, bảng mức tưới theo vùng và mùa vụ', en: 'TCVN 8641:2011, irrigation tables by region and season' },
         method: { vi: 'Chép nguyên mức trong tiêu chuẩn; không đổi đơn vị, không so với nguồn khác.', en: 'Copied as written in the standard; no unit change, not compared with another source.' },
         appliesTo: { vi: 'Mức chuẩn cho vùng; tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.', en: 'Regional norms; the standard does not say whether Nghệ An is central or northern.' },

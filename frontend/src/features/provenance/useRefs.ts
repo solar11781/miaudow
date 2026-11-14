@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { YEARS, type RuleCode, type RiceSeason } from '../../data';
 import { RULES } from '../../domain/hazards';
 import { SOURCES } from '../../domain/sources';
-import { CROPS, type Plan, type PlanCrop } from '../../domain/plans';
+import { CROPS, type Plan, type PlanCrop, type TcvnRow } from '../../domain/plans';
 import type { SourceRef } from '../../domain/provenance';
 import { useFormat, usePick, useSettings } from '../../app/settings';
 
@@ -94,8 +94,9 @@ export function useRefs() {
           chain: ['p02'],
         };
       },
-      tcvn(c: PlanCrop, text: string): SourceRef {
-        return { sourceId: 'tcvn8641', kind: 'standard', value: `${text} m³/ha`, label: vi ? `Mức tưới ${pick(CROPS[c.crop].name)}` : `Irrigation, ${pick(CROPS[c.crop].name)}` };
+      tcvn(c: PlanCrop, row: TcvnRow): SourceRef {
+        const scope = row.scope ? ` · ${pick(row.scope)}` : '';
+        return { sourceId: 'tcvn8641', kind: 'standard', value: `${pick(row.value)} m³/ha`, label: vi ? `Mức tưới ${pick(CROPS[c.crop].name)}${scope}` : `Irrigation, ${pick(CROPS[c.crop].name)}${scope}` };
       },
       fao(c: PlanCrop, text: string): SourceRef {
         return { sourceId: 'fao-tm3', kind: 'standard', value: `${text} mm`, label: vi ? `Nhu cầu nước ${pick(CROPS[c.crop].name)} theo FAO` : `FAO water need, ${pick(CROPS[c.crop].name)}` };

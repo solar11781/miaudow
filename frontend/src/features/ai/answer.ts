@@ -1,6 +1,6 @@
 import { YEARS } from '../../data';
 import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
-import { CROPS, PLANS, planProfitMillion, type CropId } from '../../domain/plans';
+import { CROPS, PLANS, planProfitMillion, type CropId, type CropInfo } from '../../domain/plans';
 import { riceYear } from '../../domain/rice';
 import type { EvidenceKind, SourceRef } from '../../domain/provenance';
 import { SOURCES } from '../../domain/sources';
@@ -79,10 +79,16 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
       ref: { sourceId: 'p02', kind: 'study', value: `${f.n(c.profit / 1000, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`, label: `${name} ${c.variety}`, detail: vi ? `Chi phí ${f.n(c.cost)} nghìn đ/ha; giá ${f.n(c.price)} đ/kg.` : `Cost ${f.n(c.cost)} thousand VND/ha; price ${f.n(c.price)} VND/kg.` },
     });
   }
-  const info = CROPS[crop] as { tcvn?: { vi: string; en: string } };
-  lines.push(info.tcvn
-    ? { text: vi ? 'Mức tưới theo TCVN 8641' : 'Irrigation in TCVN 8641', ref: { sourceId: 'tcvn8641', kind: 'standard', value: `${info.tcvn[lang]} m³/ha`, label: name } }
-    : { text: vi ? 'TCVN 8641 không ghi mức tưới cho cây này.' : 'TCVN 8641 lists no irrigation amount for this crop.' });
+  const info: CropInfo = CROPS[crop];
+  const tcvnRows = info.tcvn ?? [];
+  if (tcvnRows.length) {
+    for (const r of tcvnRows) {
+      const scope = r.scope ? ` (${r.scope[lang]})` : '';
+      lines.push({ text: `${vi ? 'Mức tưới theo TCVN 8641' : 'Irrigation in TCVN 8641'}${scope}`, ref: { sourceId: 'tcvn8641', kind: 'standard', value: `${r.value[lang]} m³/ha`, label: `${name}${scope}` } });
+    }
+  } else {
+    lines.push({ text: vi ? 'TCVN 8641 không ghi mức tưới cho cây này.' : 'TCVN 8641 lists no irrigation amount for this crop.' });
+  }
   lines.push({ text: vi ? 'Một ô thử, một năm. Giá năm nay có thể khác; hỏi nơi thu mua ở xã.' : 'One plot, one year. Prices may differ this year; ask local buyers.' });
   return { type: 'crop', lines, evidence: [], kinds: ['study', 'standard'] };
 }
