@@ -13,9 +13,8 @@ from datetime import UTC, datetime
 import pandas as pd
 
 from fieldshift.ml.evaluation import TEST_YEARS
-from fieldshift.ml.primary_test import APP_SEASONS, EXPERIMENT, app_season
+from fieldshift.ml.primary_test import APP_SEASONS, EXPERIMENT, SCHEMA_VERSION, app_season
 
-SCHEMA_VERSION = "0.4"  # 05-DATA-CONTRACTS section 5
 MODEL_ID = "m1_ridge"  # the cards use M1 for every season (03-ML-SPEC section 10, D-102)
 HISTORY_SOURCES = ["R-D01", "E-010"]  # NSO PX-Web E06 tables; the normal method
 KEY = ["province_nso", "season", "year"]
@@ -26,19 +25,24 @@ def _status(gates: list[dict]) -> dict[str, dict]:
     verdict = {(g["gate"], g["season"]): g["passed"] for g in gates}
     out = {}
     for season in APP_SEASONS.values():
-        if not verdict.get(("G1", season)):
+        if ("G1", season) not in verdict:
+            raise ValueError(f"gates.json has no G1 row for {season}")
+        if not verdict[("G1", season)]:
             out[season] = {"model_status": "not_modeled", "model_id": None, "interval": False}
             continue
-        shown = bool(verdict.get(("G2", season)) and verdict.get(("G3", season)))
+        missing = [g for g in ("G2", "G3", "G4") if (g, season) not in verdict]
+        if missing:
+            raise ValueError(f"gates.json lacks the {season} rows {missing} of a modeled season")
+        shown = bool(verdict[("G2", season)] and verdict[("G3", season)])
         out[season] = {
             "model_status": "shown" if shown else "not_shown",
             "model_id": MODEL_ID,
-            "interval": shown and bool(verdict.get(("G4", season))),
+            "interval": shown and bool(verdict[("G4", season)]),
         }
     return out
 
 
-def _num(x: float) -> float | None:
+def _num(x: float | None) -> float | None:
     return None if x is None or (isinstance(x, float) and math.isnan(x)) else float(x)
 
 
