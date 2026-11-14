@@ -133,8 +133,8 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   (whole-project audit when features are done, proposes fixes), `/submission-check` (pre-submission audit).
   `/checkpoints` (phone reminders for the schedule; run in a separate idle session), `/vi-copy` (glossary-consistent
   Vietnamese and English text; glossary in `frontend/src/i18n/GLOSSARY.md`).
-  `/plan-queue`, `/autopilot`, `/health`, `/final-audit`, `/submission-check` and `/checkpoints` run only when a
-  person types them.
+  `/plan-queue`, `/autopilot`, `/health`, `/final-audit`, `/submission-check`, `/checkpoints` and `/unslop` run only
+  when a person types them.
 - Checks as tests: `tests/test_source_trace.py` (every displayed value has a source that is in the response and in
   the registers; hard rule H5), `tests/test_architecture.py` (layers). `scripts/attribution.py` prints the Python
   licence table for the README from the lock file.
