@@ -5,8 +5,8 @@ answers; a delete-everything call; several saved sets per account), §6b (the an
 same rules as the compare request), H14 (no cookie). The routes are on only when GOOGLE_CLIENT_ID and DATABASE_URL are
 both set; otherwise they answer 503. The database is a throwaway PostgreSQL 18: TEST_DATABASE_URL when set (the
 service container in CI), otherwise a container this module starts with Docker; the module is skipped with the reason
-when neither is available. Google's token check runs for real on tokens signed with a test key; only the download of
-Google's public keys is replaced, so no test touches the network.
+when neither is available. Google's token check runs for real, on every account request, on tokens signed with a
+test key; only the download of Google's public keys is replaced, so no test touches the network.
 """
 
 import json
@@ -14,6 +14,7 @@ import logging
 import os
 import shutil
 import socket
+import ssl
 import subprocess
 import time
 import urllib.error
@@ -28,6 +29,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi.testclient import TestClient
 from google.auth import crypt, jwt
+from google.auth.exceptions import TransportError
 
 from fieldshift.api import accounts
 from fieldshift.api.app import MAX_BODY_BYTES, create_app
@@ -35,6 +37,7 @@ from fieldshift.api.app import MAX_BODY_BYTES, create_app
 REPO = Path(__file__).resolve().parents[1]
 CLIENT_ID = "test-client.apps.googleusercontent.com"
 GOOGLE_CERTS = "https://www.googleapis.com/oauth2/v1/certs"  # google-auth 2.62.2, google/oauth2/id_token.py
+GOOGLE_CACHE = "public, max-age=23762, must-revalidate, no-transform"  # Google's header on GOOGLE_CERTS, 2026-11-14
 ANSWERS = {"land": "dry", "years": [1995, 2007, 2013], "priority": "income"}
 ROUTES = [
     ("post", "/api/account/sign-in"),
@@ -116,36 +119,52 @@ def _pem(key: rsa.RSAPrivateKey) -> str:
     ).decode()
 
 
-@pytest.fixture
-def fetched(keys: dict[str, rsa.RSAPrivateKey], monkeypatch: pytest.MonkeyPatch) -> list[str]:
-    """Google's key download answered locally with the public half of the "google" key; returns the URLs asked for."""
-    asked: list[str] = []
-    public = (
+class Answer:
+    """What urllib.request.urlopen gives back: a body and a Cache-Control header."""
+
+    def __init__(self, body: bytes, cache: str | None = GOOGLE_CACHE) -> None:
+        self.status, self.body = 200, body
+        self.headers = {"content-type": "application/json"} | ({"cache-control": cache} if cache else {})
+
+    def read(self, size: int = -1) -> bytes:
+        return self.body if size < 0 else self.body[:size]
+
+    def __enter__(self) -> "Answer":
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        return None
+
+
+def public_keys(keys: dict[str, rsa.RSAPrivateKey]) -> bytes:
+    pem = (
         keys["google"]
         .public_key()
         .public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
     )
-    body = json.dumps({"google": public.decode()}).encode()
+    return json.dumps({"google": pem.decode()}).encode()
 
-    class Answer:
-        def __init__(self) -> None:
-            self.status, self.headers = 200, {"content-type": "application/json"}
 
-        def read(self) -> bytes:
-            return body
+def fake_download(monkeypatch: pytest.MonkeyPatch, answer: Answer) -> list[SimpleNamespace]:
+    """Replace the key download; returns every call with its URL, timeout and TLS context."""
+    calls: list[SimpleNamespace] = []
 
-        def __enter__(self) -> "Answer":
-            return self
-
-        def __exit__(self, *_: object) -> None:
-            return None
-
-    def fake_urlopen(request: urllib.request.Request, timeout: float | None = None) -> Answer:
-        asked.append(request.full_url)
-        return Answer()
+    def fake_urlopen(request: urllib.request.Request, timeout: float | None = None, context: object = None) -> Answer:
+        calls.append(SimpleNamespace(url=request.full_url, timeout=timeout, context=context))
+        return answer
 
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
-    return asked
+    return calls
+
+
+@pytest.fixture
+def fetched(keys: dict[str, rsa.RSAPrivateKey], monkeypatch: pytest.MonkeyPatch) -> list[SimpleNamespace]:
+    """Google's key download answered locally with the public half of the "google" key."""
+    return fake_download(monkeypatch, Answer(public_keys(keys)))
+
+
+def urls(calls: list[SimpleNamespace]) -> list[str]:
+    return [call.url for call in calls]
 
 
 def google_token(keys: dict[str, rsa.RSAPrivateKey], kid: str = "google", **changes: object) -> str:
@@ -160,9 +179,11 @@ def bearer(token: str) -> dict[str, str]:
 
 
 def sign_in(c: TestClient, keys: dict[str, rsa.RSAPrivateKey], **changes: object) -> dict[str, str]:
-    r = c.post("/api/account/sign-in", headers=bearer(google_token(keys, **changes)))
-    assert r.status_code == 200, r.text
-    return bearer(r.json()["token"])
+    """Sign in; the same Google token then goes with every account request."""
+    me = bearer(google_token(keys, **changes))
+    r = c.post("/api/account/sign-in", headers=me)
+    assert r.status_code == 204, r.text
+    return me
 
 
 def no_echo(r: object, status: int) -> None:
@@ -221,15 +242,14 @@ def test_config_names_the_client_id_when_on(on: str) -> None:
 # ---- sign-in
 
 
-def test_sign_in_creates_the_account_with_only_the_google_id(on: str, keys: dict, fetched: list[str]) -> None:
+def test_sign_in_creates_the_account_with_only_the_google_id(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     r = c.post("/api/account/sign-in", headers=bearer(google_token(keys, email="farmer@example.com", name="Ba")))
-    assert r.status_code == 200
-    assert set(r.json()) == {"token", "expires_at"}
-    assert r.headers["cache-control"] == "no-store"  # RFC 6749 §5.1: token responses are not cached
-    assert "set-cookie" not in r.headers  # H14: the session is a bearer token the page keeps in memory
+    assert r.status_code == 204
+    assert r.headers["cache-control"] == "no-store"  # RFC 6749 §5.1: answers about an account are not cached
+    assert "set-cookie" not in r.headers  # H14: the page keeps Google's token in memory and sends it; no cookie
     assert rows(on, "SELECT google_sub FROM account") == [("110169484474386276334",)]
-    assert fetched == [GOOGLE_CERTS]  # the one outbound call: Google's public keys, over https
+    assert urls(fetched) == [GOOGLE_CERTS]  # the one outbound call: Google's public keys, over https
     # §12c: only Google's account id and the saved answers are stored
     columns = rows(
         on,
@@ -248,7 +268,7 @@ def test_sign_in_creates_the_account_with_only_the_google_id(on: str, keys: dict
     assert "farmer@example.com" not in str(rows(on, "SELECT * FROM account"))
 
 
-def test_signing_in_again_keeps_one_account(on: str, keys: dict, fetched: list[str]) -> None:
+def test_signing_in_again_keeps_one_account(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     sign_in(c, keys)
     sign_in(c, keys)
@@ -265,8 +285,12 @@ def test_signing_in_again_keeps_one_account(on: str, keys: dict, fetched: list[s
         {"authorization": "Bearer "},
     ],
 )
-def test_sign_in_without_a_google_token_is_401_without_echo(on: str, fetched: list[str], headers: dict) -> None:
-    no_echo(TestClient(create_app(root=REPO)).post("/api/account/sign-in", headers=headers), 401)
+def test_no_google_token_is_401_without_echo_on_every_route(on: str, fetched: list, headers: dict) -> None:
+    c = TestClient(create_app(root=REPO))
+    for method, path in ROUTES:
+        r = getattr(c, method)(path, headers=headers)
+        no_echo(r, 401)
+        assert r.headers["www-authenticate"] == "Bearer"  # RFC 6750 §3
     assert rows(on, "SELECT count(*) FROM account") == [(0,)]
 
 
@@ -280,29 +304,90 @@ def test_sign_in_without_a_google_token_is_401_without_echo(on: str, fetched: li
         lambda keys: google_token(keys, sub=""),  # no account id
     ],
 )
-def test_sign_in_with_a_token_google_did_not_issue_to_us_is_401(
-    on: str, keys: dict, fetched: list[str], token: Callable[[dict], str]
+def test_a_token_google_did_not_issue_to_us_is_401_on_every_route(
+    on: str, keys: dict, fetched: list, token: Callable[[dict], str]
 ) -> None:
-    no_echo(TestClient(create_app(root=REPO)).post("/api/account/sign-in", headers=bearer(token(keys))), 401)
+    c = TestClient(create_app(root=REPO))
+    sign_in(c, keys)  # the account exists, so only the token check can refuse the other routes
+    for method, path in ROUTES:
+        no_echo(getattr(c, method)(path, headers=bearer(token(keys))), 401)
+    assert rows(on, "SELECT count(*) FROM account") == [(1,)]
+
+
+def test_a_valid_token_without_a_sign_in_is_401(on: str, keys: dict, fetched: list) -> None:
+    c = TestClient(create_app(root=REPO))
+    for method, path in ROUTES[1:]:
+        no_echo(getattr(c, method)(path, headers=bearer(google_token(keys))), 401)
     assert rows(on, "SELECT count(*) FROM account") == [(0,)]
 
 
-def test_sign_in_answers_503_when_google_keys_cannot_be_fetched(
+def test_every_account_route_answers_503_when_google_keys_cannot_be_fetched(
     on: str, keys: dict, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     def unreachable(*_: object, **__: object) -> None:
         raise urllib.error.URLError("no route")
 
     monkeypatch.setattr(urllib.request, "urlopen", unreachable)
+    c = TestClient(create_app(root=REPO))
+    for method, path in ROUTES:
+        r = getattr(c, method)(path, headers=bearer(google_token(keys)))
+        assert r.status_code == 503, path
+        assert r.json() == {"detail": "google sign-in check is not reachable"}, path
+
+
+def test_google_keys_are_downloaded_once_while_google_says_they_are_fresh(on: str, keys: dict, fetched: list) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    c.post("/api/account/saved", headers=me, json=ANSWERS)
+    c.get("/api/account/saved", headers=me)
+    assert urls(fetched) == [GOOGLE_CERTS]  # the max-age of Google's Cache-Control header has not run out
+
+
+# ---- the download of Google's keys (standard-library transport)
+
+
+def test_the_key_download_checks_tls_with_the_default_context_and_has_a_timeout(
+    keys: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = fake_download(monkeypatch, Answer(public_keys(keys)))
+    assert accounts.HttpsRequest()(GOOGLE_CERTS).status == 200
+    [call] = calls
+    assert call.timeout == accounts.GOOGLE_TIMEOUT_SECONDS
+    # Python ssl docs: ssl.create_default_context() requires a valid certificate and checks the host name
+    assert call.context.verify_mode == ssl.CERT_REQUIRED
+    assert call.context.check_hostname
+
+
+def test_the_key_download_refuses_plain_http(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = fake_download(monkeypatch, Answer(b"{}"))
+    with pytest.raises(TransportError):
+        accounts.HttpsRequest()("http://www.googleapis.com/oauth2/v1/certs")
+    assert calls == []
+
+
+def test_an_answer_over_the_size_cap_is_refused(on: str, keys: dict, monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_download(monkeypatch, Answer(b" " * (accounts.KEYS_MAX_BYTES + 1)))
+    with pytest.raises(TransportError):
+        accounts.HttpsRequest()(GOOGLE_CERTS)
     r = TestClient(create_app(root=REPO)).post("/api/account/sign-in", headers=bearer(google_token(keys)))
     assert r.status_code == 503
-    assert r.json() == {"detail": "google sign-in check is not reachable"}
+
+
+@pytest.mark.parametrize("cache", [None, "no-store", "public, max-age=0"])
+def test_keys_without_a_fresh_cache_life_are_downloaded_again(
+    keys: dict, monkeypatch: pytest.MonkeyPatch, cache: str | None
+) -> None:
+    calls = fake_download(monkeypatch, Answer(public_keys(keys), cache))
+    download = accounts.HttpsRequest()
+    download(GOOGLE_CERTS)
+    download(GOOGLE_CERTS)
+    assert len(calls) == 2
 
 
 # ---- saved sets
 
 
-def test_saved_sets_round_trip(on: str, keys: dict, fetched: list[str]) -> None:
+def test_saved_sets_round_trip(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)
     assert c.get("/api/account/saved", headers=me).json() == {"saved": []}
@@ -316,7 +401,7 @@ def test_saved_sets_round_trip(on: str, keys: dict, fetched: list[str]) -> None:
     assert listed.headers["cache-control"] == "no-store"
 
 
-def test_saved_sets_survive_a_restart_and_the_schema_is_kept(on: str, keys: dict, fetched: list[str]) -> None:
+def test_saved_sets_survive_a_restart_and_the_schema_is_kept(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     c.post("/api/account/saved", headers=sign_in(c, keys), json=ANSWERS)
     c = TestClient(create_app(root=REPO))  # the schema already exists: the start keeps it and its rows
@@ -337,7 +422,7 @@ def test_saved_sets_survive_a_restart_and_the_schema_is_kept(on: str, keys: dict
         {k: v for k, v in ANSWERS.items() if k != "land"},
     ],
 )
-def test_saved_answers_follow_the_compare_request_rules(on: str, keys: dict, fetched: list[str], body: dict) -> None:
+def test_saved_answers_follow_the_compare_request_rules(on: str, keys: dict, fetched: list, body: dict) -> None:
     c = TestClient(create_app(root=REPO))
     r = c.post("/api/account/saved", headers=sign_in(c, keys), json=body)
     no_echo(r, 422)
@@ -345,7 +430,7 @@ def test_saved_answers_follow_the_compare_request_rules(on: str, keys: dict, fet
     assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
 
 
-def test_saved_answers_over_the_body_limit_are_422(on: str, keys: dict, fetched: list[str]) -> None:
+def test_saved_answers_over_the_body_limit_are_422(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     content = json.dumps(ANSWERS).encode()
     padded = content + b" " * (MAX_BODY_BYTES + 1 - len(content))
@@ -353,7 +438,7 @@ def test_saved_answers_over_the_body_limit_are_422(on: str, keys: dict, fetched:
     no_echo(c.post("/api/account/saved", headers=headers, content=padded), 422)
 
 
-def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict, fetched: list[str]) -> None:
+def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)
     other = sign_in(c, keys, sub="222222222222222222222")
@@ -364,7 +449,7 @@ def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict
     assert [s["id"] for s in c.get("/api/account/saved", headers=me).json()["saved"]] == [mine]
 
 
-def test_deleting_one_set_keeps_the_others(on: str, keys: dict, fetched: list[str]) -> None:
+def test_deleting_one_set_keeps_the_others(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)
     first, second = (c.post("/api/account/saved", headers=me, json=ANSWERS).json()["id"] for _ in range(2))
@@ -374,12 +459,12 @@ def test_deleting_one_set_keeps_the_others(on: str, keys: dict, fetched: list[st
 
 
 @pytest.mark.parametrize("set_id", ["0", "-1", "9223372036854775808", "zz-secret"])
-def test_a_set_id_outside_the_database_range_is_422(on: str, keys: dict, fetched: list[str], set_id: str) -> None:
+def test_a_set_id_outside_the_database_range_is_422(on: str, keys: dict, fetched: list, set_id: str) -> None:
     c = TestClient(create_app(root=REPO))
     no_echo(c.delete(f"/api/account/saved/{set_id}", headers=sign_in(c, keys)), 422)
 
 
-def test_delete_everything_leaves_no_row_and_ends_the_session(on: str, keys: dict, fetched: list[str]) -> None:
+def test_delete_everything_leaves_no_row_and_ends_the_sign_in(on: str, keys: dict, fetched: list) -> None:
     # §12c: one call deletes the account and all saved answers
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)
@@ -391,48 +476,20 @@ def test_delete_everything_leaves_no_row_and_ends_the_session(on: str, keys: dic
     assert c.get("/api/account/saved", headers=me).status_code == 401
 
 
-# ---- the session token
+# ---- more than one server
 
 
-@pytest.mark.parametrize("token", ["zz-secret", "1.9999999999.zz-secret", "1.9999999999", ""])
-def test_a_bad_session_token_is_401_without_echo(on: str, token: str) -> None:
-    c = TestClient(create_app(root=REPO))
-    for method, path in ROUTES[1:]:
-        r = getattr(c, method)(path, headers=bearer(token))
-        no_echo(r, 401)
-        assert r.headers["www-authenticate"] == "Bearer"  # RFC 6750 §3
-
-
-def test_a_session_token_cannot_be_changed_to_another_account(on: str, keys: dict, fetched: list[str]) -> None:
-    c = TestClient(create_app(root=REPO))
-    sign_in(c, keys, sub="111")
-    token = sign_in(c, keys, sub="222")["authorization"].removeprefix("Bearer ")
-    account, expires, signature = token.split(".")
-    forged = f"{int(account) - 1}.{expires}.{signature}"
-    no_echo(c.get("/api/account/saved", headers=bearer(forged)), 401)
-
-
-def test_the_session_ends_when_the_google_token_expires(
-    on: str, keys: dict, fetched: list[str], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    c = TestClient(create_app(root=REPO))
-    expires = int(time.time()) + 120
-    me = sign_in(c, keys, exp=expires)
-    assert c.get("/api/account/saved", headers=me).status_code == 200
-    monkeypatch.setattr(accounts, "time", SimpleNamespace(time=lambda: expires + 1))
-    assert c.get("/api/account/saved", headers=me).status_code == 401
-
-
-def test_a_restart_ends_every_session(on: str, keys: dict, fetched: list[str]) -> None:
+def test_another_server_instance_accepts_the_same_sign_in(on: str, keys: dict, fetched: list) -> None:
+    # the database lets more than one instance serve, and a restart signs nobody out
     me = sign_in(TestClient(create_app(root=REPO)), keys)
-    assert TestClient(create_app(root=REPO)).get("/api/account/saved", headers=me).status_code == 401
+    assert TestClient(create_app(root=REPO)).get("/api/account/saved", headers=me).status_code == 200
 
 
 # ---- the farmer routes with sign-in on
 
 
 def test_farmer_routes_set_no_cookie_and_call_no_network_with_sign_in_on(
-    on: str, keys: dict, fetched: list[str], monkeypatch: pytest.MonkeyPatch
+    on: str, keys: dict, fetched: list, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # NFR-01 and T14 with sign-in on: only loopback (the test database); Google's key download is the stated exception
     real_connect = socket.socket.connect
@@ -452,4 +509,4 @@ def test_farmer_routes_set_no_cookie_and_call_no_network_with_sign_in_on(
     assert r.status_code == 200
     assert "set-cookie" not in r.headers
     sign_in(c, keys)
-    assert fetched == [GOOGLE_CERTS]
+    assert urls(fetched) == [GOOGLE_CERTS]
