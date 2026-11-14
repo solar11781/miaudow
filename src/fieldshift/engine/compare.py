@@ -32,7 +32,7 @@ from fieldshift.engine.rules import (
     load_plans,
     load_rules,
     load_sources,
-    load_test_years,
+    metrics_file,
     pick_sources,
     risk_rows,
     risk_seasons,
@@ -107,7 +107,7 @@ class Inputs:
 def compare(request: CompareRequest, root: Path) -> CompareResponse:
     texts = load_card_texts(root)
     gates = gate_rows(root)
-    years = load_test_years(root)
+    years = metrics_file(root).test_years
     crop_rows = [row for row in hazard_rows(root) if row.level == "crop"]
     history = rice_history(request.province, risk_rows(root), risk_seasons(root), gates, years, texts.stability_scope)
     inputs = Inputs(load_crops(root), texts, request.years, _shares(crop_rows), _soil(soil_rows(root)), history)

@@ -475,6 +475,7 @@ def test_coverage_agrees_with_the_rules_files() -> None:
     water = {c["crop_id"]: {f["source_id"] for f in c["water_facts"]} for c in read("crops.yaml")}
     gates = json.loads((REPO / "artifacts" / "gates.json").read_text(encoding="utf-8"))["gates"]
     g1 = {g["season"]: g["passed"] for g in gates if g["gate"] == "G1"}
+    g2 = {g["season"]: g["passed"] for g in gates if g["gate"] == "G2"}
     p02 = set(PLAN_IDS) - {"usual_p03"}
     for cell in method()["coverage"]:
         crops, season = COVERAGE_ROWS[cell["row_key"]]
@@ -486,6 +487,8 @@ def test_coverage_agrees_with_the_rules_files() -> None:
             assert ("E-019" in cell["source_ids"]) is in_plans(p02, crops, season), cell["row_key"]
         if cell["axis"] == "model" and is_rice:  # G1 fails: never a model (D-66)
             assert cell["text"]["en"].startswith("Never") is (g1[season] is False), cell["row_key"]
+            if g1[season]:  # G2 decides whether the cards show the model (D-82, D-83)
+                assert cell["text"]["en"].startswith("No:") is (g2[season] is False), cell["row_key"]
         if cell["axis"] in ("water_tcvn", "water_fao"):
             source = TCVN if cell["axis"] == "water_tcvn" else FAO
             listed = all(source in water[c] for c in crops)
