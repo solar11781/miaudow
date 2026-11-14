@@ -13,14 +13,13 @@ from __future__ import annotations
 
 import math
 import textwrap
-from xml.sax.saxutils import escape
 
 import pandas as pd
 from shapely.geometry import Polygon, box
 from shapely.geometry.base import BaseGeometry
 
 from fieldshift.features.farmland_weights import POWER_DLAT, POWER_DLON
-from fieldshift.ml.results_chart import BACKGROUND, MARK, TEXT, ZERO, svg_text
+from fieldshift.ml.results_chart import BACKGROUND, MARK, TEXT, ZERO, svg_header, svg_text
 
 PROVINCE = "Nghe An"  # NSO unit name in cell_weights.csv (05-DATA-CONTRACTS section 3)
 METHOD = "farmland_weighted"  # the main weights, not the E-008 centroid rows (05-DATA-CONTRACTS section 3)
@@ -163,13 +162,7 @@ def grid_figure_svg(table: pd.DataFrame, zero_table: pd.DataFrame, boundary: Bas
     )
     return "\n".join(
         [
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" viewBox="0 0 {WIDTH} {height}"'
-            f' role="img" aria-labelledby="grid-figure-title grid-figure-desc" font-family="sans-serif"'
-            f' font-size="14" fill="{TEXT}">',
-            f'<title id="grid-figure-title">{escape(TITLE)}</title>',
-            f'<desc id="grid-figure-desc">{escape(desc)}</desc>',
-            f'<rect width="{WIDTH}" height="{height}" fill="{BACKGROUND}"/>',
-            *(svg_text(SIDE, 28 + 24 * i, t, ' font-size="18" font-weight="bold"') for i, t in enumerate(title_lines)),
+            *svg_header("grid-figure", TITLE, desc, (WIDTH, height), SIDE, title_lines),
             # outlines first, so the solid edges of the weighted cells are drawn over the shared dashed edges
             *(cell(*c) for c in sorted(cells, key=lambda c: c in weights)),
             f'<path d="{path}" fill="none" stroke="{TEXT}" stroke-width="2" stroke-linejoin="round"/>',
