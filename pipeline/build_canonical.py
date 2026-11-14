@@ -18,7 +18,11 @@ Inputs
 Outputs (data/canonical/)
 - hazards.json, soil.json, geo.json, model.json: the same structure and values as web/pipeline/build_data.py writes
   (pipeline/tests/test_canonical_identity.py proves it; only generated_at differs).
-- climate.json, catalog.json, rotations.generated.json, passages.json.
+- climate.json, catalog.json, rotations.generated.json, passages.json, decision.json, ndvi_modis.json.
+- climate_ml.json: the climate ML core's analog years and unusual-year scores with their evaluations (read back
+  from api/miaudow_api/climate_ml.py, one implementation).
+- quality.json, last: the data-quality report of pipeline/check_quality.py over the files just written (it never
+  stops the build; failed checks are written into the report for everyone to see).
 
 Crop field times are the sowing and first harvest dates reported by the P-02 trial (Tables 1, 5 and 9). Rules are the
 QĐ 18/2021/QĐ-TTg risk-level rules as implemented in miaudow_api.science.hazards (level 1 or higher).
@@ -1377,6 +1381,53 @@ def write(name: str, payload: dict, stamp: str) -> None:
     (OUT / name).write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
 
 
+def build_climate_ml_view() -> dict:
+    """The climate ML core's results for the web app (one implementation, in api/miaudow_api/climate_ml.py): the three
+    closest past years for every year, the unusual-year scores, and both evaluations with their plain verdicts."""
+    from miaudow_api import canonical as canon  # noqa: PLC0415 - after the canonical files exist
+    from miaudow_api import climate_ml  # noqa: PLC0415
+
+    canon.clear()
+    climate_ml.clear()
+    anomalies = climate_ml.anomaly_years().model_dump(mode="json")
+    analogs: dict[str, list] = {}
+    typical = None
+    for row in anomalies["years"]:
+        res = climate_ml.analog_search(row["year"], 3).model_dump(mode="json")
+        typical = res["median_pairwise_distance"]
+        analogs[str(row["year"])] = [
+            {k: a[k] for k in ("year", "order", "distance", "annual_rain_anomaly_pct")} | {"drivers": a["drivers"][:2]}
+            for a in res["analogs"]
+        ]
+    return {
+        "model_id": climate_ml.MODEL_ID,
+        "model_version": climate_ml.MODEL_VERSION,
+        "baseline_years": list(climate_ml.BASELINE),
+        "is_forecast": False,
+        "analogs": {
+            "distance_unit": climate_ml.DISTANCE_UNIT,
+            "features": climate_ml.FEATURES,
+            "median_pairwise_distance": typical,
+            "by_year": analogs,
+            "evaluation": climate_ml.analog_evaluation_summary().model_dump(mode="json"),
+            "limitations": [t.model_dump() for t in climate_ml.ANALOG_LIMITS],
+        },
+        "anomalies": {
+            k: anomalies[k]
+            for k in (
+                "score_unit",
+                "threshold",
+                "threshold_rule",
+                "percentile_bounds_mm",
+                "years",
+                "agreement",
+                "evaluation",
+                "limitations",
+            )
+        },
+    }
+
+
 def build_decision_view() -> dict:
     """The decision core's own text for the web app (one implementation): per plan, how the study land relates to
     each water answer, and the questions for the extension officer. Read back from the canonical files just written."""
@@ -1470,7 +1521,13 @@ def main() -> None:
     ndvi = build_ndvi_modis()
     if ndvi:
         write("ndvi_modis.json", ndvi, stamp)
+    write("climate_ml.json", build_climate_ml_view(), stamp)
+    import check_quality  # noqa: PLC0415 - runs last, on the canonical files just written
+
+    report = check_quality.run_checks(ROOT, OUT)
+    check_quality.write_report(report, OUT)
     sys.stdout.write(f"written {sorted(p.name for p in OUT.iterdir())}\n")
+    sys.stdout.write(f"quality: {report.counts}\n")
 
 
 if __name__ == "__main__":
