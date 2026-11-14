@@ -239,6 +239,7 @@ export const en: Messages = {
     startCta: 'Start',
     landTitle: 'What is your field like?',
     landHelp: 'Pick the one most like your field.',
+    landSameDry: 'The first three are all water-short fields: each of them leads to the same plans.',
     lands: {
       high_field: {
         title: 'High field, hard to water',

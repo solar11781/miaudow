@@ -241,6 +241,7 @@ export const vi = {
     startCta: 'Bắt đầu',
     landTitle: 'Ruộng nhà mình thế nào?',
     landHelp: 'Chọn một ô giống ruộng nhà bạn nhất.',
+    landSameDry: 'Ba ô đầu đều là ruộng thiếu nước: chọn ô nào cũng ra cùng các cách trồng.',
     lands: {
       high_field: {
         title: 'Ruộng cao, khó lấy nước',

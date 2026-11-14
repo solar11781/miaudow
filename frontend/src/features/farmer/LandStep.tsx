@@ -56,6 +56,8 @@ export function LandStep() {
           );
         })}
       </div>
+      {/* high_field, canal_end and water_short all map to land "dry" (domain/farmerState.ts) */}
+      <p className="muted">{t.farmer.landSameDry}</p>
       {state.land === 'reliable' && (
         <p className={s.note} role="status">
           <Icon name="alert" size={20} />
