@@ -9,6 +9,7 @@ Tests on the committed SVG run without the boundary file (data/raw is not in the
 it from the real boundary is skipped when the file is not downloaded.
 """
 
+import math
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -102,9 +103,21 @@ def test_the_cells_are_the_weighted_cells_and_the_pipeline_zero_weight_cells(com
 
 
 def test_every_cell_is_one_power_cell_of_0_5_by_0_625_degrees(committed: ET.Element) -> None:
-    # farmland_weights.POWER_DLAT, POWER_DLON (verified 2026-11-11): every drawn rectangle has the same size
-    sizes = {(r.get("width"), r.get("height")) for g in _cells(committed).values() for r in g.findall(f"{SVG_NS}rect")}
-    assert len(sizes) == 1
+    # NASA POWER grid 0.5 x 0.625 degrees (R-N01); longitude drawn scaled by cos(middle latitude), as the caption says
+    rects = {cell_id: g.find(f"{SVG_NS}rect") for cell_id, g in _cells(committed).items()}
+    centres = {cell_id: tuple(float(v) for v in cell_id.split("_")) for cell_id in rects}
+    lats = [lat for lat, _ in centres.values()]
+    middle = (min(lats) - 0.25 + max(lats) + 0.25) / 2
+    (height,) = {float(r.get("height")) for r in rects.values()}
+    (width,) = {float(r.get("width")) for r in rects.values()}
+    assert width / height == pytest.approx(0.625 * math.cos(math.radians(middle)) / 0.5, abs=0.002)
+    west = min(lon for _, lon in centres.values())
+    north = max(lat for lat, _ in centres.values())
+    x0 = min(float(r.get("x")) for r in rects.values())
+    y0 = min(float(r.get("y")) for r in rects.values())
+    for cell_id, (lat, lon) in centres.items():  # cells sit edge to edge on the grid, one cell per step
+        assert float(rects[cell_id].get("x")) == pytest.approx(x0 + (lon - west) / 0.625 * width, abs=0.15)
+        assert float(rects[cell_id].get("y")) == pytest.approx(y0 + (north - lat) / 0.5 * height, abs=0.15)
 
 
 def test_the_printed_weights_sum_to_1_within_rounding(committed: ET.Element) -> None:
