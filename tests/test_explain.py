@@ -3,12 +3,15 @@
 Spec: 02-SRS FR-15 (off by default; the app works without it; the key lives only in the server environment; the text is
 marked as AI-generated, R-H15), 01-PRD later idea 5, D-146, D-159 (the anthropic package), QUEUE-DRAFT item 53 (the
 endpoint refuses when the key is missing; it sends only the card's shown text, no personal data; the reply is marked
-AI-generated; no call when the feature is off), NFR-01 (this call is the one stated exception), UI-UX-SPEC H14 (no
-personal data), python.md (no personal data in logs; invalid input is HTTP 422). The real SDK runs against a mock
-transport, so no test reaches the network and each test sees the exact request the SDK would send.
+AI-generated; no call when the feature is off), D-165 (the server builds the text from its own compare answer: the
+browser sends only the compare answers, a plan code and a field), NFR-01 (this call is the one stated exception),
+UI-UX-SPEC H14 (no personal data), python.md (no personal data in logs; invalid input is HTTP 422). The real SDK runs
+against a mock transport, so no test reaches the network and each test sees the exact request the SDK would send.
 """
 
 import asyncio
+import functools
+import html
 import json
 import logging
 import threading
@@ -23,15 +26,28 @@ import pytest
 from fastapi.testclient import TestClient
 
 from fieldshift.api import explain
-from fieldshift.api.app import create_app
-from fieldshift.api.explain import MAX_EXPLAIN_BODY_BYTES, MAX_TEXT_CHARS, MODEL
+from fieldshift.api.app import MAX_BODY_BYTES, create_app
+from fieldshift.api.explain import MODEL, ExplainError
 
 REPO = Path(__file__).resolve().parents[1]
 KEY = "zz-test-key-not-real"
 # card-like text with the number forms the app shows (P-02 Table 4 profit, thousand đ/ha; a year; a decimal)
 TEXT_VI = "Lợi nhuận 16.200 nghìn đ/ha. Năm 2007 có 1,5 tháng khô hạn."
-TEXT_EN = "Profit 16,200 thousand VND/ha. In 2007 there were 1.5 dry months."
 SIMPLE_VI = "Tiền lãi là 16.200 nghìn đồng mỗi ha. Năm 2007 có 1,5 tháng khô."  # same numbers, order and units
+ANSWERS = {"province": "nghe_an", "land": "dry", "years": [1995, 2007], "priority": "income"}  # a valid CompareRequest
+# D-165: what identifies a shown text; "evidence" holds numbers (a year, a page, a plot size), so the number check runs
+BODY = {"answers": ANSWERS, "plan": "cc1", "field": "evidence", "lang": "vi"}
+WHY_PARTS = ("why", "evidence", "benefits", "gaps")  # UI-UX-SPEC §7 row `why`: the four labelled long text parts
+
+
+@functools.cache
+def compared() -> list[dict]:
+    return TestClient(create_app(root=REPO)).post("/api/compare", json=ANSWERS).json()["plans"]
+
+
+def shown(plan: str = "cc1", field: str = "evidence", lang: str = "vi") -> str:
+    """The field's text as POST /api/compare shows it for ANSWERS (D-165: the server's own answer)."""
+    return next(p for p in compared() if p["id"] == plan)["why"][field][lang]
 
 
 def reply(text: str, stop_reason: str = "end_turn", headers: dict | None = None) -> httpx2.Response:
@@ -49,6 +65,17 @@ def reply(text: str, stop_reason: str = "end_turn", headers: dict | None = None)
     return httpx2.Response(200, json=message, headers=headers)
 
 
+def tagged(request: httpx2.Request) -> str:
+    """The text the app sent inside its <text> tags, unescaped."""
+    content = json.loads(request.content)["messages"][0]["content"]
+    return html.unescape(content.removeprefix("<text>").removesuffix("</text>"))
+
+
+def echo(request: httpx2.Request) -> httpx2.Response:
+    """A reply with the sent text unchanged, so its numbers always pass the check."""
+    return reply(tagged(request))
+
+
 class FakeApi:
     """Stands in for api.anthropic.com: records each request the SDK sends and answers with `answer`."""
 
@@ -56,6 +83,7 @@ class FakeApi:
         self.answer = answer
         self.requests: list[httpx2.Request] = []
         self.clients: list[dict] = []
+        self.client: anthropic.Anthropic | None = None
 
     def handle(self, request: httpx2.Request) -> httpx2.Response:
         self.requests.append(request)
@@ -66,7 +94,7 @@ class FakeApi:
 def fake_api(monkeypatch: pytest.MonkeyPatch) -> Callable[..., FakeApi]:
     """Builds the real SDK client on a mock transport; counts every client the app creates."""
 
-    def install(answer: Callable[[httpx2.Request], httpx2.Response] = lambda _: reply(SIMPLE_VI)) -> FakeApi:
+    def install(answer: Callable[[httpx2.Request], httpx2.Response] = echo) -> FakeApi:
         api = FakeApi(answer)
         real = anthropic.Anthropic
 
@@ -87,6 +115,13 @@ def app_client(monkeypatch: pytest.MonkeyPatch, flag: str | None = "1", key: str
         else:
             monkeypatch.setenv(name, value)
     return TestClient(create_app(root=REPO), raise_server_exceptions=False)
+
+
+def direct_client(fake_api: Callable[..., FakeApi], answer: Callable[[httpx2.Request], httpx2.Response]) -> FakeApi:
+    """The fake API and the app's client on it, for tests of explain() with a text no plan holds."""
+    api = fake_api(answer)
+    api.client = explain.claude_client({"FIELDSHIFT_EXPLAIN": "1", "ANTHROPIC_API_KEY": KEY})
+    return api
 
 
 def sent_body(api: FakeApi) -> dict:
@@ -112,7 +147,7 @@ def test_explain_is_not_available_without_flag_and_key(
 ) -> None:
     api = fake_api()
     c = app_client(monkeypatch, flag, key)
-    r = c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+    r = c.post("/api/explain", json=BODY)
     assert r.status_code == 503
     assert r.json() == {"detail": "Service Unavailable"}
     assert api.clients == []
@@ -134,17 +169,17 @@ def test_explain_answers_with_the_reworded_text_marked_ai_generated(
     monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
 ) -> None:
     fake_api()
-    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+    r = app_client(monkeypatch).post("/api/explain", json=BODY)
     assert r.status_code == 200
     assert r.headers["content-type"] == "application/json"
-    assert r.json() == {"text": SIMPLE_VI, "ai_generated": True, "model": MODEL}  # FR-15 / R-H15: marked AI-generated
+    assert r.json() == {"text": shown(), "ai_generated": True, "model": MODEL}  # FR-15 / R-H15: marked AI-generated
 
 
 def test_the_client_uses_the_key_from_the_environment(
     monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
 ) -> None:
     api = fake_api()
-    app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+    app_client(monkeypatch).post("/api/explain", json=BODY)
     assert len(api.clients) == 1  # one client for the app, made at start
     assert api.clients[0]["api_key"] == KEY
     assert api.clients[0]["timeout"] == explain.TIMEOUT_SECONDS
@@ -157,18 +192,23 @@ def test_a_base_url_in_the_environment_changes_nothing(
 ) -> None:
     api = fake_api()
     monkeypatch.setenv("ANTHROPIC_BASE_URL", "https://zz-other-host.example")
-    assert app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": TEXT_VI}).status_code == 200
+    assert app_client(monkeypatch).post("/api/explain", json=BODY).status_code == 200
     assert api.requests[0].url == "https://api.anthropic.com/v1/messages"
 
 
-@pytest.mark.parametrize(("lang", "text", "language"), [("vi", TEXT_VI, "Vietnamese"), ("en", TEXT_EN, "English")])
-def test_the_request_holds_only_the_shown_text_and_the_system_prompt(
-    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], lang: str, text: str, language: str
+@pytest.mark.parametrize("field", WHY_PARTS)
+@pytest.mark.parametrize(("plan", "lang", "language"), [("cc1", "vi", "Vietnamese"), ("usual_p03", "en", "English")])
+def test_the_request_holds_only_the_shown_field_and_the_system_prompt(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], plan: str, field: str, lang: str, language: str
 ) -> None:
-    api = fake_api(lambda _: reply(text))
+    # D-165: the server takes the field's text in the asked language from its own compare answer for the answers sent
+    api = fake_api()
     headers = {"user-agent": "zz-farmer-phone", "x-forwarded-for": "203.0.113.9", "cookie": "zz-cookie=1"}
-    r = app_client(monkeypatch).post("/api/explain", json={"lang": lang, "text": text}, headers=headers)
+    request = {"answers": ANSWERS, "plan": plan, "field": field, "lang": lang}
+    r = app_client(monkeypatch).post("/api/explain", json=request, headers=headers)
     assert r.status_code == 200
+    text = shown(plan, field, lang)
+    assert r.json()["text"] == text
     body = sent_body(api)
     assert set(body) == {"model", "max_tokens", "system", "messages", "output_config", "thinking"}
     assert body["messages"] == [{"role": "user", "content": f"<text>{text}</text>"}]  # review of PR #43: data in tags
@@ -183,9 +223,9 @@ def test_the_request_holds_only_the_shown_text_and_the_system_prompt(
     assert body["max_tokens"] == max(2 * len(text.encode("utf-8")), explain.MIN_MAX_TOKENS)
     sent = api.requests[0]
     assert sent.url == "https://api.anthropic.com/v1/messages"
-    # H14: nothing of the farmer's request beyond the text leaves the server
+    # H14: nothing of the farmer's request leaves the server, not even the answers
     everything = sent.content.decode() + json.dumps(dict(sent.headers))
-    for value in ("zz-farmer-phone", "203.0.113.9", "zz-cookie"):
+    for value in ("zz-farmer-phone", "203.0.113.9", "zz-cookie", "nghe_an", "1995", "income"):
         assert value not in everything
 
 
@@ -223,11 +263,9 @@ def test_max_tokens_is_twice_the_bytes_with_a_floor() -> None:
         "a <b>bold</b> & c",
     ],
 )
-def test_tag_like_text_is_escaped_inside_the_tags(
-    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], text: str
-) -> None:
-    api = fake_api(lambda _: reply("a b"))
-    app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": text})
+def test_tag_like_text_is_escaped_inside_the_tags(fake_api: Callable[..., FakeApi], text: str) -> None:
+    api = direct_client(fake_api, lambda _: reply("a b"))
+    explain.explain(text, "vi", api.client)
     content = sent_body(api)["messages"][0]["content"]
     escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     assert content == f"<text>{escaped}</text>"
@@ -238,19 +276,20 @@ def test_tag_like_text_is_escaped_inside_the_tags(
 
 
 @pytest.mark.parametrize(
-    "answer",
+    "change",
     [
-        "Năm 2007 có 1,5 tháng khô. Tiền lãi là 16.300 nghìn đồng mỗi ha.",  # a changed number
-        "Năm 2007 có 1,5 tháng khô. Tiền lãi khá cao.",  # a dropped number
-        "Năm 2007 có 1,5 tháng khô. Tiền lãi là 16.200 nghìn đồng mỗi ha, gấp 2 lần.",  # a new number
-        "Năm 2007 có 1.5 tháng khô. Tiền lãi là 16.200 nghìn đồng mỗi ha.",  # a number written differently
+        lambda text: text.replace("1000", "1001"),  # a changed number
+        lambda text: text.replace("1000", "một nghìn"),  # a dropped number
+        lambda text: text + " Gấp 2 lần.",  # a new number
+        lambda text: text.replace("1000", "1.000"),  # a number written differently
     ],
 )
-def test_a_reply_that_changes_the_numbers_is_refused(
-    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], answer: str
+def test_a_reply_that_changes_the_numbers_of_the_field_is_refused(
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], change: Callable[[str], str]
 ) -> None:
-    fake_api(lambda _: reply(answer))
-    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+    assert "1000" in shown()  # P-02: one unreplicated plot of 1000 m2 per crop and season
+    fake_api(lambda request: reply(change(tagged(request))))
+    r = app_client(monkeypatch).post("/api/explain", json=BODY)
     assert r.status_code == 502
     assert r.json() == {"detail": "Bad Gateway"}
 
@@ -271,11 +310,11 @@ def test_a_reply_that_changes_the_numbers_is_refused(
     ],
 )
 def test_a_reply_with_numbers_in_another_order_sign_or_unit_is_refused(
-    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], text: str, answer: str
+    fake_api: Callable[..., FakeApi], text: str, answer: str
 ) -> None:
-    fake_api(lambda _: reply(answer))
-    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": text})
-    assert r.status_code == 502
+    api = direct_client(fake_api, lambda _: reply(answer))
+    with pytest.raises(ExplainError, match="NumbersDiffer"):
+        explain.explain(text, "vi", api.client)
 
 
 def test_numbers_are_read_in_order_with_sign_and_unit() -> None:
@@ -303,11 +342,10 @@ def test_numbers_are_read_in_order_with_sign_and_unit() -> None:
     ],
 )
 def test_a_reply_that_keeps_numbers_units_and_order_passes(
-    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], text: str, answer: str
+    fake_api: Callable[..., FakeApi], text: str, answer: str
 ) -> None:
-    fake_api(lambda _: reply(answer))
-    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": text})
-    assert r.status_code == 200
+    api = direct_client(fake_api, lambda _: reply(answer))
+    assert explain.explain(text, "vi", api.client).text == answer
 
 
 # ---- errors of the Claude API: a generic answer, no internals
@@ -340,7 +378,7 @@ def test_an_api_failure_answers_a_generic_502(
     monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], answer: Callable
 ) -> None:
     fake_api(answer)
-    r = app_client(monkeypatch).post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+    r = app_client(monkeypatch).post("/api/explain", json=BODY)
     assert r.status_code == 502
     assert r.json() == {"detail": "Bad Gateway"}
     assert "zz-secret" not in r.text
@@ -356,11 +394,10 @@ def test_the_key_and_the_text_never_reach_a_log(
     fake_api()
     c = app_client(monkeypatch)
     with caplog.at_level(logging.DEBUG):
-        ok = c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+        ok = c.post("/api/explain", json=BODY)
     assert ok.status_code == 200
     assert KEY not in caplog.text
-    assert TEXT_VI not in caplog.text
-    assert SIMPLE_VI not in caplog.text
+    assert shown() not in caplog.text
     assert KEY not in ok.text
 
 
@@ -370,9 +407,9 @@ def test_a_failure_logs_no_text_and_no_key(
     fake_api(lambda _: httpx2.Response(500, json={"type": "error", "error": {"type": "api_error", "message": "x"}}))
     c = app_client(monkeypatch)
     with caplog.at_level(logging.DEBUG):
-        assert c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI}).status_code == 502
+        assert c.post("/api/explain", json=BODY).status_code == 502
     assert KEY not in caplog.text
-    assert TEXT_VI not in caplog.text
+    assert shown() not in caplog.text
 
 
 def failure_lines(caplog: pytest.LogCaptureFixture) -> list[str]:
@@ -412,13 +449,13 @@ def test_every_502_logs_one_line_without_text_key_or_ip(
     c = app_client(monkeypatch)
     headers = {"x-forwarded-for": "203.0.113.9", "user-agent": "zz-farmer-phone"}
     with caplog.at_level(logging.DEBUG):
-        r = c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI}, headers=headers)
+        r = c.post("/api/explain", json=BODY, headers=headers)
     assert r.status_code == 502
     lines = failure_lines(caplog)
     assert len(lines) == 1
     for part in expected:
         assert part in lines[0], (part, lines[0])
-    for secret in (KEY, TEXT_VI, SIMPLE_VI, "Tiền lãi", "203.0.113.9", "zz-farmer-phone", "testclient"):
+    for secret in (KEY, shown(), SIMPLE_VI, "Tiền lãi", "203.0.113.9", "zz-farmer-phone", "testclient"):
         assert secret not in caplog.text
 
 
@@ -438,15 +475,24 @@ def rejected(r: httpx.Response, api: FakeApi, secret: str | None = None) -> None
 @pytest.mark.parametrize(
     ("body", "secret"),
     [
-        ({"lang": "vi", "text": TEXT_VI, "extra": "zz-secret-extra"}, "zz-secret-extra"),  # only lang and text
-        ({"lang": "vi", "text": TEXT_VI, "name": "zz-secret-name"}, "zz-secret-name"),  # H14: no personal data field
-        ({"lang": "fr", "text": "zz-secret-text"}, "zz-secret-text"),  # Lang is vi or en (UI-UX-SPEC §11 Text)
-        ({"lang": "vi", "text": ""}, None),
-        ({"lang": "vi", "text": "   "}, None),
-        ({"lang": "vi", "text": 5}, None),
-        ({"lang": "vi"}, None),
-        ({"text": "zz-secret-text"}, "zz-secret-text"),
-        ({"lang": "vi", "text": "zz-secret " + "a" * MAX_TEXT_CHARS}, "zz-secret"),  # over the text limit
+        ({"lang": "vi", "text": "zz-secret-text"}, "zz-secret-text"),  # D-165: the browser never sends the text
+        ({**BODY, "text": "zz-secret-text"}, "zz-secret-text"),
+        ({**BODY, "name": "zz-secret-name"}, "zz-secret-name"),  # H14: no personal data field
+        ({**BODY, "lang": "zz-secret-lang"}, "zz-secret-lang"),  # Lang is vi or en (UI-UX-SPEC §11 Text)
+        ({**BODY, "plan": "zz-secret-plan"}, "zz-secret-plan"),  # PlanId (UI-UX-SPEC §11)
+        ({**BODY, "field": "zz-secret-field"}, "zz-secret-field"),  # D-165: a field from a closed list
+        ({**BODY, "field": "risks"}, None),  # not a why part (UI-UX-SPEC §7: the risks are in the row `check`)
+        ({**BODY, "field": "name"}, None),
+        ({**BODY, "answers": {**ANSWERS, "years": []}}, None),  # the CompareRequest rules hold (UI-UX-SPEC §6b)
+        ({**BODY, "answers": {**ANSWERS, "years": [1990]}}, None),
+        ({**BODY, "answers": {**ANSWERS, "land": "irrigated"}}, None),  # §6b rule 4: never reaches the API
+        ({**BODY, "answers": {**ANSWERS, "zz": "zz-secret-extra"}}, "zz-secret-extra"),
+        ({**BODY, "answers": "zz-secret-answers"}, "zz-secret-answers"),
+        ({**ANSWERS, "plan": "cc1", "field": "why", "lang": "vi"}, None),  # the answers nest under "answers"
+        ({"plan": "cc1", "field": "why", "lang": "vi"}, None),
+        ({"answers": ANSWERS, "field": "why", "lang": "vi"}, None),
+        ({"answers": ANSWERS, "plan": "cc1", "lang": "vi"}, None),
+        ({"answers": ANSWERS, "plan": "cc1", "field": "why"}, None),
     ],
 )
 def test_explain_rejects_an_invalid_body(
@@ -471,41 +517,18 @@ def test_explain_rejects_a_body_over_the_byte_limit(
     api = fake_api()
 
     def chunks() -> Iterator[bytes]:  # no content-length: the limit counts the bytes as they arrive
-        yield json.dumps({"lang": "vi", "text": "a"}).encode()
-        yield b" " * MAX_EXPLAIN_BODY_BYTES
+        yield json.dumps(BODY).encode()
+        yield b" " * MAX_BODY_BYTES
 
     r = app_client(monkeypatch).post("/api/explain", content=chunks(), headers={"content-type": "application/json"})
     rejected(r, api)
 
 
-def test_the_byte_limit_holds_the_longest_text_in_its_widest_json_form() -> None:
-    # json.dumps writes each non-ASCII character of the BMP as \\uXXXX, 6 bytes; Vietnamese letters are all in the BMP
-    largest = {"lang": "vi", "text": "ữ" * MAX_TEXT_CHARS}
-    assert len(json.dumps(largest, indent=4).encode()) <= MAX_EXPLAIN_BODY_BYTES
-
-
-def test_the_text_limit_holds_every_plan_of_the_app() -> None:
-    # real data: all text and numbers of one plan, all 30 years, one language, joined by spaces (the most a card shows)
-    c = TestClient(create_app(root=REPO))
-    body = {"province": "nghe_an", "land": "unsure", "years": list(range(1995, 2025)), "priority": "stability"}
-    plans = c.post("/api/compare", json=body).json()["plans"]
-    skip = {"id", "code", "key", "crop_key", "source_ids", "values_source_ids", "threshold_source_id", "computed_by"}
-
-    def strings(node: object, lang: str) -> Iterator[str]:
-        if isinstance(node, dict) and set(node) == {"vi", "en"}:
-            yield node[lang]
-        elif isinstance(node, dict):
-            for k, v in node.items():
-                if k not in skip:
-                    yield from strings(v, lang)
-        elif isinstance(node, list):
-            for v in node:
-                yield from strings(v, lang)
-        elif isinstance(node, str | int | float) and not isinstance(node, bool):
-            yield str(node)
-
-    longest = max(len(" ".join(strings(p, lang))) for p in plans for lang in ("vi", "en"))
-    assert longest <= MAX_TEXT_CHARS
+def test_the_byte_limit_holds_the_largest_request_in_its_widest_json_form() -> None:
+    # the longest value of each closed list (UI-UX-SPEC §11 Land, Priority, PlanId; §7 why parts), all 30 years
+    answers = {"province": "nghe_an", "land": "unsure", "years": list(range(1995, 2025)), "priority": "stability"}
+    largest = {"answers": answers, "plan": "usual_p03", "field": "evidence", "lang": "vi"}
+    assert len(json.dumps(largest, indent=4).encode()) <= MAX_BODY_BYTES
 
 
 # ---- one client for the app, and its own small thread limit
@@ -516,7 +539,7 @@ def test_the_client_is_made_once_at_start(monkeypatch: pytest.MonkeyPatch, fake_
     c = app_client(monkeypatch)
     assert len(api.clients) == 1
     for _ in range(3):
-        c.post("/api/explain", json={"lang": "vi", "text": TEXT_VI})
+        c.post("/api/explain", json=BODY)
     assert len(api.clients) == 1
     assert len(api.requests) == 3
 
@@ -528,14 +551,12 @@ def test_a_burst_runs_at_most_the_limit_and_the_rest_get_503_at_once(
     # 12 parallel calls runs at most EXPLAIN_LIMIT, the rest answer 503 without waiting for a slot
     release = threading.Event()
 
-    def stall(_: httpx2.Request) -> httpx2.Response:
+    def stall(request: httpx2.Request) -> httpx2.Response:
         release.wait(10)
-        return reply(SIMPLE_VI)
+        return echo(request)
 
     api = fake_api(stall)
     app = app_client(monkeypatch).app
-    explain_body = {"lang": "vi", "text": TEXT_VI}
-    compare_body = {"province": "nghe_an", "land": "dry", "years": [1995, 2007], "priority": "income"}
     burst = 12
 
     async def run() -> tuple[list[int], int, int, list[int]]:
@@ -543,14 +564,14 @@ def test_a_burst_runs_at_most_the_limit_and_the_rest_get_503_at_once(
         anyio.to_thread.current_default_thread_limiter().total_tokens = explain.EXPLAIN_LIMIT
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
-            calls = [asyncio.create_task(c.post("/api/explain", json=explain_body)) for _ in range(burst)]
+            calls = [asyncio.create_task(c.post("/api/explain", json=BODY)) for _ in range(burst)]
             try:
                 async with asyncio.timeout(5):  # nothing is released yet: the 503s come without waiting
                     while sum(t.done() for t in calls) < burst - explain.EXPLAIN_LIMIT:
                         await asyncio.sleep(0.01)
                     early = [t.result().status_code for t in calls if t.done()]
                     running = len(api.requests)
-                    compared = await c.post("/api/compare", json=compare_body)
+                    compared = await c.post("/api/compare", json=ANSWERS)
             finally:
                 release.set()
             done = sorted(r.status_code for r in await asyncio.gather(*calls))
