@@ -112,7 +112,7 @@ test('rule 8: ordinary commands and quoted text are not blocked', () => {
   allowed('git log --oneline -5');
 });
 
-// ---- auto-merge gate (team decision D-124, 2026-11-13) ----
+// ---- auto-merge gate (team decisions D-124, 2026-11-13, and D-152, 2026-11-14: normal merges only) ----
 import { mergeRequest, checkMergeGate } from './guard.mjs';
 
 test('merge command shape: normal merge, explicit number, no bypass flags', () => {
@@ -128,12 +128,20 @@ test('merge command shape: normal merge, explicit number, no bypass flags', () =
   assert.match(mergeRequest('gh pr merge 12 --merge && git push origin main').problem, /alone/);
 });
 
-// team decision 2026-11-14: main keeps every branch commit, so squash and rebase merges are refused
 test('squash and rebase merges are refused', () => {
   for (const flag of ['--squash', '-s', '--rebase', '-r']) {
     assert.match(mergeRequest(`gh pr merge 12 ${flag}`).problem, /--merge/, flag);
     assert.match(mergeRequest(`gh pr merge 12 --merge ${flag}`).problem, /--merge/, flag);
   }
+});
+
+test('flags written as --flag=value are checked like the plain flag', () => {
+  assert.match(mergeRequest('gh pr merge 12 --merge --squash=true').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --rebase=true').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --admin=true').problem, /admin/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --auto=true').problem, /auto/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --delete-branch=true').problem, /delete/);
+  assert.deepEqual(mergeRequest('gh pr merge 12 --merge=true'), { pr: '12', problem: null });
 });
 
 const GATE = 'review-gates: spec-review=pass security-review=pass tests=pass';
