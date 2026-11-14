@@ -17,12 +17,13 @@ from fieldshift.ml.primary_test import SCHEMA_VERSION
 PROVINCE = "Nghe An"  # the province of the P-02 trial (province_nso spelling of cell_weights.csv)
 
 weights_table = pd.read_csv("data/processed/cell_weights.csv")  # fixed farmland mask, D-106
-nghe_an = weights_table[(weights_table["province_nso"] == PROVINCE) & (weights_table["farmland_weight"] > 0)]
+in_mask = (weights_table["province_nso"] == PROVINCE) & (weights_table["method"] == "farmland_weighted")
+nghe_an = weights_table[in_mask & (weights_table["farmland_weight"] > 0)]
 weights = {(round(r.lat, 6), round(r.lon, 6)): float(r.farmland_weight) for r in nghe_an.itertuples()}
 cells, _unmatched = load_cells("data/raw/power", "data/raw/power_t2m", POWER_CACHE_FILES)
-missing = [c for c in weights if c not in cells]
+missing = [c for c in weights if c not in cells or "T2M" not in cells[c]]  # T2M: its own cache (D-72)
 if missing:
-    raise ValueError(f"no cached POWER series for the weighted {PROVINCE} cells {missing}")
+    raise ValueError(f"no cached POWER series (or no T2M) for the weighted {PROVINCE} cells {missing}")
 plans = yaml.safe_load(Path("rules/rotations.yaml").read_text(encoding="utf-8"))
 rows = hazard_label_rows(plan_crops(plans), cells, weights)
 gates = json.loads(Path("artifacts/gates.json").read_text(encoding="utf-8"))  # written by run_primary_test.py

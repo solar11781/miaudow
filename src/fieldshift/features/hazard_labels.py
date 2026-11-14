@@ -27,6 +27,8 @@ def plan_crops(plans: list[dict]) -> list[dict]:
             continue
         for span in plan["seasons"]:
             sow, harvest = span["sow_from"], span["harvest_from"]
+            if span["sow_to"] != sow:  # P-02 reports one sowing date per crop (03-ML-SPEC section 5a)
+                raise ValueError(f"{span['crop_key']}: sowing range {sow}..{span['sow_to']}, expected one sowing date")
             crops.append(
                 {
                     "plan_id": plan["id"],
@@ -51,14 +53,24 @@ def hazard_label_rows(
     crops: list[dict], cells: dict[tuple, pd.DataFrame], weights: dict[tuple, float], years: Iterable[int] = YEARS
 ) -> list[dict]:
     """One row per level x crop x year x rule; cells: daily PRECTOTCORR, T2M_MAX, T2M per weighted cell."""
-    clim = {c: monthly_climatology(cells[c]["PRECTOTCORR"]) for c in weights}
+    clim = {}
+    for c in weights:
+        try:
+            clim[c] = monthly_climatology(cells[c]["PRECTOTCORR"])
+        except ValueError as err:
+            raise ValueError(f"cell {c}: {err}") from err
     year_keys = {"level": "year", "plan_id": None, "crop_key": None, "season": None}
     windows = [({"level": "crop", **{k: c[k] for k in ("plan_id", "crop_key", "season")}}, c) for c in crops]
     windows.append((year_keys, year_window(crops)))
     rows = []
     for keys, window in windows:
         for year in years:
-            met = {c: cell_rules(cells[c], year, window["field_dates"], window["months"], clim[c]) for c in weights}
+            met = {}
+            for c in weights:
+                try:
+                    met[c] = cell_rules(cells[c], year, window["field_dates"], window["months"], clim[c])
+                except (KeyError, ValueError) as err:
+                    raise ValueError(f"{keys['crop_key'] or 'year row'} {year} cell {c}: {err}") from err
             for rule in RULES:
                 rows.append(
                     {
