@@ -2,7 +2,7 @@ import { decisionPlan, rulebookPlan } from '../../data/rulebook';
 import type { Land } from '../../domain/farmerState';
 import { useState, type ReactNode } from 'react';
 import { livingDays } from '../../domain/calendar';
-import { cropShare, cropShareRange, soilReading } from '../../domain/hazards';
+import { cropShare, cropShareRange, reachOf, RULES, soilReading } from '../../domain/hazards';
 import { CROPS, planCropCount, planHasLegume, planProfitMillion, type Plan } from '../../domain/plans';
 import { riceSummary } from '../../domain/rice';
 import type { Priority } from '../../domain/farmerState';
@@ -69,18 +69,64 @@ function MoneyRow({ plan, highlight }: { plan: Plan; highlight: boolean }) {
   return (
     <Row icon="coin" title={t.farmer.rows.money} note={plan.crops.length ? t.farmer.rows.moneyNote : undefined} highlight={highlight}>
       {total !== null && (
-        <>
-          <div className={s.money}><SourceValue size="xl" {...refs.planProfit(plan, total)}>{f.n(total, 1)}</SourceValue><span className={s.unit}>{t.common.millionPerHa}</span></div>
-          <ul className={s.cropMoney}>
-            {plan.crops.map((c) => (
-              <li key={c.key}><span>{pick(CROPS[c.crop].name)}</span><SourceValue {...refs.cropProfit(c)}>{f.million(c.profit)}</SourceValue></li>
-            ))}
-          </ul>
-        </>
+        <div className={s.money}><SourceValue size="xl" {...refs.planProfit(plan, total)}>{f.n(total, 1)}</SourceValue><span className={s.unit}>{t.common.millionPerHa}</span></div>
       )}
       {total === null && plan.textOnly && (
         <SourceValue sourceId="p03" kind="study" value={pick(plan.textOnly.profitNote)} label={t.farmer.rows.money} />
       )}
+    </Row>
+  );
+}
+
+function CropMoney({ plan }: { plan: Plan }) {
+  const t = useT();
+  const pick = usePick();
+  const f = useFormat();
+  const refs = useRefs();
+  if (!plan.crops.length) return null;
+  return (
+    <Row icon="coin" title={t.farmer.perCrop}>
+      <ul className={s.cropMoney}>
+        {plan.crops.map((c) => (
+          <li key={c.key}><span>{pick(CROPS[c.crop].name)}</span><SourceValue {...refs.cropProfit(c)}>{f.million(c.profit)}</SourceValue></li>
+        ))}
+      </ul>
+    </Row>
+  );
+}
+
+const RULE_ICON: Record<(typeof CARD_RULES)[number], IconName> = { drought_rain_any2: 'crack', heat: 'sun', heavy_rain: 'rain' };
+
+/** Bad weather in one glance: a plain word per condition, with the worst share as the sourced number beside it. */
+function WeatherGlance({ plan, years, highlight }: { plan: Plan; years: number[]; highlight: boolean }) {
+  const t = useT();
+  const pick = usePick();
+  const f = useFormat();
+  const refs = useRefs();
+  if (!plan.crops.length || !years.length) return null;
+  return (
+    <Row icon="sun" title={t.farmer.weatherGlance} note={t.farmer.weatherGlanceNote} highlight={highlight}>
+      <ul className={s.glance}>
+        {CARD_RULES.map((rule) => {
+          let worst: { share: number; year: number; crop: (typeof plan.crops)[number] } | null = null;
+          for (const c of plan.crops) {
+            for (const y of years) {
+              const v = cropShare(c.key, rule, y);
+              if (!worst || v > worst.share) worst = { share: v, year: y, crop: c };
+            }
+          }
+          if (!worst) return null;
+          const level = reachOf(worst.share);
+          return (
+            <li key={rule} className={s.glanceItem} data-reach={level}>
+              <Icon name={RULE_ICON[rule]} size={22} />
+              <span className={s.glanceName}>{pick(RULES[rule].short)}</span>
+              <span className={s.glanceWord}>{t.farmer.reach[level]}</span>
+              <SourceValue {...refs.share(rule, worst.year, worst.share, worst.crop)}>{t.farmer.upTo(f.pct(worst.share))}</SourceValue>
+            </li>
+          );
+        })}
+      </ul>
     </Row>
   );
 }
@@ -286,9 +332,15 @@ export function PlanCard({ plan, years, priority, land, focused, onShare }: {
       <div className={s.body}>
         {hasCrops ? <MonthBar plan={plan} /> : <p className={s.noCal}><Icon name="calendar" size={18} />{t.farmer.p03NoCalendar}</p>}
         <MoneyRow plan={plan} highlight={priority === 'income'} />
-        <WeatherRow plan={plan} years={years} highlight={priority === 'stability'} />
-        {hasCrops && <WaterRow plan={plan} years={years} highlight={priority === 'water'} />}
+        <WeatherGlance plan={plan} years={years} highlight={priority === 'stability'} />
         {hasCrops && <LandRow plan={plan} highlight={priority === 'land'} />}
+        {hasCrops && priority === 'water' && <WaterRow plan={plan} years={years} highlight />}
+        <details className={s.all}>
+          <summary><Icon name="chart" size={18} />{t.farmer.allNumbers}<Icon name="chevronDown" size={18} /></summary>
+          <CropMoney plan={plan} />
+          <WeatherRow plan={plan} years={years} highlight={false} />
+          {hasCrops && priority !== 'water' && <WaterRow plan={plan} years={years} highlight={false} />}
+        </details>
         <GovernedRows plan={plan} land={land} />
       </div>
       <footer className={s.foot}>

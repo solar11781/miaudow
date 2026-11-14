@@ -1,0 +1,8 @@
+.tag {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 .8rem;
+  border-radius: var(--r-sm); border: 1px solid color-mix(in srgb, var(--c-gold-500) 55%, transparent);
+  background: color-mix(in srgb, var(--c-gold-500) 10%, transparent); color: var(--fg); text-decoration: none;
+  font-weight: 600; font-size: var(--t-small);
+}
+.tag svg { color: var(--accent-ink); }
+.tag:hover { border-color: var(--c-gold-500); }

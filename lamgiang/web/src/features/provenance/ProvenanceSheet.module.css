@@ -22,7 +22,7 @@
   box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--seal) 12%, transparent);
 }
 .label { color: var(--fg-3); font-size: var(--t-small); }
-.value { font: 400 clamp(1.7rem, 1.4rem + 1vw, 2.2rem)/1.15 var(--font-display); font-variant-numeric: lining-nums; overflow-wrap: anywhere; }
+.value { font: 700 clamp(1.7rem, 1.4rem + 1vw, 2.2rem)/1.15 var(--font-display); font-variant-numeric: lining-nums; overflow-wrap: anywhere; }
 .kindHelp { color: var(--fg-3); font-size: var(--t-small); line-height: 1.45; }
 .close { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; display: grid; place-items: center; color: var(--fg-2); }
 .close:hover { background: var(--bg-sunk); }
@@ -36,5 +36,5 @@
 .facts dt { color: var(--fg-3); }
 .facts dd { color: var(--fg); }
 @media (max-width: 420px) { .facts { grid-template-columns: minmax(0, 1fr); gap: 2px var(--s-4); } .facts dd { margin-bottom: var(--s-2); } }
-.caveat { border-left: 3px solid var(--hl-line); background: var(--hl-bg); color: var(--hl-fg); padding: var(--s-3) var(--s-4); border-radius: 0 var(--r-sm) var(--r-sm) 0; font-size: var(--t-small); }
+.caveat { background: var(--hl-bg); color: var(--hl-fg); padding: var(--s-3) var(--s-4); border-radius: var(--r-sm); font-size: var(--t-small); }
 .link { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent-ink); font-weight: 500; text-underline-offset: 4px; }

@@ -141,7 +141,6 @@ export function EarthPage() {
         <div ref={credits} className={s.credits} />
 
         <header className={s.head}>
-          <p className="eyebrow">{t.earth.eyebrow}</p>
           <h1 id="earth-title" className={s.title}>{t.earth.title}</h1>
           <p className={s.sceneName}><span className={s.sceneNum}>{String(idx + 1).padStart(2, '0')}/{String(SCENES.length).padStart(2, '0')}</span>{t.earth.scenes[st.scene].title}</p>
         </header>

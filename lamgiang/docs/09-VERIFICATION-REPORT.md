@@ -13,8 +13,9 @@ Date: 14 November 2026. Machine: Windows 11, Python 3.13.2, Node 26.13.1, Micros
 | Type check | `cd web && npx tsc -b` | clean |
 | Web lint | `cd web && npx eslint .` | clean (strict typescript-eslint, react-hooks, complexity ≤ 14) |
 | Web unit tests | `cd web && npx vitest run` | **39 passed** |
-| Browser journeys + WCAG 2.2 AA (axe) | `cd web && npm run build && npx playwright test e2e/journey.spec.ts` (API running on :8000; for repeated local runs set `MIAUDOW_COPILOT_RATE=500/600`, the default 20 questions per 10 minutes is reached) | **47 passed, 1 skipped** (clipboard check runs on desktop only) at 360 × 740 and 1440 × 900 |
-| Production build | `cd web && npm run build` | builds; largest chunks (gzip): Earth globe 1.13 MB (`/dai-quan-sat` only), science 3D 154 kB (science only), React 99 kB, app shell 92 kB |
+| Browser journeys + WCAG 2.2 AA (axe) | `cd web && npm run build && npx playwright test e2e/journey.spec.ts` (API running on :8000; for repeated local runs set `MIAUDOW_COPILOT_RATE=500/600`, the default 20 questions per 10 minutes is reached) | **53 passed, 1 skipped** (clipboard check runs on desktop only) at 360 × 740 and 1440 × 900 |
+| Production build | `cd web && npm run build` | builds; largest chunks (gzip): Earth globe 1.13 MB (`/dai-quan-sat` only), science 3D 154 kB (science only), main chunk 116 kB (app shell, router and GSAP) |
+| Template-pattern audit | `npx impeccable@4.7.0 detect web/src` | **0 findings** (was 8); browser scan of the plans page at 390 px: 4 (was 18), see D-049 |
 | Retrieval benchmark | `.venv\Scripts\python api/eval/run_retrieval_eval.py` | see below |
 | Climate ML evaluation | `.venv\Scripts\python api/eval/run_climate_ml_eval.py` | see below; a test checks the stored file equals a fresh run |
 | Data-quality report | `.venv\Scripts\python pipeline/check_quality.py` (also the last step of the canonical build) | **75 checks: 64 pass, 11 warn, 0 fail** |

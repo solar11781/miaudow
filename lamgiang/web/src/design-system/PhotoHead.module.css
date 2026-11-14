@@ -1,0 +1,10 @@
+.head { position: relative; overflow: hidden; min-height: min(68svh, 640px); display: flex; align-items: flex-end; isolation: isolate; }
+.photo { position: absolute; inset: 0; z-index: -1; transform-origin: 50% 60%; }
+.photo::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(6, 10, 7, .94) 0%, rgba(6, 10, 7, .6) 40%, rgba(6, 10, 7, .15) 100%),
+    linear-gradient(90deg, rgba(6, 10, 7, .55) 0%, rgba(6, 10, 7, 0) 65%);
+}
+.inner { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-5); padding-top: var(--s-24); padding-bottom: clamp(2.5rem, 2rem + 3vw, 4.5rem); }
+.title { font-size: clamp(3rem, 1.8rem + 4.6vw, 6.25rem); max-width: 16ch; color: #f7f8f3; text-wrap: wrap; font-kerning: none; }
+.lead { font-size: var(--t-lead); line-height: 1.5; max-width: 40rem; color: #dfe3d8; }

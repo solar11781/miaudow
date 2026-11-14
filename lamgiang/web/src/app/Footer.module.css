@@ -3,8 +3,8 @@
 @media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); gap: var(--s-8); } }
 .brandCol { display: flex; flex-direction: column; gap: var(--s-4); }
 .brand { display: inline-flex; align-items: center; gap: .8rem; }
-.name { font: 500 1.8rem/1 var(--font-display); }
-.tagline { font: italic 400 1.35rem/1.35 var(--font-display); color: var(--c-gold-300); max-width: 26ch; }
+.name { font: 750 2rem/1 var(--font-display); letter-spacing: -.015em; }
+.tagline { font: 700 1.6rem/1.15 var(--font-display); color: var(--c-gold-300); max-width: 22ch; }
 .support { color: var(--fg-2); font-size: var(--t-small); max-width: 52ch; }
 .links { display: flex; flex-direction: column; gap: 2px; }
 .links a { min-height: 44px; display: inline-flex; align-items: center; color: var(--fg); text-decoration: none; font-weight: 500; }

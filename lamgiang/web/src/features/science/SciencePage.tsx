@@ -1,4 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { ART } from '../../data/art';
+import { PhotoHead } from '../../design-system/PhotoHead';
 import { Link, useSearchParams } from 'react-router-dom';
 import { geo, hazards, model, YEARS, type MetricRow, type RiceSeason, type RuleCode } from '../../data';
 import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
@@ -45,13 +47,6 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
   return (
     <section className={`band surface-forest grain ${s.gridBand}`} aria-labelledby="grid-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-6)' }}>
-        <header className={s.pageHead}>
-          <p className="eyebrow">{t.science.eyebrow}</p>
-          <h1 className={`display ${s.pageTitle}`}>{t.science.title}</h1>
-          <p className="lead">{t.science.lead}</p>
-          <Link to={`/dai-quan-sat?canh=analysis&nam=${year}`} className={s.globeLink}><Icon name="globe" size={20} />{t.science.globeCta}<Icon name="arrowRight" size={18} /></Link>
-        </header>
-
         <div className={s.rules} role="radiogroup" aria-label={t.science.rule}>
           {SCIENCE_RULES.map((r) => (
             <button key={r} type="button" role="radio" aria-checked={rule === r} className={s.ruleBtn} onClick={() => setRule(r)}>
@@ -144,7 +139,6 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
     <section className="band surface-paper" aria-labelledby="climate-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
         <Reveal className={s.colHead}>
-          <p className="eyebrow">{t.climate.sectionEyebrow}</p>
           <h2 id="climate-title" className="h1">{t.climate.sectionTitle} · <span className="num">{year}</span></h2>
           <p className="lead">{t.climate.sectionLead}</p>
           <Link className={s.askLink} to={`/tro-ly?${q}`} viewTransition><Icon name="spark" size={18} />{t.climate.askYear(year)}</Link>
@@ -284,6 +278,15 @@ function SkillSection() {
   );
 }
 
+function ScienceHead({ year }: { year: number }) {
+  const t = useT();
+  return (
+    <PhotoHead shot={ART.pageHead.science} id="science-title" title={t.science.title} lead={t.science.lead}>
+      <Link to={`/dai-quan-sat?canh=analysis&nam=${year}`} className={s.globeLink}><Icon name="globe" size={20} />{t.science.globeCta}<Icon name="arrowRight" size={18} /></Link>
+    </PhotoHead>
+  );
+}
+
 export function SciencePage() {
   const [params, setParams] = useSearchParams();
   const fromUrl = Number(params.get('nam'));
@@ -292,6 +295,7 @@ export function SciencePage() {
   const setYear = useCallback((y: number) => setParams((p) => { const n = new URLSearchParams(p); n.set('nam', String(y)); return n; }, { replace: true, preventScrollReset: true }), [setParams]);
   return (
     <main id="main">
+      <ScienceHead year={year} />
       <GridSection year={year} setYear={setYear} />
       <ClimateSection year={year} setYear={setYear} />
       <ClimateMlSection year={year} setYear={setYear} />

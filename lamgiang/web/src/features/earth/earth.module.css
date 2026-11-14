@@ -29,8 +29,8 @@
   display: flex; flex-direction: column; gap: .35rem; color: #f4f0e5; text-shadow: 0 2px 18px rgba(0, 0, 0, .7);
 }
 .head :global(.eyebrow) { color: var(--c-gold-300); }
-.title { font: 400 clamp(1.9rem, 1.4rem + 1.6vw, 3rem)/1.1 var(--font-display); letter-spacing: -.01em; }
-.sceneName { display: flex; align-items: baseline; gap: .6rem; font: 400 clamp(1.25rem, 1.1rem + .5vw, 1.6rem)/1.3 var(--font-display); color: #fbf8f0; }
+.title { font: 700 clamp(1.9rem, 1.4rem + 1.6vw, 3rem)/1.1 var(--font-display); letter-spacing: -.01em; }
+.sceneName { display: flex; align-items: baseline; gap: .6rem; font: 700 clamp(1.25rem, 1.1rem + .5vw, 1.6rem)/1.3 var(--font-display); color: #fbf8f0; }
 .sceneNum { font: 500 17px/1 var(--font-mono); color: var(--c-gold-500); }
 
 .panel {
@@ -90,7 +90,7 @@
 .legend span { display: inline-flex; align-items: center; gap: .45rem; }
 .legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 .insight { border-radius: var(--r-lg); padding: var(--s-4); background: rgba(233, 188, 87, .12); border: 1px solid rgba(233, 188, 87, .35); display: flex; flex-direction: column; gap: .6rem; }
-.insightText { font: 400 1.3rem/1.4 var(--font-display); color: #fbf8f0; }
+.insightText { font: 700 1.5rem/1.3 var(--font-display); color: #fbf8f0; }
 .insightLinks { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
 .askBtn {
   display: inline-flex; align-items: center; gap: .45rem; min-height: 48px; padding: 0 1.1rem; border-radius: var(--r-pill);
@@ -129,7 +129,7 @@
 .eyes::backdrop { background: rgba(4, 7, 10, .8); }
 .eyesInner { height: 100%; display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-4); }
 .eyesHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); }
-.eyesHead h2 { font: 400 1.6rem/1.2 var(--font-display); }
+.eyesHead h2 { font: 700 1.6rem/1.2 var(--font-display); }
 .eyesActions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
 .backEarth {
   display: inline-flex; align-items: center; gap: .45rem; min-height: 48px; padding: 0 1.1rem; border-radius: var(--r-pill); border: 0;

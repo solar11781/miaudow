@@ -9,7 +9,7 @@ type Size = 'md' | 'lg';
 interface Common {
   variant?: Variant;
   size?: Size;
-  /** Trailing icon; the primary button shows it in a dark disc, like a seal pressed into the pill. */
+  /** Trailing icon; it moves a little on hover, the button itself stays still. */
   icon?: IconName;
   leadingIcon?: IconName;
   block?: boolean;
@@ -19,12 +19,12 @@ interface Common {
 const cls = (v: Variant, z: Size, block?: boolean, extra?: string) =>
   [s.btn, s[v], s[z], block ? s.block : '', extra ?? ''].filter(Boolean).join(' ');
 
-function Inner({ icon, leadingIcon, children, variant }: Pick<Common, 'icon' | 'leadingIcon' | 'children' | 'variant'>) {
+function Inner({ icon, leadingIcon, children }: Pick<Common, 'icon' | 'leadingIcon' | 'children'>) {
   return (
     <>
       {leadingIcon && <Icon name={leadingIcon} size={18} />}
       <span className={s.label}>{children}</span>
-      {icon && (variant === 'primary' ? <span className={s.disc}><Icon name={icon} size={18} strokeWidth={2} /></span> : <Icon name={icon} size={18} />)}
+      {icon && <span className={s.icon}><Icon name={icon} size={18} strokeWidth={2} /></span>}
     </>
   );
 }
@@ -35,7 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, Common & ButtonHTMLAttribute
 ) {
   return (
     <button ref={ref} type={type} className={cls(variant, size, block, className)} {...rest}>
-      <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>{children}</Inner>
+      <Inner icon={icon} leadingIcon={leadingIcon}>{children}</Inner>
     </button>
   );
 });
@@ -43,7 +43,7 @@ export const Button = forwardRef<HTMLButtonElement, Common & ButtonHTMLAttribute
 export function ButtonLink({ variant = 'primary', size = 'md', icon, leadingIcon, block, children, className, ...rest }: Common & LinkProps) {
   return (
     <Link className={cls(variant, size, block, className)} viewTransition {...rest}>
-      <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>{children}</Inner>
+      <Inner icon={icon} leadingIcon={leadingIcon}>{children}</Inner>
     </Link>
   );
 }
