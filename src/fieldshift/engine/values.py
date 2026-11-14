@@ -5,9 +5,10 @@ from __future__ import annotations
 from decimal import ROUND_HALF_UP, Decimal
 
 from fieldshift.engine.rules import HazardRow
-from fieldshift.engine.schemas import Text, Value
+from fieldshift.engine.schemas import SourceId, Text, Value
 
 PERCENT: Text = {"vi": "%", "en": "%"}  # unit "%" in both languages (05-DATA-CONTRACTS §4b)
+ENGINE_ID: SourceId = "E-022"  # engine arithmetic on cited values: sums, counts, min / median / max (D-158)
 
 
 def whole_percent(fraction: float | Decimal) -> str:
@@ -19,12 +20,16 @@ def whole_percent(fraction: float | Decimal) -> str:
     return str(abs(shown) if shown == 0 else shown)
 
 
+def percent(fraction: float | Decimal, source_ids: list[SourceId]) -> Value:
+    """A fraction as a whole-percent Value with its sources."""
+    return Value(value=whole_percent(fraction), unit=PERCENT, source_ids=source_ids)
+
+
+def percent_value(fraction: float | Decimal | None, source_ids: list[SourceId]) -> Value | None:
+    """A fraction as a whole-percent Value with its sources; null stays null."""
+    return None if fraction is None else percent(fraction, source_ids)
+
+
 def share_value(row: HazardRow) -> Value | None:
     """One hazard_labels.json row as its share Value (05-DATA-CONTRACTS §4b API conversion); null stays null."""
-    if row.share_farmland is None:
-        return None
-    return Value(
-        value=whole_percent(row.share_farmland),
-        unit=PERCENT,
-        source_ids=[row.threshold_source_id, *row.values_source_ids, row.computed_by],
-    )
+    return percent_value(row.share_farmland, [row.threshold_source_id, *row.values_source_ids, row.computed_by])
