@@ -6,3 +6,8 @@
 .autopilot/audit.md
 __pycache__/
 .pytest_cache/
+data/raw/
+.venv/
+*.pyc
+build/
+*.egg-info/
