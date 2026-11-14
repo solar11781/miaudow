@@ -1,4 +1,6 @@
 import type { SourceId, SourceRecord } from './provenance';
+import { en } from '../i18n/en';
+import { vi } from '../i18n/vi';
 
 // The source registry. Text here describes the sources; it adds no new findings.
 export const SOURCES: Record<SourceId, SourceRecord> = {
@@ -317,8 +319,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       en: 'Results recorded in metrics.json and gates.json',
     },
     caveat: {
-      vi: 'Lúa vụ Đông Xuân không vượt mô hình bỏ thời tiết, nên dự đoán lúa vụ Đông Xuân không được hiện. Lúa vụ Mùa vượt qua, nhưng chỉ hơn một chút.',
-      en: 'Spring rice did not beat the no-weather model, so spring predictions are not shown. Winter rice passed by a small margin.',
+      vi: `Lúa vụ Đông Xuân không vượt mô hình bỏ thời tiết, nên dự đoán lúa vụ Đông Xuân không được hiện. Lúa vụ Mùa vượt qua, nhưng chỉ hơn một chút. ${vi.common.winterFragile}.`,
+      en: `Spring rice did not beat the no-weather model, so spring predictions are not shown. Winter rice passed by a small margin. ${en.common.winterFragile}.`,
     },
   },
   e010: {
