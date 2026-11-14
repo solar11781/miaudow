@@ -127,6 +127,16 @@ def test_fetch_recorded_refuses_a_changed_file_an_unknown_path_and_http(tmp_path
     assert not Path("data/raw/b.geojson").exists()
     with pytest.raises(ValueError, match="no manifest row"):
         fetch_recorded("data/raw/other.geojson", _recorded(tmp_path), _Opener(b"boundary"))
+    two = tmp_path / "TWO.csv"
+    _write(
+        two,
+        [
+            ["data/raw/b.geojson", "g", "t", "t", "https://example.org/b.geojson", "2026-11-11", "curl", "a" * 64],
+            ["data/raw/b.geojson", "g", "t", "t", "https://example.org/b.geojson", "2026-11-12", "curl", "b" * 64],
+        ],
+    )
+    with pytest.raises(ValueError, match="several versions"):
+        fetch_recorded("data/raw/b.geojson", two, _Opener(b"boundary"))
     with pytest.raises(ValueError, match="https"):
         fetch_recorded(
             "data/raw/b.geojson", _recorded(tmp_path, url="http://example.org/b.geojson"), _Opener(b"boundary")

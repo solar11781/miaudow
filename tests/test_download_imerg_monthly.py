@@ -39,4 +39,6 @@ def test_imerg_stage_is_skipped_with_a_message_when_asked(tmp_path: Path) -> Non
 
 def test_imerg_stage_runs_when_the_switch_is_not_1(tmp_path: Path) -> None:
     result = _run(tmp_path, "0")
-    assert "IMERG stage skipped" not in result.stdout  # it went on (and stops here at the missing cell list)
+    assert "IMERG stage skipped" not in result.stdout
+    assert result.returncode != 0  # it went on and stopped at the missing cell list of this empty folder
+    assert "cell_weights.csv" in result.stderr
