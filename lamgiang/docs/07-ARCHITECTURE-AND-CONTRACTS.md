@@ -51,6 +51,45 @@ HTTP: `GET /api/health`, `GET /api/catalog`, `GET /api/climate/year/{year}`, `GE
 `GET /api/climate/live` (on-demand NASA POWER), `POST /api/evidence/search`, `GET /api/decision/plans`,
 `POST /api/decision/compare`, `POST /api/copilot`, `GET /api/voice/benchmark`.
 
+### Phase 2 additions
+
+| Core | Module | Entry points |
+|---|---|---|
+| 01 Climate ML | `miaudow_api.climate_ml` | `analog_search(year, k)` → `AnalogResult`; `anomaly_years()` → `AnomalyYearsResult`; `full_evaluation()` (leave-one-year-out against persistence and climatology, stored in `api/eval/results/`) |
+| 01 Climate series | `miaudow_api.climate_series` | yearly and monthly NASA POWER and CHIRPS series side by side, never averaged |
+| Data views | `miaudow_api.data_views` | quality report, dataset coverage, regions, map layers, satellite scenes and vegetation, documents, AI capabilities, model evaluations |
+
+HTTP added: `GET /api/data/catalog`, `/api/data/quality`, `/api/data/coverage`, `/api/climate/history`,
+`/api/climate/anomalies`, `/api/climate/analogs`, `/api/climate/anomaly-years`, `/api/geo/regions`, `/api/geo/layers`,
+`/api/satellite/scenes`, `/api/satellite/vegetation`, `/api/research/documents`, `POST /api/research/search`,
+`POST /api/crop/compare`, `GET /api/ai/capabilities` (credentials checked for presence only), `/api/models/evaluations`.
+An optional file that is not built answers 200 with an explicit unavailable state; a missing core file answers 503.
+
+The copilot gained six strict tools on the same cores: `get_climate_anomalies`, `find_analog_years`,
+`list_climate_anomaly_years`, `get_satellite_vegetation`, `get_data_provenance`, `get_map_layer_metadata`.
+
+New canonical files: `climate_ml.json` (analogs for every year, unusual-year scores, both evaluations; written by
+the build from `climate_ml.py`) and `quality.json` (75 checks from `pipeline/check_quality.py`, run last).
+
+## The Earth observatory (web, `/dai-quan-sat`)
+
+One page, eight scenes, one state in the URL (`canh`, `nam`, `lop`, `mua`, `o`):
+
+| Scene | Camera | Shows | Panel |
+|---|---|---|---|
+| cosmos | 62,000 km over the western Pacific | Earth among the stars | planets in NASA Eyes |
+| earth | 17,000 km over Viet Nam | Blue Marble, lit for 21 June 2020 | GIBS credit |
+| satellites | 24,000 km | illustrative orbit rings of six missions | what MIAUDOW used from each, what is blocked |
+| vietnam | 2,900 km | place names, Nghệ An and Đô Lương outlines | — |
+| nghe-an | 240 km, tilted | province outline, district, Lưu Sơn | year, layer (Sentinel-2 data or GIBS imagery) |
+| do-luong | 34 km, tilted | Sentinel-2 seasonal NDVI over the district | season |
+| analysis | 200 km, tilted | five NASA POWER cells as columns (height = rain, colour = against 1991–2020) | cell, sourced values |
+| insight | same | same | one plain sentence, link to the copilot with the year |
+
+`web/src/features/earth/globe.ts` is the only file that imports Cesium (`createGlobe` → `goTo`, `setYear`,
+`setOverlay`, `setSelected`, `setOrbits`, `stopFlight`, `dispose`); the panels read the same canonical files without
+it, so the page works with the globe off (reduced motion, no WebGL, load failure).
+
 ## Rules carried over from the team (UI-UX-SPEC H1-H19, D-155)
 
 3D, WebGL and canvas only outside the farmer routes and code-split; every animation off under reduced motion and

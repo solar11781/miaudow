@@ -5,6 +5,10 @@ Run from api/:  ..\\.venv\\Scripts\\uvicorn main:app
 The canonical files are loaded once at startup; a missing file gives a clear 503 that names the build command.
 POST /api/copilot calls miaudow_api.copilot.answer behind a small in-memory rate limiter (per client IP, configured by
 MIAUDOW_COPILOT_RATE as "requests/seconds", default 20/600).
+
+Phase-2 routes (data layer, climate ML, geography, satellite, research, AI status) are typed by the models at the end
+of contracts.py. An optional file that was not built answers 200 with an explicit unavailable state and the command
+that builds it; a missing core canonical file answers 503; an unknown id answers 404; a bad parameter answers 422.
 """
 
 from __future__ import annotations
@@ -20,8 +24,28 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from . import canonical, climate, copilot, decision, evidence, voice
-from .contracts import CompareRequest, CopilotRequest, CopilotResponse, DecisionResult, MetricRecord, SearchResult
+from . import canonical, climate, climate_ml, climate_series, copilot, data_views, decision, evidence, voice
+from .contracts import (
+    AiCapability,
+    AnalogResult,
+    AnomalyYearsResult,
+    ClimateAnomalies,
+    ClimateHistory,
+    CompareRequest,
+    CopilotRequest,
+    CopilotResponse,
+    DatasetCoverage,
+    DecisionResult,
+    MapLayer,
+    MetricRecord,
+    ModelEvaluation,
+    QualityResponse,
+    Region,
+    ResearchDocument,
+    SatelliteScenes,
+    SatelliteVegetation,
+    SearchResult,
+)
 from .paths import BUILD_COMMAND
 
 DEFAULT_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
@@ -72,6 +96,7 @@ def cors_origins() -> list[str]:
 def _warm() -> None:
     """Load every canonical file and the evidence index once; a missing file is reported by /api/health and 503s."""
     canonical.clear()
+    climate_ml.clear()
     evidence.load_passages.cache_clear()
     evidence.default_index.cache_clear()
     if canonical.missing_files():
@@ -105,6 +130,10 @@ def create_app() -> FastAPI:
     @app.exception_handler(climate.ClimateInputError)
     async def _bad_climate(_: Request, exc: climate.ClimateInputError):
         return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+    @app.exception_handler(data_views.NotFound)
+    async def _not_found(_: Request, exc: data_views.NotFound):
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
 
     @app.get("/api/health")
     def health() -> dict:
@@ -185,6 +214,82 @@ def create_app() -> FastAPI:
     @app.get("/api/voice/benchmark")
     def voice_benchmark() -> dict:
         return voice.benchmark_status()
+
+    # ---- Phase 2: data layer
+
+    @app.get("/api/data/catalog")
+    def data_catalog() -> dict:
+        return climate.catalog()
+
+    @app.get("/api/data/quality", response_model=QualityResponse)
+    def data_quality() -> QualityResponse:
+        return data_views.quality()
+
+    @app.get("/api/data/coverage", response_model=list[DatasetCoverage])
+    def data_coverage() -> list[DatasetCoverage]:
+        return data_views.coverage()
+
+    # ---- Phase 2: climate series and climate ML (AI core 01)
+
+    @app.get("/api/climate/history", response_model=ClimateHistory)
+    def climate_history(
+        cell: str = Query(climate.FARMLAND, description="farmland_weighted, a cell id or site_luu_son"),
+        first: int | None = Query(None, alias="from"),
+        last: int | None = Query(None, alias="to"),
+    ) -> ClimateHistory:
+        return climate_series.history(cell, first, last)
+
+    @app.get("/api/climate/anomalies", response_model=ClimateAnomalies)
+    def climate_anomalies(year: int = Query(...)) -> ClimateAnomalies:
+        return climate_series.anomalies(year)
+
+    @app.get("/api/climate/analogs", response_model=AnalogResult)
+    def climate_analogs(year: int = Query(...), k: int = Query(3, ge=1, le=10)) -> AnalogResult:
+        return climate_ml.analog_search(year, k)
+
+    @app.get("/api/climate/anomaly-years", response_model=AnomalyYearsResult)
+    def climate_anomaly_years() -> AnomalyYearsResult:
+        return climate_ml.anomaly_years()
+
+    # ---- Phase 2: geography and satellite
+
+    @app.get("/api/geo/regions", response_model=list[Region])
+    def geo_regions() -> list[Region]:
+        return data_views.regions()
+
+    @app.get("/api/geo/layers", response_model=list[MapLayer])
+    def geo_layers() -> list[MapLayer]:
+        return data_views.layers()
+
+    @app.get("/api/satellite/scenes", response_model=SatelliteScenes)
+    def satellite_scenes() -> SatelliteScenes:
+        return data_views.satellite_scenes()
+
+    @app.get("/api/satellite/vegetation", response_model=SatelliteVegetation)
+    def satellite_vegetation() -> SatelliteVegetation:
+        return data_views.satellite_vegetation()
+
+    # ---- Phase 2: research, crops, AI status
+
+    @app.get("/api/research/documents", response_model=list[ResearchDocument])
+    def research_documents() -> list[ResearchDocument]:
+        return data_views.research_documents()
+
+    @app.post("/api/research/search", response_model=SearchResult)
+    def research_search(payload: SearchRequest) -> SearchResult:
+        return evidence.search(payload.query, payload.k)
+
+    @app.post("/api/crop/compare", response_model=DecisionResult)
+    def crop_compare(payload: CompareRequest) -> DecisionResult:
+        return decision_compare(payload)
+
+    @app.get("/api/ai/capabilities", response_model=list[AiCapability])
+    def ai_capabilities() -> list[AiCapability]:
+        return data_views.capabilities()
+
+    @app.get("/api/models/evaluations", response_model=list[ModelEvaluation])
+    def model_evaluations() -> list[ModelEvaluation]:
+        return data_views.model_evaluations()
 
     return app
 

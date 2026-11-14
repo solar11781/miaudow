@@ -79,6 +79,19 @@ data, so some starter decisions are superseded; each supersession is recorded he
 | D-033 | Sentinel-2 through the open Earth Search COGs | Windowed reads over the former Đô Lương district, SCL classes 4/5/6 kept, 20 m grid; the double-offset trap of `boa_offset_applied` items is checked per tile. Composites are greenness only; 2020–21 and 2024 are not compared as change. |
 | D-034 | The study site is a commune marker, not a field | Lưu Sơn at 18.8964 N, 105.2803 E (Wikidata Q10788283). The commune merged into xã Đô Lương in 2025; the district boundary is geoBoundaries ADM2 (2020 vintage, CC BY 3.0 IGO). |
 
+## Decisions of Phase 2 (14 Nov 2026)
+
+| ID | Decision | Why and what it costs |
+|---|---|---|
+| D-035 | CesiumJS for the Earth observatory (`/dai-quan-sat`) | A WGS84 globe that flies from space to one commune is what Cesium is built for; three.js stays for the science page's grid. No Cesium ion token: base map and layers come from NASA GIBS, terrain is the plain ellipsoid. The globe is its own chunk (4.2 MB, 1.13 MB gzip) and loads only on this route, after the page paints. |
+| D-036 | Cesium sub-packages pinned to the 1.146.0 release set | `cesium@1.146.0` declares `@cesium/engine ^26.4.0`; npm resolved 26.5.0 (published 2 Nov 2026, under two weeks old), which moved `addExtensionsRequired` out, and the build failed. `package.json` `overrides` pin `@cesium/engine` 26.4.0, `@cesium/widgets` 16.3.0, `@cesium/core` 0.1.0, all published 1 Oct 2026 with Cesium 1.146.0. |
+| D-037 | Place names drawn by the app, not GIBS `Reference_Labels_15m` | That layer answers HTTP 500 for many tiles over Viet Nam (alternating zoom levels, checked by hand); Cesium then painted those globe tiles black. Five labels (Viet Nam, Hà Nội, Vinh, Nghệ An, former Đô Lương) are drawn as entities that fade with distance. |
+| D-038 | Eight scenes as one shared state in the URL | `canh` (scene), `nam` (year), `lop` (layer), `mua` (Sentinel-2 season), `o` (cell). Flights start only when the user picks a scene and stop on any touch; autoplay runs only on request and can be paused (H1); under reduced motion the globe is not loaded and the page says why. Farmer routes still load no 3D code (tested). |
+| D-039 | NASA Eyes opened, never imitated | Planets and missions open the official `eyes.nasa.gov` pages in a dialog (frameable, checked) with a new-tab link in case the frame stays empty. "Trở về Trái Đất — Khám phá đồng lúa Nghệ An" closes it and lands on the Nghệ An scene. Orbit rings on the globe are labelled as illustrations from published height and inclination. |
+| D-040 | Climate ML: analog years and a robust unusual-year score | Numpy only. Analogs: 14 features z-scored on 1991–2020, leave-one-year-out with the normal recomputed per held-out year. Unusual years: largest monthly robust z of log rain against the 1991–2020 median, flagged above the 95th percentile of baseline scores (Mahalanobis rejected: 30 years cannot hold a stable 12 × 12 covariance). The verdicts are shown in the app as written, including that analogs have no forecast skill. |
+| D-041 | One implementation, read back for the web | `pipeline/build_canonical.py` writes `climate_ml.json` by calling `api/miaudow_api/climate_ml.py`, as it does for `decision.json`. The web shows the hit rates from counts (16/33 = 48 %), because the stored rates are rounded to three decimals and rounding twice turned 48.48 % into 49 %. |
+| D-042 | Data-quality report on every build | `pipeline/check_quality.py` runs last in the canonical build and never stops it: 75 checks, 64 pass, 11 warn, 0 fail, shown on the evidence page as written. The "POWER cells inside the province" check is a warning, not a failure, for cell 18.5_105.625: its centre lies south of the province box, but its footprint overlaps Nghệ An (21 %) and only the in-province farmland carries weight. |
+
 ### Packages of the 2.0 build
 
 Exact pins, each published at least two weeks before use. Runtime packages of the web app are the team-approved
@@ -88,7 +101,8 @@ ones (team decision D-157) plus three.js.
 |---|---|---|---|---|---|---|
 | react, react-dom | 19.3.1 | MIT | UI runtime | shared `react` chunk ~314 kB (≈ 100 kB gzip) | — | none known |
 | react-router-dom | 7.18.5 | MIT | hash routing, lazy areas, view transitions | in the main chunk | hand-made router | none known |
-| three | 0.186.1 | MIT | WebGL observatory of the real Nghệ An outline and NASA grid | only in the science chunk (≈ 635 kB, ≈ 165 kB gzip); never on farmer routes | CSS 3D (kept as fallback), deck.gl/MapLibre (heavier, needs tiles), Cesium (planned for the globe, Phase 2) | renders local data only |
+| three | 0.186.1 | MIT | WebGL observatory of the real Nghệ An outline and NASA grid | only in the science chunk (≈ 635 kB, ≈ 165 kB gzip); never on farmer routes | CSS 3D (kept as fallback), deck.gl/MapLibre (heavier, needs tiles); Cesium serves the globe (D-035) | renders local data only |
+| cesium (with @cesium/engine 26.4.0, @cesium/widgets 16.3.0, @cesium/core 0.1.0 via overrides) | 1.146.0 | Apache-2.0 | 3D Earth observatory from space to Lưu Sơn (D-035, D-036) | only in the observatory chunk (4.2 MB, 1.13 MB gzip); runtime files (workers, sky box) copied by `web/pipeline/copy_cesium.mjs`, git-ignored; never on farmer routes | three.js globe (no geodesy, no imagery tiling), MapLibre globe (no 3D extrusions over a globe in the pinned version), NASA Eyes only (cannot show our data) | no ion token, no third-party tiles except NASA GIBS and our own Sentinel-2 PNGs |
 | @fontsource/be-vietnam-pro, noto-serif-display, jetbrains-mono | 5.3.0 | OFL-1.1 | self-hosted fonts with the Vietnamese subset | only imported weights ship | Google Fonts CDN (rejected: third-party request) | none |
 | fastapi | 0.162.5 | MIT | API | server only | — | CORS allow-list from env |
 | uvicorn[standard] | 0.54.0 | BSD-3-Clause | ASGI server | server only | — | — |

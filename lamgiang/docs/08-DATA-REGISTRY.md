@@ -1,6 +1,6 @@
 # MIAUDOW — data registry
 
-Generated from `data/canonical/catalog.json` (built 2026-11-14T10:36:34+00:00) by `pipeline/write_data_registry.py`.
+Generated from `data/canonical/catalog.json` (built 2026-11-14T11:44:59+00:00) by `pipeline/write_data_registry.py`.
 Do not edit by hand: rebuild the canonical data, then rerun the script.
 
 Ingestion state: **INGESTED** 13, **BLOCKED** 8.

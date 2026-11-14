@@ -24,6 +24,7 @@ export const router = createHashRouter([
       },
       { path: 'can-bo', lazy: async () => ({ Component: (await import('../features/officer/OfficerPage')).OfficerPage }) },
       { path: 'khoa-hoc', lazy: async () => ({ Component: (await import('../features/science/SciencePage')).SciencePage }) },
+      { path: 'dai-quan-sat', lazy: async () => ({ Component: (await import('../features/earth/EarthPage')).EarthPage }) },
       { path: 'bang-chung', lazy: async () => ({ Component: (await import('../features/evidence/EvidencePage')).EvidencePage }) },
       { path: 'tro-ly', lazy: async () => ({ Component: (await import('../features/ai/AssistantPage')).AssistantPage }) },
       { path: 'hoi', element: <Navigate to="/tro-ly" replace /> },

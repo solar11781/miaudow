@@ -12,14 +12,16 @@ every number with its source. Team Miaudow, NASA Space Apps Challenge 2026 (Hà 
 | Home | `#/` | everyone | Eight chapters from Nghệ An rice land to the satellite grid, on licensed photographs |
 | Farmer | `#/nong-dan` … `/phuong-an` | farmers | Four tap-only steps; plan cards with a 12-month calendar, trial profit, weather, water, land care, sourced risks and questions for the officer. No 3D, nothing stored in the browser |
 | Officer | `#/can-bo` | extension officers | Evidence desk: conclusion → meaning → number → source → method and limits, the fit with a family's field, the matrix |
-| Science | `#/khoa-hoc?nam=2020` | judges, researchers | WebGL observatory of the real province outline and NASA grid; one shared year across the 34-year rain strip, NASA POWER vs CHIRPS, MODIS NDVI, rice history and the model test |
-| Evidence | `#/bang-chung` | everyone | Claims with their evidence status, the places where sources disagree, every dataset with its real ingestion state, the source list |
+| Science | `#/khoa-hoc?nam=2020` | judges, researchers | WebGL observatory of the real province outline and NASA grid; one shared year across the 34-year rain strip, NASA POWER vs CHIRPS, MODIS NDVI, the closest past years and the unusual years (climate ML, with its test results), rice history and the model test |
+| Earth observatory | `#/dai-quan-sat` | everyone, judges | CesiumJS globe in eight scenes from space to Lưu Sơn: NASA GIBS imagery, the missions MIAUDOW used or could not use, Sentinel-2 greenness over Đô Lương, NASA POWER cells as 3D columns, official NASA Eyes in a dialog. Part of the science area; never on farmer routes |
+| Evidence | `#/bang-chung` | everyone | Claims with their evidence status, the places where sources disagree, every dataset with its real ingestion state, the data-quality report (75 checks, warnings shown), the source list |
 | Copilot | `#/tro-ly` | everyone | Vietnamese-first assistant with voice input (transcript confirmed before sending), read-aloud, answer cards and a visible tool trace |
 
 Four AI cores share one data layer (`docs/07-ARCHITECTURE-AND-CONTRACTS.md`):
 
 1. **Climate intelligence** — `api/miaudow_api/climate.py`: complete-month aggregation, normals, anomalies, hot and
-   cold days, dry spells, the official risk-level rules of QĐ 18/2021, farmland weighting.
+   cold days, dry spells, the official risk-level rules of QĐ 18/2021, farmland weighting. `climate_ml.py`: analog
+   years and unusual-year scores, tested year by year against simple baselines (`api/eval/run_climate_ml_eval.py`).
 2. **Evidence retrieval** — `api/miaudow_api/evidence.py`: hybrid lexical search over 538 passages with abstention,
    benchmarked in `api/eval/`.
 3. **Crop decision support** — `api/miaudow_api/decision.py`: the six plans in study order, verified values with
@@ -75,11 +77,13 @@ NASA POWER daily caches for the five cells are committed under `data/raw/power*`
 ## Checks
 
 ```bash
-.venv/Scripts/python -m pytest api/tests pipeline/tests -q   # 210 tests
+.venv/Scripts/python -m pytest api/tests pipeline/tests -q   # 288 tests
 .venv/Scripts/ruff check api pipeline scripts
 cd web && npx tsc -b && npx eslint . && npx vitest run      # 39 unit tests
-cd web && npm run build && npx playwright test e2e/journey.spec.ts   # 35 browser tests incl. WCAG 2.2 AA
+cd web && npm run build && npx playwright test e2e/journey.spec.ts   # 48 browser tests incl. WCAG 2.2 AA
 .venv/Scripts/python api/eval/run_retrieval_eval.py          # retrieval benchmark
+.venv/Scripts/python api/eval/run_climate_ml_eval.py         # climate ML evaluation
+.venv/Scripts/python pipeline/check_quality.py               # data-quality report
 ```
 
 Results, performance measurements and the completion matrix: `docs/09-VERIFICATION-REPORT.md`.
@@ -111,6 +115,8 @@ reference/    the original prototype and the starter app, kept for comparison
 
 Code: Apache-2.0 (team Miaudow). Data: NASA POWER, NASA MODIS (LP DAAC, ORNL DAAC subsets), CHIRPS v3 (Climate
 Hazards Center, CC BY 4.0), Copernicus Sentinel-2 ("Contains modified Copernicus Sentinel data 2020-2024"),
-geoBoundaries (gbOpen; ADM2 under CC BY 3.0 IGO, source OCHA ROAP), NASA GIBS imagery, Cục Thống kê (NSO Vietnam),
+geoBoundaries (gbOpen; ADM2 under CC BY 3.0 IGO, source OCHA ROAP), NASA GIBS imagery ("We acknowledge the use of
+imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and
+Information System (ESDIS)"), NASA Eyes (opened, not copied), CesiumJS (Apache-2.0), Cục Thống kê (NSO Vietnam),
 Vietnamese legal texts (not subject to copyright, Luật SHTT Điều 15). Photographs: see `assets/photos/PHOTO_MANIFEST.json`
 and the footer of the app. MIAUDOW is not endorsed by NASA, ESA or any data provider.

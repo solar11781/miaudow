@@ -47,12 +47,21 @@ class CanonicalMissing(RuntimeError):
     """A canonical file is missing; the API answers 503 and names the build command."""
 
 
-@lru_cache(maxsize=16)
+@lru_cache(maxsize=32)
 def load(name: str) -> dict:
     path = canonical_dir() / name
     if not path.exists():
         raise CanonicalMissing(f"data/canonical/{name} is missing; build it with: {BUILD_COMMAND}")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_optional(name: str) -> dict | None:
+    """A Phase-2 canonical file (vegetation, MODIS NDVI, GIBS layers, quality) or None when it was not built yet;
+    callers turn None into an explicit unavailable state instead of a 503."""
+    try:
+        return load(name)
+    except CanonicalMissing:
+        return None
 
 
 def missing_files() -> list[str]:

@@ -1,0 +1,2942 @@
+{
+ "date": "2026-11-14",
+ "script": "api/eval/run_climate_ml_eval.py",
+ "command": ".venv\\Scripts\\python api/eval/run_climate_ml_eval.py",
+ "model": {
+  "model_id": "climate_ml",
+  "version": "1.0.0",
+  "implementation": "numpy only (no scikit-learn); api/miaudow_api/climate_ml.py",
+  "inputs": {
+   "file": "data/canonical/climate.json",
+   "dataset_id": "nasa_power_daily",
+   "source_id": "R-N01",
+   "version_sha256": "59bacd1a389ee5449835a534a2709f4842339557237a64075120d848c4bc0e81",
+   "series": "series.farmland_weighted (monthly_rain_mm, anomaly_pct, hot_days, longest_dry_spell_days, annual_rain_mm)",
+   "cross_check": "chirps.cells (CHIRPS v3, farmland-weighted with the same weights)",
+   "years": [
+    1991,
+    2024
+   ]
+  },
+  "training_years": {
+   "baseline": [
+    1991,
+    2020
+   ],
+   "fitted_on_baseline_only": [
+    "feature means and standard deviations (z-scores)",
+    "monthly medians and MADs of log(1 + rain)",
+    "the 95th-percentile score threshold",
+    "the 10th and 90th percentiles of the annual total"
+   ],
+   "other_parameters": "none (no weights are learned)"
+  },
+  "components": [
+   {
+    "method_id": "analog_years_zscore_euclidean",
+    "features": [
+     "rain_anomaly_pct_m01",
+     "rain_anomaly_pct_m02",
+     "rain_anomaly_pct_m03",
+     "rain_anomaly_pct_m04",
+     "rain_anomaly_pct_m05",
+     "rain_anomaly_pct_m06",
+     "rain_anomaly_pct_m07",
+     "rain_anomaly_pct_m08",
+     "rain_anomaly_pct_m09",
+     "rain_anomaly_pct_m10",
+     "rain_anomaly_pct_m11",
+     "rain_anomaly_pct_m12",
+     "hot_days",
+     "longest_dry_spell_days"
+    ],
+    "distance": "Euclidean over z-scores; ties broken by the earlier year"
+   },
+   {
+    "method_id": "robust_mad_max_month_score",
+    "score": "max over months of |(log(1+mm) - median) / (1.4826 MAD)|",
+    "threshold": "95th percentile of the 1991-2020 scores",
+    "why_not_mahalanobis": "30 years for 12 correlated, skewed months give an unstable covariance even with shrinkage; median/MAD resist the extremes being detected; the max names the driving month."
+   }
+  ],
+  "metrics": {
+   "analogs_proxy": {
+    "n_cases": 33,
+    "hit_rates": {
+     "analog_k1_tercile": 0.545,
+     "analog_k3_tercile": 0.545,
+     "persistence_tercile": 0.485,
+     "climatology_tercile": 0.273,
+     "analog_k1_sign": 0.758,
+     "persistence_sign": 0.576,
+     "climatology_sign": 0.485
+    },
+    "hits": {
+     "analog_k1_tercile": 18,
+     "analog_k3_tercile": 18,
+     "persistence_tercile": 16,
+     "climatology_tercile": 9,
+     "analog_k1_sign": 25,
+     "persistence_sign": 19,
+     "climatology_sign": 16
+    },
+    "mcnemar_p": {
+     "tercile_analog_vs_persistence": 0.7539,
+     "tercile_analog_vs_climatology": 0.0636,
+     "sign_analog_vs_persistence": 0.146,
+     "sign_analog_vs_climatology": 0.0117
+    }
+   },
+   "analogs_out_of_sample": {
+    "n_cases": 33,
+    "hit_rates": {
+     "analog_k1_tercile": 0.333,
+     "analog_k3_tercile": 0.424,
+     "persistence_tercile": 0.485,
+     "climatology_tercile": 0.273,
+     "analog_k1_sign": 0.424,
+     "persistence_sign": 0.576,
+     "climatology_sign": 0.515
+    },
+    "hits": {
+     "analog_k1_tercile": 11,
+     "analog_k3_tercile": 14,
+     "persistence_tercile": 16,
+     "climatology_tercile": 9,
+     "analog_k1_sign": 14,
+     "persistence_sign": 19,
+     "climatology_sign": 17
+    },
+    "mcnemar_p": {
+     "tercile_analog_vs_persistence": 0.3323,
+     "tercile_analog_vs_climatology": 0.8036,
+     "sign_analog_vs_persistence": 0.2668,
+     "sign_analog_vs_climatology": 0.5488
+    }
+   },
+   "anomalies_agreement_all_years": {
+    "n_years": 34,
+    "both": 1,
+    "ml_only": 2,
+    "baseline_only": 7,
+    "neither": 24,
+    "percent_agreement": 73.5,
+    "cohen_kappa": 0.061,
+    "jaccard": 0.1,
+    "ml_years": [
+     1997,
+     2018,
+     2022
+    ],
+    "baseline_years": [
+     1998,
+     2004,
+     2009,
+     2017,
+     2019,
+     2020,
+     2021,
+     2022
+    ]
+   },
+   "anomalies_agreement_baseline_years": {
+    "n_years": 30,
+    "both": 0,
+    "ml_only": 2,
+    "baseline_only": 6,
+    "neither": 22,
+    "percent_agreement": 73.3,
+    "cohen_kappa": -0.111,
+    "jaccard": 0.0,
+    "ml_years": [
+     1997,
+     2018
+    ],
+    "baseline_years": [
+     1998,
+     2004,
+     2009,
+     2017,
+     2019,
+     2020
+    ]
+   },
+   "anomalies_chirps_cross_check": {
+    "status": "available",
+    "threshold": 4.215,
+    "chirps_flagged_years": [
+     2010,
+     2018
+    ],
+    "agreement_with_power": {
+     "n_years": 34,
+     "both": 1,
+     "ml_only": 2,
+     "baseline_only": 1,
+     "neither": 30,
+     "percent_agreement": 91.2,
+     "cohen_kappa": 0.354,
+     "jaccard": 0.25,
+     "ml_years": [
+      1997,
+      2018,
+      2022
+     ],
+     "baseline_years": [
+      2010,
+      2018
+     ]
+    }
+   },
+   "anomaly_threshold": 3.393
+  },
+  "limitations": [
+   {
+    "vi": "So sánh các năm đã qua, không phải dự báo.",
+    "en": "A comparison of past years, not a forecast."
+   },
+   {
+    "vi": "Số NASA POWER theo ô lưới mô hình, cân theo đất trồng; không phải số đo tại ruộng.",
+    "en": "NASA POWER model grid values, farmland-weighted; not measured at a field."
+   },
+   {
+    "vi": "Chỉ có 34 năm; năm giống nhất vẫn có thể khác nhiều ở những điều không đo ở đây (bão, lũ, sâu bệnh, giá).",
+    "en": "Only 34 years; the closest year can still differ a lot in what is not measured here (storms, floods, pests, prices)."
+   },
+   {
+    "vi": "Mưa 12 tháng chiếm 12 trên 14 đặc trưng, nên mưa quyết định phần lớn khoảng cách.",
+    "en": "Rain makes up 12 of the 14 features, so rain decides most of the distance."
+   },
+   {
+    "vi": "Không có danh sách 'năm bất thường' chính thức để kiểm tra; chỉ so được với một quy tắc đơn giản.",
+    "en": "No official list of 'unusual years' exists to check against; only agreement with a simple rule is shown."
+   },
+   {
+    "vi": "Ngưỡng là phân vị 95 của 30 năm chuẩn, nên khoảng 1-2 năm chuẩn luôn bị đánh dấu theo cách tính.",
+    "en": "The threshold is the 95th percentile of 30 baseline years, so about 1-2 baseline years are flagged by construction."
+   },
+   {
+    "vi": "Một năm khô đều mọi tháng có thể không bị đánh dấu, vì điểm chỉ nhìn tháng lệch nhiều nhất.",
+    "en": "A year that is evenly dry in every month can stay unflagged, because the score looks at the most unusual month only."
+   }
+  ],
+  "failure_cases": {
+   "analog_category_mismatches": [
+    {
+     "year": 1992,
+     "target_anomaly_pct": -1.3,
+     "target_tercile": "near",
+     "analog": 2004,
+     "analog_anomaly_pct": -28.2,
+     "analog_tercile": "below"
+    },
+    {
+     "year": 1994,
+     "target_anomaly_pct": 23.9,
+     "target_tercile": "above",
+     "analog": 1992,
+     "analog_anomaly_pct": -0.4,
+     "analog_tercile": "near"
+    },
+    {
+     "year": 1997,
+     "target_anomaly_pct": 4.3,
+     "target_tercile": "near",
+     "analog": 2021,
+     "analog_anomaly_pct": 35.0,
+     "analog_tercile": "above"
+    },
+    {
+     "year": 1999,
+     "target_anomaly_pct": 4.5,
+     "target_tercile": "near",
+     "analog": 2001,
+     "analog_anomaly_pct": 12.9,
+     "analog_tercile": "above"
+    },
+    {
+     "year": 2000,
+     "target_anomaly_pct": -15.6,
+     "target_tercile": "below",
+     "analog": 1995,
+     "analog_anomaly_pct": -7.7,
+     "analog_tercile": "near"
+    },
+    {
+     "year": 2001,
+     "target_anomaly_pct": 13.2,
+     "target_tercile": "above",
+     "analog": 2002,
+     "analog_anomaly_pct": -12.3,
+     "analog_tercile": "below"
+    },
+    {
+     "year": 2005,
+     "target_anomaly_pct": -5.8,
+     "target_tercile": "near",
+     "analog": 1993,
+     "analog_anomaly_pct": -21.4,
+     "analog_tercile": "below"
+    },
+    {
+     "year": 2008,
+     "target_anomaly_pct": -14.8,
+     "target_tercile": "below",
+     "analog": 1995,
+     "analog_anomaly_pct": -7.7,
+     "analog_tercile": "near"
+    },
+    {
+     "year": 2010,
+     "target_anomaly_pct": 19.2,
+     "target_tercile": "above",
+     "analog": 2007,
+     "analog_anomaly_pct": -10.9,
+     "analog_tercile": "near"
+    },
+    {
+     "year": 2011,
+     "target_anomaly_pct": 2.0,
+     "target_tercile": "near",
+     "analog": 2013,
+     "analog_anomaly_pct": 6.3,
+     "analog_tercile": "above"
+    },
+    {
+     "year": 2013,
+     "target_anomaly_pct": 6.5,
+     "target_tercile": "above",
+     "analog": 1995,
+     "analog_anomaly_pct": -7.0,
+     "analog_tercile": "near"
+    },
+    {
+     "year": 2014,
+     "target_anomaly_pct": -23.5,
+     "target_tercile": "below",
+     "analog": 2013,
+     "analog_anomaly_pct": 5.4,
+     "analog_tercile": "above"
+    },
+    {
+     "year": 2021,
+     "target_anomaly_pct": 34.8,
+     "target_tercile": "above",
+     "analog": 2000,
+     "analog_anomaly_pct": -15.2,
+     "analog_tercile": "below"
+    },
+    {
+     "year": 2023,
+     "target_anomaly_pct": 8.3,
+     "target_tercile": "above",
+     "analog": 2008,
+     "analog_anomaly_pct": -14.4,
+     "analog_tercile": "below"
+    },
+    {
+     "year": 2024,
+     "target_anomaly_pct": 16.3,
+     "target_tercile": "above",
+     "analog": 2012,
+     "analog_anomaly_pct": -11.9,
+     "analog_tercile": "near"
+    }
+   ],
+   "anomaly_flagged_by_monthly_method_only": [
+    {
+     "year": 1997,
+     "why": "one or two extreme months; the annual total stays inside the 10th-90th percentile"
+    },
+    {
+     "year": 2018,
+     "why": "one or two extreme months; the annual total stays inside the 10th-90th percentile"
+    }
+   ],
+   "anomaly_missed_compared_with_percentile_rule": [
+    {
+     "year": 1998,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    },
+    {
+     "year": 2004,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    },
+    {
+     "year": 2009,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    },
+    {
+     "year": 2017,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    },
+    {
+     "year": 2019,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    },
+    {
+     "year": 2020,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    },
+    {
+     "year": 2021,
+     "why": "annual total outside the 10th-90th percentile, but no single month extreme enough to pass the threshold"
+    }
+   ]
+  }
+ },
+ "analogs": {
+  "proxy_task": {
+   "years_evaluated": [
+    1992,
+    1993,
+    1994,
+    1995,
+    1996,
+    1997,
+    1998,
+    1999,
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "description": "Leave one year out. Features: 12 monthly rain anomalies (%), hot days, longest dry spell. Normal, z-score scale and tercile thresholds refitted on 1991-2020 without the held-out year. Label: the annual rain anomaly category (terciles of 1991-2020: below / near / above) and its sign. Baselines: climatology (always 'near normal'; for the sign, the majority sign of the fit years) and persistence (the previous year's category).",
+   "n_cases": 33,
+   "hits": {
+    "analog_k1_tercile": 18,
+    "analog_k3_tercile": 18,
+    "persistence_tercile": 16,
+    "climatology_tercile": 9,
+    "analog_k1_sign": 25,
+    "persistence_sign": 19,
+    "climatology_sign": 16
+   },
+   "hit_rates": {
+    "analog_k1_tercile": 0.545,
+    "analog_k3_tercile": 0.545,
+    "persistence_tercile": 0.485,
+    "climatology_tercile": 0.273,
+    "analog_k1_sign": 0.758,
+    "persistence_sign": 0.576,
+    "climatology_sign": 0.485
+   },
+   "mcnemar_p": {
+    "tercile_analog_vs_persistence": 0.7539,
+    "tercile_analog_vs_climatology": 0.0636,
+    "sign_analog_vs_persistence": 0.146,
+    "sign_analog_vs_climatology": 0.0117
+   },
+   "beats_both_baselines_tercile": true,
+   "beats_both_baselines_sign": true,
+   "difference_significant_p05": false,
+   "cases": [
+    {
+     "year": 1992,
+     "target_anomaly_pct": -1.3,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2004,
+     "analog_distance": 2.992,
+     "analog_anomaly_pct": -28.2,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2004,
+      1998,
+      2013
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.44,
+      5.6
+     ]
+    },
+    {
+     "year": 1993,
+     "target_anomaly_pct": -21.8,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2009,
+     "analog_distance": 2.126,
+     "analog_anomaly_pct": -33.3,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2009,
+      2005,
+      2007
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.4,
+      4.87
+     ]
+    },
+    {
+     "year": 1994,
+     "target_anomaly_pct": 23.9,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1992,
+     "analog_distance": 4.062,
+     "analog_anomaly_pct": -0.4,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1992,
+      2013,
+      2004
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.7,
+      5.13
+     ]
+    },
+    {
+     "year": 1995,
+     "target_anomaly_pct": -7.5,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2012,
+     "analog_distance": 1.901,
+     "analog_anomaly_pct": -12.1,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2012,
+      2013,
+      2000
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.62,
+      5.38
+     ]
+    },
+    {
+     "year": 1996,
+     "target_anomaly_pct": 30.3,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2019,
+     "analog_distance": 5.045,
+     "analog_anomaly_pct": 41.1,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2019,
+      2023,
+      2016
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.52,
+      5.35
+     ]
+    },
+    {
+     "year": 1997,
+     "target_anomaly_pct": 4.3,
+     "target_tercile": "near",
+     "target_sign": "wetter",
+     "analog": 2021,
+     "analog_distance": 5.517,
+     "analog_anomaly_pct": 35.0,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2021,
+      2020,
+      2000
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.28,
+      5.79
+     ]
+    },
+    {
+     "year": 1998,
+     "target_anomaly_pct": -28.6,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2004,
+     "analog_distance": 2.092,
+     "analog_anomaly_pct": -28.8,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2004,
+      2015,
+      2012
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.6,
+      4.63
+     ]
+    },
+    {
+     "year": 1999,
+     "target_anomaly_pct": 4.5,
+     "target_tercile": "near",
+     "target_sign": "wetter",
+     "analog": 2001,
+     "analog_distance": 3.432,
+     "analog_anomaly_pct": 12.9,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2001,
+      2002,
+      2012
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.27,
+      5.73
+     ]
+    },
+    {
+     "year": 2000,
+     "target_anomaly_pct": -15.6,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1995,
+     "analog_distance": 2.446,
+     "analog_anomaly_pct": -7.7,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1995,
+      2009,
+      2012
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.22,
+      5.09
+     ]
+    },
+    {
+     "year": 2001,
+     "target_anomaly_pct": 13.2,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2002,
+     "analog_distance": 3.189,
+     "analog_anomaly_pct": -12.3,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2002,
+      1999,
+      2006
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.02,
+      4.76
+     ]
+    },
+    {
+     "year": 2002,
+     "target_anomaly_pct": -13.0,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2009,
+     "analog_distance": 2.175,
+     "analog_anomaly_pct": -33.1,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2009,
+      2003,
+      2012
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.14,
+      5.18
+     ]
+    },
+    {
+     "year": 2003,
+     "target_anomaly_pct": -25.6,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2009,
+     "analog_distance": 2.279,
+     "analog_anomaly_pct": -33.3,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2009,
+      2002,
+      2012
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.51,
+      4.74
+     ]
+    },
+    {
+     "year": 2004,
+     "target_anomaly_pct": -28.9,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1998,
+     "analog_distance": 2.08,
+     "analog_anomaly_pct": -28.6,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1998,
+      1992,
+      2000
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.61,
+      4.63
+     ]
+    },
+    {
+     "year": 2005,
+     "target_anomaly_pct": -5.8,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 1993,
+     "analog_distance": 2.282,
+     "analog_anomaly_pct": -21.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1993,
+      2011,
+      2007
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.57,
+      5.44
+     ]
+    },
+    {
+     "year": 2006,
+     "target_anomaly_pct": -7.5,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2007,
+     "analog_distance": 2.221,
+     "analog_anomaly_pct": -11.6,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2007,
+      1993,
+      1995
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.62,
+      5.38
+     ]
+    },
+    {
+     "year": 2007,
+     "target_anomaly_pct": -11.8,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2006,
+     "analog_distance": 2.236,
+     "analog_anomaly_pct": -7.6,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2006,
+      1993,
+      2009
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.75,
+      5.23
+     ]
+    },
+    {
+     "year": 2008,
+     "target_anomaly_pct": -14.8,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1995,
+     "analog_distance": 2.671,
+     "analog_anomaly_pct": -7.7,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1995,
+      2023,
+      2012
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.19,
+      5.12
+     ]
+    },
+    {
+     "year": 2009,
+     "target_anomaly_pct": -33.5,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1993,
+     "analog_distance": 2.126,
+     "analog_anomaly_pct": -22.1,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1993,
+      2002,
+      2003
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.74,
+      4.46
+     ]
+    },
+    {
+     "year": 2010,
+     "target_anomaly_pct": 19.2,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2007,
+     "analog_distance": 4.687,
+     "analog_anomaly_pct": -10.9,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2007,
+      1991,
+      2006
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.84,
+      4.97
+     ]
+    },
+    {
+     "year": 2011,
+     "target_anomaly_pct": 2.0,
+     "target_tercile": "near",
+     "target_sign": "wetter",
+     "analog": 2013,
+     "analog_distance": 2.928,
+     "analog_anomaly_pct": 6.3,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2013,
+      1995,
+      2009
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.34,
+      5.71
+     ]
+    },
+    {
+     "year": 2012,
+     "target_anomaly_pct": -12.3,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 1995,
+     "analog_distance": 1.906,
+     "analog_anomaly_pct": -7.6,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1995,
+      2003,
+      2013
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.59,
+      5.21
+     ]
+    },
+    {
+     "year": 2013,
+     "target_anomaly_pct": 6.5,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1995,
+     "analog_distance": 2.356,
+     "analog_anomaly_pct": -7.0,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1995,
+      2012,
+      2000
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.21,
+      4.53
+     ]
+    },
+    {
+     "year": 2014,
+     "target_anomaly_pct": -23.5,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2013,
+     "analog_distance": 3.742,
+     "analog_anomaly_pct": 5.4,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2013,
+      2011,
+      1993
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.45,
+      4.82
+     ]
+    },
+    {
+     "year": 2015,
+     "target_anomaly_pct": -28.0,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1998,
+     "analog_distance": 2.393,
+     "analog_anomaly_pct": -28.6,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1998,
+      2023,
+      2003
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.58,
+      4.66
+     ]
+    },
+    {
+     "year": 2016,
+     "target_anomaly_pct": 24.2,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2023,
+     "analog_distance": 4.618,
+     "analog_anomaly_pct": 9.2,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2023,
+      2008,
+      2024
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.7,
+      5.14
+     ]
+    },
+    {
+     "year": 2017,
+     "target_anomaly_pct": 39.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2024,
+     "analog_distance": 4.505,
+     "analog_anomaly_pct": 17.8,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2024,
+      2001,
+      2019
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.24,
+      5.68
+     ]
+    },
+    {
+     "year": 2018,
+     "target_anomaly_pct": 24.3,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1994,
+     "analog_distance": 9.141,
+     "analog_anomaly_pct": 23.9,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      1994,
+      2023,
+      1991
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.69,
+      5.15
+     ]
+    },
+    {
+     "year": 2019,
+     "target_anomaly_pct": 41.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2023,
+     "analog_distance": 3.73,
+     "analog_anomaly_pct": 9.8,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2023,
+      2002,
+      2012
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.19,
+      5.75
+     ]
+    },
+    {
+     "year": 2020,
+     "target_anomaly_pct": 47.9,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2017,
+     "analog_distance": 5.252,
+     "analog_anomaly_pct": 40.1,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2017,
+      2019,
+      1997
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -11.0,
+      5.96
+     ]
+    },
+    {
+     "year": 2021,
+     "target_anomaly_pct": 34.8,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2000,
+     "analog_distance": 4.339,
+     "analog_anomaly_pct": -15.2,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2000,
+      2013,
+      2004
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.16,
+      5.01
+     ]
+    },
+    {
+     "year": 2022,
+     "target_anomaly_pct": 46.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1996,
+     "analog_distance": 7.523,
+     "analog_anomaly_pct": 29.0,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      1996,
+      2019,
+      1994
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.16,
+      5.01
+     ]
+    },
+    {
+     "year": 2023,
+     "target_anomaly_pct": 8.3,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2008,
+     "analog_distance": 2.758,
+     "analog_anomaly_pct": -14.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2008,
+      2015,
+      1991
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.16,
+      5.01
+     ]
+    },
+    {
+     "year": 2024,
+     "target_anomaly_pct": 16.3,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2012,
+     "analog_distance": 3.343,
+     "analog_anomaly_pct": -11.9,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2012,
+      1995,
+      1992
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -12.16,
+      5.01
+     ]
+    }
+   ]
+  },
+  "out_of_sample_check": {
+   "description": "Same leave-one-year-out setup, but the analog is chosen from January-June rain anomalies only and the label is the July-December rain anomaly category: information the features do not contain.",
+   "n_cases": 33,
+   "hits": {
+    "analog_k1_tercile": 11,
+    "analog_k3_tercile": 14,
+    "persistence_tercile": 16,
+    "climatology_tercile": 9,
+    "analog_k1_sign": 14,
+    "persistence_sign": 19,
+    "climatology_sign": 17
+   },
+   "hit_rates": {
+    "analog_k1_tercile": 0.333,
+    "analog_k3_tercile": 0.424,
+    "persistence_tercile": 0.485,
+    "climatology_tercile": 0.273,
+    "analog_k1_sign": 0.424,
+    "persistence_sign": 0.576,
+    "climatology_sign": 0.515
+   },
+   "mcnemar_p": {
+    "tercile_analog_vs_persistence": 0.3323,
+    "tercile_analog_vs_climatology": 0.8036,
+    "sign_analog_vs_persistence": 0.2668,
+    "sign_analog_vs_climatology": 0.5488
+   },
+   "beats_both_baselines_tercile": false,
+   "beats_both_baselines_sign": false,
+   "difference_significant_p05": false,
+   "cases": [
+    {
+     "year": 1992,
+     "target_anomaly_pct": -8.5,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2023,
+     "analog_distance": 2.138,
+     "analog_anomaly_pct": 16.0,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2023,
+      1998,
+      2004
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.54,
+      5.62
+     ]
+    },
+    {
+     "year": 1993,
+     "target_anomaly_pct": -20.3,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2009,
+     "analog_distance": 1.102,
+     "analog_anomaly_pct": -37.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2009,
+      2003,
+      2007
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.56,
+      5.21
+     ]
+    },
+    {
+     "year": 1994,
+     "target_anomaly_pct": 6.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1992,
+     "analog_distance": 3.595,
+     "analog_anomaly_pct": -8.0,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1992,
+      2021,
+      2013
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.11,
+      4.99
+     ]
+    },
+    {
+     "year": 1995,
+     "target_anomaly_pct": -6.0,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 1991,
+     "analog_distance": 0.885,
+     "analog_anomaly_pct": 6.0,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      1991,
+      2023,
+      2011
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.47,
+      5.71
+     ]
+    },
+    {
+     "year": 1996,
+     "target_anomaly_pct": 45.4,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2018,
+     "analog_distance": 1.294,
+     "analog_anomaly_pct": 38.0,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2018,
+      2007,
+      1998
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.04,
+      6.34
+     ]
+    },
+    {
+     "year": 1997,
+     "target_anomaly_pct": -17.6,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2020,
+     "analog_distance": 4.137,
+     "analog_anomaly_pct": 53.8,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2020,
+      2021,
+      2000
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.48,
+      5.3
+     ]
+    },
+    {
+     "year": 1998,
+     "target_anomaly_pct": -37.3,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2018,
+     "analog_distance": 1.135,
+     "analog_anomaly_pct": 34.3,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2018,
+      2004,
+      2023
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -14.05,
+      4.61
+     ]
+    },
+    {
+     "year": 1999,
+     "target_anomaly_pct": -8.2,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2002,
+     "analog_distance": 2.06,
+     "analog_anomaly_pct": -19.3,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2002,
+      2001,
+      2019
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.53,
+      5.63
+     ]
+    },
+    {
+     "year": 2000,
+     "target_anomaly_pct": -20.5,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1993,
+     "analog_distance": 1.795,
+     "analog_anomaly_pct": -20.3,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1993,
+      2009,
+      2018
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.56,
+      5.2
+     ]
+    },
+    {
+     "year": 2001,
+     "target_anomaly_pct": 2.7,
+     "target_tercile": "near",
+     "target_sign": "wetter",
+     "analog": 1999,
+     "analog_distance": 2.396,
+     "analog_anomaly_pct": -7.9,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1999,
+      2002,
+      2006
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.23,
+      6.02
+     ]
+    },
+    {
+     "year": 2002,
+     "target_anomaly_pct": -19.6,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2003,
+     "analog_distance": 1.111,
+     "analog_anomaly_pct": -28.7,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2003,
+      2006,
+      2012
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.54,
+      5.23
+     ]
+    },
+    {
+     "year": 2003,
+     "target_anomaly_pct": -29.0,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2012,
+     "analog_distance": 0.985,
+     "analog_anomaly_pct": -15.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2012,
+      2002,
+      2006
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.81,
+      4.9
+     ]
+    },
+    {
+     "year": 2004,
+     "target_anomaly_pct": -42.6,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 1998,
+     "analog_distance": 1.175,
+     "analog_anomaly_pct": -37.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1998,
+      2018,
+      2023
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -14.21,
+      4.42
+     ]
+    },
+    {
+     "year": 2005,
+     "target_anomaly_pct": 3.6,
+     "target_tercile": "near",
+     "target_sign": "wetter",
+     "analog": 2012,
+     "analog_distance": 1.322,
+     "analog_anomaly_pct": -14.5,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2012,
+      1993,
+      2003
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.2,
+      6.05
+     ]
+    },
+    {
+     "year": 2006,
+     "target_anomaly_pct": -7.0,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2003,
+     "analog_distance": 1.237,
+     "analog_anomaly_pct": -28.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2003,
+      2019,
+      2002
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.5,
+      5.68
+     ]
+    },
+    {
+     "year": 2007,
+     "target_anomaly_pct": -10.0,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2009,
+     "analog_distance": 0.913,
+     "analog_anomaly_pct": -37.2,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2009,
+      1993,
+      2006
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.58,
+      5.57
+     ]
+    },
+    {
+     "year": 2008,
+     "target_anomaly_pct": -9.6,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 1991,
+     "analog_distance": 1.109,
+     "analog_anomaly_pct": 5.9,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      1991,
+      2023,
+      2010
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.57,
+      5.59
+     ]
+    },
+    {
+     "year": 2009,
+     "target_anomaly_pct": -37.8,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2007,
+     "analog_distance": 0.92,
+     "analog_anomaly_pct": -10.8,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2007,
+      1993,
+      2003
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -14.07,
+      4.59
+     ]
+    },
+    {
+     "year": 2010,
+     "target_anomaly_pct": 41.2,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2008,
+     "analog_distance": 1.16,
+     "analog_anomaly_pct": -8.1,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2008,
+      2023,
+      1991
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.15,
+      6.19
+     ]
+    },
+    {
+     "year": 2011,
+     "target_anomaly_pct": 8.9,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1995,
+     "analog_distance": 1.093,
+     "analog_anomaly_pct": -5.5,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1995,
+      2015,
+      2005
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.05,
+      5.06
+     ]
+    },
+    {
+     "year": 2012,
+     "target_anomaly_pct": -15.0,
+     "target_tercile": "near",
+     "target_sign": "drier",
+     "analog": 2003,
+     "analog_distance": 0.978,
+     "analog_anomaly_pct": -28.6,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2003,
+      1995,
+      2023
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.09,
+      5.39
+     ]
+    },
+    {
+     "year": 2013,
+     "target_anomaly_pct": 5.6,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2014,
+     "analog_distance": 1.129,
+     "analog_anomaly_pct": -30.4,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2014,
+      1995,
+      2011
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "near",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -16.15,
+      5.48
+     ]
+    },
+    {
+     "year": 2014,
+     "target_anomaly_pct": -31.2,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2013,
+     "analog_distance": 1.158,
+     "analog_anomaly_pct": 4.3,
+     "analog_tercile": "near",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2013,
+      2011,
+      1995
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "near",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.88,
+      4.82
+     ]
+    },
+    {
+     "year": 2015,
+     "target_anomaly_pct": -29.3,
+     "target_tercile": "below",
+     "target_sign": "drier",
+     "analog": 2023,
+     "analog_distance": 1.03,
+     "analog_anomaly_pct": 15.2,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2023,
+      1995,
+      2011
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -13.82,
+      4.89
+     ]
+    },
+    {
+     "year": 2016,
+     "target_anomaly_pct": 39.2,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2008,
+     "analog_distance": 2.305,
+     "analog_anomaly_pct": -8.1,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2008,
+      2010,
+      2024
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "below",
+     "persistence_sign": "drier",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.21,
+      6.12
+     ]
+    },
+    {
+     "year": 2017,
+     "target_anomaly_pct": 47.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2024,
+     "analog_distance": 2.705,
+     "analog_anomaly_pct": 18.8,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2024,
+      1996,
+      2020
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -14.97,
+      6.42
+     ]
+    },
+    {
+     "year": 2018,
+     "target_anomaly_pct": 37.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1998,
+     "analog_distance": 1.142,
+     "analog_anomaly_pct": -35.7,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1998,
+      1996,
+      2004
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.25,
+      6.07
+     ]
+    },
+    {
+     "year": 2019,
+     "target_anomaly_pct": 55.0,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2006,
+     "analog_distance": 1.293,
+     "analog_anomaly_pct": -5.1,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2006,
+      1996,
+      2018
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -14.77,
+      6.67
+     ]
+    },
+    {
+     "year": 2020,
+     "target_anomaly_pct": 57.7,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1997,
+     "analog_distance": 3.106,
+     "analog_anomaly_pct": -15.6,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1997,
+      2017,
+      1996
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -14.69,
+      6.77
+     ]
+    },
+    {
+     "year": 2021,
+     "target_anomaly_pct": 26.4,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2004,
+     "analog_distance": 2.856,
+     "analog_anomaly_pct": -41.8,
+     "analog_tercile": "below",
+     "analog_sign": "drier",
+     "analog3_years": [
+      2004,
+      2000,
+      2018
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.46,
+      5.66
+     ]
+    },
+    {
+     "year": 2022,
+     "target_anomaly_pct": 44.8,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 2020,
+     "analog_distance": 6.323,
+     "analog_anomaly_pct": 54.7,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      2020,
+      1997,
+      2004
+     ],
+     "analog3_tercile": "below",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.46,
+      5.66
+     ]
+    },
+    {
+     "year": 2023,
+     "target_anomaly_pct": 16.3,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1995,
+     "analog_distance": 1.001,
+     "analog_anomaly_pct": -5.8,
+     "analog_tercile": "near",
+     "analog_sign": "drier",
+     "analog3_years": [
+      1995,
+      2015,
+      2008
+     ],
+     "analog3_tercile": "near",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.46,
+      5.66
+     ]
+    },
+    {
+     "year": 2024,
+     "target_anomaly_pct": 16.9,
+     "target_tercile": "above",
+     "target_sign": "wetter",
+     "analog": 1991,
+     "analog_distance": 2.185,
+     "analog_anomaly_pct": 6.2,
+     "analog_tercile": "above",
+     "analog_sign": "wetter",
+     "analog3_years": [
+      1991,
+      2008,
+      2023
+     ],
+     "analog3_tercile": "above",
+     "persistence_tercile": "above",
+     "persistence_sign": "wetter",
+     "majority_sign": "drier",
+     "tercile_thresholds_pct": [
+      -15.46,
+      5.66
+     ]
+    }
+   ]
+  },
+  "failure_cases": [
+   {
+    "year": 1992,
+    "target_anomaly_pct": -1.3,
+    "target_tercile": "near",
+    "analog": 2004,
+    "analog_anomaly_pct": -28.2,
+    "analog_tercile": "below"
+   },
+   {
+    "year": 1994,
+    "target_anomaly_pct": 23.9,
+    "target_tercile": "above",
+    "analog": 1992,
+    "analog_anomaly_pct": -0.4,
+    "analog_tercile": "near"
+   },
+   {
+    "year": 1997,
+    "target_anomaly_pct": 4.3,
+    "target_tercile": "near",
+    "analog": 2021,
+    "analog_anomaly_pct": 35.0,
+    "analog_tercile": "above"
+   },
+   {
+    "year": 1999,
+    "target_anomaly_pct": 4.5,
+    "target_tercile": "near",
+    "analog": 2001,
+    "analog_anomaly_pct": 12.9,
+    "analog_tercile": "above"
+   },
+   {
+    "year": 2000,
+    "target_anomaly_pct": -15.6,
+    "target_tercile": "below",
+    "analog": 1995,
+    "analog_anomaly_pct": -7.7,
+    "analog_tercile": "near"
+   },
+   {
+    "year": 2001,
+    "target_anomaly_pct": 13.2,
+    "target_tercile": "above",
+    "analog": 2002,
+    "analog_anomaly_pct": -12.3,
+    "analog_tercile": "below"
+   },
+   {
+    "year": 2005,
+    "target_anomaly_pct": -5.8,
+    "target_tercile": "near",
+    "analog": 1993,
+    "analog_anomaly_pct": -21.4,
+    "analog_tercile": "below"
+   },
+   {
+    "year": 2008,
+    "target_anomaly_pct": -14.8,
+    "target_tercile": "below",
+    "analog": 1995,
+    "analog_anomaly_pct": -7.7,
+    "analog_tercile": "near"
+   },
+   {
+    "year": 2010,
+    "target_anomaly_pct": 19.2,
+    "target_tercile": "above",
+    "analog": 2007,
+    "analog_anomaly_pct": -10.9,
+    "analog_tercile": "near"
+   },
+   {
+    "year": 2011,
+    "target_anomaly_pct": 2.0,
+    "target_tercile": "near",
+    "analog": 2013,
+    "analog_anomaly_pct": 6.3,
+    "analog_tercile": "above"
+   },
+   {
+    "year": 2013,
+    "target_anomaly_pct": 6.5,
+    "target_tercile": "above",
+    "analog": 1995,
+    "analog_anomaly_pct": -7.0,
+    "analog_tercile": "near"
+   },
+   {
+    "year": 2014,
+    "target_anomaly_pct": -23.5,
+    "target_tercile": "below",
+    "analog": 2013,
+    "analog_anomaly_pct": 5.4,
+    "analog_tercile": "above"
+   },
+   {
+    "year": 2021,
+    "target_anomaly_pct": 34.8,
+    "target_tercile": "above",
+    "analog": 2000,
+    "analog_anomaly_pct": -15.2,
+    "analog_tercile": "below"
+   },
+   {
+    "year": 2023,
+    "target_anomaly_pct": 8.3,
+    "target_tercile": "above",
+    "analog": 2008,
+    "analog_anomaly_pct": -14.4,
+    "analog_tercile": "below"
+   },
+   {
+    "year": 2024,
+    "target_anomaly_pct": 16.3,
+    "target_tercile": "above",
+    "analog": 2012,
+    "analog_anomaly_pct": -11.9,
+    "analog_tercile": "near"
+   }
+  ]
+ },
+ "analog_summary": {
+  "task": {
+   "vi": "Bỏ ra từng năm (1992-2024): nhóm mưa cả năm (thấp / gần / cao hơn bình thường) của năm giống nhất có trùng với năm bị bỏ ra không; so với luôn đoán 'bình thường' và lấy năm trước.",
+   "en": "Leave one year out (1992-2024): does the closest year's annual rain category (below / near / above normal) match the held-out year's; against 'always normal' and 'same as last year'."
+  },
+  "n_cases": 33,
+  "scores": {
+   "proxy_analog_k1_tercile": 0.545,
+   "proxy_analog_k3_tercile": 0.545,
+   "proxy_persistence_tercile": 0.485,
+   "proxy_climatology_tercile": 0.273,
+   "proxy_analog_k1_sign": 0.758,
+   "proxy_persistence_sign": 0.576,
+   "proxy_climatology_sign": 0.485,
+   "oos_analog_k1_tercile": 0.333,
+   "oos_analog_k3_tercile": 0.424,
+   "oos_persistence_tercile": 0.485,
+   "oos_climatology_tercile": 0.273,
+   "oos_analog_k1_sign": 0.424,
+   "oos_persistence_sign": 0.576,
+   "oos_climatology_sign": 0.515,
+   "proxy_mcnemar_p_vs_persistence": 0.7539,
+   "proxy_mcnemar_p_vs_climatology": 0.0636
+  },
+  "beats_baselines": true,
+  "verdict": {
+   "vi": "Năm giống nhất trùng nhóm mưa cả năm trong 55% số năm, cao hơn cách đoán 'bình thường' (27%) và năm trước (48%), nhưng với 33 năm thì chênh lệch này chưa chắc không do ngẫu nhiên. Phép thử này dùng chính mưa của năm đó nên chỉ cho thấy các năm giống nhau thật, không phải khả năng dự báo: khi chọn năm giống theo tháng 1-6 để đoán tháng 7-12, mức trùng là 33% (luôn đoán 'bình thường': 27%, năm trước: 48%).",
+   "en": "The closest year matched the annual rain category in 55% of years, above 'always normal' (27%) and last year (48%), but with 33 years the difference may be chance. The test uses the year's own rain, so it shows that analogs are alike, not that they forecast: choosing analogs from January-June to tell July-December matched in 33% of years ('always normal' 27%, last year 48%)."
+  },
+  "source_file": "api/eval/results/climate_ml_2026-11-14.json"
+ },
+ "anomalies": {
+  "summary": {
+   "task": {
+    "vi": "So với quy tắc đơn giản 'tổng mưa năm ngoài khoảng phân vị 10-90 của 1991-2020', trên 34 năm.",
+    "en": "Agreement with the simple rule 'annual total outside the 10th-90th percentile of 1991-2020', 34 years."
+   },
+   "n_cases": 34,
+   "scores": {
+    "percent_agreement": 73.5,
+    "cohen_kappa": 0.061,
+    "jaccard_flagged_sets": 0.1,
+    "n_flagged_ml": 3.0,
+    "n_flagged_percentile_rule": 8.0,
+    "jaccard_power_vs_chirps": 0.25
+   },
+   "beats_baselines": false,
+   "verdict": {
+    "vi": "Không có đáp án đúng cho 'năm bất thường', nên đây là mức trùng khớp, không phải độ chính xác: hai cách cùng đánh dấu 1 năm; chỉ cách theo tháng đánh dấu 2 năm; chỉ quy tắc tổng năm đánh dấu 7 năm (kappa 0,061). Cách theo tháng bắt được tháng mưa dữ dội hay khô hạn mà tổng năm làm mờ đi; quy tắc tổng năm bắt được năm khô hoặc ướt đều.",
+    "en": "There is no ground truth for 'unusual year', so this is agreement, not accuracy: years flagged by both methods: 1; by the monthly method only: 2; by the annual-total rule only: 7 (kappa 0.061). The monthly method catches single extreme months that an annual total smooths out; the annual rule catches evenly dry or wet years."
+   },
+   "source_file": "api/eval/results/climate_ml_2026-11-14.json"
+  },
+  "years": [
+   {
+    "year": 1991,
+    "in_baseline": true,
+    "score": 2.444,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 12,
+      "robust_z": 2.44,
+      "rain_mm": 132.5,
+      "baseline_median_mm": 34.9,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1790.3,
+    "annual_rain_anomaly_pct": 2.6,
+    "percentile_flag": null
+   },
+   {
+    "year": 1992,
+    "in_baseline": true,
+    "score": 2.462,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": -2.46,
+      "rain_mm": 27.5,
+      "baseline_median_mm": 84.1,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1724.1,
+    "annual_rain_anomaly_pct": -1.2,
+    "percentile_flag": null
+   },
+   {
+    "year": 1993,
+    "in_baseline": true,
+    "score": 1.804,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 1,
+      "robust_z": -1.8,
+      "rain_mm": 5.5,
+      "baseline_median_mm": 25.7,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1375.1,
+    "annual_rain_anomaly_pct": -21.2,
+    "percentile_flag": null
+   },
+   {
+    "year": 1994,
+    "in_baseline": true,
+    "score": 2.195,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 12,
+      "robust_z": 2.2,
+      "rain_mm": 115.8,
+      "baseline_median_mm": 34.9,
+      "direction": "wetter"
+     },
+     {
+      "month": 6,
+      "robust_z": 2.13,
+      "rain_mm": 367.5,
+      "baseline_median_mm": 107.5,
+      "direction": "wetter"
+     },
+     {
+      "month": 2,
+      "robust_z": 2.11,
+      "rain_mm": 53.2,
+      "baseline_median_mm": 17.7,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2146.0,
+    "annual_rain_anomaly_pct": 23.0,
+    "percentile_flag": null
+   },
+   {
+    "year": 1995,
+    "in_baseline": true,
+    "score": 0.792,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 12,
+      "robust_z": -0.79,
+      "rain_mm": 22.5,
+      "baseline_median_mm": 34.9,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1619.5,
+    "annual_rain_anomaly_pct": -7.2,
+    "percentile_flag": null
+   },
+   {
+    "year": 1996,
+    "in_baseline": true,
+    "score": 3.268,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": 3.27,
+      "rain_mm": 362.5,
+      "baseline_median_mm": 84.1,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2252.4,
+    "annual_rain_anomaly_pct": 29.0,
+    "percentile_flag": null
+   },
+   {
+    "year": 1997,
+    "in_baseline": true,
+    "score": 3.398,
+    "flagged": true,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": -3.4,
+      "rain_mm": 17.8,
+      "baseline_median_mm": 84.1,
+      "direction": "drier"
+     },
+     {
+      "month": 4,
+      "robust_z": 2.42,
+      "rain_mm": 220.2,
+      "baseline_median_mm": 46.5,
+      "direction": "wetter"
+     },
+     {
+      "month": 2,
+      "robust_z": 2.22,
+      "rain_mm": 56.1,
+      "baseline_median_mm": 17.7,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1817.9,
+    "annual_rain_anomaly_pct": 4.2,
+    "percentile_flag": null
+   },
+   {
+    "year": 1998,
+    "in_baseline": true,
+    "score": 2.651,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 7,
+      "robust_z": -2.65,
+      "rain_mm": 51.2,
+      "baseline_median_mm": 167.6,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1257.8,
+    "annual_rain_anomaly_pct": -27.9,
+    "percentile_flag": "below_p10"
+   },
+   {
+    "year": 1999,
+    "in_baseline": true,
+    "score": 2.665,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 5,
+      "robust_z": 2.67,
+      "rain_mm": 311.0,
+      "baseline_median_mm": 126.2,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1821.9,
+    "annual_rain_anomaly_pct": 4.4,
+    "percentile_flag": null
+   },
+   {
+    "year": 2000,
+    "in_baseline": true,
+    "score": 1.282,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 4,
+      "robust_z": 1.28,
+      "rain_mm": 106.4,
+      "baseline_median_mm": 46.5,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1480.3,
+    "annual_rain_anomaly_pct": -15.2,
+    "percentile_flag": null
+   },
+   {
+    "year": 2001,
+    "in_baseline": true,
+    "score": 2.737,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 5,
+      "robust_z": 2.74,
+      "rain_mm": 318.6,
+      "baseline_median_mm": 126.2,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1967.5,
+    "annual_rain_anomaly_pct": 12.7,
+    "percentile_flag": null
+   },
+   {
+    "year": 2002,
+    "in_baseline": true,
+    "score": 1.823,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 5,
+      "robust_z": 1.82,
+      "rain_mm": 234.0,
+      "baseline_median_mm": 126.2,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1524.7,
+    "annual_rain_anomaly_pct": -12.6,
+    "percentile_flag": null
+   },
+   {
+    "year": 2003,
+    "in_baseline": true,
+    "score": 2.501,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": -2.5,
+      "rain_mm": 27.0,
+      "baseline_median_mm": 84.1,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1310.6,
+    "annual_rain_anomaly_pct": -24.9,
+    "percentile_flag": null
+   },
+   {
+    "year": 2004,
+    "in_baseline": true,
+    "score": 1.837,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 2,
+      "robust_z": 1.84,
+      "rain_mm": 46.2,
+      "baseline_median_mm": 17.7,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1254.0,
+    "annual_rain_anomaly_pct": -28.2,
+    "percentile_flag": "below_p10"
+   },
+   {
+    "year": 2005,
+    "in_baseline": true,
+    "score": 1.432,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 1,
+      "robust_z": -1.43,
+      "rain_mm": 7.7,
+      "baseline_median_mm": 25.7,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1647.6,
+    "annual_rain_anomaly_pct": -5.6,
+    "percentile_flag": null
+   },
+   {
+    "year": 2006,
+    "in_baseline": true,
+    "score": 1.394,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 9,
+      "robust_z": -1.39,
+      "rain_mm": 204.1,
+      "baseline_median_mm": 376.6,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1618.3,
+    "annual_rain_anomaly_pct": -7.3,
+    "percentile_flag": null
+   },
+   {
+    "year": 2007,
+    "in_baseline": true,
+    "score": 2.415,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": -2.41,
+      "rain_mm": 28.1,
+      "baseline_median_mm": 84.1,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1546.0,
+    "annual_rain_anomaly_pct": -11.4,
+    "percentile_flag": null
+   },
+   {
+    "year": 2008,
+    "in_baseline": true,
+    "score": 1.652,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 7,
+      "robust_z": -1.65,
+      "rain_mm": 80.2,
+      "baseline_median_mm": 167.6,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1493.8,
+    "annual_rain_anomaly_pct": -14.4,
+    "percentile_flag": null
+   },
+   {
+    "year": 2009,
+    "in_baseline": true,
+    "score": 2.361,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": -2.36,
+      "rain_mm": 28.8,
+      "baseline_median_mm": 84.1,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1173.6,
+    "annual_rain_anomaly_pct": -32.8,
+    "percentile_flag": "below_p10"
+   },
+   {
+    "year": 2010,
+    "in_baseline": true,
+    "score": 3.339,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": -3.34,
+      "rain_mm": 18.3,
+      "baseline_median_mm": 84.1,
+      "direction": "drier"
+     },
+     {
+      "month": 5,
+      "robust_z": -3.1,
+      "rain_mm": 43.8,
+      "baseline_median_mm": 126.2,
+      "direction": "drier"
+     },
+     {
+      "month": 3,
+      "robust_z": -2.91,
+      "rain_mm": 7.3,
+      "baseline_median_mm": 37.6,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 2066.7,
+    "annual_rain_anomaly_pct": 18.4,
+    "percentile_flag": null
+   },
+   {
+    "year": 2011,
+    "in_baseline": true,
+    "score": 1.36,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 5,
+      "robust_z": -1.36,
+      "rain_mm": 79.5,
+      "baseline_median_mm": 126.2,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1779.1,
+    "annual_rain_anomaly_pct": 1.9,
+    "percentile_flag": null
+   },
+   {
+    "year": 2012,
+    "in_baseline": true,
+    "score": 1.04,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": 1.04,
+      "rain_mm": 134.1,
+      "baseline_median_mm": 84.1,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1537.5,
+    "annual_rain_anomaly_pct": -11.9,
+    "percentile_flag": null
+   },
+   {
+    "year": 2013,
+    "in_baseline": true,
+    "score": 1.486,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 6,
+      "robust_z": 1.49,
+      "rain_mm": 253.7,
+      "baseline_median_mm": 107.5,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1855.0,
+    "annual_rain_anomaly_pct": 6.3,
+    "percentile_flag": null
+   },
+   {
+    "year": 2014,
+    "in_baseline": true,
+    "score": 2.647,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 5,
+      "robust_z": -2.65,
+      "rain_mm": 51.2,
+      "baseline_median_mm": 126.2,
+      "direction": "drier"
+     },
+     {
+      "month": 1,
+      "robust_z": -2.63,
+      "rain_mm": 2.4,
+      "baseline_median_mm": 25.7,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1346.0,
+    "annual_rain_anomaly_pct": -22.9,
+    "percentile_flag": null
+   },
+   {
+    "year": 2015,
+    "in_baseline": true,
+    "score": 2.259,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 8,
+      "robust_z": -2.26,
+      "rain_mm": 83.1,
+      "baseline_median_mm": 266.7,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 1268.3,
+    "annual_rain_anomaly_pct": -27.3,
+    "percentile_flag": null
+   },
+   {
+    "year": 2016,
+    "in_baseline": true,
+    "score": 2.365,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 11,
+      "robust_z": 2.37,
+      "rain_mm": 242.4,
+      "baseline_median_mm": 84.1,
+      "direction": "wetter"
+     },
+     {
+      "month": 3,
+      "robust_z": -2.12,
+      "rain_mm": 11.6,
+      "baseline_median_mm": 37.6,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 2150.6,
+    "annual_rain_anomaly_pct": 23.2,
+    "percentile_flag": null
+   },
+   {
+    "year": 2017,
+    "in_baseline": true,
+    "score": 2.34,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 7,
+      "robust_z": 2.34,
+      "rain_mm": 473.5,
+      "baseline_median_mm": 167.6,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2406.9,
+    "annual_rain_anomaly_pct": 37.9,
+    "percentile_flag": "above_p90"
+   },
+   {
+    "year": 2018,
+    "in_baseline": true,
+    "score": 3.72,
+    "flagged": true,
+    "driving_months": [
+     {
+      "month": 12,
+      "robust_z": 3.72,
+      "rain_mm": 263.8,
+      "baseline_median_mm": 34.9,
+      "direction": "wetter"
+     },
+     {
+      "month": 7,
+      "robust_z": 3.32,
+      "rain_mm": 732.3,
+      "baseline_median_mm": 167.6,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2152.5,
+    "annual_rain_anomaly_pct": 23.3,
+    "percentile_flag": null
+   },
+   {
+    "year": 2019,
+    "in_baseline": true,
+    "score": 1.433,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 6,
+      "robust_z": -1.43,
+      "rain_mm": 46.7,
+      "baseline_median_mm": 107.5,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 2439.1,
+    "annual_rain_anomaly_pct": 39.7,
+    "percentile_flag": "above_p90"
+   },
+   {
+    "year": 2020,
+    "in_baseline": true,
+    "score": 3.387,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 7,
+      "robust_z": -3.39,
+      "rain_mm": 36.7,
+      "baseline_median_mm": 167.6,
+      "direction": "drier"
+     },
+     {
+      "month": 2,
+      "robust_z": 2.2,
+      "rain_mm": 55.6,
+      "baseline_median_mm": 17.7,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2541.0,
+    "annual_rain_anomaly_pct": 45.6,
+    "percentile_flag": "above_p90"
+   },
+   {
+    "year": 2021,
+    "in_baseline": false,
+    "score": 1.904,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 4,
+      "robust_z": 1.9,
+      "rain_mm": 158.6,
+      "baseline_median_mm": 46.5,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2353.1,
+    "annual_rain_anomaly_pct": 34.8,
+    "percentile_flag": "above_p90"
+   },
+   {
+    "year": 2022,
+    "in_baseline": false,
+    "score": 3.96,
+    "flagged": true,
+    "driving_months": [
+     {
+      "month": 2,
+      "robust_z": 3.96,
+      "rain_mm": 136.2,
+      "baseline_median_mm": 17.7,
+      "direction": "wetter"
+     },
+     {
+      "month": 11,
+      "robust_z": 3.51,
+      "rain_mm": 404.4,
+      "baseline_median_mm": 84.1,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 2561.5,
+    "annual_rain_anomaly_pct": 46.8,
+    "percentile_flag": "above_p90"
+   },
+   {
+    "year": 2023,
+    "in_baseline": false,
+    "score": 2.135,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 12,
+      "robust_z": 2.14,
+      "rain_mm": 112.1,
+      "baseline_median_mm": 34.9,
+      "direction": "wetter"
+     }
+    ],
+    "annual_rain_mm": 1891.0,
+    "annual_rain_anomaly_pct": 8.3,
+    "percentile_flag": null
+   },
+   {
+    "year": 2024,
+    "in_baseline": false,
+    "score": 1.882,
+    "flagged": false,
+    "driving_months": [
+     {
+      "month": 8,
+      "robust_z": -1.88,
+      "rain_mm": 101.0,
+      "baseline_median_mm": 266.7,
+      "direction": "drier"
+     }
+    ],
+    "annual_rain_mm": 2030.0,
+    "annual_rain_anomaly_pct": 16.3,
+    "percentile_flag": null
+   }
+  ]
+ }
+}
