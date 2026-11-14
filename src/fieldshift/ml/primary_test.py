@@ -84,7 +84,8 @@ def app_season(nso_season: str) -> str:
     return APP_SEASONS[nso_season]
 
 
-def _text(vi: str, en: str) -> dict:
+def bilingual(vi: str, en: str) -> dict:
+    """A Text value {vi, en} (UI-UX-SPEC section 11)."""
     return {"vi": vi, "en": en}
 
 
@@ -152,7 +153,7 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
         (v1, e1), (vl1, el1), (vh1, eh1) = (
             _num(national["skill_vs_bnw"][k]) for k in ("value", "ci90_low", "ci90_high")
         )
-        return _text(
+        return bilingual(
             f"Mức hơn dự báo trung bình nhiều năm {v0} (khoảng tin cậy 90%: {vl0} đến {vh0}); "
             f"hơn mô hình không dùng thời tiết {v1} (khoảng tin cậy 90%: {vl1} đến {vh1}).",
             f"skill {e0} (90% CI {el0} to {eh0}) against the climatology reference; "
@@ -160,12 +161,12 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
         )
     if gate == "G3":
         (v, e), (vl, el), (vh, eh) = (_num(pilot["skill_vs_b2"][k]) for k in ("value", "ci90_low", "ci90_high"))
-        return _text(
+        return bilingual(
             f"Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước {v} (khoảng tin cậy 90%: {vl} đến {vh}).",
             f"Nghe An, Ha Tinh, Thanh Hoa: skill {e} (90% CI {el} to {eh}) against persistence.",
         )
     cover = f"{100 * national['coverage_80']:.0f}"
-    return _text(
+    return bilingual(
         f"Khoảng dự báo 80% chứa {cover}% kết quả của các năm kiểm tra (cần 70% đến 90%).",
         f"The 80% range covered {cover}% of the held-out outcomes (needs 70% to 90%).",
     )
@@ -173,8 +174,9 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
 
 def g1_detail(g: dict) -> dict:
     need = G1_MIN_PROVINCES[g["season"]]
-    return _text(
-        f"{g['years']} năm và {g['provinces']} tỉnh có số liệu dùng được (cần ít nhất {G1_MIN_YEARS} năm và {need} tỉnh).",
+    return bilingual(
+        f"{g['years']} năm và {g['provinces']} tỉnh có số liệu dùng được "
+        f"(cần ít nhất {G1_MIN_YEARS} năm và {need} tỉnh).",
         f"{g['years']} usable years and {g['provinces']} provinces (needs at least {G1_MIN_YEARS} years and {need} "
         "provinces).",
     )
@@ -185,8 +187,8 @@ def penalty_report(at_edge: dict[str, float]) -> dict:
     m1, bnw = (f"{100 * at_edge[k]:.0f}%" for k in ("m1", "bnw"))
     return {
         "id": EXPERIMENT,
-        "title": _text("Mức phạt của mô hình ở đầu thang", "Model penalty at an end of the grid"),
-        "text": _text(
+        "title": bilingual("Mức phạt của mô hình ở đầu thang", "Model penalty at an end of the grid"),
+        "text": bilingual(
             f"Mức phạt được chọn nằm ở một đầu thang của D-110 trong {m1} số năm kiểm tra với M1 và {bnw} với mô hình "
             "không dùng thời tiết; mô hình này có thể yếu hơn mức nó đạt được với thang rộng hơn.",
             f"The chosen penalty was at an end of the D-110 grid in {m1} of the test years for M1 and in {bnw} for the "
