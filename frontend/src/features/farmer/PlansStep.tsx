@@ -10,6 +10,7 @@ import { compareRequest, serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
+import { SaveAnswers } from '../account/SaveAnswers';
 import { usePick, useT } from '../../app/settings';
 import s from './farmer.module.css';
 
@@ -149,6 +150,7 @@ export function PlansStep() {
       )}
       {state.land !== 'reliable' && years.status !== 'ok' && <LoadState state={years} retry={retryYears} />}
       {body && <Compare body={body} />}
+      {body && <SaveAnswers answers={{ land: body.land, years: body.years, priority: body.priority }} />}
 
       <section className={s.officerBox} aria-labelledby="ask-officer">
         <h2 id="ask-officer" className="h3">
