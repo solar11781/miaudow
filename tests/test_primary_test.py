@@ -159,3 +159,19 @@ def test_penalty_report_gives_the_share_of_test_years_at_a_grid_end():
     assert "11%" in item["text"]["en"]
     assert "78%" in item["text"]["en"]
     assert item["id"] == "E-012"
+
+
+def test_g1_boundaries_at_20_years_and_40_provinces_for_winter():
+    # Source: D-71: ">= 20 usable years and >= 40 provinces" for winter rice too; one fewer of either fails
+    def rows(provinces: int, years: int) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "season": ["winter"] * provinces * years,
+                "province_nso": [f"p{i}" for i in range(provinces) for _ in range(years)],
+                "year": [1995 + y for _ in range(provinces) for y in range(years)],
+            }
+        )
+
+    assert g1_rows(rows(40, 20))[0]["passed"] is True
+    assert g1_rows(rows(39, 20))[0]["passed"] is False
+    assert g1_rows(rows(40, 19))[0]["passed"] is False
