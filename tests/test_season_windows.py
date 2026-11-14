@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from fieldshift.features.season_windows import calendar_region, load_calendar, season_window
+from fieldshift.features.season_windows import Calendar, calendar_region, load_calendar, season_window
 
 RAW = Path("data/raw/nso/E06.14.csv")
 
@@ -103,3 +103,15 @@ def test_rules_calendar_entries_cite_a_source():
     cal = load_calendar()
     assert cal.windows
     assert all(w["source_ids"] for w in cal.raw["ml_windows"])
+
+
+def test_calendar_refuses_a_repeated_pair_and_an_unknown_region():
+    # Source: 05-DATA-CONTRACTS section 6b: "one entry per NSO rice season and calendar region", and the six region codes
+    # red_river_delta, northern_mountains, north_central, central_coast, highlands_southeast, mekong
+    w = {"nso_season": "spring", "calendar_region": "mekong", "start": [11, -1], "end": [4, 0], "source_ids": ["R-V05"]}
+    with pytest.raises(ValueError, match=r"spring.*mekong"):
+        Calendar({"ml_windows": [w, w]})
+    with pytest.raises(ValueError, match="mekongg"):
+        Calendar({"ml_windows": [{**w, "calendar_region": "mekongg"}]})
+    with pytest.raises(ValueError, match="highland"):
+        Calendar({"excluded": [{"nso_season": "autumn", "calendar_region": "highland", "reason": "x"}]})
