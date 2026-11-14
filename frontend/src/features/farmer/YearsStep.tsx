@@ -10,7 +10,8 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs } from '../provenance/useApiRefs';
-import { useFormat, usePick, useT } from '../../app/settings';
+import { useEffect, useState } from 'react';
+import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import s from './farmer.module.css';
 
 // the bar only draws the API's whole-percent share; the number itself is the source button next to it
@@ -21,7 +22,7 @@ function YearRow({ row, res }: { row: Row; res: PastYearsResponse }) {
   const pick = usePick();
   const refs = useApiRefs(res.sources, res.rules);
   return (
-    <article className={s.yearCard} aria-labelledby={`y-${row.year}`}>
+    <article id={`year-card-${row.year}`} className={s.yearCard} aria-labelledby={`y-${row.year}`}>
       <header className={s.yearHead}>
         <h2 id={`y-${row.year}`} className={s.yearNum}>
           {row.year}
@@ -57,8 +58,19 @@ function Years({ res }: { res: PastYearsResponse }) {
   const t = useT();
   const f = useFormat();
   const { state, update } = useFarmer();
+  const { calm } = useSettings();
   const offered = res.years.map((y) => y.year);
   const picked = state.years.filter((y) => offered.includes(y));
+  const shown = picked.join(',');
+  // the year just picked: its detail is brought on screen, clear of the sticky header and Next bar (scroll-margin)
+  const [added, setAdded] = useState<number | null>(null);
+  useEffect(() => {
+    // the URL update lands after the tap, so this waits until the picked list holds the new year
+    if (added === null || !shown.split(',').includes(String(added))) return;
+    document
+      .getElementById(`year-card-${added}`)
+      ?.scrollIntoView({ block: 'nearest', behavior: calm ? 'auto' : 'smooth' });
+  }, [added, calm, shown]);
   return (
     <>
       <div className={s.yearGridHead}>
@@ -78,7 +90,10 @@ function Years({ res }: { res: PastYearsResponse }) {
               aria-pressed={on}
               className={[s.yearChip, on ? s.on : ''].join(' ')}
               data-testid={`year-${row.year}`}
-              onClick={() => update({ years: toggleYear(picked, row.year) })}
+              onClick={() => {
+                update({ years: toggleYear(picked, row.year) });
+                setAdded(on ? null : row.year);
+              }}
               disabled={!on && picked.length >= MAX_YEARS}
             >
               <span className="num">{row.year}</span>

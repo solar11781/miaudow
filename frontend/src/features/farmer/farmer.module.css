@@ -380,6 +380,8 @@
   gap: var(--s-3);
 }
 .yearCard {
+  scroll-margin: calc(72px + env(safe-area-inset-top, 0px) + var(--s-4)) 0
+    calc(120px + env(safe-area-inset-bottom, 0px));
   background: var(--bg-raised);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);

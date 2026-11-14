@@ -307,3 +307,14 @@ test('no page outside the observatory makes a third-party request', async ({ pag
   }
   expect(outside).toEqual([]);
 });
+
+// walkthrough 2026-11-14: after a tap the picked year's detail is on screen, not under the sticky Next bar
+test('a picked year scrolls its detail into view above the sticky bar', async ({ page }) => {
+  await page.goto('/#/nong-dan/nam?ruong=canal_end');
+  await page.getByTestId('year-1998').click();
+  const card = page.getByRole('heading', { level: 2, name: '1998' }).locator('xpath=ancestor::article');
+  await expect(card).toBeInViewport();
+  const bar = await page.getByRole('link', { name: 'Tiếp tục' }).boundingBox();
+  const top = await card.boundingBox();
+  expect(top && bar && top.y + 40 < bar.y).toBe(true);
+});
