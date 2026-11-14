@@ -193,3 +193,11 @@ def test_incomplete_month_or_climatology_fails_loudly():
     gap.loc["2000-06-01"] = np.nan
     with pytest.raises(ValueError, match=r"daily rain incomplete"):
         hz.monthly_climatology(gap)
+
+
+def test_drought_month_without_a_climatology_value_fails_loudly():
+    # Source: Art. 48.1 compares with "trung bình nhiều năm"; without that normal the month has no reading (no guessing)
+    month_rain = pd.Series([10.0, 10.0], index=[5, 6])
+    clim = pd.Series([100.0], index=[5])
+    with pytest.raises(ValueError, match=r"\[6\]"):
+        hz.drought_months(month_rain, clim)
