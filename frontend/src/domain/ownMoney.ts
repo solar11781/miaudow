@@ -3,10 +3,15 @@
  * your cost (thousand đ/ha), only with a cost. Exact until one rounding at the end, half away from zero like the
  * engine's ROUND_HALF_UP (D-156); the results use the API's notation ("16,200"), so they display like its values. */
 
+// routine cap (privacy review of PR #66): far above any real price in đ/kg or cost in thousand đ/ha, and a crafted
+// link with huge values cannot freeze the page
+const MAX_DIGITS = 9;
+const WHOLE = new RegExp(`^[0-9]{1,${MAX_DIGITS}}$`);
+
 /** The digits of a typed field (whole đồng or thousand đồng, 0 or more), null when empty, 'invalid' for anything else. */
 export function readWhole(raw: string): string | null | 'invalid' {
   if (raw === '') return null;
-  return /^[0-9]+$/.test(raw) ? BigInt(raw).toString() : 'invalid';
+  return WHOLE.test(raw) ? BigInt(raw).toString() : 'invalid';
 }
 
 /** A number as numerator / 10^places, so the study's decimal yields stay exact. */

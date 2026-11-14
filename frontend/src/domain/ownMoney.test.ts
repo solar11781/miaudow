@@ -61,4 +61,12 @@ describe('a typed field', () => {
     expect(readWhole('007500')).toBe('7500');
     for (const bad of ['1.5', '-3', '1e3', ' 5', '5,000']) expect(readWhole(bad)).toBe('invalid');
   });
+  // privacy review of PR #66: a crafted link with 200,000-digit values froze the cards; 9 digits is a routine cap
+  it('takes at most 9 digits and rejects a 200,000-digit value at once', () => {
+    expect(readWhole('999999999')).toBe('999999999');
+    expect(readWhole('1000000000')).toBe('invalid');
+    const start = performance.now();
+    expect(readWhole('9'.repeat(200_000))).toBe('invalid');
+    expect(performance.now() - start).toBeLessThan(100);
+  });
 });

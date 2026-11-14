@@ -121,3 +121,13 @@ test('T31 two quick entries on a slow phone both stay in the fragment and the re
   await expect(page).toHaveURL(new RegExp(`yp[.]cc1_spring_peanut=${PRICE}`));
   await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
 });
+
+// privacy review of PR #66: a crafted link with 200,000-digit values froze the cards for about a minute
+test('T31 a link with a 200,000-digit price opens the cards promptly and does not use it', async ({ page }) => {
+  await page.goto(`${PLANS_URL}&yp.cc1_spring_peanut=${'9'.repeat(200_000)}`);
+  const card = page.locator('#the-cc1');
+  await expect(card).toBeVisible({ timeout: 10_000 });
+  await card.getByRole('button', { name: 'Tính với giá bán và chi phí của bạn' }).click({ timeout: 5_000 });
+  await expect(card.getByRole('spinbutton', { name: /^Lạc.*Giá bán của bạn/ })).toHaveValue('');
+  await expect(card.getByTestId('card-cc1-own')).toContainText('Nhập giá bán để tính.');
+});
