@@ -1,0 +1,37 @@
+# PLACEHOLDER FIXTURE for engine tests, not real rule text (05-DATA-CONTRACTS §6c layout). Entries are deliberately
+# not in rule-code order, so the test sees the engine order them.
+- code: cold
+  label: {vi: "[cold label]", en: "[cold label]"}
+  rule_text: {vi: "[quoted article text]", en: "[translation]"}
+  article: "[article]"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: heavy_rain
+  label: {vi: "[heavy rain label]", en: "[heavy rain label]"}
+  rule_text: {vi: "[quoted article text]", en: "[translation]"}
+  article: "[article]"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: heat
+  label: {vi: "[heat label]", en: "[heat label]"}
+  rule_text: {vi: "[quoted article text]", en: "[translation]"}
+  article: "[article]"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: drought_rain_consecutive
+  label: {vi: "[drought label]", en: "[drought label]"}
+  rule_text: {vi: "[quoted article text]", en: "[translation]"}
+  article: "[article]"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
+- code: drought_rain_any2
+  label: {vi: "[drought label]", en: "[drought label]"}
+  rule_text: {vi: "[quoted article text]", en: "[translation]"}
+  article: "[article]"
+  threshold_source_id: R-A01
+  values_source_ids: [R-N01, R-N02]
+  computed_by: E-019
