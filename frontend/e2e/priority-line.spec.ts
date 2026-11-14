@@ -3,7 +3,8 @@ import { expect, test, type Page } from '@playwright/test';
 const plansUrl = (priority: string) => `/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020&uutien=${priority}`;
 const TESTED = ['cc1', 'cc2', 'cc3', 'cc4'];
 // UI-UX-SPEC T37 and D-136: never better, best, should or recommended, nor their Vietnamese equivalents (glossary)
-const BANNED = /better|best|should|recommend|tốt hơn|tốt nhất|\bnên\b|khuyến nghị|khuyên/i;
+const BANNED =
+  /better|best|should|recommend|propos|suitable|more profitable|tốt hơn|tốt nhất|\bnên\b|khuyến nghị|khuyên|đề xuất|đề nghị|phù hợp|lãi hơn/i;
 const ROW = { income: 'money', stability: 'weather', water: 'water', land: 'land' } as const;
 
 const values = (page: Page, selector: string) =>
@@ -21,6 +22,8 @@ test('T37 priority-line the line is on cc1..cc4 only, inside the highlighted row
       const row = page.locator(`[data-testid="card-${id}-row-${ROW[priority]}"][data-highlighted="true"]`);
       await expect(row.getByTestId(`card-${id}-priority-line`)).toHaveCount(1);
       expect(await line.textContent()).not.toMatch(BANNED);
+      // the P-02 short source name, not the author line P-02 shares with P-03
+      await expect(line).toContainText('Trịnh Đức Toàn và cs. 2023 · VAAS');
     }
     await expect(page.locator('[data-testid="card-usual"] [data-testid$="-priority-line"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="card-usual_p03"] [data-testid$="-priority-line"]')).toHaveCount(0);

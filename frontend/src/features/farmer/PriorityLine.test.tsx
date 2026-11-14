@@ -7,11 +7,13 @@ import { validateCompare } from '../../api';
 import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
 import { vi } from '../../i18n/vi';
+import { SOURCES } from '../../domain/sources';
 import type { CompareResponse, Plan, PlanId, Priority } from '../../types';
 
 const PRIORITIES: Priority[] = ['income', 'stability', 'water', 'land'];
 // UI-UX-SPEC T37 and D-136: never better, best, should or recommended, nor their Vietnamese equivalents (glossary)
-const BANNED = /better|best|should|recommend|tốt hơn|tốt nhất|\bnên\b|khuyến nghị|khuyên/i;
+const BANNED =
+  /better|best|should|recommend|propos|suitable|more profitable|tốt hơn|tốt nhất|\bnên\b|khuyến nghị|khuyên|đề xuất|đề nghị|phù hợp|lãi hơn/i;
 const unit = (vi: string, en: string) => ({ vi, en });
 const v = (value: string, u: { vi: string; en: string }) => ({ value, unit: u, source_ids: ['R-P02'] });
 
@@ -71,7 +73,6 @@ describe('priority line', () => {
     card(response(), 'cc1', 'income');
     expect(values(line('cc1'))).toEqual(['53.380 nghìn đồng/ha', '30.799 nghìn đồng/ha']);
     expect(line('cc1')?.textContent).toContain('Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu');
-    expect(line('cc1')?.textContent).toContain('Trịnh Đức Toàn và cs. (2023)');
   });
   it("T37 land shows this card's and the usual card's crops in the year and living days", () => {
     card(response(), 'cc1', 'land');
@@ -95,7 +96,7 @@ describe('priority line', () => {
       cleanup();
     }
   });
-  it('T37 never says better, best, should or recommended, in either language', () => {
+  it('T37 names P-02 by its short name and never says better, best, should or recommended, in either language', () => {
     for (const languages of [
       ['vi-VN', 'vi'],
       ['en-GB', 'en'],
@@ -104,6 +105,8 @@ describe('priority line', () => {
       for (const pr of PRIORITIES) {
         card(response(), 'cc1', pr);
         expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).not.toMatch(BANNED);
+        // P-02, not the author line it shares with P-03 (D-52)
+        expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).toContain(SOURCES.p02.short);
         cleanup();
       }
     }

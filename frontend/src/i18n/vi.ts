@@ -293,12 +293,12 @@ export const vi = {
     yourPriority: 'Bạn quan tâm',
     // the priority line of cards cc1..cc4 (UI-UX-SPEC section 9, D-136): values side by side, never a verdict
     priorityLine: {
-      income: (usual: string) =>
-        `Tiền lãi cộng cả năm (phép cộng của chúng tôi) của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm của Trịnh Đức Toàn và cs. (2023):`,
-      land: (usual: string) =>
-        `Chăm sóc đất của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm của Trịnh Đức Toàn và cs. (2023):`,
-      perYear: (usual: string) =>
-        `Số liệu ở hàng này tính theo từng cây và từng năm đã qua. Hãy so hàng này với cùng hàng trên thẻ cách làm hiện nay (${usual}) của cùng thử nghiệm Trịnh Đức Toàn và cs. (2023).`,
+      income: (usual: string, source: string) =>
+        `Tiền lãi cộng cả năm (phép cộng của chúng tôi) của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm (${source}):`,
+      land: (usual: string, source: string) =>
+        `Chăm sóc đất của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm (${source}):`,
+      perYear: (usual: string, source: string) =>
+        `Số liệu ở hàng này tính theo từng cây và từng năm đã qua. Hãy so hàng này với cùng hàng trên thẻ cách làm hiện nay (${usual}) của cùng thử nghiệm (${source}).`,
       thisPlan: 'cách này',
       usualPlan: 'cách làm hiện nay',
     },

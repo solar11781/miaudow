@@ -2,6 +2,7 @@ import type { CompareResponse, Plan, Priority, Value } from '../../types';
 import type { ApiRefs } from '../provenance/useApiRefs';
 import { usePick, useT } from '../../app/settings';
 import { NumberOr } from './NumberOr';
+import { SOURCES } from '../../domain/sources';
 import s from './PriorityLine.module.css';
 
 // UI-UX-SPEC section 9: only the four tested plans get the line; the two local-practice cards never do
@@ -43,18 +44,18 @@ export function PriorityLine({
     <div className={s.line} data-testid={`card-${plan.id}-priority-line`}>
       {priority === 'income' && (
         <>
-          <p>{l.income(usualName)}</p>
+          <p>{l.income(usualName, SOURCES.p02.short)}</p>
           {pair(t.farmer.ourSum, plan.money.total, usual?.money.total ?? null, false)}
         </>
       )}
       {priority === 'land' && (
         <>
-          <p>{l.land(usualName)}</p>
+          <p>{l.land(usualName, SOURCES.p02.short)}</p>
           {pair(t.farmer.cropsInYear, plan.land.crops_in_year.value, usual?.land.crops_in_year.value ?? null)}
           {pair(t.farmer.livingDays, plan.land.living_days.value, usual?.land.living_days.value ?? null)}
         </>
       )}
-      {(priority === 'stability' || priority === 'water') && <p>{l.perYear(usualName)}</p>}
+      {(priority === 'stability' || priority === 'water') && <p>{l.perYear(usualName, SOURCES.p02.short)}</p>}
     </div>
   );
 }
