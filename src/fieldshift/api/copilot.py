@@ -1,14 +1,17 @@
 """The copilot, POST /api/copilot: member B's grounded question answering (branch feat/lamgiang-2,
 lamgiang/api/miaudow_api/copilot.py and evidence.py), ported by D-172 with the protections of the explain endpoint.
 
-Two engines share three read-only tools over our own data: a search of the passages (rules/copilot.yaml, the plans,
-the official conditions and the model gates), the year shares of the official conditions (GET /api/past-years) and
-the plans in the study order (rules/rotations.yaml).
-- deterministic (the default, no key): fixed sentences from rules/copilot.yaml filled from the tool results.
-- claude (only with ANTHROPIC_API_KEY): Claude calls the same tools and returns only ids, in a structured output
-  (D-177): passages, plans and years the tools returned. The server drops unknown ids and shows the rest word for
-  word from our data, each with its source, under one fixed line; no model-written sentence reaches the farmer. The
-  question goes to the model escaped inside <question> tags and capped at QUESTION_MAX_CHARS.
+The server finds what our own data holds for the question, with no model: a search of the passages
+(rules/copilot.yaml, the plans, the official conditions and the model gates), the year shares of the official
+conditions for each past year the question names (GET /api/past-years), and the plans in the study order
+(rules/rotations.yaml) when a plan or crop word appears.
+- deterministic (the default, no key): fixed sentences from rules/copilot.yaml filled from that data.
+- claude (only with ANTHROPIC_API_KEY): one model call, with no tools, gets the question and the numbered candidates
+  as data and returns only the ids of those that answer it, in a structured output whose schema lists the candidate
+  ids (live test after PR #55: with tools and a structured output, the model called no tool). The server shows the
+  picked candidates word for word from our data, each with its source, under one fixed line; no model-written
+  sentence reaches the farmer. The question goes to the model escaped inside <question> tags and capped at
+  QUESTION_MAX_CHARS.
 Plans are never ranked, a past year is never a forecast, and the year card is not sent (D-169: it has no source
 button). Member B's climate ML, satellite, map and dataset tools are not ported: D-169 hid the climate ML and the
 other data have no register row or are not served by our API.
@@ -18,13 +21,12 @@ from __future__ import annotations
 
 import html
 import itertools
-import json
 import math
 import re
 import unicodedata
 from collections import Counter
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -58,16 +60,13 @@ from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, Contract, PlanId, S
 COPILOT_LIMIT = 2  # the explain endpoint's own limit (review of PR #43), so a burst never fills the farmer threads
 # routine choice: 300 letters of 3 UTF-8 bytes stay under the 1024-byte body limit (tests/test_copilot.py)
 QUESTION_MAX_CHARS = 300
-MAX_TOOL_ROUNDS = 2  # routine choice: 3 calls of at most TIMEOUT_SECONDS stay under the page's 90 s wait (api.ts)
-MAX_TOKENS = 2048  # routine choice: member B's 220-word technical answer as JSON, in Vietnamese
-EFFORT = "low"  # the explain endpoint's effort; the tools do the work
+MAX_TOKENS = 1024  # routine choice: a list of at most a dozen candidate ids as JSON
+EFFORT = "low"  # the explain endpoint's effort; the server has already found the candidates
 SEARCH_LIMIT = 3  # member B's deterministic answer quotes the top 3 passages
 # member B's search (frontend/src/features/ai/retrieve.ts, kept by the D-169 audit): BM25 with k1 1.4 and b 0.72, and
 # an answer only when the top hit reaches both floors (its MIN_SCORE and MIN_COVERAGE)
 K1, B = 1.4, 0.72
 MIN_SCORE, MIN_COVERAGE = 4.5, 0.5
-MAX_TOOLS_PER_ROUND = 3  # security review of PR #55: a prompt injection asked for about 100 tool calls in one turn
-MAX_TOOL_RESULT_BYTES = 20_000  # security review of PR #55: about 3 plan lists; more is refused, so a loop cannot grow
 # CLAUDE.md scientific boundaries (regional estimates only, never the farmer's own field, past years never a forecast,
 # no ranking): forecast questions never reach the model, so a model answer with a future marker, a ranking or advice
 # is refused. Matched on the lower-case text with its accents, so "sẽ" never matches "sẻ" (second pass of PR #55).
@@ -260,6 +259,7 @@ class Corpus:
     year_sources: list[SourceId]
     plans: list[dict[str, object]]  # what the list_plans tool returns, per language below
     plan_names: dict[PlanId, Text]
+    crop_words: frozenset[str]  # the crop names of rules/crops.yaml without accents, both languages
     system: str  # rules/prompts/copilot.md
 
 
@@ -493,6 +493,7 @@ def load_corpus(root: Path) -> Corpus:
         year_sources=year_sources,
         plans=tool_plans,
         plan_names={p.id: p.name for p in plans},
+        crop_words=frozenset(normalize(c.name[lang]) for c in crops.values() for lang in ("vi", "en")),
         system=load_prompt(root, PROMPT),
     )
 
@@ -509,16 +510,6 @@ def _lang(value: object, lang: str) -> object:
     if isinstance(value, list):
         return [_lang(v, lang) for v in value]
     return value
-
-
-def tool_search(corpus: Corpus, query: str, lang: str) -> dict[str, object]:
-    hits = search(corpus, query[:QUESTION_MAX_CHARS])
-    return {
-        "abstained": not hits,
-        "passages": [
-            {"passage_id": p.id, "source_id": p.source_id, "title": p.title[lang], "text": p.text[lang]} for p in hits
-        ],
-    }
 
 
 def tool_year(corpus: Corpus, year: int, lang: str) -> dict[str, object]:
@@ -542,52 +533,7 @@ def tool_plans(corpus: Corpus, lang: str) -> dict[str, object]:
     }
 
 
-def run_tool(corpus: Corpus, name: str, args: object, lang: str) -> dict[str, object]:
-    if not isinstance(args, dict):
-        raise ValueError("tool input is not an object")
-    if name == "search_evidence" and isinstance(args.get("query"), str):
-        return tool_search(corpus, args["query"], lang)
-    if name == "year_conditions" and type(args.get("year")) is int:
-        return tool_year(corpus, args["year"], lang)
-    if name == "list_plans":
-        return tool_plans(corpus, lang)
-    raise ValueError(f"unknown tool or bad input: {name}")
-
-
-TOOLS = [
-    {
-        "name": "search_evidence",
-        "description": "Search the app's evidence passages (study results with their limits, official rules, "
-        "standards, model test results). Returns passages with ids; abstained=true means nothing relevant was found.",
-        "input_schema": {
-            "type": "object",
-            "properties": {"query": {"type": "string", "description": "Search words, Vietnamese or English."}},
-            "required": ["query"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "name": "year_conditions",
-        "description": "For one past year, the share of Nghệ An farmland that met each official hazard condition. "
-        "NASA POWER grid values, never field measurements, never a forecast.",
-        "input_schema": {
-            "type": "object",
-            "properties": {"year": {"type": "integer"}},
-            "required": ["year"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "name": "list_plans",
-        "description": "The crop plans of the studies in the study order, with the study's money values, their "
-        "definition, source and limits. Never rank them.",
-        "input_schema": {"type": "object", "properties": {}, "additionalProperties": False},
-    },
-]
-
-TOOL_NAMES = frozenset(t["name"] for t in TOOLS)
-
-PROMPT = "copilot"  # rules/prompts/copilot.md: member B's SYSTEM without its climate ML, map rules and numbers
+PROMPT = "copilot"  # rules/prompts/copilot.md: pick the candidates that answer the question
 
 
 # ---------------------------------------------------------------- number check
@@ -769,15 +715,16 @@ def copilot_client(environ: Mapping[str, str]) -> anthropic.Anthropic | None:
     return anthropic.Anthropic(api_key=key, base_url=BASE_URL, timeout=TIMEOUT_SECONDS, max_retries=MAX_RETRIES)
 
 
-def _create(client: anthropic.Anthropic, system: str, messages: list[dict[str, object]]) -> anthropic.types.Message:
+def _create(
+    client: anthropic.Anthropic, system: str, messages: list[dict[str, object]], schema: dict[str, object]
+) -> anthropic.types.Message:
     try:
         message = client.messages.create(
             model=MODEL,
             max_tokens=MAX_TOKENS,
             system=system,
-            tools=TOOLS,  # type: ignore[arg-type]
             thinking=THINKING,  # type: ignore[arg-type]
-            output_config={"effort": EFFORT, "format": {"type": "json_schema", "schema": ANSWER_SCHEMA}},
+            output_config={"effort": EFFORT, "format": {"type": "json_schema", "schema": schema}},
             messages=messages,  # type: ignore[arg-type]
         )
     except anthropic.APIStatusError as err:
@@ -787,59 +734,6 @@ def _create(client: anthropic.Anthropic, system: str, messages: list[dict[str, o
     if not isinstance(message, anthropic.types.Message):
         raise CopilotError("NotWhole", 200, None, None)
     return message
-
-
-@dataclass
-class _ToolRuns:
-    """What the tool calls of one answer returned, and the limits they keep (security review of PR #55)."""
-
-    corpus: Corpus
-    lang: str
-    trace: list[ToolCall] = field(default_factory=list)
-    results: list[dict[str, object]] = field(default_factory=list)
-    returned: set[str] = field(default_factory=set)
-    result_bytes: int = 0
-    seen: dict[str, Passage] = field(default_factory=dict)
-    listed: bool = False
-    years: set[int] = field(default_factory=set)
-
-    def reply(self, block: anthropic.types.ToolUseBlock, n: int, request_id: str | None) -> dict[str, object]:
-        """The tool_result of one call: past MAX_TOOLS_PER_ROUND not run, a repeat answered by a short note."""
-        call = f"{block.name} {json.dumps(block.input, sort_keys=True)}"
-        if n >= MAX_TOOLS_PER_ROUND:
-            content, ok = json.dumps({"error": f"not run: at most {MAX_TOOLS_PER_ROUND} tool calls per turn"}), False
-        elif call in self.returned:
-            content, ok = json.dumps({"note": "already returned above"}), True
-        else:
-            self.returned.add(call)
-            content, ok = self.run(block, request_id)
-        return {
-            "type": "tool_result",
-            "tool_use_id": block.id,
-            "content": content,
-            **({} if ok else {"is_error": True}),
-        }
-
-    def run(self, block: anthropic.types.ToolUseBlock, request_id: str | None) -> tuple[str, bool]:
-        try:
-            out, ok = run_tool(self.corpus, block.name, block.input, self.lang), True
-        except (ValueError, KeyError) as err:
-            out, ok = {"error": str(err)}, False
-        year = block.input.get("year") if isinstance(block.input, dict) else None
-        shown = {"year": year} if ok and type(year) is int else {}  # a failed call shows no year
-        self.trace.append(ToolCall(tool=block.name if block.name in TOOL_NAMES else "unknown", input=shown, ok=ok))
-        content = json.dumps(out, ensure_ascii=False)
-        self.result_bytes += len(content.encode())
-        if self.result_bytes > MAX_TOOL_RESULT_BYTES:
-            raise CopilotError("ToolResultsTooLarge", 200, "tool_use", request_id)
-        if ok:
-            self.results.append(out)
-            by_id = {p.id: p for p in self.corpus.passages}
-            self.seen |= {p["passage_id"]: by_id[p["passage_id"]] for p in out.get("passages", [])}
-            self.listed = self.listed or block.name == "list_plans"
-            if block.name == "year_conditions":
-                self.years.add(block.input["year"])
-        return content, ok
 
 
 def id_refusal(raw: str) -> str | None:
@@ -858,26 +752,63 @@ PICKED_BY = {"engine": "claude", "model": MODEL}  # the model picked what the se
 
 
 class PickedIds(BaseModel):
-    """The model's whole answer (D-177): ids of what the tools returned, so no model-written sentence reaches the
-    farmer."""
+    """The model's whole answer: ids of the candidates, so no model-written sentence reaches the farmer."""
 
     model_config = ConfigDict(extra="forbid")
 
-    passage_ids: list[str]
-    plan_ids: list[str]
-    years: list[int]
+    ids: list[str]
 
 
-ANSWER_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "passage_ids": {"type": "array", "items": {"type": "string"}},
-        "plan_ids": {"type": "array", "items": {"type": "string"}},
-        "years": {"type": "array", "items": {"type": "integer"}},
-    },
-    "required": ["passage_ids", "plan_ids", "years"],
-    "additionalProperties": False,
-}
+@dataclass(frozen=True)
+class Candidate:
+    """Something the server found for the question: a passage, a plan passage or a past year's fixed lines."""
+
+    id: str
+    text: str
+    passage: Passage | None = None
+    year: int | None = None
+
+
+def candidates(req: CopilotRequest, corpus: Corpus) -> list[Candidate]:
+    """The server's own retrieval, with no model and no tools (live test after PR #55): the passage search on the
+    question with member B's floors, the fixed lines of each past year the question names, and the plans when a
+    plan or crop word appears."""
+    lang, q = req.lang, f" {normalize(req.question)} "
+    found = [Candidate(p.id, p.text[lang], passage=p) for p in search(corpus, req.question)]
+    for year in dict.fromkeys(int(y) for y in YEAR.findall(req.question)):
+        if year in corpus.years:
+            found.append(Candidate(f"year-{year}", "\n".join(_year_block(corpus, year, lang)[0]), year=year))
+    if any(f" {w} " in q for w in (*PLAN_WORDS, *corpus.crop_words)):
+        shown = {c.id for c in found}
+        found += [
+            Candidate(p.id, p.text[lang], passage=p)
+            for p in corpus.passages
+            if p.id.startswith("plan-") and p.id not in shown
+        ]
+    return found
+
+
+def _trace(found: list[Candidate]) -> list[ToolCall]:
+    """The server's retrieval steps; only a year, never model text, is shown (security review of PR #55)."""
+    trace = [ToolCall(tool="search_evidence", input={}, ok=True)]
+    trace += [ToolCall(tool="year_conditions", input={"year": c.year}, ok=True) for c in found if c.year]
+    if any(c.id.startswith("plan-") for c in found):
+        trace.append(ToolCall(tool="list_plans", input={}, ok=True))
+    return trace
+
+
+def _schema(found: list[Candidate]) -> dict[str, object]:
+    """Structured output (claude-api skill: output_config.format json_schema, enum supported): only candidate ids."""
+    ids = {"type": "array", "items": {"type": "string", "enum": [c.id for c in found]}}
+    return {"type": "object", "properties": {"ids": ids}, "required": ["ids"], "additionalProperties": False}
+
+
+def _content(req: CopilotRequest, found: list[Candidate]) -> str:
+    mode = "Simple mode." if req.mode == "simple" else "Technical mode."
+    water = f" The farmer's water situation: {req.water}." if req.water else ""
+    question = f"<question>{html.escape(req.question, quote=False)}</question>"
+    listed = "\n\n".join(f"[{n}] {c.id}\n{html.escape(c.text, quote=False)}" for n, c in enumerate(found, start=1))
+    return f"{mode}{water}\n\n{question}\n\n<candidates>\n{listed}\n</candidates>"
 
 
 def _picked(message: anthropic.types.Message) -> PickedIds:
@@ -889,64 +820,52 @@ def _picked(message: anthropic.types.Message) -> PickedIds:
         picked = PickedIds.model_validate_json(raw)
     except ValidationError as err:
         raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
-    for cause in filter(None, map(id_refusal, [*picked.passage_ids, *picked.plan_ids])):
+    for cause in filter(None, map(id_refusal, picked.ids)):
         raise CopilotError(cause, 200, message.stop_reason, request_id)
     return picked
 
 
-def _extracted(picked: PickedIds, runs: _ToolRuns, req: CopilotRequest) -> CopilotResponse:
-    """The picked passages, plans and years that a tool returned, word for word from our data under one fixed line,
-    each with its source; an unknown id is dropped, and nothing left is the fixed "not enough evidence" answer."""
-    corpus, lang = runs.corpus, req.lang
-    by_id = {p.id: p for p in corpus.passages}
-    plans = [i for i in dict.fromkeys(picked.plan_ids) if runs.listed and i in corpus.plan_names]
-    shown = [runs.seen[i] for i in dict.fromkeys(picked.passage_ids) if i in runs.seen]
-    shown += [by_id[f"plan-{i}"] for i in plans if by_id[f"plan-{i}"] not in shown]
-    years = [y for y in dict.fromkeys(picked.years) if y in runs.years]
-    if not shown and not years:
-        out = _response("insufficient_evidence", corpus.answers.insufficient[lang], set(), trace=runs.trace)
+def _shown(picked: PickedIds, found: list[Candidate], req: CopilotRequest, corpus: Corpus) -> CopilotResponse:
+    """The picked candidates word for word from our data under one fixed line, each with its source; an id that is no
+    candidate is dropped, and nothing left is the fixed "not enough evidence" answer."""
+    lang, by_id, trace = req.lang, {c.id: c for c in found}, _trace(found)
+    chosen = [by_id[i] for i in dict.fromkeys(picked.ids) if i in by_id]
+    if not chosen:
+        out = _response("insufficient_evidence", corpus.answers.insufficient[lang], set(), trace=trace)
         return out.model_copy(update=PICKED_BY)
-    lines = [corpus.answers.extractive_head[lang], *(f"• {p.text[lang]}" for p in shown)]
-    citations = [_citation(corpus, p.id, p.source_id) for p in shown]
-    known = known_numbers([p.text[lang] for p in shown])
-    for year in years:
-        block, data = _year_block(corpus, year, lang)
-        lines += block
-        citations += _year_citations(corpus, year)
-        known |= known_numbers(data)
-    cards = [AnswerCard(kind="passage", ref_id=p.id, title=p.title) for p in shown if not p.id.startswith("plan-")]
-    cards += [AnswerCard(kind="plan", ref_id=i, title=corpus.plan_names[i]) for i in plans]
-    return _response("grounded", "\n".join(lines), known, citations, cards, runs.trace).model_copy(update=PICKED_BY)
-
-
-def claude_answer(
-    req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic, charge: Callable[[], bool]
-) -> CopilotResponse:
-    """Member B's manual tool loop, so every tool result is ours; the model ends with ids only (D-177)."""
-    mode = "Simple mode." if req.mode == "simple" else "Technical mode."
-    water = f" The farmer's water situation: {req.water}." if req.water else ""
-    question = f"<question>{html.escape(req.question, quote=False)}</question>"
-    messages: list[dict[str, object]] = [{"role": "user", "content": f"{mode}{water}\n\n{question}"}]
-    runs = _ToolRuns(corpus, req.lang)
-    for _ in range(MAX_TOOL_ROUNDS + 1):
-        if not charge():  # each model call takes one of the shared calls (caps.py), not each answer
-            raise ModelCallsFullError
-        message = _create(client, corpus.system, messages)
-        request_id = getattr(message, "_request_id", None)
-        if message.stop_reason != "tool_use":
-            break
-        blocks = [b for b in message.content if isinstance(b, anthropic.types.ToolUseBlock)]
-        messages.append({"role": "assistant", "content": message.content})
-        messages.append({"role": "user", "content": [runs.reply(b, n, request_id) for n, b in enumerate(blocks)]})
-    else:
-        raise CopilotError("TooManyToolRounds", 200, "tool_use", request_id)
-    return _extracted(_picked(message), runs, req)
+    lines, citations, cards, known = [corpus.answers.extractive_head[lang]], [], [], set()
+    for c in chosen:
+        p = c.passage
+        if p is None:  # a past year's fixed lines (candidates)
+            year = int(c.id.removeprefix("year-"))
+            block, data = _year_block(corpus, year, lang)
+            lines += block
+            citations += _year_citations(corpus, year)
+            known |= known_numbers(data)
+            continue
+        lines.append(f"• {p.text[lang]}")
+        citations.append(_citation(corpus, p.id, p.source_id))
+        known |= known_numbers(p.text[lang])
+        plan = p.id.removeprefix("plan-")
+        if plan in corpus.plan_names:
+            cards.append(AnswerCard(kind="plan", ref_id=plan, title=corpus.plan_names[plan]))
+        else:
+            cards.append(AnswerCard(kind="passage", ref_id=p.id, title=p.title))
+    out = _response("grounded", "\n".join(lines), known, citations, cards, trace)
+    return out.model_copy(update=PICKED_BY)
 
 
 def answer(
     req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic | None, charge: Callable[[], bool]
 ) -> CopilotResponse:
-    """`charge` takes one model call from the caps before each call, and False refuses it (ModelCallsFullError)."""
+    """The fixed answers without a key or for a fixed route; else the server's candidates and one model call that
+    picks among them (`charge` takes that call from the caps first, and False refuses it: ModelCallsFullError)."""
     if client is None or fixed_only(req):
         return deterministic(req, corpus)
-    return claude_answer(req, corpus, client, charge)
+    found = candidates(req, corpus)
+    if not found:  # nothing to pick from: no model call
+        return _response("insufficient_evidence", corpus.answers.insufficient[req.lang], set(), trace=_trace(found))
+    if not charge():
+        raise ModelCallsFullError
+    message = _create(client, corpus.system, [{"role": "user", "content": _content(req, found)}], _schema(found))
+    return _shown(_picked(message), found, req, corpus)
