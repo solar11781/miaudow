@@ -18,6 +18,7 @@ from fieldshift.ml.primary_test import (
     gate_detail,
     metric_records,
     metric_row,
+    model_rows,
     penalty_report,
     season_gates,
     weather_claim,
@@ -175,3 +176,25 @@ def test_g1_boundaries_at_20_years_and_40_provinces_for_winter():
     assert g1_rows(rows(40, 20))[0]["passed"] is True
     assert g1_rows(rows(39, 20))[0]["passed"] is False
     assert g1_rows(rows(40, 19))[0]["passed"] is False
+
+
+def test_model_rows_keep_the_model_seasons_with_an_anomaly_and_need_a_region():
+    # Source: 03-ML-SPEC section 3 (rows without a normal are never training or test rows) and D-66 (spring and winter
+    # rice); the spatial blocks need every province's NSO region (section 7.2)
+    years = list(range(2000, 2006))
+    table = pd.DataFrame(
+        {
+            "province_nso": "P",
+            "crop": "rice",
+            "season": ["spring"] * 6 + ["autumn"] * 6,
+            "year": years * 2,
+            "series_id": ["P|rice|spring|0"] * 6 + ["P|rice|autumn|0"] * 6,
+            "yield_t_ha": [5.0] * 12,
+        }
+    )
+    rows = model_rows(table, {"P": "Region"})
+    assert list(rows["year"]) == [2003, 2004, 2005]  # 3-year mean: no normal before 2003
+    assert set(rows["season"]) == {"spring"}
+    assert set(rows["region"]) == {"Region"}
+    with pytest.raises(ValueError, match="P"):
+        model_rows(table, {})

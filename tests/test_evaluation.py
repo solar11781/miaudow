@@ -203,3 +203,19 @@ def test_bootstrap_needs_at_least_two_years():
     # Hesterberg's alpha' uses n/(n-1) and t with n-1 degrees of freedom: undefined for one year; fail loudly.
     with pytest.raises(ValueError, match=r"at least 2 resampled years"):
         ev.expanded_alpha_half(1, 0.90)
+
+
+def test_secondary_grids_follow_their_sources():
+    # Source: team 2026-11-14 from Meroni et al. 2021 Table 4 (random forest: max depth 7 values from 10 to 40 in steps
+    # of 5; max features all or sqrt; min samples split 6 values in [0.2, 0.8]) and LightGBM's documented tuning
+    # parameters (num_leaves, min_data_in_leaf, max_depth; num_leaves below 2^max_depth), defaults 31 and 20 with one
+    # step either side; max_depth 10, 20, 40 from Meroni's boosting grid
+    assert sorted({g["max_depth"] for g in ev.M3_GRID}) == [10, 15, 20, 25, 30, 35, 40]
+    assert {g["max_features"] for g in ev.M3_GRID} == {1.0, "sqrt"}
+    assert sorted({g["min_samples_split"] for g in ev.M3_GRID}) == pytest.approx([0.2, 0.32, 0.44, 0.56, 0.68, 0.8])
+    assert len(ev.M3_GRID) == 7 * 2 * 6
+    assert len(ev.M2_GRID) == 27
+    assert {g["num_leaves"] for g in ev.M2_GRID} == {15, 31, 63}
+    assert {g["min_data_in_leaf"] for g in ev.M2_GRID} == {10, 20, 40}
+    assert {g["max_depth"] for g in ev.M2_GRID} == {10, 20, 40}
+    assert all(g["num_leaves"] < 2 ** g["max_depth"] for g in ev.M2_GRID)
