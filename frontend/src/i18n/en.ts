@@ -99,6 +99,8 @@ export const en: Messages = {
     honestyLead: 'The machine-learning model was tested on 2016–2024, years it had never seen, against simple ways of guessing. The result is published as it is.',
     honestySpring: 'NASA weather did not help predict better than the model without weather. No spring rice prediction is shown.',
     honestyWinter: 'The model with NASA weather predicts better, by a small margin. Winter rice predictions are shown next to the real values.',
+    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
+    honestyWinterFragile: 'The winter rice weather result is narrow and fragile',
     honestySummer: 'Too few provinces have data to test it, so only the real values are shown.',
     honestyCta: 'See the test',
     faqEyebrow: 'Farmers ask',

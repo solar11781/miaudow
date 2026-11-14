@@ -287,6 +287,7 @@ function Honesty() {
               </span>
               <h3 className="h3">{c.title}</h3>
               <p>{c.body}</p>
+              {c.key === 'winter' && <p><strong>{t.home.honestyWinterFragile}</strong></p>}
               {c.skill !== undefined && c.key !== 'summer' && (
                 <p className={s.skillLine}>
                   <span className="muted">{t.science.models.m1_ridge} vs BNW</span>

@@ -97,6 +97,8 @@ export const vi = {
     honestyLead: 'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
     honestySpring: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa xuân không được hiện.',
     honestyWinter: 'Mô hình có thời tiết NASA đoán tốt hơn, với mức hơn nhỏ. Dự đoán lúa mùa được hiện cạnh số liệu thật.',
+    // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
+    honestyWinterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
     honestyCta: 'Xem bài kiểm tra',
     faqEyebrow: 'Bà con hỏi',
