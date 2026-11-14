@@ -69,7 +69,7 @@ explain_terms:
     title: {vi: "Độ ẩm đất", en: "Soil moisture"}
     text:
       vi: "Độ ẩm vùng rễ (GWETROOT) của MERRA-2 là giá trị mô hình, không phải số đo. Mô hình dùng nó làm đầu vào; thẻ
-        phương án hiển thị nó bên cạnh trung bình 1991-2020."
+        so sánh hiện nó bên cạnh trung bình 1991-2020."
       en: "Root-zone wetness (GWETROOT) from MERRA-2 is a model value, not a measurement. The model uses it as an
         input; the plan cards show it next to its 1991-2020 average."
     source_ids: [R-W12, R-N01]
@@ -101,7 +101,7 @@ explain_terms:
     text:
       vi: "Số liệu ngày của NASA POWER lấy từ tái phân tích MERRA-2. GPM IMERG Final kết hợp ước tính từ vệ tinh với
         phân tích mưa đo ở trạm của GPCC; chỉ dùng cho phần kiểm tra mưa trên trang này. Không dùng số liệu trạm. Giá
-        trị theo ô lưới làm mờ các giá trị cực đoan."
+        trị theo ô lưới làm mượt các giá trị cực đoan."
       en: "NASA POWER daily values come from the MERRA-2 reanalysis. GPM IMERG Final combines satellite estimates with
         the GPCC rain-gauge analysis; it is used only for the rain check on this page. No station data is used.
         Gridded values smooth extremes."
@@ -166,7 +166,7 @@ datasets_not_used:
   - dataset: FAO GAEZ
     reason:
       vi: "Các lớp bản đồ thích nghi nông nghiệp - khí hậu toàn cầu, có trong thẻ Resources của thử thách. Không dùng:
-        các phương án của chúng tôi lấy từ một thử nghiệm đồng ruộng trên đúng loại đất này; một mô hình thích nghi toàn
+        các cách trồng của chúng tôi lấy từ một thử nghiệm đồng ruộng trên đúng loại đất này; một mô hình thích nghi toàn
         cầu không phải bằng chứng tại chỗ; điều khoản sử dụng chưa được kiểm tra."
       en: "Global agro-climatic suitability layers, listed on the challenge Resources tab. Not used: our plans come from
         a field trial on this land type; a global suitability model is not local evidence; its terms of use were not
@@ -184,9 +184,9 @@ datasets_not_used:
 
 # limitations: one line each (UI-UX-SPEC §11b item 5): 03-ML-SPEC §9 and the spell rule of 03-ML-SPEC §5a.
 limitations:
-  - {vi: "Thời tiết của tỉnh lấy từ các ô lưới tái phân tích lớn, có trọng số theo đất trồng trọt; giá trị theo ô lưới làm mờ các giá trị cực đoan.",
+  - {vi: "Thời tiết của tỉnh lấy từ các ô lưới tái phân tích lớn, có trọng số theo đất trồng; giá trị theo ô lưới làm mượt các giá trị cực đoan.",
      en: "Province weather comes from large reanalysis grid cells weighted by farmland; gridded values smooth extremes."}
-  - {vi: "Trọng số đất trồng trọt lấy từ một bản đồ cố định, nên không theo kịp thay đổi sử dụng đất về sau.",
+  - {vi: "Trọng số đất trồng lấy từ một bản đồ cố định, nên không theo kịp thay đổi sử dụng đất về sau.",
      en: "Farmland weights come from one fixed farmland map, so they miss later land-cover change."}
   - {vi: "Các năng suất của nhiều tỉnh gần nhau tương quan với nhau, làm cỡ mẫu trông lớn hơn thực tế; phép lấy mẫu lại theo năm xử lý điều này.",
      en: "Yields of nearby provinces move together, which makes the sample look larger than it is; the year bootstrap handles this."}
@@ -203,7 +203,7 @@ limitations:
   - {vi: "Lúa của tỉnh phần lớn là lúa có tưới, nên độ nhạy của cả vùng có thể thấp hơn độ nhạy của đất thường xuyên khô hạn.",
      en: "Provincial rice is mostly irrigation-served, so regional sensitivity can understate the sensitivity of drought-prone land."}
   - {vi: "Quyết định không xếp loại các đợt nắng nóng hoặc rét hại có các ngày nằm ở nhiều khoảng nhiệt độ khác nhau, nên chúng tôi không tính các đợt như vậy; một chuỗi ngày đủ điều kiện nằm trong một khoảng nhiệt độ vẫn được tính, kể cả khi nó nằm trong một đợt dài hơn.",
-     en: "The decision does not classify heat or cold spells whose days fall in different temperature bands, so we do not count such spells; a run of days inside one band that meets its rule still counts, also inside a longer spell."}
+     en: "The Decision does not classify heat or cold spells whose days fall in different temperature bands, so we do not count such spells; a run of days inside one band that meets its rule still counts, also inside a longer spell."}
 
 # stability_scope: the card scope text (03-ML-SPEC §5b; UI-UX-SPEC §11 Stability.scope), no number.
 stability_scope: {vi: "Trung bình của tỉnh; phần lớn là lúa có tưới", en: "Province average; mostly irrigation-served rice"}
