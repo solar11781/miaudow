@@ -303,6 +303,10 @@ test('folders: anything less certain keeps the old check of the session folder',
     'git -C /repo/main merge feat/x',
     'git -C /repo/wt --git-dir=/repo/main/.git merge feat/x',
     'GIT_DIR=/repo/main/.git git -C /repo/wt merge feat/x',
+    'cd /repo/wt && export GIT_DIR=/repo/main/.git && git merge feat/x',
+    'cd /repo/wt && declare -x GIT_WORK_TREE=/repo/main && git merge feat/x',
+    'cd /repo/wt && git -c core.worktree=/repo/main merge feat/x',
+    'cd /repo/wt && git -c "alias.m=!cd /repo/main && git merge feat/x" m',
   ]) blocked(cmd, s);
   blocked('cd /repo/wt; git merge feat/x', at('main', 'powershell'));
   blocked('Set-Location /repo/wt; git merge feat/x', at('main', 'powershell'));
