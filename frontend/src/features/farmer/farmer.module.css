@@ -129,12 +129,6 @@
   position: relative;
   aspect-ratio: 16 / 11;
 }
-.startPhoto::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(14, 30, 19, 0) 40%, var(--c-forest-900) 100%);
-}
 .photoCaption {
   position: absolute;
   z-index: 1;
@@ -148,9 +142,9 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
+/* the body starts below the photo, so the photo's credit at its bottom edge stays readable */
 .startBody {
-  padding: 0 var(--s-6) var(--s-6);
-  margin-top: -2.5rem;
+  padding: var(--s-5) var(--s-6) var(--s-6);
   position: relative;
   z-index: 1;
   display: flex;

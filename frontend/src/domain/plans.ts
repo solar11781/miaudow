@@ -350,5 +350,3 @@ export const planProfitMillion = (plan: Plan): number | null =>
   plan.crops.length ? Math.round(plan.crops.reduce((s, c) => s + c.profit, 0)) / 1000 : null;
 
 export const planHasLegume = (plan: Plan) => plan.crops.some((c) => CROPS[c.crop].legume);
-
-export const planCropCount = (plan: Plan) => new Set(plan.crops.map((c) => c.crop)).size;

@@ -10,6 +10,7 @@ export const en: Messages = {
     title: 'Miaudow · Nghệ An rice fields',
   },
   nav: {
+    tagline: 'Nghệ An rice fields',
     home: 'Home',
     method: 'Method',
     farmer: 'Farmers',
@@ -89,6 +90,12 @@ export const en: Messages = {
     type: 'Type of study',
     placeYears: 'Place and years',
     readStatus: 'What we read',
+    readStatusValues: {
+      READ: 'Read',
+      ABSTRACT: 'Abstract only',
+      SUMMARY: 'Only a secondary summary',
+      NOT_READ: 'Not read',
+    },
     fullText: 'Full text read',
     limits: 'Limitations',
     yes: 'Yes',
@@ -183,6 +190,8 @@ export const en: Messages = {
       'The model with NASA weather predicts better, by a small margin. Winter rice predictions are shown next to the real values.',
     // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
     honestyWinterFragile: 'The winter rice weather result is narrow and fragile',
+    vsBnw: 'vs BNW',
+    skillVsBnw: 'skill vs BNW',
     honestySummer: 'Too few provinces have data to test it, so only the real values are shown.',
     honestyCta: 'See the test',
     faqEyebrow: 'Farmers ask',
@@ -230,6 +239,7 @@ export const en: Messages = {
     startCta: 'Start',
     landTitle: 'What is your field like?',
     landHelp: 'Pick the one most like your field.',
+    landSameDry: 'The first three are all water-short fields: each of them leads to the same plans.',
     lands: {
       high_field: {
         title: 'High field, hard to water',
@@ -925,6 +935,30 @@ export const en: Messages = {
     rainNotRun: 'The rain check has not run.',
     notUsed: 'Datasets considered and not used',
     noUserTest: 'Usability has not been tested with farmers.',
+  },
+  refs: {
+    anyCropWindow: 'the time any P-02 crop is in the field',
+    cropWindow: (crop: string, sow: string, harvest: string) =>
+      `the field time of ${crop} (${sow} → ${harvest}, from P-02)`,
+    shareDetail: (article: string, quote: string, window: string) =>
+      `${article}, Decision 18/2021: “${quote}”. Applied to each NASA POWER cell over ${window}; MODIS farmland weights of the cells meeting it are added. Miaudow’s computation, not an official record.`,
+    cellDetail: (unit: string, share: string) =>
+      `Each NASA POWER cell’s amount over the year (${unit}); the weight is the cell’s farmland share on the MODIS map. ${share}`,
+    riceSeriesLabel: (span: string) => `Nghệ An rice yield against normal, ${span}`,
+    riceSeason: { spring: 'spring', summer_autumn: 'summer-autumn', winter: 'winter' },
+    riceDetail: (season: string) => `Actual yield ÷ mean of the 3 previous years − 1 (${season} season).`,
+    predictionsLabel: 'Out-of-sample predictions, winter rice, 2016–2024',
+    predictionsDetail:
+      'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
+    ndviLabel: 'NDVI greenness around Lưu Sơn',
+    ndviDetail:
+      'Median and middle half (25th–75th percentile) of the reliable 250 m pixels on each 16-day date; a date without a reliable pixel is left empty.',
+    cropProfitLabel: (crop: string) => `Profit, ${crop}`,
+    cropProfitDetail: (profit: string, cost: string, price: string) =>
+      `Table 13: ${profit} thousand VND/ha, net of labour. Cost ${cost} thousand VND/ha; price ${price} VND/kg at harvest.`,
+    planProfitLabel: 'Yearly profit, three seasons added',
+    planProfitSum: 'Table 13, Miaudow’s sum',
+    tcvnLabel: (crop: string) => `Irrigation, ${crop}`,
   },
   footer: {
     tagline: 'Where generations of farming knowledge meet Earth observation.',

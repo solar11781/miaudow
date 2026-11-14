@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 // The FastAPI server sets the content security policy (src/fieldshift/api/app.py); the tests run against it.
-test('the observatory draws its 3D globe under the server CSP', async ({ page }) => {
+test('T1 the observatory, outside the farmer routes, draws its 3D globe under the server CSP', async ({ page }) => {
   const blocked: string[] = [];
   page.on('console', (m) => {
     if (/Content Security Policy|Refused/i.test(m.text())) blocked.push(m.text());

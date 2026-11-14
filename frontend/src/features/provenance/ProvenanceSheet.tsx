@@ -4,6 +4,7 @@ import type { ApiSourceRef, SheetRef } from '../../domain/provenance';
 import type { SourceFacts } from '../../types';
 import { Icon } from '../../design-system/Icon';
 import { KindBadge } from './KindBadge';
+import { readStatusText } from './readStatus';
 import { usePick, useT } from '../../app/settings';
 import s from './ProvenanceSheet.module.css';
 
@@ -121,7 +122,7 @@ function FactsBlock({ facts }: { facts: SourceFacts }) {
         {facts.read_status !== null && (
           <>
             <dt>{t.sheet.readStatus}</dt>
-            <dd>{facts.read_status}</dd>
+            <dd>{readStatusText(facts.read_status, t.sheet.readStatusValues)}</dd>
           </>
         )}
         {facts.full_text_read !== null && (

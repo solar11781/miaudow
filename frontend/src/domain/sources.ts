@@ -357,5 +357,3 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     caveat: { vi: 'Dùng để nói rõ giới hạn, không tạo số mới.', en: 'Used to state a limit, not to make new numbers.' },
   },
 };
-
-export const sourceById = (id: SourceId) => SOURCES[id];

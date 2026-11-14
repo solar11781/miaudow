@@ -414,12 +414,14 @@ function Honesty() {
               )}
               {c.skill !== undefined && c.key !== 'summer' && (
                 <p className={s.skillLine}>
-                  <span className="muted">{t.science.models.m1_ridge} vs BNW</span>
+                  <span className="muted">
+                    {t.science.models.m1_ridge} {t.home.vsBnw}
+                  </span>
                   <SourceValue
                     sourceId="e012"
                     kind="model"
                     value={f.n(c.skill, 2)}
-                    label={`${c.title} · skill vs BNW`}
+                    label={`${c.title} · ${t.home.skillVsBnw}`}
                     detail={pick(g2(c.key as 'spring' | 'winter')?.detail ?? { vi: '', en: '' })}
                   />
                 </p>
