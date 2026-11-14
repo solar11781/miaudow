@@ -2,8 +2,9 @@
 
 Source: NASA Earthdata Login user tokens are sent as an "Authorization: Bearer <token>" header; this header reached the
 LP DAAC and GES DISC archives on this laptop on 2026-11-14 (team). Expectations: the token goes only to https requests
-to NASA Earthdata hosts, never to other hosts (the archives redirect to storage hosts), never over http, and is not
-carried to a redirect target; without a token the opener still keeps cookies for the login redirect.
+to NASA Earthdata hosts, never to other hosts (the archives redirect to storage hosts), never over http, and a redirect
+gets it again only when its target is a NASA Earthdata host; without a token the opener still keeps cookies for the
+login redirect.
 """
 
 import urllib.request
@@ -46,7 +47,7 @@ def _header(opener: urllib.request.OpenerDirector) -> str | None:
         hook = getattr(handler, "https_request", None)
         if hook is not None:
             req = hook(req)
-    return req.unredirected_hdrs.get("Authorization")  # unredirected: not carried to a redirect target
+    return req.unredirected_hdrs.get("Authorization")  # unredirected: urllib does not copy it to the next request
 
 
 def test_the_opener_adds_the_header_from_the_environment_only(monkeypatch: pytest.MonkeyPatch) -> None:

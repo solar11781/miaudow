@@ -1,8 +1,9 @@
 """Earthdata Login for the NASA downloads that need it (MODIS land cover R-N02, GPM IMERG R-N05).
 
 Plain words: two NASA archives need a free Earthdata login. The user token in EARTHDATA_TOKEN is sent as a bearer
-header only on https requests to NASA Earthdata hosts, never to the storage hosts the archives redirect to, never to a
-redirect target, and never printed. Without a token the opener still keeps the cookies of the login redirect.
+header only on https requests to NASA Earthdata hosts, never to the storage hosts the archives redirect to (a redirect
+gets it again only when its target is a NASA Earthdata host too), and never printed. Without a token the opener still
+keeps the cookies of the login redirect.
 """
 
 from __future__ import annotations
