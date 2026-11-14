@@ -138,7 +138,7 @@ def claude_client(environ: Mapping[str, str]) -> anthropic.Anthropic | None:
     return anthropic.Anthropic(api_key=key, base_url=BASE_URL, timeout=TIMEOUT_SECONDS, max_retries=MAX_RETRIES)
 
 
-def numbers(text: str, units: frozenset[str] = UNITS) -> list[tuple[str, str, str]]:
+def numbers(text: str) -> list[tuple[str, str, str]]:
     """(sign, digits, unit) of each number, in order. The unit is the first word of UNITS (or a %, attached or not)
     within the next UNIT_WINDOW words, before the next number or sentence end; else "". The Unicode minus reads as
     "-"."""
@@ -150,7 +150,7 @@ def numbers(text: str, units: frozenset[str] = UNITS) -> list[tuple[str, str, st
             open_words = UNIT_WINDOW
         elif open_words and (percent or word):
             unit = percent or word.lower()
-            if unit in units:
+            if unit in UNITS:
                 found[-1][2] = unit
                 open_words = 0
             else:
