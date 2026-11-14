@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export type Loaded<T> = { status: 'loading' } | { status: 'error' } | { status: 'ok'; data: T };
+export type Loaded<T> = { status: 'loading' } | { status: 'error'; error: unknown } | { status: 'ok'; data: T };
 
 const LOADING = { status: 'loading' } as const;
 
@@ -16,8 +16,8 @@ export function useApi<T>(load: (signal: AbortSignal) => Promise<T>, key: string
       (data) => {
         if (!ctrl.signal.aborted) setDone({ id, result: { status: 'ok', data } });
       },
-      () => {
-        if (!ctrl.signal.aborted) setDone({ id, result: { status: 'error' } });
+      (error: unknown) => {
+        if (!ctrl.signal.aborted) setDone({ id, result: { status: 'error', error } });
       },
     );
     return () => ctrl.abort();
