@@ -9,16 +9,27 @@ reason; missing inputs (weights, cell data, days) raise instead of being filled.
 
 from __future__ import annotations
 
+from datetime import date
+
 import pandas as pd
 
 from fieldshift.features.climate import official_counts, province_daily_weather, season_features
+from fieldshift.features.hazards import risk_level_shares
 from fieldshift.features.season_windows import season_window
 
 RICE_SEASONS = ("spring", "autumn", "winter")
 
 
+def _window(season: str, region: str, year: int, shift: tuple[int, int]) -> tuple[date, date]:
+    """The NSO season window, its start and end moved by whole months (E-008 robustness; (0, 0) = the window)."""
+    start, end = season_window(season, region, year)
+    s = (pd.Timestamp(start) + pd.DateOffset(months=shift[0])).replace(day=1)
+    e = (pd.Timestamp(end).replace(day=1) + pd.DateOffset(months=shift[1])) + pd.offsets.MonthEnd(0)
+    return s.date(), e.date()
+
+
 def build_feature_table(
-    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict
+    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict, shift: tuple[int, int] = (0, 0)
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     # D-106: one fixed farmland mask for all years (cell_weights.csv, 05-DATA-CONTRACTS §3)
     # iter(): a GroupBy has a non-callable .keys attribute, so dict() alone would treat it as a mapping
@@ -43,7 +54,7 @@ def build_feature_table(
     for rec in lab.itertuples(index=False):
         region = regions[rec.province_nso]
         try:
-            start, end = season_window(rec.season, region, rec.year)
+            start, end = _window(rec.season, region, rec.year, shift)
         except ValueError as err:
             skipped.append(
                 {"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, "reason": str(err)}
@@ -66,7 +77,7 @@ def build_feature_table(
 
 
 def build_cell_month_rain(
-    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict
+    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict, shift: tuple[int, int] = (0, 0)
 ) -> pd.DataFrame:
     """Monthly rain of every weighted cell over each rice row's season window (05-DATA-CONTRACTS section 4a).
 
@@ -78,7 +89,7 @@ def build_cell_month_rain(
     lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
     for rec in lab.itertuples(index=False):
         try:
-            start, end = season_window(rec.season, regions[rec.province_nso], rec.year)
+            start, end = _window(rec.season, regions[rec.province_nso], rec.year, shift)
         except ValueError:  # no window for this pair: the feature table lists it as skipped with its reason
             continue
         for la, lo, wt in w.loc[w["province_nso"] == rec.province_nso, ["lat", "lon", "farmland_weight"]].itertuples(
@@ -89,3 +100,23 @@ def build_cell_month_rain(
                 rows.append((rec.province_nso, rec.season, rec.year, la, lo, wt, month, float(total)))
     cols = ["province_nso", "season", "year", "lat", "lon", "farmland_weight", "month", "rain_mm"]
     return pd.DataFrame(rows, columns=cols)
+
+
+def build_risk_level_features(
+    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict
+) -> pd.DataFrame:
+    """Per rice row, the farmland shares meeting the heavy-rain, heat and cold risk-level rules over its season window
+    (sensitivity run c of 03-ML-SPEC section 7; team 2026-11-14). Rows without a window (D-37) are left out."""
+    w = weights[weights["method"] == "farmland_weighted"]
+    rows = []
+    lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
+    for rec in lab.itertuples(index=False):
+        try:
+            start, end = season_window(rec.season, regions[rec.province_nso], rec.year)
+        except ValueError:  # no window for this pair: the feature table lists it as skipped with its reason
+            continue
+        g = w[w["province_nso"] == rec.province_nso]
+        wts = {(la, lo): wt for la, lo, wt in zip(g["lat"], g["lon"], g["farmland_weight"], strict=True)}
+        shares = risk_level_shares(cell_frames, wts, start, end)
+        rows.append({"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, **shares})
+    return pd.DataFrame(rows)
