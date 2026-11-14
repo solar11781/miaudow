@@ -301,7 +301,15 @@ def test_a_missing_year_row_stops_the_start_naming_the_file(tmp_path: Path) -> N
 # ---- no outbound network (NFR-01)
 
 
-def test_no_outbound_network_call_while_starting_or_serving(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+@pytest.mark.parametrize("explain_on", [False, True])  # NFR-01: POST /api/explain is the one stated exception
+def test_no_outbound_network_call_while_starting_or_serving(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, explain_on: bool
+) -> None:
+    if explain_on:
+        monkeypatch.setenv("FIELDSHIFT_EXPLAIN", "1")
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "zz-test-key-not-real")
+    else:
+        monkeypatch.delenv("FIELDSHIFT_EXPLAIN", raising=False)
     real_connect = socket.socket.connect
 
     def local_only(sock: socket.socket, address: object) -> None:
