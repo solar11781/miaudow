@@ -4,12 +4,14 @@ import { Icon } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
 import { usePick, useT } from '../../app/settings';
 import { media } from '../../data/media';
+import { useSignInAvailable } from '../account/AccountProvider';
 import s from './farmer.module.css';
 
 export function StartStep() {
   const t = useT();
   const pick = usePick();
   const { search } = useFarmer();
+  const signIn = useSignInAvailable();
   return (
     <div className={s.shell}>
       <article className={`${s.startCard} surface-forest`}>
@@ -34,6 +36,11 @@ export function StartStep() {
           </ButtonLink>
         </div>
       </article>
+      {signIn && (
+        <ButtonLink to="/da-luu" variant="secondary" leadingIcon="book">
+          {t.account.savedTitle}
+        </ButtonLink>
+      )}
       <p className={s.support}>
         <Icon name="user" size={20} />
         {t.common.support}

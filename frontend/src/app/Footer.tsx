@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SavedLink } from '../features/account/SavedLink';
 import { useAreas } from './Header';
 import { PHOTO_CREDITS } from '../data/media';
 import { hazards } from '../data';
@@ -33,6 +34,7 @@ export function Footer() {
               {a.label}
             </Link>
           ))}
+          <SavedLink />
         </nav>
         <div className={s.meta}>
           <p>{t.common.dataLine}</p>

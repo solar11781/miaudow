@@ -16,10 +16,17 @@ const OTHER_ROUTES = [
   '/#/bang-chung',
   '/#/tro-ly',
 ];
-// a stand-in for https://accounts.google.com/gsi/client: Google's API with a plain button
-const FAKE_GSI = `window.google = { accounts: { id: {
-  initialize() {}, disableAutoSelect() {},
-  renderButton(el) { const b = document.createElement('button'); b.textContent = 'Google'; el.append(b); },
+// a stand-in for https://accounts.google.com/gsi/client: Google's API with a plain button that signs in with a fake
+// token, and Google's stylesheet link, as the real script adds one
+const FAKE_GSI = `let done = () => {};
+window.google = { accounts: { id: {
+  initialize(c) { done = c.callback; }, disableAutoSelect() {},
+  renderButton(el) {
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://accounts.google.com/gsi/style';
+    document.head.append(css);
+    const b = document.createElement('button'); b.textContent = 'Google'; b.onclick = () => done({ credential: 'fake' });
+    el.append(b);
+  },
 } } };`;
 
 async function signInOn(page: Page): Promise<string[]> {
@@ -29,7 +36,10 @@ async function signInOn(page: Page): Promise<string[]> {
   );
   await page.route(/^https:\/\/([a-z0-9-]+\.)*google\.com\//, (route) => {
     google.push(route.request().url());
-    return route.fulfill({ contentType: 'text/javascript', body: FAKE_GSI });
+    const css = route.request().url().endsWith('/gsi/style');
+    return route.fulfill(
+      css ? { contentType: 'text/css', body: '' } : { contentType: 'text/javascript', body: FAKE_GSI },
+    );
   });
   return google;
 }
@@ -81,7 +91,8 @@ test('T14 sign-in on: /dang-nhap shows the notice first and loads Google only af
   expect(google).toEqual([]);
   await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
   await expect(page.getByTestId('google-button').getByRole('button', { name: 'Google' })).toBeVisible();
-  expect(google).toEqual(['https://accounts.google.com/gsi/client']);
+  // the script, then the stylesheet it adds, both allowed by the CSP
+  expect(google).toEqual(['https://accounts.google.com/gsi/client', 'https://accounts.google.com/gsi/style']);
   expect(blocked).toEqual([]);
 });
 
@@ -108,4 +119,70 @@ test('H6 H7 the sign-in pages use 17 px text and 44 px taps', async ({ page }) =
     });
     expect(found, url).toEqual([]);
   }
+});
+
+test('T14 after signing in, the plan cards hold no Google script or stylesheet and the pending save is made', async ({
+  page,
+}) => {
+  await signInOn(page);
+  const saved: unknown[] = [];
+  await page.route('**/api/account/sign-in', (route) => route.fulfill({ status: 204 }));
+  await page.route('**/api/account/saved', (route) => {
+    saved.push(route.request().postDataJSON());
+    return route.fulfill({ status: 201, json: { id: 1, land: 'canal_end', years: [2010, 2020], priority: 'income' } });
+  });
+  await page.goto(PLANS_URL);
+  await page.getByRole('link', { name: 'Đăng nhập để lưu các câu trả lời này' }).click();
+  await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
+  await page.getByTestId('google-button').getByRole('button', { name: 'Google' }).click();
+  await expect(page.getByText('Đã lưu các câu trả lời này.')).toBeVisible();
+  expect(saved).toEqual([{ land: 'canal_end', years: [2010, 2020], priority: 'income' }]);
+  await expect(page).toHaveURL(/#\/nong-dan\/phuong-an\?/);
+  await expect(page).not.toHaveURL(/luu=1/);
+  const left = await page.evaluate(() => ({
+    tags: document.querySelectorAll('script[src*="accounts.google.com"], link[href*="accounts.google.com"]').length,
+    api: 'google' in window,
+  }));
+  expect(left).toEqual({ tags: 0, api: false });
+});
+
+test('T10 /dang-nhap does not scroll sideways once the Google button is shown', async ({ page }) => {
+  await signInOn(page);
+  await page.goto('/#/dang-nhap');
+  await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
+  await expect(page.getByTestId('google-button').getByRole('button', { name: 'Google' })).toBeVisible();
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test('UI-UX-SPEC 12c the saved answers page is reachable from the menu, the footer and the farmer start page', async ({
+  page,
+}, info) => {
+  await signInOn(page);
+  await page.goto('/#/nong-dan');
+  await page.getByRole('main').getByRole('link', { name: 'Câu trả lời đã lưu' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Câu trả lời đã lưu' })).toBeVisible();
+  await page.goto('/#/can-bo');
+  await expect(page.locator('footer').getByRole('link', { name: 'Câu trả lời đã lưu' })).toBeVisible();
+  if (info.project.name === 'phone-360') {
+    await page.getByRole('button', { name: 'Mở menu' }).click();
+    await page.getByRole('dialog').getByRole('link', { name: 'Câu trả lời đã lưu' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Câu trả lời đã lưu' })).toBeVisible();
+  }
+});
+
+test('UI-UX-SPEC 12c sign-in off: no saved answers link anywhere', async ({ page }) => {
+  for (const url of ['/#/nong-dan', '/#/can-bo']) {
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('link', { name: 'Câu trả lời đã lưu' })).toHaveCount(0);
+  }
+});
+
+test('/da-luu with sign-in off says it is not available and offers no sign-in', async ({ page }) => {
+  await page.goto('/#/da-luu');
+  await expect(page.getByText('Hiện chưa đăng nhập được', { exact: false })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Đăng nhập' })).toHaveCount(0);
 });
