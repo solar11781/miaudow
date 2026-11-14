@@ -47,7 +47,7 @@ function FarmerHeader() {
   return (
     <header className={`${s.header} ${s.paper}`}>
       <div className={`container ${s.bar}`}>
-        <Link to="/" className={s.brand} viewTransition aria-label={`Miaudow · ${t.nav.home}`}>
+        <Link to="/" className={s.brand} viewTransition>
           <BrandMark />
           <span className={s.word}><span className={s.name}>Miaudow</span><span className={s.tag}>{t.nav.farmer}</span></span>
         </Link>
