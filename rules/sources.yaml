@@ -338,6 +338,18 @@
        en: "A copy on hethongphapluat.com, not the official publication."}
   url: "https://hethongphapluat.com/nghi-dinh-112-2024-nd-cp-huong-dan-ve-dat-trong-lua/dieu-7"
   nso_credit: false
+- id: R-H12
+  citation: {vi: "NASA Space Apps 2026, Hướng dẫn chấm điểm và giải thưởng (trang ngày 12/11/2026)",
+             en: "NASA Space Apps 2026 Judging & Awards Guide (page dated 2026-11-12)"}
+  study_type: {vi: "Trang web của cuộc thi NASA Space Apps", en: "NASA Space Apps challenge web page"}
+  place_years: {vi: "Toàn cầu; năm 2026", en: "Global; 2026"}
+  read_status: "READ (2026-11-13)"
+  full_text_read: true
+  limitations:
+    - {vi: "Tiêu chí chấm điểm của cuộc thi, không phải kết quả nghiên cứu.",
+       en: "The challenge's judging criteria, not study results."}
+  url: "https://www.spaceappschallenge.org/resources/judging-awards-guide/"
+  nso_credit: false
 - id: R-H16
   citation: {vi: "Trang thử thách Field Shift, thẻ Resources (đăng ngày 13/11/2026)",
              en: "Field Shift challenge page, Resources tab (published 2026-11-13)"}
@@ -515,6 +527,17 @@
   limitations:
     - {vi: "Định nghĩa của chỉ số, không phải kết quả nghiên cứu.", en: "A definition of the index, not study results."}
   url: "https://science.nasa.gov/earth/earth-observatory/measuring-vegetation-ndvi-evi"
+  nso_credit: false
+- id: R-N09
+  citation: {vi: "Copernicus Climate Data Store, ERA5 hourly data on single levels from 1940 to present",
+             en: "Copernicus Climate Data Store, ERA5 hourly data on single levels from 1940 to present"}
+  study_type: {vi: "Trang mô tả bộ số liệu tái phân tích", en: "Reanalysis dataset page"}
+  place_years: {vi: "Toàn cầu; từ năm 1940; đọc ngày 14/11/2026", en: "Global; from 1940; read 2026-11-14"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc trang mô tả, không tải số liệu.", en: "We read only the dataset page, not the data."}
+  url: "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
   nso_credit: false
 - id: R-P02
   citation:

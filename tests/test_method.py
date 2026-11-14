@@ -117,8 +117,11 @@ def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_source
         "GLDAS",
         "GRACE / GRACE-FO",
         "FAO GAEZ",
+        "ERA5 (ECMWF)",
         "ISRIC SoilGrids",
     ]
+    era5 = next(d for d in resp["datasets_not_used"] if d["dataset"] == "ERA5 (ECMWF)")
+    assert "R-N09" in era5["source_ids"]  # REFERENCES R-N09: the Copernicus CDS ERA5 page holds its facts
     register = load_sources(REPO)
     for entry in resp["datasets_not_used"]:
         assert entry["reason"]["vi"].strip()
