@@ -75,13 +75,7 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   const seasonLabel = (code: string) => res.seasons.find((x) => x.code === code);
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
   return (
-    <Row
-      hook={`card-${plan.id}-row-money`}
-      icon="coin"
-      title={t.farmer.rows.money}
-      note={pick(m.definition)}
-      highlight={highlight}
-    >
+    <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight}>
       {m.total && (
         <div className={s.money}>
           <SourceValue size="xl" {...refs.value(m.total, t.farmer.ourSum)}>
@@ -111,6 +105,9 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
         </ul>
       )}
       {m.text_only && <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} />}
+      {/* the source's definition as the API gives it, then the same in plain words: P-03 money is the text_only plan */}
+      <p className={s.rowNote}>{pick(m.definition)}</p>
+      <p className={s.rowNote}>{m.text_only ? t.farmer.definitionPlain.p03 : t.farmer.definitionPlain.p02}</p>
     </Row>
   );
 }

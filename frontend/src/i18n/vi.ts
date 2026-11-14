@@ -331,6 +331,10 @@ export const vi = {
     localReview: 'Hãy hỏi nông dân hoặc cán bộ nông nghiệp nơi bạn sống về những điều này trước khi thay đổi.',
     whyParts: { why: 'Vì sao', evidence: 'Bằng chứng', benefits: 'Lợi ích', gaps: 'Điều chưa biết' },
     needAnswers: 'Còn thiếu câu trả lời ở bước trước.',
+    definitionPlain: {
+      p02: 'Nói cách khác: tiền bán trừ mọi khoản chi, kể cả công lao động.',
+      p03: 'Nói cách khác: tiền bán trừ chi phí vật tư.',
+    },
     share: 'Gửi thẻ này',
     shareCopied: 'Đã chép liên kết của thẻ này',
     shareFailed: 'Không chép được. Hãy chép địa chỉ trên thanh trình duyệt.',

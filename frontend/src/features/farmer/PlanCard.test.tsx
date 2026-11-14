@@ -100,3 +100,34 @@ describe('check and why rows', () => {
     expect(why?.open).toBe(false);
   });
 });
+
+// UI-UX-SPEC section 9: P-02 "lợi nhuận thuần (RVAC) = GR - TVC", labour included; P-03 "Lợi nhuận = GR - Tổng chi phí
+// vật chất", material costs only. The API's definition stays; one plain sentence follows it.
+describe('money definition', () => {
+  afterEach(cleanup);
+  const moneyText = (planIndex: number, textOnly: boolean) => {
+    const res = validateCompare(compare(), body);
+    const plan = res.plans[planIndex];
+    if (!plan) throw new Error('no plan');
+    plan.money.definition = { vi: 'định nghĩa của bài', en: 'the paper definition' };
+    if (textOnly) plan.money.text_only = { vi: 'tiền theo bài', en: 'money as text' };
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    return document.querySelector(`[data-testid="card-${plan.id}-row-money"]`)?.textContent ?? '';
+  };
+  it('explains the P-02 definition in plain words', () => {
+    const text = moneyText(2, false);
+    expect(text).toContain('định nghĩa của bài');
+    expect(text).toContain(vi.farmer.definitionPlain.p02);
+  });
+  it('explains the P-03 definition in plain words', () => {
+    const text = moneyText(1, true);
+    expect(text).toContain(vi.farmer.definitionPlain.p03);
+    expect(text).not.toContain(vi.farmer.definitionPlain.p02);
+  });
+});
