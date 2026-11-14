@@ -292,6 +292,7 @@ class WaterFactEntry(Entry):
     unit: Text
     scope: Text
     note: Text | None
+    season: SeasonCode | None = None  # set on TCVN 8641 rows that apply to one rice season only (D-161)
 
 
 class CropEntry(Entry):
