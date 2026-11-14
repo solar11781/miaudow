@@ -347,6 +347,7 @@ def with_rice_years(rows: list[dict], years: list[int] | None = None) -> dict:
     plans = [empty_plan(p) for p in PLAN_IDS]
     block = stability([None] * len(rows), None, [], 0)
     block["per_year"] = rows
+    block["model_status"] = "shown"  # predictions appear only for a shown model
     plans[0]["stability"] = [block]
     return compare(plans, years or [r["year"] for r in rows])
 

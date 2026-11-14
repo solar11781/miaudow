@@ -224,7 +224,9 @@ class Stability(Contract):
     worst_years: list[int]
 
     @model_validator(mode="after")
-    def _summary_from_two_real_values(self) -> Self:
+    def _predictions_and_summary(self) -> Self:
+        if self.model_status != "shown" and any(row.oos_prediction is not None for row in self.per_year):
+            raise ValueError(f"{self.crop_key}: oos_prediction only if model_status is shown")
         real = [(row.year, row.real.value) for row in self.per_year if row.real is not None]
         if self.years_count != len(real):
             raise ValueError(f"{self.crop_key}: years_count {self.years_count} but {len(real)} real values")

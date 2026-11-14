@@ -66,7 +66,10 @@ class HazardRow(BaseModel):
 
 def hazard_rows(root: Path) -> list[HazardRow]:
     """The checked rows of artifacts/hazard_labels.json; a bad row fails naming the file and the field."""
-    data = json.loads((root / "artifacts" / HAZARD_LABELS).read_text(encoding="utf-8"))
+    try:
+        data = json.loads((root / "artifacts" / HAZARD_LABELS).read_text(encoding="utf-8"))
+    except json.JSONDecodeError as err:
+        raise ValueError(f"artifacts/{HAZARD_LABELS}: not valid JSON: {err}") from err
     if not isinstance(data, dict) or not isinstance(data.get("rows"), list):
         raise ValueError(f"artifacts/{HAZARD_LABELS}: expected an object with a rows list")
     try:
@@ -76,7 +79,10 @@ def hazard_rows(root: Path) -> list[HazardRow]:
 
 
 def _read_entries(root: Path, name: str) -> list[dict[str, object]]:
-    data = yaml.safe_load((root / "rules" / name).read_text(encoding="utf-8"))
+    try:
+        data = yaml.safe_load((root / "rules" / name).read_text(encoding="utf-8"))
+    except yaml.YAMLError as err:
+        raise ValueError(f"rules/{name}: not valid YAML: {err}") from err
     if not isinstance(data, list) or not all(isinstance(e, dict) for e in data):
         raise ValueError(f"rules/{name}: expected a list of entries")
     return data
