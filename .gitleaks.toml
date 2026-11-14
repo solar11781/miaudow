@@ -1,8 +1,8 @@
 # Secret scan settings: gitleaks' default rules plus one narrow exception.
-# The artifacts name each plan crop by its UI-UX-SPEC crop key (for example "cc1_spring_peanut", "usual_p03_spring_rice");
-# the generic API key rule reads `"crop_key": "<plan>_<season>_<crop>"` as a key, also unquoted in YAML before an
-# optional CRLF line end, so only that key format is allowed, quotes in pairs, for that rule only; the crop part holds
-# only lower case letters and underscores.
+# The artifacts name each plan crop by its UI-UX-SPEC crop key (for example "cc1_spring_peanut" or
+# "usual_p03_spring_rice"); the generic API key rule reads `"crop_key": "<plan>_<season>_<crop>"` as a key, also
+# unquoted in YAML and before an optional CRLF line end, so only that key format is allowed, quotes in pairs, for that
+# rule only; the crop part holds only lower case letters and underscores.
 
 [extend]
 useDefault = true
