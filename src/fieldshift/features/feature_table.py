@@ -25,7 +25,7 @@ def build_feature_table(
     w_index = dict(iter(weights[weights["method"] == "farmland_weighted"].groupby("province_nso")))
     daily_cache: dict = {}
 
-    def daily(province: str, stat_year: int) -> pd.DataFrame:
+    def daily(province: str) -> pd.DataFrame:
         if province not in daily_cache:
             if province not in w_index:
                 raise KeyError(f"no farmland weights for {province}")
@@ -49,7 +49,7 @@ def build_feature_table(
                 {"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, "reason": str(err)}
             )
             continue
-        feats = season_features(daily(rec.province_nso, rec.year), start, end)
+        feats = season_features(daily(rec.province_nso), start, end)
         feats.update(official_counts(cell_frames, cell_weights(rec.province_nso), start, end))
         feats["n_points"] = len(cell_weights(rec.province_nso))  # 05 §4: cells aggregated
         rows.append(
