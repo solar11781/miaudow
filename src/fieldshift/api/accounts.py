@@ -36,7 +36,8 @@ SCHEMA = (
     " land text NOT NULL, years integer[] NOT NULL, priority text NOT NULL)",
 )
 BIGINT_MAX = 2**63 - 1  # largest PostgreSQL bigint, the type of every id (PostgreSQL 18 docs, numeric types)
-GOOGLE_TIMEOUT_SECONDS = 120  # google-auth's own default for its requests transport (google/auth/transport/requests.py)
+GOOGLE_TIMEOUT_SECONDS = 10  # team, 2026-11-14: an account request must not hang for minutes on Google's keys
+DB_CONNECT_TIMEOUT_SECONDS = 5  # team, 2026-11-14: a down database must not hold the start for psycopg's 130 s
 # Google's key answer was 2447 bytes (measured 2026-11-14); 64 KiB leaves room for many more keys
 KEYS_MAX_BYTES = 65536
 MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
@@ -154,7 +155,7 @@ class Accounts:
                 conn.execute(statement)
 
     def _connect(self) -> psycopg.Connection:
-        return psycopg.connect(self._url)
+        return psycopg.connect(self._url, connect_timeout=DB_CONNECT_TIMEOUT_SECONDS)
 
     # ---- the Google token
 
