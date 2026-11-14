@@ -22,3 +22,9 @@ ml_windows:
   - {nso_season: winter, calendar_region: mekong, start: [8, -1], end: [2, 0], source_ids: [R-V05]}
 excluded:
   - {nso_season: autumn, calendar_region: mekong, reason: "Mekong 'autumn' figure adds hè thu and thu đông (D-37)"}
+# Window text of the season that is not an NSO rice season (D-158): the P-02 Table 5 (2020) sowing and harvest dates of
+# the autumn-winter crops. Shown nowhere; Season.window is for traceability (UI-UX-SPEC §11).
+trial_windows:
+  - season: autumn_winter
+    window: {vi: "gieo 15/8 - 10/9, thu hoạch 21/11 - 22/12", en: "sown 15/8 - 10/9, harvested 21/11 - 22/12"}
+    source_ids: [R-P02]

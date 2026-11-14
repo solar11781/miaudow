@@ -56,6 +56,19 @@
        en: "A MERRA-2 model value, not a field measurement."}
   url: null
   nso_credit: false
+- id: E-022
+  citation: {vi: "Thực nghiệm E-022 của nhóm: các phép tính của công cụ (tổng, số đếm, nhỏ nhất, trung vị, lớn nhất)",
+             en: "Our experiment E-022: engine computations (sums, counts, minimum, median, maximum)"}
+  study_type: {vi: "Tính toán của chúng tôi", en: "Our computation"}
+  place_years: {vi: "Nghệ An; năm thử nghiệm 2020-21 và các năm đã qua được chọn",
+                en: "Nghệ An; the trial year 2020-21 and the picked past years"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Phép tính đơn giản trên các giá trị đã dẫn nguồn; không dùng mô hình.",
+       en: "Simple arithmetic on the cited values; no model."}
+  url: null
+  nso_credit: false
 - id: R-A01
   citation:
     vi: "Quyết định 18/2021/QĐ-TTg quy định về dự báo, cảnh báo, truyền tin thiên tai và cấp độ rủi ro thiên tai"

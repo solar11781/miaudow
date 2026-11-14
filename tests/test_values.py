@@ -4,6 +4,8 @@ Expected: the share x 100 rounded half up to an integer (decimal.ROUND_HALF_UP),
 source_ids = [threshold_source_id, values_source_ids..., computed_by], null stays null. Values worked out by hand.
 """
 
+from decimal import Decimal
+
 import pytest
 
 from fieldshift.engine.rules import HazardRow
@@ -16,6 +18,17 @@ from fieldshift.engine.values import share_value, whole_percent
 )
 def test_whole_percent_rounds_half_up(fraction: float, shown: str) -> None:
     assert whole_percent(fraction) == shown
+
+
+def test_a_negative_fraction_rounds_half_up_and_never_shows_minus_zero() -> None:
+    assert whole_percent(-0.08960967564595923) == "-9"  # artifacts/risk_table.json, Nghe An spring rice 2007
+    assert whole_percent(-0.005) == "-1"  # decimal.ROUND_HALF_UP rounds a tie away from zero (D-102)
+    assert whole_percent(-1.1102230246251565e-16) == "0"  # Nghe An spring rice 2020: an integer has no minus zero
+
+
+def test_an_exact_decimal_is_rounded_once() -> None:
+    # D-156: the mean of two middle values is rounded once; 0.0832835... -> 8, rounding each year first gives 8.5 -> 9
+    assert whole_percent((Decimal("0.07565789473684204") + Decimal("0.09090909090909127")) / 2) == "8"
 
 
 def row(share: float | None) -> HazardRow:

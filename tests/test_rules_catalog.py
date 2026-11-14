@@ -18,6 +18,7 @@ from pydantic import TypeAdapter
 
 from fieldshift.engine.rules import load_rules, load_sources
 from fieldshift.engine.schemas import EXPLAIN_KEYS, PLAN_IDS, RULE_CODES, CropSpan, SeasonCode, Text
+from fieldshift.engine.values import ENGINE_ID
 from source_trace import known_ids_from
 
 REPO = Path(__file__).resolve().parents[1]
@@ -495,7 +496,7 @@ def artifact_ids() -> set[str]:
 
 def test_every_id_used_has_its_source_facts_and_no_entry_is_unused() -> None:
     facts = load_sources(REPO)
-    used = set().union(*(ids_in(read(name)) for name in CATALOG)) | LAND_CARE_PRINCIPLES
+    used = set().union(*(ids_in(read(name)) for name in CATALOG)) | LAND_CARE_PRINCIPLES | {ENGINE_ID}  # D-158
     assert used - facts.keys() == set()  # H5
     assert facts.keys() - used - artifact_ids() == set()  # §8: one entry per id used by a displayed value
 

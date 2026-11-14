@@ -8,7 +8,7 @@ UI-UX-SPEC §11 Plan.bare_periods: [] when dates are missing; 04-TECH-DESIGN §4
 
 import pytest
 
-from fieldshift.engine.bare_periods import bare_periods
+from fieldshift.engine.bare_periods import bare_periods, living_days
 from fieldshift.engine.schemas import CropSpan
 
 T = {"vi": "[x]", "en": "[x]"}
@@ -67,3 +67,21 @@ def test_a_plan_with_some_dates_missing_fails_loudly() -> None:
 def test_a_date_outside_a_365_day_year_fails_loudly() -> None:
     with pytest.raises(ValueError, match="02-29"):
         bare_periods(spans(("02-01", "02-29")))
+
+
+@pytest.mark.parametrize(
+    ("dates", "days"),
+    [
+        ([("02-01", "06-30")], 150),  # 28 + 31 + 30 + 31 + 30 days of February to June
+        ([("02-01", "05-31"), ("07-01", "10-31")], 243),  # 120 + 123; the June gap is not counted
+        ([("02-01", "06-30"), ("06-01", "12-31")], 334),  # overlapping days count once: 365 - 31 days of January
+        ([("01-01", "12-31")], 365),
+    ],
+)
+def test_living_days_are_365_minus_the_bare_days(dates: list, days: int) -> None:
+    # D-103; 05-DATA-CONTRACTS §7: living and bare days always add up to 365
+    assert living_days(spans(*dates)) == days
+
+
+def test_no_dates_give_no_living_days() -> None:
+    assert living_days(spans(None, None)) is None  # UI-UX-SPEC §11 LandCare.living_days: null for usual_p03
