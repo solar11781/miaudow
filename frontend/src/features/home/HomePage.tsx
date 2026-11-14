@@ -118,7 +118,7 @@ function Heritage() {
               <span className={s.mosaicPhoto}>
                 <Media
                   slug={slug}
-                  sizes={i === 0 ? '(min-width: 1000px) 640px, 92vw' : '(min-width: 1000px) 420px, 92vw'}
+                  sizes={`(max-width: 480px) 320px, (max-width: 860px) 640px, ${i === 0 ? 640 : 420}px`}
                 />
               </span>
               <figcaption>

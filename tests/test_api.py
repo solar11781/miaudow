@@ -105,12 +105,14 @@ def test_the_grid_figure_is_served_as_svg(client: TestClient) -> None:
 def test_health_lists_each_artifact_with_version_and_time(client: TestClient) -> None:
     r = client.get("/api/health")
     assert r.status_code == 200
-    HealthResponse.model_validate(r.json())
+    HealthResponse.model_validate(
+        {k: v for k, v in r.json().items() if k != "explain"}
+    )  # the flag sits outside the contract, as copilot does
     expected = {}
     for f in sorted((REPO / "artifacts").glob("*.json")):
         data = json.loads(f.read_text(encoding="utf-8"))
         expected[f.name] = {"schema_version": data["schema_version"], "generated_at": data["generated_at"]}
-    assert r.json() == {"status": "ok", "artifacts": expected}
+    assert r.json() == {"status": "ok", "artifacts": expected, "explain": False}
 
 
 # ---- invalid input: HTTP 422

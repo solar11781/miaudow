@@ -225,7 +225,7 @@ export function AssistantPage() {
       .health(ctrl.signal)
       .then((h) => {
         const c = h.copilot;
-        // our backend has no copilot route (D-166): without a copilot entry in health the page answers in the browser
+        // the browser engine is the fallback: health has no copilot entry when the copilot is off or offline
         if (c === undefined) {
           setEngine('browser');
           return;
