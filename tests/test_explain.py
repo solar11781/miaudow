@@ -227,6 +227,7 @@ def refused_connection(_: httpx2.Request) -> httpx2.Response:
         lambda _: httpx2.Response(401, json={"type": "error", "error": {"type": "auth", "message": "zz-secret"}}),
         lambda _: httpx2.Response(429, json={"type": "error", "error": {"type": "rate", "message": "zz-secret"}}),
         lambda _: httpx2.Response(200, content=b"zz-secret not json"),
+        lambda _: httpx2.Response(200, json={"zz-secret": "not a message"}),
         lambda _: reply(SIMPLE_VI, stop_reason="refusal"),
         lambda _: reply(SIMPLE_VI, stop_reason="max_tokens"),  # cut off: not the whole text
         lambda _: reply(""),
