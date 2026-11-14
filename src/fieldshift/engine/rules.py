@@ -368,6 +368,35 @@ class PrivacyTexts(Entry):
     paragraphs: list[Text] = Field(min_length=1)
 
 
+class CopilotPassage(Entry):
+    """One hand-written passage of rules/copilot.yaml (D-169 audit, D-172): one source per passage."""
+
+    id: str = Field(pattern=r"^[a-z0-9-]+$")
+    source_id: SourceId
+    keys: str
+    title: Text
+    text: Text
+
+
+class CopilotAnswers(Entry):
+    """The copilot's fixed answer sentences of rules/copilot.yaml; `{year}`, `{unit}` and `{parts}` are filled in."""
+
+    insufficient: Text
+    forecast: Text
+    plans_head: Text
+    plans_tail: Text
+    year_head: Text
+    year_note: Text
+    no_value: Text
+    plan_money: Text
+    model_title: Text
+
+
+class CopilotTexts(Entry):
+    passages: list[CopilotPassage] = Field(min_length=1)
+    answers: CopilotAnswers
+
+
 class MethodTexts(BaseModel):
     """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2-5)."""
 
@@ -436,6 +465,14 @@ def load_method_texts(root: Path) -> MethodTexts:
 
 def load_privacy_texts(root: Path) -> PrivacyTexts:
     return _checked("privacy.yaml", PrivacyTexts, _read_mapping(root, "privacy.yaml"))
+
+
+def load_copilot_texts(root: Path) -> CopilotTexts:
+    texts = _checked("copilot.yaml", CopilotTexts, _read_mapping(root, "copilot.yaml"))
+    ids = [p.id for p in texts.passages]
+    if len(set(ids)) != len(ids):
+        raise ValueError("rules/copilot.yaml: a passage id is listed twice")
+    return texts
 
 
 def load_calendar(root: Path) -> CalendarFile:
