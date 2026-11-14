@@ -22,17 +22,31 @@ def _mmdd(day: int) -> str:
     return (YEAR_START + timedelta(days=day)).strftime("%m-%d")
 
 
-def bare_periods(calendar: list[CropSpan]) -> list[Period]:
-    """Bare periods in date order; [] when the plan has no dates (P-03)."""
+def _covered(calendar: list[CropSpan]) -> list[bool] | None:
+    """Per day of the year, whether a span from `sow_from` to `harvest_to` covers it; None when the plan has no dates."""
     undated = [s.crop_key for s in calendar if s.sow_from is None]
     if len(undated) == len(calendar):
-        return []
+        return None
     if undated:
         raise ValueError(f"crop spans without dates in a plan with dates: {undated}")
     covered = [False] * DAYS
     for span in calendar:
         for day in range(_day(span.sow_from), _day(span.harvest_to) + 1):
             covered[day] = True
+    return covered
+
+
+def living_days(calendar: list[CropSpan]) -> int | None:
+    """Days with a living crop out of 365 = 365 minus the bare days (D-103); None when the plan has no dates (P-03)."""
+    covered = _covered(calendar)
+    return None if covered is None else sum(covered)
+
+
+def bare_periods(calendar: list[CropSpan]) -> list[Period]:
+    """Bare periods in date order; [] when the plan has no dates (P-03)."""
+    covered = _covered(calendar)
+    if covered is None:
+        return []
     starts = [d for d in range(DAYS) if not covered[d] and covered[d - 1]]  # covered[-1] is 31 December
     periods = []
     for start in starts:
