@@ -113,6 +113,8 @@ export const vi = {
     inviteLead: 'Bốn lần chạm. Không cần gõ chữ, không cần tài khoản, không lưu gì trên máy của bạn.',
   },
   farmer: {
+    dataLine: (names: string) => `Dữ liệu: ${names}`,
+    dataSources: { 'R-N01': 'NASA POWER', 'R-N02': 'NASA MODIS', 'R-N05': 'NASA GPM IMERG', 'R-D01': 'Cục Thống kê', 'R-P02': 'Trịnh Đức Toàn và cs. (2023)', 'R-P03': 'Trịnh Đức Toàn và cs. (2023)' } as Record<string, string>,
     stepOf: (n: number) => `Bước ${n}/4`,
     startEyebrow: 'Đất lúa thiếu nước ở Nghệ An',
     startTitle: 'Ruộng nhà mình, mùa tới trồng gì?',

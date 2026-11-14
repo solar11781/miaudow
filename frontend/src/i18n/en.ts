@@ -115,6 +115,8 @@ export const en: Messages = {
     inviteLead: 'Four taps. No typing, no account, nothing stored on your phone.',
   },
   farmer: {
+    dataLine: (names: string) => `Data: ${names}`,
+    dataSources: { 'R-N01': 'NASA POWER', 'R-N02': 'NASA MODIS', 'R-N05': 'NASA GPM IMERG', 'R-D01': 'NSO Vietnam', 'R-P02': 'Trịnh Đức Toàn et al. (2023)', 'R-P03': 'Trịnh Đức Toàn et al. (2023)' } as Record<string, string>,
     stepOf: (n: number) => `Step ${n}/4`,
     startEyebrow: 'Water-short rice land in Nghệ An',
     startTitle: 'Your field: what to grow next season?',

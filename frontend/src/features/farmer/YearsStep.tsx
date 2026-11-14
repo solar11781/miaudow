@@ -6,6 +6,7 @@ import type { PastYearsResponse, YearRow as Row } from '../../types';
 import { RULES } from '../../domain/hazards';
 import { MAX_YEARS, toggleYear } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
+import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs } from '../provenance/useApiRefs';
@@ -106,8 +107,7 @@ export function YearsStep() {
       }
     >
       <p className={s.notForecast}><Icon name="alert" size={18} />{t.common.notForecast}</p>
-      <p className="muted small">{t.common.dataLine}</p>
-      {res.status === 'ok' ? <Years res={res.data} /> : <LoadState state={res} retry={retry} />}
+      {res.status === 'ok' ? <><DataLine sources={res.data.sources} className="muted small" /><Years res={res.data} /></> : <LoadState state={res} retry={retry} />}
     </StepShell>
   );
 }

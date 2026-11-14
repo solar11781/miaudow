@@ -4,6 +4,7 @@ import type { Interval, MethodResponse, MetricRow, SeasonCode } from '../../type
 import { COVERAGE_AXES, SEASON_CODES } from '../../types';
 import { SkillChart, type SkillRow } from '../charts/SkillChart';
 import { useApi } from '../../hooks/useApi';
+import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
@@ -153,7 +154,7 @@ function Method({ res }: { res: MethodResponse }) {
       </Section>
 
       <Section id="m-data" title={t.method.dataTitle}>
-        <p>{t.common.dataLine}</p>
+        <DataLine sources={res.sources} />
         <p>{t.method.farmland}</p>
         <figure className="stack">
           <img src={GRID_FIGURE_URL} alt={t.method.gridAlt} width={480} height={480} className={s.gridFigure} />

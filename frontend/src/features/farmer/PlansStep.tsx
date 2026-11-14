@@ -8,6 +8,7 @@ import { api } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
 import { compareRequest, serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
+import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { usePick, useT } from '../../app/settings';
 import s from './farmer.module.css';
@@ -50,6 +51,7 @@ function Cards({ res }: { res: CompareResponse }) {
 
   return (
     <>
+      <DataLine sources={res.sources} className="muted small" />
       <nav className={s.jump} aria-label={t.farmer.jumpTo}>
         {res.plans.map((p) => (
           <a key={p.id} href={`#the-${p.id}`} onClick={(e) => { e.preventDefault(); document.getElementById(`the-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); update({ plan: p.id }); }}>
@@ -84,7 +86,6 @@ export function PlansStep() {
     <StepShell step={4} title={t.farmer.plansTitle} help={t.farmer.plansLead} wide>
       <div className={s.plansMeta}>
         <p className={s.notForecast}><Icon name="alert" size={18} />{t.common.notForecast}</p>
-        <p className="muted small">{t.common.dataLine}</p>
         <div className={s.pickedYears}>
           {state.years.map((y) => <span key={y} className={s.yearTag}>{y}</span>)}
           <Link to={{ pathname: '/nong-dan/nam', search }} className={s.editLink} viewTransition>{t.farmer.yearsTitle}</Link>
