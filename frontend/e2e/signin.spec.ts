@@ -186,3 +186,55 @@ test('/da-luu with sign-in off says it is not available and offers no sign-in', 
   await expect(page.getByText('Hiện chưa đăng nhập được', { exact: false })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Đăng nhập' })).toHaveCount(0);
 });
+
+test('UI-UX-SPEC 12c home shows the saved answers link under the main button while sign-in is on', async ({ page }) => {
+  await signInOn(page);
+  await page.goto('/#/');
+  const main = page.getByRole('link', { name: 'Tìm hiểu ruộng nhà mình' }).first(); // the hero's, the first on the page
+  const saved = page.getByRole('main').getByRole('link', { name: 'Câu trả lời đã lưu' });
+  await expect(saved).toBeVisible();
+  const [a, b] = [await main.boundingBox(), await saved.boundingBox()];
+  expect(b && a && b.y >= a.y + a.height - 1).toBe(true);
+  expect(b && b.height >= 44 && b.width >= 44).toBe(true);
+});
+
+test('UI-UX-SPEC 12c a saved set cannot be saved twice, and new answers can be saved again', async ({ page }) => {
+  await signInOn(page);
+  const saved: unknown[] = [];
+  await page.route('**/api/account/sign-in', (route) => route.fulfill({ status: 204 }));
+  await page.route('**/api/account/saved', (route) => {
+    saved.push(route.request().postDataJSON());
+    return route.fulfill({
+      status: 201,
+      json: { id: saved.length, land: 'canal_end', years: [2010], priority: 'income' },
+    });
+  });
+  await page.goto(PLANS_URL);
+  await page.getByRole('link', { name: 'Đăng nhập để lưu các câu trả lời này' }).click();
+  await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
+  await page.getByTestId('google-button').getByRole('button', { name: 'Google' }).click();
+  await expect(page.getByRole('button', { name: 'Đã lưu ✓' })).toBeDisabled();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.getByRole('link', { name: /Quay lại/ }).click();
+  await page.getByRole('radio', { name: /Tiết kiệm nước/ }).click();
+  await page.getByRole('link', { name: 'Xem các cách trồng' }).click();
+  await page.getByRole('button', { name: 'Lưu các câu trả lời này' }).click();
+  await expect(page.getByRole('button', { name: 'Đã lưu ✓' })).toBeDisabled();
+  expect(saved).toHaveLength(2);
+});
+
+test('UI-UX-SPEC 12c the delete confirm buttons are not in the main button style', async ({ page }) => {
+  await signInOn(page);
+  await page.route('**/api/account/sign-in', (route) => route.fulfill({ status: 204 }));
+  await page.route('**/api/account/saved', (route) =>
+    route.fulfill({ json: { saved: [{ id: 1, land: 'canal_end', years: [2010], priority: 'income' }] } }),
+  );
+  await page.goto('/#/dang-nhap');
+  await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
+  await page.getByTestId('google-button').getByRole('button', { name: 'Google' }).click();
+  await page.getByRole('button', { name: /^Xóa: / }).click();
+  await page.getByRole('button', { name: 'Xóa tài khoản và mọi câu trả lời đã lưu' }).click();
+  for (const name of ['Có, xóa', 'Có, xóa hết']) {
+    await expect(page.getByRole('button', { name, exact: true })).not.toHaveClass(/_primary_/);
+  }
+});

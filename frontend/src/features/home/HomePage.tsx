@@ -6,6 +6,7 @@ import { media } from '../../data/media';
 import { RULES } from '../../domain/hazards';
 import { PLANS } from '../../domain/plans';
 import { ButtonLink } from '../../design-system/Button';
+import { useSignInAvailable } from '../account/AccountProvider';
 import { Icon } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
 import { Reveal } from '../../design-system/Reveal';
@@ -26,6 +27,7 @@ function Hero() {
   const pick = usePick();
   const { calm } = useSettings();
   const [paused, setPaused] = useState(false);
+  const signIn = useSignInAvailable();
   return (
     <section className={`${s.hero} surface-forest`} aria-labelledby="hero-title">
       <div className={s.heroMedia}>
@@ -48,6 +50,14 @@ function Hero() {
             {t.home.ctaScience}
           </ButtonLink>
         </div>
+        {/* a farmer on a second phone finds the saved answers on the first screen (walkthrough of PR #53) */}
+        {signIn && (
+          <div className={s.ctas}>
+            <ButtonLink to="/da-luu" variant="secondary" icon="book">
+              {t.account.savedTitle}
+            </ButtonLink>
+          </div>
+        )}
       </div>
       <div className={s.heroFoot}>
         <p className={s.heroCredit}>
