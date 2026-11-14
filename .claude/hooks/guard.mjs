@@ -49,7 +49,8 @@ function segments(tokens) {
   return out.filter((s) => s.length);
 }
 
-const isMainRef = (ref) => ref === MAIN || ref === `refs/heads/${MAIN}`;
+// git also expands heads/main to refs/heads/main
+const isMainRef = (ref) => ref === MAIN || ref === `refs/heads/${MAIN}` || ref === `heads/${MAIN}`;
 // git global options that take the next word as their value
 const VALUE_OPTIONS = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--exec-path', '--config-env']);
 
@@ -90,6 +91,15 @@ function checkGit(args, state) {
     return 'pulling another branch into main';
   }
   if (sub === 'branch' && has('-d', '-D', '--delete')) return 'deleting a branch';
+  // ways to write main without merging into it (adversarial review, 2026-11-14)
+  if (sub === 'fetch' && plain.some((p) => p.includes(':') && isMainRef(p.split(':').pop().replace(/^\+/, '')))) {
+    return 'fetching into main';
+  }
+  if (sub === 'update-ref' && plain.some(isMainRef)) return 'moving main with update-ref';
+  if (sub === 'symbolic-ref' && plain.some(isMainRef)) return 'pointing HEAD at main';
+  if (sub === 'branch' && has('-f', '--force', '-m', '-M', '--move', '-c', '-C', '--copy') && plain.some(isMainRef)) {
+    return 'moving or overwriting main';
+  }
   if (sub === 'reset' && has('--hard')) return 'git reset --hard';
   if (sub === 'clean' && flags.some((f) => /^-[a-zA-Z]*f/.test(f) || f === '--force')) return 'git clean -f';
   if ((sub === 'checkout' || sub === 'restore') && plain.includes('.')) return `git ${sub} . (discards all changes)`;
@@ -173,6 +183,24 @@ function literalFolder(raw) {
   return process.platform === 'win32' && /^\/[a-zA-Z]\//.test(raw) ? `${raw[1].toUpperCase()}:${raw.slice(2)}` : raw;
 }
 
+// git subcommands that cannot change which branch the checkout is on; fetch, merge and push only without a refspec
+// (no ':') and without a target ending in main (team, 2026-11-14, after the adversarial review)
+const SAFE_GIT = new Set(['status', 'log', 'diff', 'show', 'add', 'commit', 'rev-parse', 'fetch', 'merge', 'push']);
+
+function safeStep(words) {
+  if (words[0].split(/[\\/]/).pop().toLowerCase().replace(/\.exe$/, '') !== 'git') return false;
+  let i = 1;
+  while (i < words.length && words[i].startsWith('-')) i += VALUE_OPTIONS.has(words[i]) ? 2 : 1;
+  const sub = words[i];
+  if (!SAFE_GIT.has(sub)) return false;
+  const plain = words.slice(i + 1).filter((w) => !w.startsWith('-'));
+  if (sub === 'merge') return plain.every((w) => !w.includes(':'));
+  if (sub === 'fetch' || sub === 'push') {
+    return plain.every((w) => !w.includes(':') && w !== '.' && !(sub === 'push' && /(^|\/)main$/.test(w)));
+  }
+  return true;
+}
+
 // The checkout a bash command certainly runs in, when it names one: `cd <literal path>` as the first step with every
 // step joined by && (nothing runs if the cd fails), or a single `git -C <literal path> ...`. The folder must be a git
 // checkout on a branch other than main. Anything else returns null and the session folder's branch applies.
@@ -192,10 +220,11 @@ function certainFolder(command, shell, branchAt) {
     folder = literalFolder(first[2]);
     rest = [['git', ...first.slice(3)]];
   }
-  if (!folder) return null;
+  if (!folder || command.includes('\\')) return null;
   for (const s of rest) {
     const head = s[0].split(/[\\/]/).pop().toLowerCase().replace(/\.exe$/, '');
     if (FOLDER_WORDS.has(head) || s.some((w) => GIT_REPO_OPTION.test(w))) return null;
+    if (!safeStep(s)) return null;
   }
   const branch = branchAt(folder);
   return typeof branch === 'string' && branch !== '' && branch !== MAIN ? { folder, branch } : null;
