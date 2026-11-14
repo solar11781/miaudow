@@ -140,3 +140,20 @@ def farmland_share(met: dict, weights: dict) -> float:
     if missing:
         raise KeyError(f"no rule result for weighted cells {missing}")
     return float(sum(w for c, w in weights.items() if met[c]))
+
+
+def risk_level_shares(cell_frames: dict, weights: dict, start: date, end: date) -> dict[str, float]:
+    """Farmland share of cells meeting the heavy-rain, heat and cold rules over [start, end] (sensitivity run c).
+
+    The same risk-level rules as the displayed labels (03-ML-SPEC section 5a), over one NSO season window; the drought
+    readings stay the model's per-fold features, because their normal must come from the training years (D-66).
+    """
+    out = {"risk_heavy_rain": 0.0, "risk_heat": 0.0, "risk_cold": 0.0}
+    for cell, w in weights.items():
+        win = cell_frames[cell].loc[pd.Timestamp(start) : pd.Timestamp(end), ["PRECTOTCORR", "T2M_MAX", "T2M"]]
+        if win.isna().any().any():
+            raise ValueError(f"weather missing in cell {cell} between {start} and {end}")
+        out["risk_heavy_rain"] += w * heavy_rain(win["PRECTOTCORR"])
+        out["risk_heat"] += w * heat(win["T2M_MAX"])
+        out["risk_cold"] += w * cold(win["T2M"])
+    return out
