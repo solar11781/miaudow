@@ -21,7 +21,7 @@
   font-size: var(--t-hero); line-height: .94; max-width: 17ch; color: #f7f8f3; text-wrap: wrap;
   font-kerning: none; text-shadow: 0 2px 30px rgba(6, 10, 7, .35);
 }
-.heroTitle em { color: var(--c-gold-300); }
+.heroTitle em { color: var(--c-gold-300); font-size: .88em; }
 .heroLead { font-size: var(--t-lead); line-height: 1.5; max-width: 36rem; color: #e3e6dc; }
 .ctas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-6); }
 .textLink {
@@ -145,16 +145,11 @@
   .strip li { scroll-snap-align: start; }
 }
 
-/* ---- observatory: photograph dims, real geometry draws ---- */
-.obs { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; min-height: 760px; background: var(--c-forest-950); }
-.obsStage { position: relative; height: 100%; min-height: 440px; }
-.obsPhoto { position: absolute; inset: 0; opacity: .55; }
-.obsPhoto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 10, 7, .1), var(--c-forest-950) 96%), linear-gradient(0deg, var(--c-forest-950), transparent 35%); }
-.obsSvg { position: absolute; inset: 8% 6%; width: 88%; height: 84%; overflow: visible; }
-.drawLine { fill: rgba(107, 154, 58, .14); stroke: var(--c-gold-300); stroke-width: 2.2; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
-.drawCell { fill: var(--c-gold-500); stroke: rgba(243, 244, 238, .55); stroke-width: 1.2; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
-.obsText { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-6); padding-block: var(--s-16); }
-@media (max-width: 960px) { .obs { grid-template-columns: minmax(0, 1fr); } .obsText { padding-top: 0; } }
+/* ---- observatory: the satellite scene, then the way into the 3D globe ---- */
+.obs { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; gap: var(--s-8); padding-block: var(--s-16); }
+.obsStage { min-width: 0; padding-left: max(var(--gutter-l), calc((100vw - var(--content)) / 2)); }
+.obsText { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-6); }
+@media (max-width: 960px) { .obs { grid-template-columns: minmax(0, 1fr); } .obsStage { padding-inline: var(--gutter-l) var(--gutter-r); } }
 
 /* ---- invitation ---- */
 .invite { position: relative; overflow: hidden; min-height: 86svh; display: flex; align-items: flex-end; }

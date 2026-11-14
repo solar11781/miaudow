@@ -1,4 +1,4 @@
-.page { padding-top: clamp(2rem, 1.5rem + 2vw, 4rem); background-image: var(--g-morning-mist); }
+.page { padding-top: clamp(2rem, 1.5rem + 2vw, 4rem); }
 .grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
 @media (max-width: 960px) { .grid { grid-template-columns: minmax(0, 1fr); } }
 .intro { display: flex; flex-direction: column; gap: var(--s-5); position: sticky; top: 96px; }
@@ -6,7 +6,7 @@
 .title { font-size: var(--t-h1); }
 .pipeline { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .pipeline li { display: inline-flex; align-items: center; gap: .45rem; padding: .35rem .85rem .35rem .4rem; border-radius: var(--r-pill); background: var(--bg-raised); border: 1px solid var(--line); }
-.pipeline li span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--c-forest-900); color: var(--c-gold-300); font: 500 17px/1 var(--font-mono); }
+.pipeline li span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--c-gold-500); color: var(--on-accent); font: 700 17px/1 var(--font-ui); }
 .pipeline li:last-child span { background: var(--c-gold-500); color: var(--on-accent); }
 .statusBox { display: flex; gap: var(--s-3); align-items: flex-start; padding: var(--s-4); border-radius: var(--r-md); background: var(--bg-raised); border: 1px solid var(--line); }
 .statusBox p { color: var(--fg-2); margin-top: .2rem; }
@@ -33,7 +33,7 @@
 .turn { display: flex; flex-direction: column; gap: var(--s-3); animation: turnIn var(--d-med) var(--ease-out); }
 @keyframes turnIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .who { display: block; font: 500 17px/1.2 var(--font-ui); color: var(--fg-3); margin-bottom: .25rem; }
-.q { align-self: flex-end; max-width: 88%; background: var(--c-forest-900); color: var(--c-paper-100); padding: var(--s-3) var(--s-4); border-radius: var(--r-lg) var(--r-lg) 4px var(--r-lg); }
+.q { align-self: flex-end; max-width: 88%; background: color-mix(in srgb, var(--c-gold-500) 18%, var(--bg-raised)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--c-gold-500) 40%, transparent); padding: var(--s-3) var(--s-4); border-radius: var(--r-lg) var(--r-lg) 4px var(--r-lg); }
 .q .who { color: rgba(244, 240, 229, .7); }
 .a { align-self: stretch; border: 1px solid var(--line); border-radius: 4px var(--r-lg) var(--r-lg) var(--r-lg); padding: var(--s-4); display: flex; flex-direction: column; gap: var(--s-3); background: var(--bg); min-width: 0; }
 .aHead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -93,3 +93,16 @@
 .small { color: var(--fg-3); }
 .clear { align-self: flex-start; min-height: 44px; border: 0; background: transparent; color: var(--fg-3); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .turn { animation: none; } .card { transition: none; } }
+
+/* branded head: the Miaudow emblem greets the visitor */
+.hero { position: relative; overflow: hidden; isolation: isolate; }
+.heroPhoto { position: absolute; inset: 0; z-index: -1; opacity: .45; }
+.heroPhoto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #0a170f 0%, rgba(10, 23, 15, .55) 60%, rgba(10, 23, 15, .8) 100%), linear-gradient(0deg, #0a170f 0%, rgba(10, 23, 15, 0) 50%); }
+.heroInner { display: flex; align-items: center; gap: clamp(1.5rem, 1rem + 3vw, 4rem); padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
+.heroEmblem { flex: none; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, .45)); }
+.heroText { display: flex; flex-direction: column; gap: var(--s-3); max-width: 44rem; }
+.greeting { color: var(--c-gold-300); font-size: clamp(1.8rem, 1.4rem + 1.4vw, 2.6rem); line-height: 1.1; }
+.heroTitle { font-size: clamp(2.8rem, 1.8rem + 4vw, 5.5rem); color: #f7f5ee; }
+.heroLead { font-size: var(--t-lead); color: #dfe4d8; line-height: 1.5; }
+@media (max-width: 760px) { .heroInner { flex-direction: column; align-items: flex-start; } .heroEmblem img { width: 150px !important; } }
+.bot { display: inline-flex; align-items: center; gap: .5rem; color: var(--fg); font-weight: 650; }

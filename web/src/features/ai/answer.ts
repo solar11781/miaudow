@@ -1,3 +1,4 @@
+import { planLabel } from '../../domain/plans';
 import { YEARS } from '../../data';
 import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
 import { CROPS, PLANS, planProfitMillion, type CropId } from '../../domain/plans';
@@ -38,7 +39,7 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   if (!YEARS.includes(year)) {
     return { type: 'abstain', lines: [{ text: vi ? `Miaudow chỉ có số liệu các năm ${YEARS[0]}–${YEARS[YEARS.length - 1]}.` : `Miaudow only has data for ${YEARS[0]}–${YEARS[YEARS.length - 1]}.` }], evidence: [], kinds: [] };
   }
-  const lines: AnswerLine[] = [{ text: vi ? `Năm ${year}, phần đất trồng Nghệ An gặp điều kiện theo QĐ 18/2021, trong thời gian có cây P-02 trên ruộng:` : `In ${year}, share of Nghệ An farmland meeting each Decision 18/2021 rule while P-02 crops were in the field:` }];
+  const lines: AnswerLine[] = [{ text: vi ? `Năm ${year}, phần đất trồng Nghệ An gặp điều kiện theo QĐ 18/2021, trong thời gian có cây của thử nghiệm Lưu Sơn trên ruộng:` : `In ${year}, share of Nghệ An farmland meeting each Decision 18/2021 rule while the Lưu Sơn trial crops were in the field:` }];
   for (const rule of FARMER_RULES) {
     const v = yearShare(rule, year);
     lines.push({
@@ -61,10 +62,10 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
   const vi = lang === 'vi';
   const rows = PLANS.flatMap((p) => p.crops.filter((c) => c.crop === crop).map((c) => ({ p, c })));
   const name = CROPS[crop].name[lang];
-  const lines: AnswerLine[] = [{ text: vi ? `${name} trong thử nghiệm P-02 (2020–21), lãi đã trừ công:` : `${name} in the P-02 trial (2020–21), profit net of labour:` }];
+  const lines: AnswerLine[] = [{ text: vi ? `${name} trong thử nghiệm ở Lưu Sơn (2020–21), lãi đã trừ công:` : `${name} in the Lưu Sơn trial (2020–21), profit net of labour:` }];
   for (const { p, c } of rows) {
     lines.push({
-      text: `${p.current ? (vi ? 'Cách làm hiện nay' : 'Current practice') : p.id.toUpperCase()} · ${c.variety} · ${c.sow} → ${c.harvest}`,
+      text: `${planLabel(p, lang)} · ${c.variety} · ${c.sow} → ${c.harvest}`,
       ref: { sourceId: 'p02', kind: 'study', value: `${f.n(c.profit / 1000, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`, label: `${name} ${c.variety}`, detail: vi ? `Chi phí ${f.n(c.cost)} nghìn đ/ha; giá ${f.n(c.price)} đ/kg.` : `Cost ${f.n(c.cost)} thousand VND/ha; price ${f.n(c.price)} VND/kg.` },
     });
   }

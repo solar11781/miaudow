@@ -45,8 +45,8 @@ const MOOD: ArtDirection = {
   officer: { slug: 'mood-village-tree' },
   pageHead: {
     science: { slug: 'mood-flower-hill-pickers' },
-    evidence: { slug: 'mood-tea-rows' },
-    assistant: { slug: 'mood-lotus-boat' },
+    evidence: { slug: 'mood-karst-valley' },
+    assistant: { slug: 'mood-valley-village' },
   },
 };
 

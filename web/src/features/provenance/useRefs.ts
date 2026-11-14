@@ -17,8 +17,8 @@ export function useRefs() {
       share(rule: RuleCode, year: number, share: number, crop?: PlanCrop): SourceRef {
         const r = RULES[rule];
         const window = crop
-          ? (vi ? `thời gian ${cropName(crop)} trên ruộng (${crop.sow} → ${crop.harvest}, theo P-02)` : `the field time of ${cropName(crop)} (${crop.sow} → ${crop.harvest}, from P-02)`)
-          : (vi ? 'thời gian có ít nhất một cây P-02 trên ruộng' : 'the time any P-02 crop is in the field');
+          ? (vi ? `thời gian ${cropName(crop)} trên ruộng (${crop.sow} → ${crop.harvest}, theo thử nghiệm Lưu Sơn)` : `the field time of ${cropName(crop)} (${crop.sow} → ${crop.harvest}, from the Lưu Sơn trial)`)
+          : (vi ? 'thời gian có ít nhất một cây của thử nghiệm Lưu Sơn trên ruộng' : 'the time any Lưu Sơn trial crop is in the field');
         return {
           sourceId: 'nasa-power', kind: 'derived', value: f.pct(share),
           label: `${pick(r.name)} · ${year}${crop ? ` · ${cropName(crop)}` : ''}`,

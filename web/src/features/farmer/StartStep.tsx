@@ -1,31 +1,55 @@
 import { useFarmer } from './FarmerLayout';
 import { ButtonLink } from '../../design-system/Button';
-import { Icon } from '../../design-system/Icon';
+import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
 import { useT } from '../../app/settings';
 import { ART } from '../../data/art';
 import s from './farmer.module.css';
 
+const HELP_ICONS: IconName[] = ['sun', 'sprout', 'user'];
+const STEP_ART = ['media/field/field-at-end-of-canal.webp', 'media/field/field-often-short-of-water.webp', 'media/field/water-under-control.webp', 'media/field/ask-extension-officer.webp'];
+
+/** What the farmer part does and does not do, in plain words, before the first tap. */
 export function StartStep() {
   const t = useT();
   const { search } = useFarmer();
   return (
-    <div className={s.shell}>
+    <div className={`${s.shell} ${s.wide}`}>
       <article className={`${s.startCard} surface-forest`}>
         <div className={s.startPhoto}>
-          <Media slug={ART.farmerStart.slug} priority sizes="(min-width: 640px) 560px, 100vw" decorative />
+          <Media slug={ART.farmerStart.slug} priority sizes="(min-width: 900px) 600px, 100vw" decorative />
         </div>
         <div className={s.startBody}>
           <h1 className={`display ${s.startTitle}`}>{t.farmer.startTitle}</h1>
           <p className={s.startLead}>{t.farmer.startLead}</p>
-          <ol className={s.startList}>
-            {t.home.steps.map((st, i) => (
-              <li key={st.title}><span className={s.startNum}>{i + 1}</span>{st.title}</li>
-            ))}
-          </ol>
           <ButtonLink to={{ pathname: '/nong-dan/ruong', search }} size="lg" block icon="arrowRight">{t.farmer.startCta}</ButtonLink>
         </div>
       </article>
+
+      <section className={s.explain} aria-labelledby="farmer-helps">
+        <div className={s.explainCol}>
+          <h2 id="farmer-helps" className="h3">{t.farmer.helpsTitle}</h2>
+          <ul className={s.helps}>
+            {t.farmer.helps.map((h, i) => <li key={h}><span className={s.helpIcon}><Icon name={HELP_ICONS[i] ?? 'check'} size={22} /></span>{h}</li>)}
+          </ul>
+        </div>
+        <div className={s.explainCol}>
+          <h2 className="h3">{t.farmer.notTitle}</h2>
+          <ul className={s.nots}>
+            {t.farmer.nots.map((h) => <li key={h}><span className={s.notIcon}><Icon name="close" size={18} strokeWidth={2.4} /></span>{h}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <ol className={s.startSteps} data-stagger aria-label={t.farmer.stepsLabel}>
+        {t.home.steps.map((st, i) => (
+          <li key={st.title}>
+            <img src={STEP_ART[i]} alt="" width={474} height={356} loading="lazy" decoding="async" />
+            <span className={s.startStepNum}>{t.home.stepLabel(i + 1)}</span>
+            <span className={s.startStepTitle}>{st.title}</span>
+          </li>
+        ))}
+      </ol>
       <p className={s.support}><Icon name="user" size={20} />{t.common.support}</p>
     </div>
   );

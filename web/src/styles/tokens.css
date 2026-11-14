@@ -1,18 +1,19 @@
 /*
-  MIAUDOW design tokens, "Mùa vụ" (the cropping season): night over the field for the story and the data rooms,
-  rice-water light for the tools a farmer uses in the sun. One accent, ripe-rice gold, for the action a person takes;
-  young-rice green only for data that is good news. Photography carries the colour, so surfaces stay quiet.
-  Type: Darker Grotesque (display, by a Vietnamese-born designer, full Vietnamese) and Hanken Grotesk (text and
-  numbers, tabular figures). Both OFL-1.1, served by the app (D-155). No monospace costume, no italic serif.
-  Components use semantic tokens only. Text pairs keep at least 4.5:1 (H8); no text under 17 px (H6).
+  MIAUDOW design tokens, "Đêm đồng" (night over the field): every page sits on a deep green-black gradient, the way
+  rice land looks before dawn; ivory text on it reads at 7:1 or better. One accent, ripe-rice gold, for the action a
+  person takes; young-rice green for good news; photographs carry the rest of the colour. The light "rice water"
+  theme stays one tap away (theme button) for bright sun.
+  Type: Alegreya (headings: a calligraphic serif, flowing like brush lettering, full Vietnamese), Be Vietnam Pro (text
+  and numbers, drawn by Vietnamese designers for Vietnamese), Dancing Script (one or two hand-lettered accents per
+  page, never for reading). All OFL-1.1, served by the app (D-155). No text under 17 px (H6); text pairs >= 4.5:1 (H8).
 */
 :root {
   /* palette */
-  --c-forest-950: #060a07;
-  --c-forest-900: #0b110d;
-  --c-forest-800: #111a14;
-  --c-forest-700: #19261d;
-  --c-forest-600: #26382b;
+  --c-forest-950: #060d09;
+  --c-forest-900: #0a170f;
+  --c-forest-800: #0f2117;
+  --c-forest-700: #19331f;
+  --c-forest-600: #26472f;
   --c-paddy-600: #436a20;
   --c-paddy-500: #6b9a3a;
   --c-paddy-300: #b9d47a;
@@ -25,7 +26,7 @@
   --c-gold-100: #f7ebc9;
   --c-clay-600: #9c4b2c;
   --c-clay-100: #f1ddd2;
-  --c-terracotta-500: #a95c3c;
+  --c-terracotta-500: #c0622f;
   --c-lam-500: #8ea6a1;
   --c-lam-300: #bfd0cc;
   --c-lam-700: #4b6561;
@@ -35,7 +36,6 @@
   --c-mist-100: #edf0ea;
   --c-water-600: #2b6a94;
   --c-water-100: #d8e7ee;
-  /* rice water: a cool, slightly green white instead of cream paper */
   --c-paper-50: #fafbf8;
   --c-paper-100: #f1f3ee;
   --c-paper-200: #e4e8e0;
@@ -46,30 +46,31 @@
   --c-seal-600: #a8381f;
 
   /* type */
-  --font-display: 'Darker Grotesque Variable', 'Darker Grotesque', 'Hanken Grotesk Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  --font-ui: 'Hanken Grotesk Variable', 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif;
+  --font-display: 'Alegreya Variable', 'Alegreya', Georgia, 'Times New Roman', serif;
+  --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif;
+  --font-script: 'Dancing Script Variable', 'Dancing Script', 'Segoe Script', cursive;
   /* no monospace costume: what used the code face now uses the text face with tabular figures */
   --font-mono: var(--font-ui);
-  --t-hero: clamp(3.5rem, 1.5rem + 7.4vw, 8.25rem);
-  --t-h1: clamp(2.75rem, 1.7rem + 3.9vw, 5.25rem);
-  --t-h2: clamp(2.3rem, 1.55rem + 2.7vw, 3.9rem);
-  --t-h3: clamp(1.55rem, 1.35rem + .6vw, 1.95rem);
+  --t-hero: clamp(3rem, 1.4rem + 6vw, 7rem);
+  --t-h1: clamp(2.4rem, 1.6rem + 3vw, 4.4rem);
+  --t-h2: clamp(2rem, 1.45rem + 2vw, 3.2rem);
+  --t-h3: clamp(1.4rem, 1.25rem + .5vw, 1.7rem);
   --t-lead: clamp(1.2rem, 1.1rem + .4vw, 1.4rem);
   --t-body: 1.125rem;
   /* H6: the two smallest steps are both 17 px; hierarchy below body comes from weight, colour and spacing. */
   --t-small: 1.0625rem;
   --t-micro: 1.0625rem;
   --t-farmer: 1.25rem;
-  --lh-tight: .98;
-  --lh-head: 1.02;
-  --lh-body: 1.6;
-  --w-display: 750;
-  --w-head: 700;
+  --lh-tight: 1.02;
+  --lh-head: 1.06;
+  --lh-body: 1.65;
+  --w-display: 800;
+  --w-head: 750;
 
   /* space (4 px base), radius: 12-16 px for surfaces, small controls only may be round */
   --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.25rem; --s-6: 1.5rem;
   --s-8: 2rem; --s-10: 2.5rem; --s-12: 3rem; --s-16: 4rem; --s-20: 5rem; --s-24: 6rem;
-  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 16px; --r-pill: 10px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 18px; --r-pill: 10px;
   --gutter-l: max(1rem, env(safe-area-inset-left, 0px));
   --gutter-r: max(1rem, env(safe-area-inset-right, 0px));
   --content: 1280px;
@@ -88,126 +89,115 @@
   /* light */
   --g-golden-horizon: linear-gradient(180deg, rgba(232, 185, 78, 0) 40%, rgba(232, 185, 78, .16) 75%, rgba(120, 70, 20, .24) 100%);
   --g-morning-mist: linear-gradient(180deg, rgba(241, 243, 238, .92) 0%, rgba(191, 208, 204, .5) 55%, rgba(241, 243, 238, 0) 100%);
-  --g-forest-depth: linear-gradient(180deg, #0b110d 0%, #060a07 100%);
+  --g-forest-depth: radial-gradient(120% 90% at 50% 0%, #1b3d28 0%, #0d1f15 55%, #07110b 100%);
   --g-harvest-glow: linear-gradient(180deg, rgba(232, 185, 78, 0) 0%, rgba(232, 185, 78, 0) 100%);
   --g-lam-reflection: linear-gradient(180deg, rgba(142, 166, 161, 0) 0%, rgba(142, 166, 161, .14) 60%, rgba(43, 106, 148, .14) 100%);
   --g-photo-scrim: linear-gradient(180deg, rgba(6, 10, 7, .62) 0%, rgba(6, 10, 7, .12) 30%, rgba(6, 10, 7, .25) 55%, rgba(6, 10, 7, .9) 100%);
 
-  /* semantic, light */
-  --bg: var(--c-paper-100);
-  --bg-raised: var(--c-paper-50);
-  --bg-sunk: var(--c-paper-200);
-  --bg-tint: var(--c-mist-100);
-  --fg: var(--c-ink-900);
-  --fg-2: var(--c-ink-700);
-  --fg-3: var(--c-ink-500);
-  --line: rgba(15, 21, 17, .1);
-  --line-2: rgba(15, 21, 17, .2);
+  /* semantic: night over the field (default) */
+  --bg: #0b1a12;
+  --bg-raised: #13281c;
+  --bg-sunk: #08140d;
+  --bg-tint: #183224;
+  --fg: #f4f2ea;
+  --fg-2: #d6ddd0;
+  --fg-3: #aebaa9;
+  --line: rgba(244, 242, 234, .12);
+  --line-2: rgba(244, 242, 234, .26);
   --accent: var(--c-gold-500);
   --accent-hover: var(--c-gold-300);
   --on-accent: #171003;
-  --accent-ink: var(--c-gold-700);
-  --brand: var(--c-forest-900);
-  --brand-ink: var(--c-forest-700);
-  --focus: var(--c-forest-900);
-  --seal: var(--c-seal-600);
-  --on-seal: #fff6ef;
-  --hl-bg: #f7ebc9;
-  --hl-fg: #5a3f05;
-  --hl-line: #dcbc68;
-  --ok: #2c6634;
-  --ok-bg: #e0edd8;
-  --warn: #7d5208;
-  --warn-bg: #f6eacb;
-  --bad: #962f1f;
-  --bad-bg: #f4ddd5;
+  --accent-ink: var(--c-gold-300);
+  --brand: #f4f2ea;
+  --brand-ink: var(--c-gold-300);
+  --focus: var(--c-gold-500);
+  --seal: #e0705a;
+  --on-seal: #1d0c07;
+  --hl-bg: #3a2f12;
+  --hl-fg: #f6dd9c;
+  --hl-line: #a07c28;
+  --ok: #9ad694;
+  --ok-bg: #1b3a22;
+  --warn: #f3d68e;
+  --warn-bg: #3a2f12;
+  --bad: #f4a690;
+  --bad-bg: #42201a;
 
-  --data-rain: #2b6a94;
-  --data-heat: #ad4129;
-  --data-drought: #b0801a;
-  --data-drought-strong: #85560a;
-  --data-cold: #33807a;
-  --data-actual: var(--c-forest-700);
-  --data-predicted: var(--c-gold-600);
-  --data-grid: rgba(15, 21, 17, .09);
+  --data-rain: #85c0e6;
+  --data-heat: #f29676;
+  --data-drought: #e9c15e;
+  --data-drought-strong: #d6a43f;
+  --data-cold: #80d0c7;
+  --data-actual: #c9e6a8;
+  --data-predicted: var(--c-gold-500);
+  --data-grid: rgba(244, 242, 234, .09);
 
-  --kind-data: var(--c-water-600);
-  --kind-derived: var(--c-paddy-600);
-  --kind-study: var(--c-bamboo-600);
-  --kind-standard: var(--c-forest-600);
-  --kind-model: var(--c-gold-700);
-  --kind-assistant: var(--c-clay-600);
-  --kind-illustration: var(--c-ink-500);
+  --kind-data: #85c0e6;
+  --kind-derived: #bcd987;
+  --kind-study: #dcc195;
+  --kind-standard: #a4d6b0;
+  --kind-model: var(--c-gold-500);
+  --kind-assistant: #f0a283;
+  --kind-illustration: #bcc1b2;
 
-  /* depth comes from surfaces and light, not from floating cards */
   --shadow-1: none;
-  --shadow-2: 0 1px 0 rgba(15, 21, 17, .06);
-  --shadow-3: 0 24px 60px -30px rgba(6, 10, 7, .45);
-  --shadow-photo: 0 40px 80px -40px rgba(6, 10, 7, .7);
+  --shadow-2: 0 1px 0 rgba(0, 0, 0, .25);
+  --shadow-3: 0 30px 60px -28px rgba(0, 0, 0, .7);
+  --shadow-photo: 0 40px 80px -40px rgba(0, 0, 0, .75);
   --shadow-contact: none;
-  --shadow-ambient: 0 1px 0 rgba(15, 21, 17, .06);
-  --shadow-float: 0 30px 70px -30px rgba(6, 10, 7, .6);
-  --shadow-modal: 0 40px 90px -30px rgba(6, 10, 7, .6);
-  --inset-surface: inset 0 0 0 1px rgba(15, 21, 17, .07);
+  --shadow-ambient: 0 1px 0 rgba(0, 0, 0, .25);
+  --shadow-float: 0 30px 70px -30px rgba(0, 0, 0, .7);
+  --shadow-modal: 0 40px 90px -30px rgba(0, 0, 0, .75);
+  --inset-surface: inset 0 0 0 1px rgba(244, 242, 234, .08);
   --text-shadow-photo: 0 1px 2px rgba(6, 10, 7, .5), 0 8px 30px rgba(6, 10, 7, .45);
   --inset-hi: none;
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .45 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   --grain-opacity: .05;
-  color-scheme: light;
-}
-
-/* Dark values: the same roles, re-mapped. Kept in two blocks so both the system setting and the toggle win. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #0b110d; --bg-raised: #121b15; --bg-sunk: #0e1611; --bg-tint: #142019;
-    --fg: #eef0e9; --fg-2: #c9cfc4; --fg-3: #a3ab9f;
-    --line: rgba(238, 240, 233, .1); --line-2: rgba(238, 240, 233, .22);
-    --accent-ink: var(--c-gold-500); --brand: #eef0e9; --brand-ink: var(--c-gold-300); --focus: var(--c-gold-500);
-    --seal: #e0705a; --on-seal: #1d0c07;
-    --hl-bg: #382d12; --hl-fg: #f1d38c; --hl-line: #86661f;
-    --ok: #93d08c; --ok-bg: #1b3520; --warn: #f1d38c; --warn-bg: #382d12; --bad: #f19d88; --bad-bg: #3c1c15;
-    --data-rain: #7cb6dd; --data-heat: #ee8f71; --data-drought: #e6be5b; --data-drought-strong: #c89a3b; --data-cold: #79c8c0;
-    --data-actual: #c6e1a4; --data-predicted: var(--c-gold-500); --data-grid: rgba(238, 240, 233, .08);
-    --kind-data: #7cb6dd; --kind-derived: #b9d47a; --kind-study: #d6ba8c; --kind-standard: #9fd0aa; --kind-model: var(--c-gold-500);
-    --kind-assistant: #ee9c79; --kind-illustration: #b8bcae;
-    --shadow-2: 0 1px 0 rgba(0, 0, 0, .3); --shadow-3: 0 30px 60px -24px rgba(0, 0, 0, .7);
-    --inset-surface: inset 0 0 0 1px rgba(238, 240, 233, .07); --grain-opacity: .045;
-    color-scheme: dark;
-  }
-}
-:root[data-theme='dark'] {
-  --bg: #0b110d; --bg-raised: #121b15; --bg-sunk: #0e1611; --bg-tint: #142019;
-  --fg: #eef0e9; --fg-2: #c9cfc4; --fg-3: #a3ab9f;
-  --line: rgba(238, 240, 233, .1); --line-2: rgba(238, 240, 233, .22);
-  --accent-ink: var(--c-gold-500); --brand: #eef0e9; --brand-ink: var(--c-gold-300); --focus: var(--c-gold-500);
-  --seal: #e0705a; --on-seal: #1d0c07;
-  --hl-bg: #382d12; --hl-fg: #f1d38c; --hl-line: #86661f;
-  --ok: #93d08c; --ok-bg: #1b3520; --warn: #f1d38c; --warn-bg: #382d12; --bad: #f19d88; --bad-bg: #3c1c15;
-  --data-rain: #7cb6dd; --data-heat: #ee8f71; --data-drought: #e6be5b; --data-drought-strong: #c89a3b; --data-cold: #79c8c0;
-  --data-actual: #c6e1a4; --data-predicted: var(--c-gold-500); --data-grid: rgba(238, 240, 233, .08);
-  --kind-data: #7cb6dd; --kind-derived: #b9d47a; --kind-study: #d6ba8c; --kind-standard: #9fd0aa; --kind-model: var(--c-gold-500);
-  --kind-assistant: #ee9c79; --kind-illustration: #b8bcae;
-  --shadow-2: 0 1px 0 rgba(0, 0, 0, .3); --shadow-3: 0 30px 60px -24px rgba(0, 0, 0, .7);
-  --inset-surface: inset 0 0 0 1px rgba(238, 240, 233, .07); --grain-opacity: .045;
+  /* the page itself: moss green at the top, near-black below, a breath of gold light on the right */
+  --page-gradient:
+    radial-gradient(120% 70% at 12% -8%, rgba(46, 104, 64, .55) 0%, rgba(46, 104, 64, 0) 58%),
+    radial-gradient(70% 50% at 100% 22%, rgba(232, 185, 78, .07) 0%, rgba(232, 185, 78, 0) 60%),
+    linear-gradient(180deg, #10291b 0%, #0b1a12 42%, #07110b 100%);
   color-scheme: dark;
 }
 
-/* Night bands keep a dark surface in every theme (hero, data rooms, footer). */
+/* Light "rice water" theme, one tap away for bright sun (theme button). */
+:root[data-theme='light'] {
+  --bg: var(--c-paper-100); --bg-raised: var(--c-paper-50); --bg-sunk: var(--c-paper-200); --bg-tint: var(--c-mist-100);
+  --fg: var(--c-ink-900); --fg-2: var(--c-ink-700); --fg-3: var(--c-ink-500);
+  --line: rgba(15, 21, 17, .1); --line-2: rgba(15, 21, 17, .2);
+  --accent-ink: var(--c-gold-700); --brand: var(--c-forest-900); --brand-ink: var(--c-forest-700); --focus: var(--c-forest-900);
+  --seal: var(--c-seal-600); --on-seal: #fff6ef;
+  --hl-bg: #f7ebc9; --hl-fg: #5a3f05; --hl-line: #dcbc68;
+  --ok: #2c6634; --ok-bg: #e0edd8; --warn: #7d5208; --warn-bg: #f6eacb; --bad: #962f1f; --bad-bg: #f4ddd5;
+  --data-rain: #2b6a94; --data-heat: #ad4129; --data-drought: #b0801a; --data-drought-strong: #85560a; --data-cold: #33807a;
+  --data-actual: var(--c-forest-700); --data-predicted: var(--c-gold-600); --data-grid: rgba(15, 21, 17, .09);
+  --kind-data: var(--c-water-600); --kind-derived: var(--c-paddy-600); --kind-study: var(--c-bamboo-600); --kind-standard: var(--c-forest-600);
+  --kind-model: var(--c-gold-700); --kind-assistant: var(--c-clay-600); --kind-illustration: var(--c-ink-500);
+  --shadow-2: 0 1px 0 rgba(15, 21, 17, .06); --shadow-3: 0 24px 60px -30px rgba(6, 10, 7, .45);
+  --inset-surface: inset 0 0 0 1px rgba(15, 21, 17, .07);
+  --page-gradient: linear-gradient(180deg, #f6f7f3 0%, #eef1ea 100%);
+  color-scheme: light;
+}
+
+/* Night bands keep a dark surface in every theme (hero, data rooms, footer), a shade deeper than the page. */
 .surface-forest {
-  --bg: var(--c-forest-900); --bg-raised: #131d16; --bg-sunk: #080d09; --bg-tint: #16231a;
-  --fg: #eef0e9; --fg-2: #ccd2c6; --fg-3: #a6ae9f;
-  --line: rgba(238, 240, 233, .11); --line-2: rgba(238, 240, 233, .24);
-  --accent-ink: var(--c-gold-500); --brand: #eef0e9; --brand-ink: var(--c-gold-300); --focus: var(--c-gold-500);
+  --bg: #0a170f; --bg-raised: #13281c; --bg-sunk: #07110b; --bg-tint: #183224;
+  --fg: #f4f2ea; --fg-2: #d6ddd0; --fg-3: #aebaa9;
+  --line: rgba(244, 242, 234, .12); --line-2: rgba(244, 242, 234, .26);
+  --accent-ink: var(--c-gold-300); --brand: #f4f2ea; --brand-ink: var(--c-gold-300); --focus: var(--c-gold-500);
   --seal: #e0705a; --on-seal: #1d0c07;
-  --hl-bg: #382d12; --hl-fg: #f1d38c; --hl-line: #86661f;
-  --ok: #93d08c; --ok-bg: #1b3520; --warn: #f1d38c; --warn-bg: #382d12; --bad: #f19d88; --bad-bg: #3c1c15;
-  --data-rain: #7cb6dd; --data-heat: #ee8f71; --data-drought: #e6be5b; --data-drought-strong: #c89a3b; --data-cold: #79c8c0;
-  --data-actual: #c6e1a4; --data-predicted: var(--c-gold-500); --data-grid: rgba(238, 240, 233, .08);
-  --kind-data: #7cb6dd; --kind-derived: #b9d47a; --kind-study: #d6ba8c; --kind-standard: #9fd0aa; --kind-model: var(--c-gold-500);
-  --kind-assistant: #ee9c79; --kind-illustration: #b8bcae;
+  --hl-bg: #3a2f12; --hl-fg: #f6dd9c; --hl-line: #a07c28;
+  --ok: #9ad694; --ok-bg: #1b3a22; --warn: #f3d68e; --warn-bg: #3a2f12; --bad: #f4a690; --bad-bg: #42201a;
+  --data-rain: #85c0e6; --data-heat: #f29676; --data-drought: #e9c15e; --data-drought-strong: #d6a43f; --data-cold: #80d0c7;
+  --data-actual: #c9e6a8; --data-predicted: var(--c-gold-500); --data-grid: rgba(244, 242, 234, .09);
+  --kind-data: #85c0e6; --kind-derived: #bcd987; --kind-study: #dcc195; --kind-standard: #a4d6b0; --kind-model: var(--c-gold-500);
+  --kind-assistant: #f0a283; --kind-illustration: #bcc1b2;
   --shadow-2: 0 1px 0 rgba(0, 0, 0, .3); --shadow-3: 0 30px 60px -24px rgba(0, 0, 0, .7);
-  --inset-surface: inset 0 0 0 1px rgba(238, 240, 233, .07); --grain-opacity: .05;
+  --inset-surface: inset 0 0 0 1px rgba(244, 242, 234, .08); --grain-opacity: .05;
   background-color: var(--bg);
+  /* the old forest depth, evolved: moss light from above fading to night */
+  background-image: radial-gradient(120% 90% at 30% 0%, #1b4128 0%, #0d2116 50%, #07110b 100%);
   color: var(--fg);
   color-scheme: dark;
 }

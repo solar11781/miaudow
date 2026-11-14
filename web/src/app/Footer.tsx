@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAreas } from './Header';
 import { PHOTO_CREDITS } from '../data/media';
 import { hazards } from '../data';
-import { BrandMark } from './Brand';
+import { BrandEmblem, BrandWordmark } from './Brand';
 import { usePick, useSettings, useT } from './settings';
 import s from './Footer.module.css';
 
@@ -17,7 +17,7 @@ export function Footer() {
     <footer className={`${s.footer} surface-forest grain`}>
       <div className={`container ${s.grid}`}>
         <div className={s.brandCol}>
-          <span className={s.brand}><BrandMark size={44} /><span className={s.name}>Miaudow</span></span>
+          <span className={s.brand}><BrandEmblem width={150} /><BrandWordmark height={26} /></span>
           <p className={s.tagline}>{t.footer.tagline}</p>
           <p className={s.support}>{t.common.support}</p>
         </div>

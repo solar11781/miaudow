@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { SatelliteScan } from '../cinema/SatelliteScan';
 import { Link, useSearchParams } from 'react-router-dom';
 import eyesJson from '@data/nasa_eyes.json';
 import { geo } from '../../data';
@@ -53,7 +54,7 @@ type ObservatoryState = ReturnType<typeof useObservatoryState>;
 const showsLayers = (sc: Scene) => sc.panel === 'layers' || sc.panel === 'metric' || sc.panel === 'insight';
 
 /** The CesiumJS globe: its own chunk, loaded only here, disposed on leave, kept in step with the URL state. */
-function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: () => void) {
+function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: () => void, satsMoving: boolean) {
   const { calm, lang } = useSettings();
   const host = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
@@ -82,9 +83,14 @@ function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: ()
   useEffect(() => {
     if (!ready || !globe.current) return;
     globe.current.goTo(sceneDef.id, firstMove.current || calm);
-    globe.current.setOrbits(sceneDef.orbits, !calm);
     firstMove.current = false;
   }, [ready, sceneDef, calm]);
+  // orbits and the two flagship satellites move only with motion allowed and until the visitor pauses them (H1)
+  useEffect(() => {
+    if (!ready || !globe.current) return;
+    globe.current.setOrbits(sceneDef.orbits, !calm && satsMoving);
+    globe.current.setFlagships(sceneDef.flagships, !calm && satsMoving);
+  }, [ready, sceneDef, calm, satsMoving]);
   useEffect(() => { if (ready) globe.current?.setYear(st.year); }, [ready, st.year]);
   useEffect(() => { if (ready) globe.current?.setSelected(st.cell); }, [ready, st.cell]);
   useEffect(() => {
@@ -104,7 +110,8 @@ export function EarthPage() {
   const live3d = supported && !calm && globeOk;
   const idx = Math.max(0, SCENES.findIndex((x) => x.id === st.scene));
   const sceneDef = SCENES[idx] as Scene;
-  const { host, credits, stop } = useGlobe(live3d, st, sceneDef, onFail);
+  const [satsMoving, setSatsMoving] = useState(true);
+  const { host, credits, stop } = useGlobe(live3d, st, sceneDef, onFail, satsMoving);
   const [autoplay, setAutoplay] = useState(false);
   const [eyes, setEyes] = useState<Eyes | null>(null);
   const eyesDialog = useRef<HTMLDialogElement>(null);
@@ -134,7 +141,8 @@ export function EarthPage() {
           <div ref={host} className={s.globe} role="img" aria-label={t.earth.globeLabel} onPointerDown={() => { setAutoplay(false); stop(); }} />
         ) : (
           <div className={s.fallback}>
-            <p>{calm ? t.earth.calmNote : t.earth.noWebgl}</p>
+            <SatelliteScan labels={t.earth.scan} className={s.scan} />
+            <p>{t.earth.scanLight} {calm ? t.earth.calmNote : t.earth.noWebgl}</p>
             <Link to={`/khoa-hoc?nam=${st.year}`} className={s.fallbackLink}>{t.earth.openScience}<Icon name="arrowRight" size={18} /></Link>
           </div>
         )}
@@ -143,6 +151,8 @@ export function EarthPage() {
         <header className={s.head}>
           <h1 id="earth-title" className={s.title}>{t.earth.title}</h1>
           <p className={s.sceneName}><span className={s.sceneNum}>{String(idx + 1).padStart(2, '0')}/{String(SCENES.length).padStart(2, '0')}</span>{t.earth.scenes[st.scene].title}</p>
+          {live3d && (sceneDef.orbits || sceneDef.flagships) && <SatToggle moving={satsMoving} onToggle={() => setSatsMoving((m) => !m)} />}
+          {live3d && sceneDef.flagships && <p className={s.flagNote}>{t.earth.flagshipNote}</p>}
         </header>
 
         <ScenePanel st={st} sceneDef={sceneDef} openEyes={openEyes} />
@@ -249,6 +259,18 @@ function OverlayPicker({ st }: { st: ObservatoryState }) {
       )}
       {st.overlay !== 'none' && <p className={s.small}>{t.earth.overlays[st.overlay].note(st.year)}</p>}
     </>
+  );
+}
+
+/** Pause and resume the moving satellites (H1: anything moving by itself for more than 5 s can be paused). */
+function SatToggle({ moving, onToggle }: { moving: boolean; onToggle: () => void }) {
+  const t = useT();
+  const { calm } = useSettings();
+  if (calm) return null;
+  return (
+    <button type="button" className={s.satBtn} aria-pressed={!moving} onClick={onToggle}>
+      <Icon name={moving ? 'pause' : 'play'} size={16} />{moving ? t.earth.satPause : t.earth.satPlay}
+    </button>
   );
 }
 

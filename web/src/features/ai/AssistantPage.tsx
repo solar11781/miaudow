@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { usePageReveals } from '../../motion/cinema';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api, type CopilotResponse, type WaterSituation } from '../../api/client';
 import { answer as localAnswer, type Answer } from './answer';
@@ -10,6 +11,9 @@ import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { useSpeech } from './useSpeech';
 import { CoreTag } from '../../design-system/CoreTag';
+import { Media } from '../../design-system/Media';
+import { ART } from '../../data/art';
+import { BrandEmblem, BrandMark } from '../../app/Brand';
 import s from './assistant.module.css';
 
 type Engine = 'checking' | 'server' | 'browser';
@@ -53,7 +57,7 @@ function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituat
   return (
     <div className={s.a}>
       <div className={s.aHead}>
-        <span className={s.who}>{t.assistant.bot}</span>
+        <span className={`${s.who} ${s.bot}`}><BrandMark size={32} />{t.assistant.bot}</span>
         <span className={s.status} data-status={res.status}>{t.copilot.status[res.status]}</span>
         <span className={s.engine}>{res.engine === 'claude' ? `Claude · ${res.model ?? ''}` : t.copilot.engineDeterministic}</span>
       </div>
@@ -114,7 +118,7 @@ function LocalAnswer({ res }: { res: Answer }) {
   return (
     <div className={s.a}>
       <div className={s.aHead}>
-        <span className={s.who}>{t.assistant.bot}</span>
+        <span className={`${s.who} ${s.bot}`}><BrandMark size={32} />{t.assistant.bot}</span>
         <span className={s.engine}>{t.copilot.engineBrowser}</span>
         {res.kinds.map((k) => <KindBadge key={k} kind={k} compact />)}
       </div>
@@ -128,6 +132,8 @@ function LocalAnswer({ res }: { res: Answer }) {
 }
 
 export function AssistantPage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
   const t = useT();
   const { lang } = useSettings();
   const f = useFormat();
@@ -197,11 +203,22 @@ export function AssistantPage() {
   const onSubmit = (e: FormEvent) => { e.preventDefault(); void ask(q); };
 
   return (
-    <main id="main" className="surface-paper">
+    <main ref={pageRef} id="main" className="surface-paper">
+      <header className={`${s.hero} surface-forest`}>
+        <span className={s.heroPhoto}><Media slug={ART.pageHead.assistant.slug} sizes="100vw" priority decorative /></span>
+        <div className={`container ${s.heroInner}`}>
+          <BrandEmblem width={220} className={s.heroEmblem} />
+          <div className={s.heroText}>
+            <p className={`script ${s.greeting}`}>{t.copilot.greeting}</p>
+            <h1 className={`display ${s.heroTitle}`}>{t.copilot.brandTitle}</h1>
+            <p className={s.heroLead}>{t.copilot.brandLead}</p>
+          </div>
+        </div>
+      </header>
       <section className={`band ${s.page}`} aria-labelledby="ai-title">
         <div className={`container ${s.grid}`}>
           <div className={s.intro}>
-            <h1 id="ai-title" className={`display ${s.title}`}>{t.copilot.title}</h1>
+            <h2 id="ai-title" className={`h2 ${s.title}`}>{t.copilot.title}</h2>
             <p className="lead">{t.copilot.lead}</p>
             <CoreTag core="copilot" />
             <ol className={s.pipeline} aria-label={t.copilot.pipelineLabel}>

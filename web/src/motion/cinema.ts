@@ -56,3 +56,75 @@ export function riseLines(el: Element, delay = 0) {
 }
 
 export { gsap, ScrollTrigger };
+
+/**
+ * Section headings lift into view and marked groups (`data-stagger`) come in one after another, each when it first
+ * scrolls into view. Only the h2 of a section and the children of a marked group move; body text never does.
+ */
+export function revealSections(scope: Element) {
+  // Section headings are revealed whole (a curtain lifting from the top), never split: many hold live text, such as
+  // the chosen year, and must stay React's own DOM.
+  scope.querySelectorAll('h2:not([data-rise])').forEach((h) => {
+    gsap.fromTo(h, { clipPath: 'inset(0% 0% 100% 0%)', y: 28 }, {
+      clipPath: 'inset(-25% -5% -25% -5%)', y: 0, duration: 1.1, ease: EASE.heavy, clearProps: 'clipPath,transform',
+      scrollTrigger: { trigger: h, start: 'top 88%', once: true },
+    });
+  });
+  scope.querySelectorAll('[data-stagger]').forEach((group) => {
+    gsap.from(group.children, {
+      autoAlpha: 0, y: 28, duration: 0.9, ease: EASE.heavy, stagger: 0.08,
+      scrollTrigger: { trigger: group, start: 'top 88%', once: true },
+    });
+  });
+  scope.querySelectorAll('[data-bars] rect[data-bar]').forEach((bar, i) => {
+    gsap.from(bar, {
+      scaleY: 0, transformOrigin: '50% 100%', duration: 0.9, ease: EASE.heavy, delay: (i % 40) * 0.025,
+      scrollTrigger: { trigger: bar.closest('[data-bars]') ?? bar, start: 'top 90%', once: true },
+    });
+  });
+}
+
+/** Writes a text node's value (kept outside the hooks: React owns the node, we only change its text). */
+function setText(node: Node, value: string) {
+  node.nodeValue = value;
+}
+
+/** Reads a number written for `lang` ("1.234,5" in Vietnamese, "1,234.5" in English). */
+function readNumber(s: string, lang: 'vi' | 'en'): { value: number; decimals: number; grouped: boolean } | null {
+  const thousands = lang === 'vi' ? '.' : ',', decimal = lang === 'vi' ? ',' : '.';
+  const re = lang === 'vi' ? /^\d{1,3}(\.\d{3})*(,\d+)?$|^\d+(,\d+)?$/ : /^\d{1,3}(,\d{3})*(\.\d+)?$|^\d+(\.\d+)?$/;
+  if (!re.test(s)) return null;
+  const [int = '', frac = ''] = s.split(decimal);
+  return { value: Number(`${int.split(thousands).join('')}.${frac || '0'}`), decimals: frac.length, grouped: int.includes(thousands) };
+}
+
+/**
+ * Counts a figure up from zero the first time it scrolls into view. It changes only the value of the text node React
+ * owns and always ends on the exact text, so the number shown at rest is the sourced one.
+ */
+export function useCountUp(ref: RefObject<HTMLElement | null>, text: string) {
+  const { calm, lang } = useSettings();
+  useGSAP(() => {
+    const node = ref.current?.firstChild;
+    const m = /^(\D*?)(\d[\d.,]*\d|\d)(.*)$/s.exec(text);
+    if (calm || !node || node.nodeType !== Node.TEXT_NODE || !m) return;
+    const [, pre = '', num = '', post = ''] = m;
+    const parsed = readNumber(num, lang);
+    if (!parsed || parsed.value === 0) return;
+    const fmt = new Intl.NumberFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { minimumFractionDigits: parsed.decimals, maximumFractionDigits: parsed.decimals, useGrouping: parsed.grouped });
+    // the exact number stays on screen until the figure is reached; only then does it count up from zero
+    const state = { v: 0 };
+    const tween = gsap.to(state, {
+      v: parsed.value, duration: 1.4, ease: 'power3.out', paused: true,
+      onUpdate: () => setText(node, `${pre}${fmt.format(state.v)}${post}`),
+      onComplete: () => setText(node, text),
+    });
+    const trigger = ScrollTrigger.create({ trigger: ref.current, start: 'top 92%', once: true, onEnter: () => tween.play(0) });
+    return () => { trigger.kill(); tween.kill(); setText(node, text); };
+  }, { dependencies: [text, calm, lang], revertOnUpdate: true });
+}
+
+/** Section reveals for a whole page (headings, marked groups, chart bars), see `revealSections`. */
+export function usePageReveals(ref: RefObject<HTMLElement | null>, dependencies: unknown[] = []) {
+  useCinema(ref, () => { if (ref.current) revealSections(ref.current); }, dependencies);
+}

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
+import { usePageReveals } from '../../motion/cinema';
 import { SOURCES } from '../../domain/sources';
 import type { EvidenceKind } from '../../domain/provenance';
 import { ART } from '../../data/art';
@@ -59,6 +60,8 @@ const KIND_GROUPS: { kind: EvidenceKind; ids: (keyof typeof SOURCES)[] }[] = [
 const CLAIMS_FIRST = 6;
 
 export function EvidencePage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
   const t = useT();
   const pick = usePick();
   const claims = useClaims();
@@ -72,7 +75,7 @@ export function EvidencePage() {
   const present = new Set(claims.map((c) => c.status));
 
   return (
-    <main id="main" className={s.page}>
+    <main ref={pageRef} id="main" className={s.page}>
       <PhotoHead shot={ART.pageHead.evidence} id="ev-title" title={t.evidence.title} lead={t.evidence.lead}>
         <ol className={s.ladder} aria-label={t.evidence.ladderLabel}>
           {t.evidence.ladder.map((step, i) => <li key={step}><span className={s.ladderNum}>{i + 1}</span>{step}</li>)}
@@ -96,7 +99,7 @@ export function EvidencePage() {
             </div>
           </div>
           <p className={s.count} role="status">{t.evidence.showing(shown.length, claims.length)}</p>
-          <div className={s.claims}>{(everyClaim ? shown : shown.slice(0, CLAIMS_FIRST)).map((c) => <ClaimCard key={c.id} claim={c} />)}</div>
+          <div className={s.claims} data-stagger>{(everyClaim ? shown : shown.slice(0, CLAIMS_FIRST)).map((c) => <ClaimCard key={c.id} claim={c} />)}</div>
           {!everyClaim && shown.length > CLAIMS_FIRST && (
             <button type="button" className={s.moreClaims} onClick={() => setEveryClaim(true)}>
               {t.evidence.moreClaims(shown.length - CLAIMS_FIRST)}<Icon name="chevronDown" size={18} />

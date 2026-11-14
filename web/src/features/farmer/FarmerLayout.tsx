@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, type ReactNode, useRef } from 'react';
+import { usePageReveals } from '../../motion/cinema';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { parseFarmerState, serializeFarmerState, type FarmerState } from '../../domain/farmerState';
 import { Icon } from '../../design-system/Icon';
@@ -25,6 +26,9 @@ export function useFarmer() {
 /** Holds the farmer's answers in the URL only (shareable, survives reload). Nothing is written to the browser's
  * storage (UI-UX-SPEC H14): closing the tab forgets the answers unless the link was kept. */
 export function FarmerLayout() {
+  const pageRef = useRef<HTMLElement>(null);
+  const { pathname } = useLocation();
+  usePageReveals(pageRef, [pathname]);
   const [params, setParams] = useSearchParams();
   const state = useMemo(() => parseFarmerState(params), [params]);
 
@@ -37,7 +41,7 @@ export function FarmerLayout() {
 
   return (
     <Ctx.Provider value={value}>
-      <main id="main" className={`surface-paper ${s.page}`}>
+      <main ref={pageRef} id="main" className={`surface-paper ${s.page}`}>
         <Outlet />
       </main>
     </Ctx.Provider>
