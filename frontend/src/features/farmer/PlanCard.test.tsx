@@ -32,7 +32,9 @@ describe('plan card test hooks', () => {
   });
   it('highlights only the row of the chosen priority', () => {
     const id = renderCard();
-    const marked = [...document.querySelectorAll('[data-highlighted="true"]')].map((e) => e.getAttribute('data-testid'));
+    const marked = [...document.querySelectorAll('[data-highlighted="true"]')].map((e) =>
+      e.getAttribute('data-testid'),
+    );
     expect(marked).toEqual([`card-${id}-row-water`]);
   });
 });

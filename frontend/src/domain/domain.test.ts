@@ -41,7 +41,8 @@ describe('plans (P-02 Table 13)', () => {
     for (const p of PLANS) for (const c of p.crops) expect(dayOfYear(c.harvest)).toBeGreaterThan(dayOfYear(c.sow));
   });
   it('uses the same field dates as the generated hazard data', () => {
-    for (const p of PLANS) for (const c of p.crops) expect(hazards.crops[c.key]).toEqual({ sow: c.sow, harvest: c.harvest });
+    for (const p of PLANS)
+      for (const c of p.crops) expect(hazards.crops[c.key]).toEqual({ sow: c.sow, harvest: c.harvest });
   });
 });
 
@@ -123,7 +124,12 @@ describe('farmer state in the URL', () => {
   it('builds the compare body from the answers', () => {
     const base = { years: [2010, 2020], priority: 'water' as const, plan: null };
     for (const land of ['high_field', 'canal_end', 'water_short'] as const) {
-      expect(compareRequest({ ...base, land })).toEqual({ province: 'nghe_an', land: 'dry', years: [2010, 2020], priority: 'water' });
+      expect(compareRequest({ ...base, land })).toEqual({
+        province: 'nghe_an',
+        land: 'dry',
+        years: [2010, 2020],
+        priority: 'water',
+      });
     }
     expect(compareRequest({ ...base, land: 'ask' })?.land).toBe('unsure');
     expect(compareRequest({ ...base, land: 'reliable' })).toBeNull();
@@ -148,8 +154,16 @@ describe('source registry', () => {
 // 31 December and is drawn as two pieces; section 6d: "01-17" is shown as "17/1"
 describe('month bar of an api plan', () => {
   const span = (key: string, from: string, to: string) => ({
-    crop_key: key, crop_id: 'x', crop: { vi: 'x', en: 'x' }, variety: null, season: 'spring' as const,
-    sow_from: from, sow_to: from, harvest_from: to, harvest_to: to, source_ids: ['R-P02'],
+    crop_key: key,
+    crop_id: 'x',
+    crop: { vi: 'x', en: 'x' },
+    variety: null,
+    season: 'spring' as const,
+    sow_from: from,
+    sow_to: from,
+    harvest_from: to,
+    harvest_to: to,
+    source_ids: ['R-P02'],
   });
   it('puts overlapping spans on separate lanes', () => {
     const segs = spanSegments([span('a', '01-17', '05-17'), span('b', '05-10', '08-25'), span('c', '09-01', '12-22')]);
@@ -158,10 +172,17 @@ describe('month bar of an api plan', () => {
     expect(segs[0]?.end).toBeCloseTo(137 / 365);
   });
   it('skips spans without dates', () => {
-    expect(spanSegments([{ ...span('a', '01-17', '05-17'), sow_from: null, sow_to: null, harvest_from: null, harvest_to: null }])).toEqual([]);
+    expect(
+      spanSegments([
+        { ...span('a', '01-17', '05-17'), sow_from: null, sow_to: null, harvest_from: null, harvest_to: null },
+      ]),
+    ).toEqual([]);
   });
   it('splits a period that wraps across the year end', () => {
-    expect(periodPieces({ from: '12-11', to: '01-16' })).toEqual([{ start: 344 / 365, end: 1 }, { start: 0, end: 16 / 365 }]);
+    expect(periodPieces({ from: '12-11', to: '01-16' })).toEqual([
+      { start: 344 / 365, end: 1 },
+      { start: 0, end: 16 / 365 },
+    ]);
     expect(periodPieces({ from: '05-18', to: '06-05' })).toEqual([{ start: 137 / 365, end: 156 / 365 }]);
   });
   it('writes a date range as day/month', () => {

@@ -30,7 +30,9 @@ export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => voi
   const [error, setError] = useState<string | null>(null);
   const rec = useRef<Recognition | null>(null);
   const cb = useRef(onTranscript);
-  useEffect(() => { cb.current = onTranscript; }, [onTranscript]);
+  useEffect(() => {
+    cb.current = onTranscript;
+  }, [onTranscript]);
 
   const listen = useCallback(() => {
     if (!Ctor) return;
@@ -50,24 +52,41 @@ export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => voi
     r.start();
   }, [Ctor, lang]);
 
-  const stopListening = useCallback(() => { rec.current?.abort(); setListening(false); }, []);
+  const stopListening = useCallback(() => {
+    rec.current?.abort();
+    setListening(false);
+  }, []);
 
-  const speak = useCallback((text: string) => {
-    if (!canSpeak) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text.replace(/[•*]/g, ''));
-    u.lang = lang === 'vi' ? 'vi-VN' : 'en-US';
-    const voice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang === 'vi' ? 'vi' : 'en'));
-    if (voice) u.voice = voice;
-    u.onend = () => setSpeaking(false);
-    u.onerror = () => setSpeaking(false);
-    setSpeaking(true);
-    window.speechSynthesis.speak(u);
-  }, [canSpeak, lang]);
+  const speak = useCallback(
+    (text: string) => {
+      if (!canSpeak) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text.replace(/[•*]/g, ''));
+      u.lang = lang === 'vi' ? 'vi-VN' : 'en-US';
+      const voice = window.speechSynthesis
+        .getVoices()
+        .find((v) => v.lang.toLowerCase().startsWith(lang === 'vi' ? 'vi' : 'en'));
+      if (voice) u.voice = voice;
+      u.onend = () => setSpeaking(false);
+      u.onerror = () => setSpeaking(false);
+      setSpeaking(true);
+      window.speechSynthesis.speak(u);
+    },
+    [canSpeak, lang],
+  );
 
-  const stopSpeaking = useCallback(() => { if (canSpeak) window.speechSynthesis.cancel(); setSpeaking(false); }, [canSpeak]);
+  const stopSpeaking = useCallback(() => {
+    if (canSpeak) window.speechSynthesis.cancel();
+    setSpeaking(false);
+  }, [canSpeak]);
 
-  useEffect(() => () => { rec.current?.abort(); if (canSpeak) window.speechSynthesis.cancel(); }, [canSpeak]);
+  useEffect(
+    () => () => {
+      rec.current?.abort();
+      if (canSpeak) window.speechSynthesis.cancel();
+    },
+    [canSpeak],
+  );
 
   return { canListen, canSpeak, listening, speaking, error, listen, stopListening, speak, stopSpeaking };
 }

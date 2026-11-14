@@ -19,19 +19,16 @@ export function SourceValue(props: Props) {
   const open = useProvenance();
   const t = useT();
   return (
-    <button
-      type="button"
-      className={[s.val, s[size]].join(' ')}
-      onClick={() => open(ref)}
-      data-value={ref.value}
-    >
+    <button type="button" className={[s.val, s[size]].join(' ')} onClick={() => open(ref)} data-value={ref.value}>
       <span className={s.text}>
         <span className={s.figure}>{children ?? ref.value}</span>
         {showSource && <span className={s.src}>{showSource}</span>}
       </span>
       {/* the accessible name starts with the visible text, then says what it is and that it opens the source */}
       <span className="visually-hidden">{`, ${ref.label ? `${ref.label}: ` : ''}${ref.value}. ${t.common.source}`}</span>
-      <span className={s.seal} aria-hidden="true"><SealGlyph /></span>
+      <span className={s.seal} aria-hidden="true">
+        <SealGlyph />
+      </span>
     </button>
   );
 }

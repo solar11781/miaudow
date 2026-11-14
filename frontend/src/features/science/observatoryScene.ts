@@ -1,8 +1,35 @@
 import {
-  ACESFilmicToneMapping, BoxGeometry, BufferGeometry, CircleGeometry, Color, CylinderGeometry, DirectionalLight, EdgesGeometry,
-  ExtrudeGeometry, Float32BufferAttribute, Fog, Group, HemisphereLight, Line, LineBasicMaterial, LineDashedMaterial,
-  LineSegments, Mesh, MeshStandardMaterial, PCFSoftShadowMap, PerspectiveCamera, Raycaster, SRGBColorSpace, Scene, Shape,
-  Spherical, Vector2, Vector3, WebGLRenderer, type Material, type Object3D,
+  ACESFilmicToneMapping,
+  BoxGeometry,
+  BufferGeometry,
+  CircleGeometry,
+  Color,
+  CylinderGeometry,
+  DirectionalLight,
+  EdgesGeometry,
+  ExtrudeGeometry,
+  Float32BufferAttribute,
+  Fog,
+  Group,
+  HemisphereLight,
+  Line,
+  LineBasicMaterial,
+  LineDashedMaterial,
+  LineSegments,
+  Mesh,
+  MeshStandardMaterial,
+  PCFSoftShadowMap,
+  PerspectiveCamera,
+  Raycaster,
+  SRGBColorSpace,
+  Scene,
+  Shape,
+  Spherical,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+  type Material,
+  type Object3D,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { geo, hazards, type RuleCode } from '../../data';
@@ -12,7 +39,8 @@ import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
 // equirectangular projection scaled by cos(latitude) so a degree of longitude keeps its real ground length.
 export const S = 10; // scene units per degree of latitude
 const K_LON = Math.cos((19.3 * Math.PI) / 180);
-const HALF_LAT = 0.25, HALF_LON = 0.3125; // POWER cell half sizes in degrees
+const HALF_LAT = 0.25,
+  HALF_LON = 0.3125; // POWER cell half sizes in degrees
 const HMAX = 6.5; // column height for the largest value of the chosen measure, in scene units
 // The trial commune's map marker (Wikidata Q10788283) and Vinh, for orientation only.
 export const PLACES = [
@@ -22,7 +50,8 @@ export const PLACES = [
 export const WEIGHTED = geo.grid.filter((c) => c.weight > 0);
 
 const [minLon, minLat, maxLon, maxLat] = geo.bounds;
-const LON0 = (minLon + maxLon) / 2, LAT0 = (minLat + maxLat) / 2;
+const LON0 = (minLon + maxLon) / 2,
+  LAT0 = (minLat + maxLat) / 2;
 const toX = (lon: number) => (lon - LON0) * K_LON * S;
 const toZ = (lat: number) => -(lat - LAT0) * S;
 
@@ -121,25 +150,48 @@ function addLand(world: Group) {
   for (const ring of geo.outline) {
     const shape = new Shape(ring.map(([lon, lat]) => new Vector2(toX(lon), (lat - LAT0) * S)));
     const land = new Mesh(
-      new ExtrudeGeometry(shape, { depth: 0.32, bevelEnabled: true, bevelSize: 0.06, bevelThickness: 0.06, bevelSegments: 2 }),
+      new ExtrudeGeometry(shape, {
+        depth: 0.32,
+        bevelEnabled: true,
+        bevelSize: 0.06,
+        bevelThickness: 0.06,
+        bevelSegments: 2,
+      }),
       new MeshStandardMaterial({ color: '#2f5a37', roughness: 0.92, metalness: 0 }),
     );
     land.rotation.x = -Math.PI / 2;
     land.receiveShadow = true;
     world.add(land);
     const pts = ring.map(([lon, lat]) => new Vector3(toX(lon), 0.42, toZ(lat)));
-    world.add(new Line(new BufferGeometry().setFromPoints(pts), new LineBasicMaterial({ color: '#f2d590', transparent: true, opacity: 0.9 })));
+    world.add(
+      new Line(
+        new BufferGeometry().setFromPoints(pts),
+        new LineBasicMaterial({ color: '#f2d590', transparent: true, opacity: 0.9 }),
+      ),
+    );
   }
 }
 
 /** POWER cell footprints (dashed); cells without farmland weight stay dim. */
 function addFootprints(world: Group) {
   for (const c of geo.grid) {
-    const x0 = toX(c.lon - HALF_LON), x1 = toX(c.lon + HALF_LON), z0 = toZ(c.lat + HALF_LAT), z1 = toZ(c.lat - HALF_LAT);
+    const x0 = toX(c.lon - HALF_LON),
+      x1 = toX(c.lon + HALF_LON),
+      z0 = toZ(c.lat + HALF_LAT),
+      z1 = toZ(c.lat - HALF_LAT);
     const y = 0.45;
     const g = new BufferGeometry();
     g.setAttribute('position', new Float32BufferAttribute([x0, y, z0, x1, y, z0, x1, y, z1, x0, y, z1, x0, y, z0], 3));
-    const line = new Line(g, new LineDashedMaterial({ color: '#f4f0e5', dashSize: 0.35, gapSize: 0.3, transparent: true, opacity: c.weight > 0 ? 0.42 : 0.16 }));
+    const line = new Line(
+      g,
+      new LineDashedMaterial({
+        color: '#f4f0e5',
+        dashSize: 0.35,
+        gapSize: 0.3,
+        transparent: true,
+        opacity: c.weight > 0 ? 0.42 : 0.16,
+      }),
+    );
     line.computeLineDistances();
     world.add(line);
   }
@@ -147,11 +199,21 @@ function addFootprints(world: Group) {
 
 function addColumns(world: Group): Map<string, Column> {
   const columns = new Map<string, Column>();
-  const cw = 2 * HALF_LON * K_LON * S * 0.5, cd = 2 * HALF_LAT * S * 0.5;
+  const cw = 2 * HALF_LON * K_LON * S * 0.5,
+    cd = 2 * HALF_LAT * S * 0.5;
   for (const c of WEIGHTED) {
     const geom = new BoxGeometry(cw, 1, cd);
     geom.translate(0, 0.5, 0);
-    const mesh = new Mesh(geom, new MeshStandardMaterial({ color: '#7d9a6b', roughness: 0.55, metalness: 0.05, transparent: true, opacity: 0.94 }));
+    const mesh = new Mesh(
+      geom,
+      new MeshStandardMaterial({
+        color: '#7d9a6b',
+        roughness: 0.55,
+        metalness: 0.05,
+        transparent: true,
+        opacity: 0.94,
+      }),
+    );
     mesh.position.set(toX(c.lon), 0.42, toZ(c.lat));
     mesh.scale.y = 0.001;
     mesh.castShadow = true;
@@ -165,7 +227,10 @@ function addColumns(world: Group): Map<string, Column> {
   }
   for (const p of PLACES) {
     const site = p.id === 'doluong';
-    const pin = new Mesh(new CylinderGeometry(0.06, 0.06, 2.4, 8), new MeshStandardMaterial({ color: site ? '#e9bc57' : '#f4f0e5', emissive: site ? '#5a3d07' : '#000000' }));
+    const pin = new Mesh(
+      new CylinderGeometry(0.06, 0.06, 2.4, 8),
+      new MeshStandardMaterial({ color: site ? '#e9bc57' : '#f4f0e5', emissive: site ? '#5a3d07' : '#000000' }),
+    );
     pin.position.set(toX(p.lon), 1.6, toZ(p.lat));
     world.add(pin);
   }
@@ -173,8 +238,15 @@ function addColumns(world: Group): Map<string, Column> {
 }
 
 /** Positions the HTML labels (values and places) over the columns and pins after each render. */
-function placeLabels(el: HTMLElement, overlay: HTMLElement, columns: Map<string, Column>, camera: PerspectiveCamera, v3: Vector3) {
-  const w = el.clientWidth, h = el.clientHeight;
+function placeLabels(
+  el: HTMLElement,
+  overlay: HTMLElement,
+  columns: Map<string, Column>,
+  camera: PerspectiveCamera,
+  v3: Vector3,
+) {
+  const w = el.clientWidth,
+    h = el.clientHeight;
   for (const node of Array.from(overlay.children) as HTMLElement[]) {
     const col = node.dataset.id ? columns.get(node.dataset.id) : undefined;
     const place = PLACES.find((q) => q.id === node.dataset.place);
@@ -183,7 +255,11 @@ function placeLabels(el: HTMLElement, overlay: HTMLElement, columns: Map<string,
     else continue;
     v3.project(camera);
     // values sit above their column; place names sit beside their pin (the trial site to the left, Vinh to the right)
-    const shift = col ? 'translate(-50%, -100%)' : place?.id === 'doluong' ? 'translate(calc(-100% - 10px), -50%)' : 'translate(10px, -50%)';
+    const shift = col
+      ? 'translate(-50%, -100%)'
+      : place?.id === 'doluong'
+        ? 'translate(calc(-100% - 10px), -50%)'
+        : 'translate(10px, -50%)';
     node.style.transform = `${shift} translate(${((v3.x + 1) / 2) * w}px, ${((1 - v3.y) / 2) * h}px)`;
     node.style.visibility = v3.z > 1 ? 'hidden' : 'visible';
   }
@@ -194,7 +270,8 @@ function disposeScene(scene: Scene) {
     const m = o as Mesh;
     m.geometry?.dispose();
     const mat = m.material as Material | Material[] | undefined;
-    if (Array.isArray(mat)) mat.forEach((x) => x.dispose()); else mat?.dispose();
+    if (Array.isArray(mat)) mat.forEach((x) => x.dispose());
+    else mat?.dispose();
   });
 }
 
@@ -202,7 +279,12 @@ function disposeScene(scene: Scene) {
  * Builds the scene into `el` and returns its controls, or null when WebGL cannot start. Renders on demand only:
  * a frame is drawn while the camera moves or a column grows, never in a perpetual loop.
  */
-export function createObservatory(el: HTMLElement, overlay: HTMLElement, canvasClass: string, onPick: (id: string) => void): Observatory | null {
+export function createObservatory(
+  el: HTMLElement,
+  overlay: HTMLElement,
+  canvasClass: string,
+  onPick: (id: string) => void,
+): Observatory | null {
   const made = makeRenderer(el, canvasClass);
   if (!made) return null;
   const { renderer, small } = made;
@@ -218,7 +300,9 @@ export function createObservatory(el: HTMLElement, overlay: HTMLElement, canvasC
   addFootprints(world);
   const columns = addColumns(world);
 
-  let raf = 0, tweenStart = 0, tweenMs = 0;
+  let raf = 0,
+    tweenStart = 0,
+    tweenMs = 0;
   const ease = (k: number) => 1 - Math.pow(1 - k, 3);
   const v3 = new Vector3();
   const frame = (now: number) => {
@@ -231,11 +315,14 @@ export function createObservatory(el: HTMLElement, overlay: HTMLElement, canvasC
     placeLabels(el, overlay, columns, camera, v3);
     if (moving || tweenMs > 0) raf = requestAnimationFrame(frame);
   };
-  const request = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const request = () => {
+    if (!raf) raf = requestAnimationFrame(frame);
+  };
   controls.addEventListener('change', request);
 
   const resize = () => {
-    const w = el.clientWidth, h = el.clientHeight;
+    const w = el.clientWidth,
+      h = el.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
@@ -257,13 +344,17 @@ export function createObservatory(el: HTMLElement, overlay: HTMLElement, canvasC
     ray.setFromCamera(ndc, camera);
     return ray.intersectObjects(meshes, false)[0]?.object.userData.cellId as string | undefined;
   };
-  const onDown = (e: PointerEvent) => { down = { x: e.clientX, y: e.clientY }; };
+  const onDown = (e: PointerEvent) => {
+    down = { x: e.clientX, y: e.clientY };
+  };
   const onUp = (e: PointerEvent) => {
     const id = down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 ? hit(e) : undefined;
     if (id) onPick(id);
     down = null;
   };
-  const onMove = (e: PointerEvent) => { if (!down) renderer.domElement.style.cursor = hit(e) ? 'pointer' : 'grab'; };
+  const onMove = (e: PointerEvent) => {
+    if (!down) renderer.domElement.style.cursor = hit(e) ? 'pointer' : 'grab';
+  };
   renderer.domElement.addEventListener('pointerdown', onDown);
   renderer.domElement.addEventListener('pointerup', onUp);
   renderer.domElement.addEventListener('pointermove', onMove);
@@ -300,7 +391,10 @@ export function createObservatory(el: HTMLElement, overlay: HTMLElement, canvasC
       camera.position.setFromSpherical(sph).add(controls.target);
       request();
     },
-    reset: () => { controls.reset(); request(); },
+    reset: () => {
+      controls.reset();
+      request();
+    },
     dispose: () => {
       cancelAnimationFrame(raf);
       ro.disconnect();

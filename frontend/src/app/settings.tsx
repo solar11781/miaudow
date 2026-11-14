@@ -30,7 +30,9 @@ const prefersReducedMotion = () =>
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(() =>
-    typeof navigator === 'undefined' ? 'vi' : browserLang(navigator.languages?.length ? navigator.languages : [navigator.language]),
+    typeof navigator === 'undefined'
+      ? 'vi'
+      : browserLang(navigator.languages?.length ? navigator.languages : [navigator.language]),
   );
   const [lite, setLite] = useState(false);
   const [theme, setTheme] = useState<Theme>('auto');
@@ -82,11 +84,13 @@ export function useFormat() {
   const { lang } = useSettings();
   return useMemo(() => {
     const locale = lang === 'vi' ? 'vi-VN' : 'en-GB';
-    const n = (v: number, digits = 0) => new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(v);
+    const n = (v: number, digits = 0) =>
+      new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(v);
     return {
       n,
       pct: (share: number, digits = 0) => `${n(share * 100, digits)}%`,
-      signedPct: (share: number, digits = 1) => `${share > 0 ? '+' : share < 0 ? '−' : ''}${n(Math.abs(share) * 100, digits)}%`,
+      signedPct: (share: number, digits = 1) =>
+        `${share > 0 ? '+' : share < 0 ? '−' : ''}${n(Math.abs(share) * 100, digits)}%`,
       million: (thousands: number) => n(thousands / 1000, 1),
     };
   }, [lang]);

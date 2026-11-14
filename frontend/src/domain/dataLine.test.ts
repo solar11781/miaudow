@@ -7,7 +7,10 @@ const cited = (...ids: string[]) => Object.fromEntries(ids.map((id) => [id, {}])
 
 describe('data line', () => {
   it('names the datasets of the past-years response only', () => {
-    expect(dataNames(cited('E-019', 'R-A01', 'R-N01', 'R-N02'), text.farmer.dataSources)).toEqual(['NASA POWER', 'NASA MODIS']);
+    expect(dataNames(cited('E-019', 'R-A01', 'R-N01', 'R-N02'), text.farmer.dataSources)).toEqual([
+      'NASA POWER',
+      'NASA MODIS',
+    ]);
   });
   it('names a study once even when two of its papers are cited', () => {
     const names = dataNames(cited('R-N01', 'R-D01', 'R-P02', 'R-P03', 'R-W15'), text.farmer.dataSources);

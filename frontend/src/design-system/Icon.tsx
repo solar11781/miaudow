@@ -8,7 +8,8 @@ const PATHS = {
   check: 'M5 12.5 9.5 17 19 7',
   close: 'M6 6l12 12M18 6 6 18',
   menu: 'M4 7h16M4 12h16M4 17h16',
-  globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-9 9h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z',
+  globe:
+    'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-9 9h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z',
   leaf: 'M5 19C5 10 11 4 20 4c0 9-6 15-15 15ZM5 19l8-8',
   sprout: 'M12 20v-8M12 12c0-4-3-6-7-6 0 4 3 6 7 6ZM12 14c0-4 3-6 7-6 0 4-3 6-7 6ZM5 20h14',
   drop: 'M12 3c3.5 4.5 6 7.7 6 11a6 6 0 0 1-12 0c0-3.3 2.5-6.5 6-11Z',
@@ -19,7 +20,8 @@ const PATHS = {
   snow: 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5',
   crack: 'M3 20h18M5 20l3-6 3 3 2-5 3 4 3-3M7 8l2-3 2 2 2-3',
   calendar: 'M5 5h14v15H5zM5 9h14M9 3v4M15 3v4',
-  share: 'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',
+  share:
+    'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',
   question: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM9.5 9.3a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.8M12 17h.01',
   alert: 'M12 4 2.8 19.5h18.4L12 4ZM12 10v4.2M12 17h.01',
   play: 'M8 5v14l11-7L8 5Z',
@@ -46,17 +48,33 @@ const PATHS = {
   volume: 'M4 9.5h3.5L12 6v12l-4.5-3.5H4v-5ZM16 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',
   stop: 'M7 7h10v10H7z',
   send: 'M4 12 20 4l-5 16-3.5-6.5L4 12ZM11.5 13.5 20 4',
-  database: 'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3ZM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
+  database:
+    'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3ZM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
 } as const;
 
 export type IconName = keyof typeof PATHS;
 
-export function Icon({ name, size = 20, strokeWidth = 1.7, ...rest }: { name: IconName; size?: number; strokeWidth?: number } & SVGProps<SVGSVGElement>) {
+export function Icon({
+  name,
+  size = 20,
+  strokeWidth = 1.7,
+  ...rest
+}: { name: IconName; size?: number; strokeWidth?: number } & SVGProps<SVGSVGElement>) {
   const filled = name === 'play' || name === 'pause';
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false"
-      fill={filled ? 'currentColor' : 'none'} stroke={filled ? 'none' : 'currentColor'}
-      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...rest}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke={filled ? 'none' : 'currentColor'}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...rest}
+    >
       <path d={PATHS[name]} />
     </svg>
   );
@@ -66,7 +84,13 @@ export function Icon({ name, size = 20, strokeWidth = 1.7, ...rest }: { name: Ic
 export function SealGlyph({ size = 12 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-      <path d="M6 10.6V6.2M6 6.2c.1-1.9.7-3.4 1.9-4.8M6.1 6.3c-1 .2-1.9.9-2.5 2M6.2 8.1c1 .2 1.8.8 2.3 1.8" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+      <path
+        d="M6 10.6V6.2M6 6.2c.1-1.9.7-3.4 1.9-4.8M6.1 6.3c-1 .2-1.9.9-2.5 2M6.2 8.1c1 .2 1.8.8 2.3 1.8"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        fill="none"
+        strokeLinecap="round"
+      />
       <ellipse cx="8.2" cy="2.7" rx=".8" ry="1.3" transform="rotate(30 8.2 2.7)" fill="currentColor" />
     </svg>
   );

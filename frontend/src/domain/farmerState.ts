@@ -24,7 +24,16 @@ const pick = <T extends string>(allowed: readonly T[], raw: string | null): T | 
 /** Reads the shareable state from URL search params; anything unknown is dropped, never guessed. */
 export function parseFarmerState(params: URLSearchParams): FarmerState {
   // no year is picked for the farmer (D-169)
-  const years = [...new Set((params.get('nam') ?? '').split(',').map(Number).filter((y) => YEARS.includes(y)))].sort((a, b) => a - b).slice(0, MAX_YEARS);
+  const years = [
+    ...new Set(
+      (params.get('nam') ?? '')
+        .split(',')
+        .map(Number)
+        .filter((y) => YEARS.includes(y)),
+    ),
+  ]
+    .sort((a, b) => a - b)
+    .slice(0, MAX_YEARS);
   return {
     land: pick(LANDS, params.get('ruong')) ?? LEGACY_LAND[params.get('ruong') ?? ''] ?? null,
     years,
@@ -50,7 +59,11 @@ export { MAX_YEARS };
 // UI-UX-SPEC section 7: the three water-short answers are the land type "dry" (cao cưỡng, cuối kênh, thiếu nước); not
 // sure is "unsure"; an irrigated field gets no compare request (section 6b rule 4)
 const API_LAND: Record<Land, CompareRequest['land'] | null> = {
-  high_field: 'dry', canal_end: 'dry', water_short: 'dry', ask: 'unsure', reliable: null,
+  high_field: 'dry',
+  canal_end: 'dry',
+  water_short: 'dry',
+  ask: 'unsure',
+  reliable: null,
 };
 
 /** The POST /api/compare body from the answers, or null while an answer is missing or the field is irrigated. */

@@ -74,7 +74,8 @@ describe('answers', () => {
   });
   it('names every TCVN 8641 spring row for rice, both regions, as rules/crops.yaml has them (D-68)', () => {
     const vi = ask('Lúa cần bao nhiêu nước?').lines[0]?.text ?? '';
-    for (const part of ['6.500–7.500 m³/ha (Trung bộ, lúa cấy', 'lúa gieo thẳng', '6.000–7.000 m³/ha (Bắc bộ']) expect(vi).toContain(part);
+    for (const part of ['6.500–7.500 m³/ha (Trung bộ, lúa cấy', 'lúa gieo thẳng', '6.000–7.000 m³/ha (Bắc bộ'])
+      expect(vi).toContain(part);
     expect(CROPS.rice.tcvn.map((r) => `${r.value.en} (${r.scope.en})`)).toEqual([
       '6,500–7,500 (Trung bộ, transplanted rice, spring season)',
       '6,500–7,500 (Trung bộ, direct-seeded rice, spring season)',

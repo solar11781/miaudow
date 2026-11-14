@@ -19,12 +19,24 @@ interface Common {
 const cls = (v: Variant, z: Size, block?: boolean, extra?: string) =>
   [s.btn, s[v], s[z], block ? s.block : '', extra ?? ''].filter(Boolean).join(' ');
 
-function Inner({ icon, leadingIcon, children, variant }: Pick<Common, 'icon' | 'leadingIcon' | 'children' | 'variant'>) {
+function Inner({
+  icon,
+  leadingIcon,
+  children,
+  variant,
+}: Pick<Common, 'icon' | 'leadingIcon' | 'children' | 'variant'>) {
   return (
     <>
       {leadingIcon && <Icon name={leadingIcon} size={18} />}
       <span className={s.label}>{children}</span>
-      {icon && (variant === 'primary' ? <span className={s.disc}><Icon name={icon} size={18} strokeWidth={2} /></span> : <Icon name={icon} size={18} />)}
+      {icon &&
+        (variant === 'primary' ? (
+          <span className={s.disc}>
+            <Icon name={icon} size={18} strokeWidth={2} />
+          </span>
+        ) : (
+          <Icon name={icon} size={18} />
+        ))}
     </>
   );
 }
@@ -35,15 +47,28 @@ export const Button = forwardRef<HTMLButtonElement, Common & ButtonHTMLAttribute
 ) {
   return (
     <button ref={ref} type={type} className={cls(variant, size, block, className)} {...rest}>
-      <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>{children}</Inner>
+      <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>
+        {children}
+      </Inner>
     </button>
   );
 });
 
-export function ButtonLink({ variant = 'primary', size = 'md', icon, leadingIcon, block, children, className, ...rest }: Common & LinkProps) {
+export function ButtonLink({
+  variant = 'primary',
+  size = 'md',
+  icon,
+  leadingIcon,
+  block,
+  children,
+  className,
+  ...rest
+}: Common & LinkProps) {
   return (
     <Link className={cls(variant, size, block, className)} viewTransition {...rest}>
-      <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>{children}</Inner>
+      <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>
+        {children}
+      </Inner>
     </Link>
   );
 }

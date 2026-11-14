@@ -12,5 +12,6 @@ export interface ExplanationModel {
 /** The default: no model is connected, and the app says so instead of pretending. */
 export const notConnected: ExplanationModel = {
   connected: false,
-  rephrase: () => Promise.reject(new Error('No language model is connected. Answers come from evidence passages only.')),
+  rephrase: () =>
+    Promise.reject(new Error('No language model is connected. Answers come from evidence passages only.')),
 };

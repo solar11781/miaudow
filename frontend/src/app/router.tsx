@@ -18,16 +18,40 @@ export const router = createHashRouter([
           { index: true, lazy: async () => ({ Component: (await import('../features/farmer/StartStep')).StartStep }) },
           { path: 'ruong', lazy: async () => ({ Component: (await import('../features/farmer/LandStep')).LandStep }) },
           { path: 'nam', lazy: async () => ({ Component: (await import('../features/farmer/YearsStep')).YearsStep }) },
-          { path: 'uu-tien', lazy: async () => ({ Component: (await import('../features/farmer/PriorityStep')).PriorityStep }) },
-          { path: 'phuong-an', lazy: async () => ({ Component: (await import('../features/farmer/PlansStep')).PlansStep }) },
+          {
+            path: 'uu-tien',
+            lazy: async () => ({ Component: (await import('../features/farmer/PriorityStep')).PriorityStep }),
+          },
+          {
+            path: 'phuong-an',
+            lazy: async () => ({ Component: (await import('../features/farmer/PlansStep')).PlansStep }),
+          },
         ],
       },
-      { path: 'can-bo', lazy: async () => ({ Component: (await import('../features/officer/OfficerPage')).OfficerPage }) },
-      { path: 'khoa-hoc', lazy: async () => ({ Component: (await import('../features/science/SciencePage')).SciencePage }) },
-      { path: 'phuong-phap', lazy: async () => ({ Component: (await import('../features/method/MethodPage')).MethodPage }) },
-      { path: 'dai-quan-sat', lazy: async () => ({ Component: (await import('../features/earth/EarthPage')).EarthPage }) },
-      { path: 'bang-chung', lazy: async () => ({ Component: (await import('../features/evidence/EvidencePage')).EvidencePage }) },
-      { path: 'tro-ly', lazy: async () => ({ Component: (await import('../features/ai/AssistantPage')).AssistantPage }) },
+      {
+        path: 'can-bo',
+        lazy: async () => ({ Component: (await import('../features/officer/OfficerPage')).OfficerPage }),
+      },
+      {
+        path: 'khoa-hoc',
+        lazy: async () => ({ Component: (await import('../features/science/SciencePage')).SciencePage }),
+      },
+      {
+        path: 'phuong-phap',
+        lazy: async () => ({ Component: (await import('../features/method/MethodPage')).MethodPage }),
+      },
+      {
+        path: 'dai-quan-sat',
+        lazy: async () => ({ Component: (await import('../features/earth/EarthPage')).EarthPage }),
+      },
+      {
+        path: 'bang-chung',
+        lazy: async () => ({ Component: (await import('../features/evidence/EvidencePage')).EvidencePage }),
+      },
+      {
+        path: 'tro-ly',
+        lazy: async () => ({ Component: (await import('../features/ai/AssistantPage')).AssistantPage }),
+      },
       { path: 'hoi', element: <Navigate to="/tro-ly" replace /> },
       { path: '*', element: <NotFound /> },
     ],

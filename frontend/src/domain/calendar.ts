@@ -47,7 +47,7 @@ export function bareMonths(plan: Plan): number[] {
     const a = dayOfYear(c.sow);
     const b = dayOfYear(c.harvest);
     MONTH_START.forEach((start, i) => {
-      const end = (MONTH_START[i + 1] ?? 365);
+      const end = MONTH_START[i + 1] ?? 365;
       if (a <= end && b > start) used.add(i + 1);
     });
   }
@@ -85,8 +85,14 @@ export function spanSegments(calendar: CropSpan[]): SpanSegment[] {
 export function periodPieces(p: Period): { start: number; end: number }[] {
   const a = dayOfYear(p.from);
   const b = dayOfYear(p.to);
-  return a <= b ? [{ start: (a - 1) / 365, end: b / 365 }] : [{ start: (a - 1) / 365, end: 1 }, { start: 0, end: b / 365 }];
+  return a <= b
+    ? [{ start: (a - 1) / 365, end: b / 365 }]
+    : [
+        { start: (a - 1) / 365, end: 1 },
+        { start: 0, end: b / 365 },
+      ];
 }
 
 /** "MM-DD" .. "MM-DD" as day/month, one date when both are the same. */
-export const dateRange = (from: string, to: string) => (from === to ? formatDayMonth(from) : `${formatDayMonth(from)}–${formatDayMonth(to)}`);
+export const dateRange = (from: string, to: string) =>
+  from === to ? formatDayMonth(from) : `${formatDayMonth(from)}–${formatDayMonth(to)}`;

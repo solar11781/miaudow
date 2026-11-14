@@ -2,7 +2,9 @@
 // climate file. Kept apart from the globe so the panels work without loading CesiumJS.
 import { CLIMATE } from '../../data/climate';
 
-interface CellSeries { cells: Record<string, Record<string, { annual_rain_mm: number | null }>> }
+interface CellSeries {
+  cells: Record<string, Record<string, { annual_rain_mm: number | null }>>;
+}
 const SERIES = (CLIMATE as unknown as { series: CellSeries }).series;
 const NORMAL = (CLIMATE as unknown as { normal_mm: { cells: Record<string, number[]> } }).normal_mm.cells;
 

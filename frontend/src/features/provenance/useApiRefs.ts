@@ -19,7 +19,13 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
       /** An official-condition share: the rule text and the "our computation" line go with it (H19). */
       share(rule: RuleCode, v: Value, label: string): ApiSourceRef {
         const r = rules?.find((x) => x.code === rule);
-        return { facts: facts(v.source_ids), value: shown(v), label, ruleText: r ? pick(r.rule_text) : undefined, note: t.common.computedNote };
+        return {
+          facts: facts(v.source_ids),
+          value: shown(v),
+          label,
+          ruleText: r ? pick(r.rule_text) : undefined,
+          note: t.common.computedNote,
+        };
       },
       /** Sources only (calendar dates, land-care principles, risks): `value` is the text shown on the button. */
       sources(ids: SourceId[], value: string, label: string): ApiSourceRef {

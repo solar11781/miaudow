@@ -15,7 +15,12 @@ export function normalize(text: string): string {
 export const hasDiacritics = (text: string) => /[̀-ͯ]/.test(text.normalize('NFD')) || /[đĐ]/.test(text);
 
 const keepAccents = (text: string) =>
-  text.normalize('NFC').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+  text
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 // Farmer words mapped to one key term, so questions in everyday language find the evidence. Matched on plain text.
 const SYNONYMS: [RegExp, string][] = [
@@ -35,9 +40,60 @@ const SYNONYMS: [RegExp, string][] = [
   [/\b(lua|thoc|rice|paddy)\b/, 'k_lua'],
 ];
 
-const STOP = new Set(['da', 'di', 'nay', 'roi', 'se', 'dang', 'tu', 'ra', 'len', 'thi', 'ma', 'vay', 'sao', 'la', 'co', 'khong',
-  'cua', 'va', 'cho', 'nha', 'toi', 'minh', 'the', 'nao', 'bao', 'nhieu', 'gi', 'o', 'trong', 'duoc', 'nhu', 'mot', 'cac',
-  'nhung', 'voi', 'a', 'an', 'is', 'are', 'what', 'how', 'of', 'in', 'to', 'do', 'does', 'my', 'i', 'and', 'for', 'it', 'be']);
+const STOP = new Set([
+  'da',
+  'di',
+  'nay',
+  'roi',
+  'se',
+  'dang',
+  'tu',
+  'ra',
+  'len',
+  'thi',
+  'ma',
+  'vay',
+  'sao',
+  'la',
+  'co',
+  'khong',
+  'cua',
+  'va',
+  'cho',
+  'nha',
+  'toi',
+  'minh',
+  'the',
+  'nao',
+  'bao',
+  'nhieu',
+  'gi',
+  'o',
+  'trong',
+  'duoc',
+  'nhu',
+  'mot',
+  'cac',
+  'nhung',
+  'voi',
+  'a',
+  'an',
+  'is',
+  'are',
+  'what',
+  'how',
+  'of',
+  'in',
+  'to',
+  'do',
+  'does',
+  'my',
+  'i',
+  'and',
+  'for',
+  'it',
+  'be',
+]);
 
 /**
  * Search terms: the words (accents kept or stripped) plus the synonym key terms found in the text.
@@ -46,6 +102,8 @@ const STOP = new Set(['da', 'di', 'nay', 'roi', 'se', 'dang', 'tu', 'ra', 'len',
 export function tokens(text: string, accented = false): string[] {
   const plain = normalize(text);
   const keys = SYNONYMS.filter(([re]) => re.test(plain)).map(([, k]) => k);
-  const words = (accented ? keepAccents(text) : plain).split(' ').filter((w) => w.length > 1 && !STOP.has(normalize(w)));
+  const words = (accented ? keepAccents(text) : plain)
+    .split(' ')
+    .filter((w) => w.length > 1 && !STOP.has(normalize(w)));
   return [...words, ...keys];
 }

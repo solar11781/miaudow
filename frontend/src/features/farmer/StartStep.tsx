@@ -23,13 +23,21 @@ export function StartStep() {
           <p className={s.startLead}>{t.farmer.startLead}</p>
           <ol className={s.startList}>
             {t.home.steps.map((st, i) => (
-              <li key={st.title}><span className={s.startNum}>{i + 1}</span>{st.title}</li>
+              <li key={st.title}>
+                <span className={s.startNum}>{i + 1}</span>
+                {st.title}
+              </li>
             ))}
           </ol>
-          <ButtonLink to={{ pathname: '/nong-dan/ruong', search }} size="lg" block icon="arrowRight">{t.farmer.startCta}</ButtonLink>
+          <ButtonLink to={{ pathname: '/nong-dan/ruong', search }} size="lg" block icon="arrowRight">
+            {t.farmer.startCta}
+          </ButtonLink>
         </div>
       </article>
-      <p className={s.support}><Icon name="user" size={20} />{t.common.support}</p>
+      <p className={s.support}>
+        <Icon name="user" size={20} />
+        {t.common.support}
+      </p>
     </div>
   );
 }

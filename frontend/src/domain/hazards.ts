@@ -21,8 +21,12 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     name: { vi: 'Mưa lớn', en: 'Heavy rain' },
     short: { vi: 'Mưa lớn', en: 'Rain' },
     article: 'Điều 44',
-    quote: 'lượng mưa từ 100 mm đến 200 mm trong 24 giờ hoặc từ 50 mm đến 100 mm trong 12 giờ, kéo dài từ 1 ngày đến 2 ngày',
-    computed: { vi: 'Một ngày có lượng mưa từ 100 mm trở lên (không tính được nhánh 12 giờ vì NASA cho số liệu theo ngày).', en: 'A day with 100 mm of rain or more (the 12-hour branch is not computable from daily values).' },
+    quote:
+      'lượng mưa từ 100 mm đến 200 mm trong 24 giờ hoặc từ 50 mm đến 100 mm trong 12 giờ, kéo dài từ 1 ngày đến 2 ngày',
+    computed: {
+      vi: 'Một ngày có lượng mưa từ 100 mm trở lên (không tính được nhánh 12 giờ vì NASA cho số liệu theo ngày).',
+      en: 'A day with 100 mm of rain or more (the 12-hour branch is not computable from daily values).',
+    },
     magnitude: 'max_rain_mm',
     unit: { vi: 'mm, ngày mưa nhiều nhất', en: 'mm, wettest day' },
     color: 'var(--data-rain)',
@@ -33,7 +37,10 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     short: { vi: 'Nóng', en: 'Heat' },
     article: 'Điều 47',
     quote: 'đợt nắng nóng với nhiệt độ cao nhất trong ngày từ 35°c đến 37°c, kéo dài từ 3 ngày trở lên',
-    computed: { vi: 'Từ 3 ngày liền trở lên có nhiệt độ cao nhất nằm trong cùng một bậc nhiệt của Điều 47.', en: 'At least 3 consecutive days with the daily maximum inside one band of Art. 47.' },
+    computed: {
+      vi: 'Từ 3 ngày liền trở lên có nhiệt độ cao nhất nằm trong cùng một bậc nhiệt của Điều 47.',
+      en: 'At least 3 consecutive days with the daily maximum inside one band of Art. 47.',
+    },
     magnitude: 'hot_days',
     unit: { vi: 'ngày từ 35 °C trở lên', en: 'days at 35 °C or above' },
     color: 'var(--data-heat)',
@@ -44,7 +51,10 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     short: { vi: 'Hạn', en: 'Drought' },
     article: 'Điều 48',
     quote: 'thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến 3 tháng',
-    computed: { vi: 'Có ít nhất 2 tháng mưa thiếu hơn 50% so với trung bình 1991–2020 của cùng tháng (cách đọc “2 tháng bất kỳ”).', en: 'At least 2 months with rain more than 50% below the 1991–2020 mean of that month (“any 2 months” reading).' },
+    computed: {
+      vi: 'Có ít nhất 2 tháng mưa thiếu hơn 50% so với trung bình 1991–2020 của cùng tháng (cách đọc “2 tháng bất kỳ”).',
+      en: 'At least 2 months with rain more than 50% below the 1991–2020 mean of that month (“any 2 months” reading).',
+    },
     magnitude: 'drought_months',
     unit: { vi: 'tháng thiếu mưa', en: 'dry months' },
     color: 'var(--data-drought)',
@@ -55,7 +65,10 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     short: { vi: 'Hạn liền', en: 'Drought+' },
     article: 'Điều 48',
     quote: 'thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến 3 tháng',
-    computed: { vi: 'Có 2 tháng liền nhau mưa thiếu hơn 50% so với trung bình 1991–2020 (cách đọc “liên tiếp”).', en: 'Two consecutive months with rain more than 50% below the 1991–2020 mean (“consecutive” reading).' },
+    computed: {
+      vi: 'Có 2 tháng liền nhau mưa thiếu hơn 50% so với trung bình 1991–2020 (cách đọc “liên tiếp”).',
+      en: 'Two consecutive months with rain more than 50% below the 1991–2020 mean (“consecutive” reading).',
+    },
     magnitude: 'drought_months',
     unit: { vi: 'tháng thiếu mưa', en: 'dry months' },
     color: 'var(--data-drought-strong)',
@@ -65,8 +78,12 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     name: { vi: 'Rét hại', en: 'Damaging cold' },
     short: { vi: 'Rét', en: 'Cold' },
     article: 'Điều 53',
-    quote: 'nhiệt độ không khí trung bình ngày từ trên 8°c đến 13°c, kéo dài từ trên 5 ngày đến 10 ngày ở vùng đồng bằng Bắc Bộ, Bắc Trung Bộ, Trung Trung Bộ',
-    computed: { vi: 'Ít nhất 6 ngày liền nhiệt độ trung bình trên 8 °C đến 13 °C, hoặc ít nhất 3 ngày liền từ 8 °C trở xuống.', en: 'At least 6 consecutive days with mean temperature above 8 °C and up to 13 °C, or at least 3 days at 8 °C or below.' },
+    quote:
+      'nhiệt độ không khí trung bình ngày từ trên 8°c đến 13°c, kéo dài từ trên 5 ngày đến 10 ngày ở vùng đồng bằng Bắc Bộ, Bắc Trung Bộ, Trung Trung Bộ',
+    computed: {
+      vi: 'Ít nhất 6 ngày liền nhiệt độ trung bình trên 8 °C đến 13 °C, hoặc ít nhất 3 ngày liền từ 8 °C trở xuống.',
+      en: 'At least 6 consecutive days with mean temperature above 8 °C and up to 13 °C, or at least 3 days at 8 °C or below.',
+    },
     magnitude: 'cold_days',
     unit: { vi: 'ngày từ 13 °C trở xuống', en: 'days at 13 °C or below' },
     color: 'var(--data-cold)',
@@ -87,7 +104,8 @@ const at = (series: number[] | undefined, year: number) => {
 export const yearShare = (rule: RuleCode, year: number) => at(hazards.year_level[rule], year);
 
 /** Share for one P-02 crop over its own field time. */
-export const cropShare = (cropKey: string, rule: RuleCode, year: number) => at(hazards.crop_level[cropKey]?.[rule], year);
+export const cropShare = (cropKey: string, rule: RuleCode, year: number) =>
+  at(hazards.crop_level[cropKey]?.[rule], year);
 
 export interface Range {
   min: number;

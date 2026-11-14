@@ -7,7 +7,9 @@ export function NotFound() {
   return (
     <main id="main" className="container band stack" style={{ ['--gap' as string]: '1.5rem', minHeight: '60vh' }}>
       <h1 className="h1">{t.errors.notFound}</h1>
-      <ButtonLink to="/" icon="arrowRight">{t.errors.goHome}</ButtonLink>
+      <ButtonLink to="/" icon="arrowRight">
+        {t.errors.goHome}
+      </ButtonLink>
     </main>
   );
 }
@@ -20,8 +22,12 @@ export function RouteError() {
     <main id="main" className="container band stack" style={{ ['--gap' as string]: '1.5rem', minHeight: '60vh' }}>
       <h1 className="h2">{t.errors.crash}</h1>
       <div className="cluster">
-        <Button onClick={() => window.location.reload()} icon="rotateR">{t.errors.reload}</Button>
-        <ButtonLink to="/" variant="secondary">{t.errors.goHome}</ButtonLink>
+        <Button onClick={() => window.location.reload()} icon="rotateR">
+          {t.errors.reload}
+        </Button>
+        <ButtonLink to="/" variant="secondary">
+          {t.errors.goHome}
+        </ButtonLink>
       </div>
     </main>
   );

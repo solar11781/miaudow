@@ -29,7 +29,8 @@ export function FarmerLayout() {
   const state = useMemo(() => parseFarmerState(params), [params]);
 
   const update = useCallback(
-    (patch: Partial<FarmerState>) => setParams(serializeFarmerState({ ...state, ...patch }), { replace: true, preventScrollReset: true }),
+    (patch: Partial<FarmerState>) =>
+      setParams(serializeFarmerState({ ...state, ...patch }), { replace: true, preventScrollReset: true }),
     [state, setParams],
   );
   const search = `?${serializeFarmerState(state).toString()}`;
@@ -45,8 +46,20 @@ export function FarmerLayout() {
 }
 
 /** Back link, step progress and the page title of one step. */
-export function StepShell({ step, title, help, children, actions, wide }: {
-  step: 1 | 2 | 3 | 4; title: string; help?: string; children: ReactNode; actions?: ReactNode; wide?: boolean;
+export function StepShell({
+  step,
+  title,
+  help,
+  children,
+  actions,
+  wide,
+}: {
+  step: 1 | 2 | 3 | 4;
+  title: string;
+  help?: string;
+  children: ReactNode;
+  actions?: ReactNode;
+  wide?: boolean;
 }) {
   const t = useT();
   const { search } = useFarmer();
@@ -65,7 +78,9 @@ export function StepShell({ step, title, help, children, actions, wide }: {
             </li>
           ))}
         </ol>
-        <span className={s.stepLabel} aria-hidden="true">{t.farmer.stepOf(step)}</span>
+        <span className={s.stepLabel} aria-hidden="true">
+          {t.farmer.stepOf(step)}
+        </span>
       </div>
       <header className={s.head}>
         <h1 className={`h1 ${s.title}`}>{title}</h1>

@@ -9,7 +9,11 @@ import { VoiceButton } from './VoiceButton';
 const setup = (listening = false) => {
   const listen = vi.fn();
   const stop = vi.fn();
-  render(<SettingsProvider><VoiceButton listening={listening} listen={listen} stop={stop} /></SettingsProvider>);
+  render(
+    <SettingsProvider>
+      <VoiceButton listening={listening} listen={listen} stop={stop} />
+    </SettingsProvider>,
+  );
   return { listen, stop };
 };
 

@@ -30,7 +30,10 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
 
   useEffect(() => {
     if (!playing) return;
-    const id = window.setInterval(() => setYear(year >= (YEARS[YEARS.length - 1] as number) ? (YEARS[0] as number) : year + 1), 1100);
+    const id = window.setInterval(
+      () => setYear(year >= (YEARS[YEARS.length - 1] as number) ? (YEARS[0] as number) : year + 1),
+      1100,
+    );
     return () => window.clearInterval(id);
   }, [playing, year, setYear]);
 
@@ -45,13 +48,26 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
           <p className="eyebrow">{t.science.eyebrow}</p>
           <h1 className={`display ${s.pageTitle}`}>{t.science.title}</h1>
           <p className="lead">{t.science.lead}</p>
-          <Link to={`/dai-quan-sat?canh=analysis&nam=${year}`} className={s.globeLink}><Icon name="globe" size={20} />{t.science.globeCta}<Icon name="arrowRight" size={18} /></Link>
+          <Link to={`/dai-quan-sat?canh=analysis&nam=${year}`} className={s.globeLink}>
+            <Icon name="globe" size={20} />
+            {t.science.globeCta}
+            <Icon name="arrowRight" size={18} />
+          </Link>
         </header>
 
         <div className={s.rules} role="radiogroup" aria-label={t.science.rule}>
           {SCIENCE_RULES.map((r) => (
-            <button key={r} type="button" role="radio" aria-checked={rule === r} className={s.ruleBtn} onClick={() => setRule(r)}>
-              <i style={{ background: RULES[r].color }} aria-hidden="true" />{pick(RULES[r].name)}<span className={s.article}>{RULES[r].article}</span>
+            <button
+              key={r}
+              type="button"
+              role="radio"
+              aria-checked={rule === r}
+              className={s.ruleBtn}
+              onClick={() => setRule(r)}
+            >
+              <i style={{ background: RULES[r].color }} aria-hidden="true" />
+              {pick(RULES[r].name)}
+              <span className={s.article}>{RULES[r].article}</span>
             </button>
           ))}
         </div>
@@ -59,15 +75,25 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
         <p className={s.panelLead}>{t.science.mapLead}</p>
         <div className={s.observatory}>
           <div className={s.stageCol}>
-            <h2 id="grid-title" className="visually-hidden">{t.science.mapTitle}</h2>
-            <Suspense fallback={<div className={s.stagePlaceholder} role="status">{t.common.loading}</div>}>
+            <h2 id="grid-title" className="visually-hidden">
+              {t.science.mapTitle}
+            </h2>
+            <Suspense
+              fallback={
+                <div className={s.stagePlaceholder} role="status">
+                  {t.common.loading}
+                </div>
+              }
+            >
               <Observatory3D rule={rule} year={year} selected={cell} onSelect={setCell} />
             </Suspense>
           </div>
 
           <aside className={s.side} aria-label={t.science.readingFor(year)}>
             <div className={s.kpi}>
-              <p className={s.kpiLabel}>{pick(info.name)} · {info.article} · <span className="num">{year}</span></p>
+              <p className={s.kpiLabel}>
+                {pick(info.name)} · {info.article} · <span className="num">{year}</span>
+              </p>
               <SourceValue size="xl" {...refs.share(rule, year, share)} />
               <p className={s.kpiSub}>{t.science.shareOfFarmland}</p>
               <p className={s.quote}>“{info.quote}”</p>
@@ -76,10 +102,18 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
             </div>
             {sel && (
               <dl className={s.cellCard}>
-                <dt>{t.science.cell}</dt><dd className="mono">{sel.lat.toFixed(1)}°N {sel.lon.toFixed(3)}°E</dd>
-                <dt>{t.science.weight}</dt><dd className="mono">{f.pct(sel.weight, 1)}</dd>
-                <dt>{t.science.measured}</dt><dd className="mono">{f.n(cellMagnitude(info.magnitude, sel.id, year), 1)} {info.unit[lang]}</dd>
-                <dt>{t.science.ruleMet}</dt><dd>{cellMet(rule, sel.id, year) ? t.science.met : t.science.notMet}</dd>
+                <dt>{t.science.cell}</dt>
+                <dd className="mono">
+                  {sel.lat.toFixed(1)}°N {sel.lon.toFixed(3)}°E
+                </dd>
+                <dt>{t.science.weight}</dt>
+                <dd className="mono">{f.pct(sel.weight, 1)}</dd>
+                <dt>{t.science.measured}</dt>
+                <dd className="mono">
+                  {f.n(cellMagnitude(info.magnitude, sel.id, year), 1)} {info.unit[lang]}
+                </dd>
+                <dt>{t.science.ruleMet}</dt>
+                <dd>{cellMet(rule, sel.id, year) ? t.science.met : t.science.notMet}</dd>
               </dl>
             )}
           </aside>
@@ -87,22 +121,50 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
 
         <div className={s.timelineCard}>
           <div className={s.timelineHead}>
-            <p className={s.timelineTitle}>{pick(info.name)} · {t.science.shareOfFarmland}, {YEARS[0]}–{YEARS[YEARS.length - 1]}</p>
+            <p className={s.timelineTitle}>
+              {pick(info.name)} · {t.science.shareOfFarmland}, {YEARS[0]}–{YEARS[YEARS.length - 1]}
+            </p>
             <label className={s.yearSelect}>
               <span>{t.science.year}</span>
-              <select value={year} onChange={(e) => { setPlaying(false); setYear(Number(e.target.value)); }}>
-                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              <select
+                value={year}
+                onChange={(e) => {
+                  setPlaying(false);
+                  setYear(Number(e.target.value));
+                }}
+              >
+                {YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
           <div className={s.timeline}>
-            <button type="button" className={s.play} onClick={() => setPlaying((p) => !p)} aria-pressed={playing} disabled={calm && !playing}
-              aria-label={playing ? t.science.pause : t.science.play}>
+            <button
+              type="button"
+              className={s.play}
+              onClick={() => setPlaying((p) => !p)}
+              aria-pressed={playing}
+              disabled={calm && !playing}
+              aria-label={playing ? t.science.pause : t.science.play}
+            >
               <Icon name={playing ? 'pause' : 'play'} size={18} />
             </button>
             <div className={s.bars}>
-              <YearBars years={YEARS} values={hazards.year_level[rule]} color={info.color} selected={year}
-                onSelect={(y) => { setPlaying(false); setYear(y); }} height={150} label={`${pick(info.name)} · ${t.science.shareOfFarmland}`} />
+              <YearBars
+                years={YEARS}
+                values={hazards.year_level[rule]}
+                color={info.color}
+                selected={year}
+                onSelect={(y) => {
+                  setPlaying(false);
+                  setYear(y);
+                }}
+                height={150}
+                label={`${pick(info.name)} · ${t.science.shareOfFarmland}`}
+              />
             </div>
           </div>
           <SourceValue {...refs.shareSeries(rule)} />
@@ -110,15 +172,32 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
 
         <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.science.tableCaption}>
           <table className={s.table}>
-            <caption>{t.science.tableCaption} · {pick(info.name)} · {year}</caption>
-            <thead><tr><th scope="col">{t.science.cell}</th><th scope="col">{t.science.weight}</th><th scope="col">{t.science.measured}</th><th scope="col">{t.science.ruleMet}</th></tr></thead>
+            <caption>
+              {t.science.tableCaption} · {pick(info.name)} · {year}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">{t.science.cell}</th>
+                <th scope="col">{t.science.weight}</th>
+                <th scope="col">{t.science.measured}</th>
+                <th scope="col">{t.science.ruleMet}</th>
+              </tr>
+            </thead>
             <tbody>
               {hazards.cells.map((c) => (
                 <tr key={c.id} aria-selected={c.id === cell} onClick={() => setCell(c.id)}>
-                  <th scope="row" className="mono">{c.lat.toFixed(1)}°N {c.lon.toFixed(3)}°E</th>
+                  <th scope="row" className="mono">
+                    {c.lat.toFixed(1)}°N {c.lon.toFixed(3)}°E
+                  </th>
                   <td className="num">{f.pct(c.weight, 1)}</td>
                   <td className="num">{f.n(cellMagnitude(info.magnitude, c.id, year), 1)}</td>
-                  <td>{cellMet(rule, c.id, year) ? <span className={s.yes}>{t.science.yes}</span> : <span className={s.no}>{t.science.no}</span>}</td>
+                  <td>
+                    {cellMet(rule, c.id, year) ? (
+                      <span className={s.yes}>{t.science.yes}</span>
+                    ) : (
+                      <span className={s.no}>{t.science.no}</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -129,7 +208,6 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
     </section>
   );
 }
-
 
 const CELLS = ['19.0_105.0', '19.0_105.625', '18.5_105.625', '19.5_105.0', '19.5_105.625'];
 
@@ -144,11 +222,18 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
         <Reveal className={s.colHead}>
           <p className="eyebrow">{t.climate.sectionEyebrow}</p>
-          <h2 id="climate-title" className="h1">{t.climate.sectionTitle} · <span className="num">{year}</span></h2>
+          <h2 id="climate-title" className="h1">
+            {t.climate.sectionTitle} · <span className="num">{year}</span>
+          </h2>
           <p className="lead">{t.climate.sectionLead}</p>
-          <Link className={s.askLink} to={`/tro-ly?${q}`} viewTransition><Icon name="spark" size={18} />{t.climate.askYear(year)}</Link>
+          <Link className={s.askLink} to={`/tro-ly?${q}`} viewTransition>
+            <Icon name="spark" size={18} />
+            {t.climate.askYear(year)}
+          </Link>
         </Reveal>
-        <Reveal className={s.chartCard}><RainStrip year={year} onYear={setYear} /></Reveal>
+        <Reveal className={s.chartCard}>
+          <RainStrip year={year} onYear={setYear} />
+        </Reveal>
         <div className={s.skillGrid}>
           <Reveal className={s.chartCard}>
             <h3 className="h3">{t.climate.twoHead}</h3>
@@ -156,7 +241,11 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
             <label className={s.yearSelect}>
               <span>{t.climate.cellLabel}</span>
               <select value={cell} onChange={(e) => setCell(e.target.value)}>
-                {CELLS.map((c) => <option key={c} value={c}>{c.replace('_', '°N ')}°E</option>)}
+                {CELLS.map((c) => (
+                  <option key={c} value={c}>
+                    {c.replace('_', '°N ')}°E
+                  </option>
+                ))}
               </select>
             </label>
             <TwoSources year={year} cell={cell} />
@@ -182,14 +271,23 @@ function RiceSection() {
     <section className="band surface-paper" aria-labelledby="rice-title">
       <div className={`container ${s.twoCol}`}>
         <Reveal className={s.colHead}>
-          <h2 id="rice-title" className="h1">{t.science.riceTitle}</h2>
+          <h2 id="rice-title" className="h1">
+            {t.science.riceTitle}
+          </h2>
           <p className="lead">{t.science.riceLead}</p>
           <div className={s.seg} role="radiogroup" aria-label={t.science.riceTitle}>
             {(['spring', 'summer_autumn', 'winter'] as RiceSeason[]).map((x) => (
-              <button key={x} type="button" role="radio" aria-checked={season === x} onClick={() => setSeason(x)}>{t.science.seasons[x]}</button>
+              <button key={x} type="button" role="radio" aria-checked={season === x} onClick={() => setSeason(x)}>
+                {t.science.seasons[x]}
+              </button>
             ))}
           </div>
-          {status !== 'shown' && <p className={s.notice}><Icon name="alert" size={18} />{status === 'not_shown' ? t.science.modelHidden : t.science.notModeled}</p>}
+          {status !== 'shown' && (
+            <p className={s.notice}>
+              <Icon name="alert" size={18} />
+              {status === 'not_shown' ? t.science.modelHidden : t.science.notModeled}
+            </p>
+          )}
         </Reveal>
         <Reveal className={s.chartCard}>
           <RiceHistoryChart season={season} />
@@ -209,8 +307,13 @@ function MethodLink() {
   return (
     <section className="band surface-paper" aria-labelledby="skill-title">
       <div className={`container ${s.colHead}`}>
-        <h2 id="skill-title" className="h1">{t.science.skillTitle}</h2>
-        <Link to="/phuong-phap" className={s.askLink}><Icon name="arrowRight" size={18} />{t.science.toMethod}</Link>
+        <h2 id="skill-title" className="h1">
+          {t.science.skillTitle}
+        </h2>
+        <Link to="/phuong-phap" className={s.askLink}>
+          <Icon name="arrowRight" size={18} />
+          {t.science.toMethod}
+        </Link>
       </div>
     </section>
   );
@@ -221,7 +324,18 @@ export function SciencePage() {
   const fromUrl = Number(params.get('nam'));
   const year = YEARS.includes(fromUrl) ? fromUrl : 2010;
   // The year lives in the URL: shareable, survives reload, and the copilot and evidence links can carry it.
-  const setYear = useCallback((y: number) => setParams((p) => { const n = new URLSearchParams(p); n.set('nam', String(y)); return n; }, { replace: true, preventScrollReset: true }), [setParams]);
+  const setYear = useCallback(
+    (y: number) =>
+      setParams(
+        (p) => {
+          const n = new URLSearchParams(p);
+          n.set('nam', String(y));
+          return n;
+        },
+        { replace: true, preventScrollReset: true },
+      ),
+    [setParams],
+  );
   return (
     <main id="main">
       <GridSection year={year} setYear={setYear} />

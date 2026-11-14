@@ -20,7 +20,11 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
   const f = useFormat();
   const id = useId();
   const [ref, W] = useWidth<HTMLElement>();
-  const H = height, padL = 52, padB = 30, padT = 10, padR = 6;
+  const H = height,
+    padL = 52,
+    padB = 30,
+    padT = 10,
+    padR = 6;
   const bw = (W - padL - padR) / years.length;
   const every = yearLabelStep(bw);
   const y = (v: number) => padT + (1 - v) * (H - padT - padB);
@@ -31,7 +35,9 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
         {[0, 0.5, 1].map((g) => (
           <g key={g}>
             <line x1={padL} x2={W - padR} y1={y(g)} y2={y(g)} className={g === reference ? s.ref : s.grid} />
-            <text x={padL - 8} y={y(g) + 6} textAnchor="end" className={s.tick}>{f.pct(g)}</text>
+            <text x={padL - 8} y={y(g) + 6} textAnchor="end" className={s.tick}>
+              {f.pct(g)}
+            </text>
           </g>
         ))}
         {years.map((yr, i) => {
@@ -43,22 +49,38 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
             <g key={yr} className={onSelect ? s.barHit : undefined} onClick={onSelect ? () => onSelect(yr) : undefined}>
               <rect x={x} y={padT} width={bw} height={H - padT - padB} fill="transparent" />
               <rect
-                x={x + bw * 0.16} y={y(v)} width={bw * 0.68} height={Math.max(1.5, (H - padT - padB) * v)} rx={Math.min(3, bw * 0.2)}
-                fill={color} opacity={isSel ? 1 : strong ? 0.92 : 0.38}
+                x={x + bw * 0.16}
+                y={y(v)}
+                width={bw * 0.68}
+                height={Math.max(1.5, (H - padT - padB) * v)}
+                rx={Math.min(3, bw * 0.2)}
+                fill={color}
+                opacity={isSel ? 1 : strong ? 0.92 : 0.38}
                 className={isSel ? s.sel : undefined}
               />
               {(yr % every === 0 || isSel) && (
-                <text x={x + bw / 2} y={H - 6} textAnchor="middle" className={isSel ? s.tickSel : s.tick}>{yr}</text>
+                <text x={x + bw / 2} y={H - 6} textAnchor="middle" className={isSel ? s.tickSel : s.tick}>
+                  {yr}
+                </text>
               )}
               <title>{`${yr}: ${f.pct(v)}`}</title>
             </g>
           );
         })}
       </svg>
-      <div className="visually-hidden"><table>
-        <caption>{label}</caption>
-        <tbody>{years.map((yr, i) => <tr key={yr}><th scope="row">{yr}</th><td>{f.pct(values[i] ?? 0)}</td></tr>)}</tbody>
-      </table></div>
+      <div className="visually-hidden">
+        <table>
+          <caption>{label}</caption>
+          <tbody>
+            {years.map((yr, i) => (
+              <tr key={yr}>
+                <th scope="row">{yr}</th>
+                <td>{f.pct(values[i] ?? 0)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }

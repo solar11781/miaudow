@@ -17,4 +17,3 @@ test('dark theme home and assistant', async ({ page }, info) => {
   await page.waitForTimeout(900);
   await page.screenshot({ path: `review-shots/${info.project.name}-assistant-top.png` });
 });
-

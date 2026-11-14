@@ -7,7 +7,8 @@ type Node = unknown;
 function shape(node: Node, path = ''): string[] {
   if (typeof node === 'function') return [`${path}()/${node.length}`];
   if (Array.isArray(node)) return [`${path}[${node.length}]`, ...node.flatMap((v, i) => shape(v, `${path}[${i}]`))];
-  if (node && typeof node === 'object') return Object.entries(node).flatMap(([k, v]) => shape(v, path ? `${path}.${k}` : k));
+  if (node && typeof node === 'object')
+    return Object.entries(node).flatMap(([k, v]) => shape(v, path ? `${path}.${k}` : k));
   return [path];
 }
 

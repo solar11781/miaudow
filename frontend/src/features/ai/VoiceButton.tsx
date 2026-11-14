@@ -11,14 +11,16 @@ export function VoiceButton({ listening, listen, stop }: { listening: boolean; l
   if (listening) {
     return (
       <button type="button" className={s.mic} aria-pressed="true" onClick={stop}>
-        <Icon name="stop" size={20} />{t.copilot.listening}
+        <Icon name="stop" size={20} />
+        {t.copilot.listening}
       </button>
     );
   }
   if (!noted) {
     return (
       <button type="button" className={s.mic} aria-pressed="false" onClick={() => setNoted(true)}>
-        <Icon name="mic" size={20} />{t.copilot.speak}
+        <Icon name="mic" size={20} />
+        {t.copilot.speak}
       </button>
     );
   }
@@ -26,7 +28,8 @@ export function VoiceButton({ listening, listen, stop }: { listening: boolean; l
     <span className={s.micNote}>
       <span role="status">{t.copilot.micNote}</span>
       <button type="button" className={s.mic} onClick={listen}>
-        <Icon name="mic" size={20} />{t.copilot.micStart}
+        <Icon name="mic" size={20} />
+        {t.copilot.micStart}
       </button>
     </span>
   );

@@ -19,7 +19,11 @@ test('science 3D grid, default and dragged', async ({ page }, info) => {
   await stage.screenshot({ path: `review-shots/${info.project.name}-grid3d-heat.png` });
 });
 
-for (const [name, url] of [['home-top', '/#/'], ['plans-top', '/#/nong-dan/phuong-an?ruong=dry&nam=2010,2015,2020&uutien=water'], ['years-top', '/#/nong-dan/nam?ruong=dry&nam=2010,2015,2020']] as const) {
+for (const [name, url] of [
+  ['home-top', '/#/'],
+  ['plans-top', '/#/nong-dan/phuong-an?ruong=dry&nam=2010,2015,2020&uutien=water'],
+  ['years-top', '/#/nong-dan/nam?ruong=dry&nam=2010,2015,2020'],
+] as const) {
   test(`first screen ${name}`, async ({ page }, info) => {
     await page.goto(url);
     await page.waitForTimeout(1600);

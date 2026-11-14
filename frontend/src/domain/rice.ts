@@ -10,7 +10,8 @@ export interface RiceYear {
   high80: number | null;
 }
 
-export const seasonStatus = (season: RiceSeason) => model.seasons.find((s) => s.season === season)?.model_status ?? 'not_modeled';
+export const seasonStatus = (season: RiceSeason) =>
+  model.seasons.find((s) => s.season === season)?.model_status ?? 'not_modeled';
 
 export function riceYear(season: RiceSeason, year: number): RiceYear {
   const h = model.history[season];
@@ -43,6 +44,7 @@ export function riceSummary(season: RiceSeason, picked: number[]): RiceSummary {
   const sorted = [...years].sort((a, b) => (a.actual as number) - (b.actual as number));
   const mid = sorted.length / 2;
   const vals = sorted.map((r) => r.actual as number);
-  const median = sorted.length % 2 ? (vals[Math.floor(mid)] as number) : ((vals[mid - 1] as number) + (vals[mid] as number)) / 2;
+  const median =
+    sorted.length % 2 ? (vals[Math.floor(mid)] as number) : ((vals[mid - 1] as number) + (vals[mid] as number)) / 2;
   return { years, min: sorted[0], max: sorted[sorted.length - 1], median };
 }

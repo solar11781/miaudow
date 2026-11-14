@@ -11,7 +11,13 @@ export type SeasonCode = 'spring' | 'summer_autumn' | 'winter' | 'autumn_winter'
 export type RuleCode = 'heavy_rain' | 'heat' | 'drought_rain_consecutive' | 'drought_rain_any2' | 'cold';
 export type SourceId = string;
 
-export const RULE_CODES: readonly RuleCode[] = ['heavy_rain', 'heat', 'drought_rain_consecutive', 'drought_rain_any2', 'cold'];
+export const RULE_CODES: readonly RuleCode[] = [
+  'heavy_rain',
+  'heat',
+  'drought_rain_consecutive',
+  'drought_rain_any2',
+  'cold',
+];
 export const PLAN_IDS: readonly PlanId[] = ['usual', 'usual_p03', 'cc1', 'cc2', 'cc3', 'cc4'];
 export const SEASON_CODES: readonly SeasonCode[] = ['spring', 'summer_autumn', 'winter', 'autumn_winter'];
 
@@ -27,8 +33,17 @@ export interface SourceFacts {
   nso_credit: boolean;
 }
 
-export interface Value { value: string; unit: Text; source_ids: SourceId[] }
-export interface Season { code: SeasonCode; label: Text; window: Text; source_ids: SourceId[] }
+export interface Value {
+  value: string;
+  unit: Text;
+  source_ids: SourceId[];
+}
+export interface Season {
+  code: SeasonCode;
+  label: Text;
+  window: Text;
+  source_ids: SourceId[];
+}
 export interface Rule {
   code: RuleCode;
   label: Text;
@@ -37,7 +52,10 @@ export interface Rule {
   values_source_ids: SourceId[];
   computed_by: SourceId;
 }
-export interface YearRow { year: number; shares: Record<RuleCode, Value | null> }
+export interface YearRow {
+  year: number;
+  shares: Record<RuleCode, Value | null>;
+}
 
 export interface PastYearsResponse {
   province: Province;
@@ -59,15 +77,40 @@ export interface CropSpan {
   harvest_to: string | null;
   source_ids: SourceId[];
 }
-export interface Period { from: string; to: string }
-export interface MoneyItem { crop_key: string; crop: Text; season: SeasonCode; profit: Value; cost: Value | null; flag: Text | null }
-export interface Money { items: MoneyItem[]; total: Value | null; price_year: string | null; definition: Text; text_only: Text | null }
+export interface Period {
+  from: string;
+  to: string;
+}
+export interface MoneyItem {
+  crop_key: string;
+  crop: Text;
+  season: SeasonCode;
+  profit: Value;
+  cost: Value | null;
+  flag: Text | null;
+}
+export interface Money {
+  items: MoneyItem[];
+  total: Value | null;
+  price_year: string | null;
+  definition: Text;
+  text_only: Text | null;
+}
 export interface CropExposure {
   crop_key: string;
   crop: Text;
-  per_year: { year: number; shares: Record<RuleCode, Value | null>; soil_wetness: { value: Value | null; normal: Value | null } }[];
+  per_year: {
+    year: number;
+    shares: Record<RuleCode, Value | null>;
+    soil_wetness: { value: Value | null; normal: Value | null };
+  }[];
 }
-export interface StabilityYear { year: number; real: Value | null; oos_prediction: Value | null; range_80: { low: Value; high: Value } | null }
+export interface StabilityYear {
+  year: number;
+  real: Value | null;
+  oos_prediction: Value | null;
+  range_80: { low: Value; high: Value } | null;
+}
 export type ModelStatus = 'shown' | 'not_shown' | 'not_modeled';
 export interface Stability {
   crop_key: string;
@@ -87,14 +130,26 @@ export interface WaterFact {
   scope: Text | null;
   note: Text | null;
 }
-export interface LandCheck { value: Value | null; principle_source_ids: SourceId[] }
+export interface LandCheck {
+  value: Value | null;
+  principle_source_ids: SourceId[];
+}
 export interface LandCare {
   crops_in_year: LandCheck;
   living_days: LandCheck;
   legume: { present: boolean; crops: Text[]; principle_source_ids: SourceId[] };
 }
-export interface RiskItem { text: Text; source_ids: SourceId[] }
-export interface Why { why: Text; evidence: Text; benefits: Text; gaps: Text; risks: RiskItem[] }
+export interface RiskItem {
+  text: Text;
+  source_ids: SourceId[];
+}
+export interface Why {
+  why: Text;
+  evidence: Text;
+  benefits: Text;
+  gaps: Text;
+  risks: RiskItem[];
+}
 
 export interface Plan {
   id: PlanId;
@@ -110,8 +165,17 @@ export interface Plan {
   why: Why;
 }
 
-export interface CompareRequest { province: Province; land: Land; years: number[]; priority: Priority }
-export interface Interval { value: number; ci90_low: number; ci90_high: number }
+export interface CompareRequest {
+  province: Province;
+  land: Land;
+  years: number[];
+  priority: Priority;
+}
+export interface Interval {
+  value: number;
+  ci90_low: number;
+  ci90_high: number;
+}
 export interface GateRow {
   gate: 'G1' | 'G2' | 'G3' | 'G4';
   season: SeasonCode;
@@ -153,13 +217,38 @@ export interface MetricRow {
   n_test_years: number;
   source_ids: SourceId[];
 }
-export interface WeatherClaim { season: SeasonCode; model_id: ModelId; made: boolean; source_ids: SourceId[] }
-export interface ReportItem { id: SourceId; title: Text; text: Text; source_ids: SourceId[] }
+export interface WeatherClaim {
+  season: SeasonCode;
+  model_id: ModelId;
+  made: boolean;
+  source_ids: SourceId[];
+}
+export interface ReportItem {
+  id: SourceId;
+  title: Text;
+  text: Text;
+  source_ids: SourceId[];
+}
 export type CoverageAxis = 'money' | 'conditions' | 'rice_history' | 'model' | 'water_tcvn' | 'water_fao';
-export interface CoverageCell { row_key: string; crop: Text; axis: CoverageAxis; text: Text; source_ids: SourceId[] }
+export interface CoverageCell {
+  row_key: string;
+  crop: Text;
+  axis: CoverageAxis;
+  text: Text;
+  source_ids: SourceId[];
+}
 export type ExplainKey = 'evapotranspiration' | 'soil_moisture' | 'ndvi' | 'frost' | 'water_balance' | 'data_types';
-export interface ExplainTerm { key: ExplainKey; title: Text; text: Text; source_ids: SourceId[] }
-export interface NotUsedDataset { dataset: string; reason: Text; source_ids: SourceId[] }
+export interface ExplainTerm {
+  key: ExplainKey;
+  title: Text;
+  text: Text;
+  source_ids: SourceId[];
+}
+export interface NotUsedDataset {
+  dataset: string;
+  reason: Text;
+  source_ids: SourceId[];
+}
 export interface RainCheck {
   months: { month: string; imerg: Value; power: Value }[];
   cc: Value;
@@ -182,5 +271,19 @@ export interface MethodResponse {
   sources: Record<SourceId, SourceFacts>;
 }
 
-export const COVERAGE_AXES: readonly CoverageAxis[] = ['money', 'conditions', 'rice_history', 'model', 'water_tcvn', 'water_fao'];
-export const EXPLAIN_KEYS: readonly ExplainKey[] = ['evapotranspiration', 'soil_moisture', 'ndvi', 'frost', 'water_balance', 'data_types'];
+export const COVERAGE_AXES: readonly CoverageAxis[] = [
+  'money',
+  'conditions',
+  'rice_history',
+  'model',
+  'water_tcvn',
+  'water_fao',
+];
+export const EXPLAIN_KEYS: readonly ExplainKey[] = [
+  'evapotranspiration',
+  'soil_moisture',
+  'ndvi',
+  'frost',
+  'water_balance',
+  'data_types',
+];

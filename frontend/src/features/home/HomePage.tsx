@@ -35,19 +35,28 @@ function Hero() {
       <div className={`container ${s.heroInner}`}>
         <p className="eyebrow">{t.home.eyebrow}</p>
         <h1 id="hero-title" className={`display ${s.heroTitle}`}>
-          {t.home.titleA}<br /><em>{t.home.titleB}</em>
+          {t.home.titleA}
+          <br />
+          <em>{t.home.titleB}</em>
         </h1>
         <p className={s.heroLead}>{t.home.lead}</p>
         <div className={s.ctas}>
-          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowUpRight">{t.home.ctaFarmer}</ButtonLink>
-          <ButtonLink to="/khoa-hoc" size="lg" variant="secondary" icon="layers">{t.home.ctaScience}</ButtonLink>
+          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowUpRight">
+            {t.home.ctaFarmer}
+          </ButtonLink>
+          <ButtonLink to="/khoa-hoc" size="lg" variant="secondary" icon="layers">
+            {t.home.ctaScience}
+          </ButtonLink>
         </div>
       </div>
       <div className={s.heroFoot}>
-        <p className={s.heroCredit}>{pick(media(HERO).caption)} · {pick(media(HERO).credit ?? { vi: '', en: '' })}</p>
+        <p className={s.heroCredit}>
+          {pick(media(HERO).caption)} · {pick(media(HERO).credit ?? { vi: '', en: '' })}
+        </p>
         {!calm && (
           <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)} aria-pressed={paused}>
-            <Icon name={paused ? 'play' : 'pause'} size={16} />{paused ? t.media.play : t.media.pause}
+            <Icon name={paused ? 'play' : 'pause'} size={16} />
+            {paused ? t.media.play : t.media.pause}
           </button>
         )}
       </div>
@@ -61,7 +70,18 @@ function ChapterNav() {
     <nav className={s.chapters} aria-label={t.home.chaptersLabel}>
       <ol className="container">
         {t.home.chapters.map((c, i) => (
-          <li key={c}><a href={`#ch-${i + 1}`} onClick={(e) => { e.preventDefault(); document.getElementById(`ch-${i + 1}`)?.scrollIntoView({ behavior: 'smooth' }); }}><span>{String(i + 1).padStart(2, '0')}</span>{c}</a></li>
+          <li key={c}>
+            <a
+              href={`#ch-${i + 1}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(`ch-${i + 1}`)?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              {c}
+            </a>
+          </li>
         ))}
       </ol>
     </nav>
@@ -76,13 +96,20 @@ function Heritage() {
       <div className={`container ${s.heritage}`}>
         <Reveal className={s.sectionHead}>
           <p className="eyebrow">{t.home.heritageEyebrow}</p>
-          <h2 id="heritage-title" className="h1">{t.home.heritageTitle}</h2>
+          <h2 id="heritage-title" className="h1">
+            {t.home.heritageTitle}
+          </h2>
           <p className="lead">{t.home.heritageLead}</p>
         </Reveal>
         <div className={s.mosaic}>
           {HERITAGE.map((slug, i) => (
             <Reveal as="figure" key={slug} className={s[`m${i}`]} delay={i * 90}>
-              <span className={s.mosaicPhoto}><Media slug={slug} sizes={i === 0 ? '(min-width: 1000px) 640px, 92vw' : '(min-width: 1000px) 420px, 92vw'} /></span>
+              <span className={s.mosaicPhoto}>
+                <Media
+                  slug={slug}
+                  sizes={i === 0 ? '(min-width: 1000px) 640px, 92vw' : '(min-width: 1000px) 420px, 92vw'}
+                />
+              </span>
               <figcaption>
                 <span className={s.place}>{pick(media(slug).geography).split(';')[0]}</span>
                 <span>{pick(media(slug).caption)}</span>
@@ -113,9 +140,14 @@ function Problem() {
       <div className={`container ${s.problem}`}>
         <Reveal className={s.problemText}>
           <p className="eyebrow">{t.home.problemEyebrow}</p>
-          <h2 id="problem-title" className="h1">{t.home.problemTitle}</h2>
+          <h2 id="problem-title" className="h1">
+            {t.home.problemTitle}
+          </h2>
           <p className="lead">{t.home.problemLead}</p>
-          <p className={s.studyLand}><span>“{t.home.studyLand}”</span><small>{t.home.studyLandBy}</small></p>
+          <p className={s.studyLand}>
+            <span>“{t.home.studyLand}”</span>
+            <small>{t.home.studyLandBy}</small>
+          </p>
         </Reveal>
         <Reveal className={s.problemSide} delay={100}>
           <figure className={s.quote}>
@@ -130,8 +162,14 @@ function Problem() {
               </div>
             )}
             <div className={s.stat}>
-              <SourceValue size="lg" sourceId="p03" kind="study" value={`${f.n(1.16, 2)} ${t.common.millionPerHa}`} label={t.home.riceSummer}
-                detail={t.home.riceSummerDetail} />
+              <SourceValue
+                size="lg"
+                sourceId="p03"
+                kind="study"
+                value={`${f.n(1.16, 2)} ${t.common.millionPerHa}`}
+                label={t.home.riceSummer}
+                detail={t.home.riceSummerDetail}
+              />
               <span>{t.home.riceSummer}</span>
             </div>
           </div>
@@ -149,10 +187,14 @@ function Climate() {
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
         <Reveal className={s.sectionHead}>
           <p className="eyebrow">{t.home.climateEyebrow}</p>
-          <h2 id="climate-title" className="h1">{t.home.climateTitle}</h2>
+          <h2 id="climate-title" className="h1">
+            {t.home.climateTitle}
+          </h2>
           <p className="lead">{t.home.climateLead}</p>
         </Reveal>
-        <Reveal className={s.card}><RainStrip /></Reveal>
+        <Reveal className={s.card}>
+          <RainStrip />
+        </Reveal>
       </div>
     </section>
   );
@@ -170,13 +212,19 @@ function Evidence() {
       <div className={`container ${s.evidence}`}>
         <Reveal className={s.sectionHead}>
           <p className="eyebrow">{t.home.evidenceEyebrow}</p>
-          <h2 id="evidence-title" className="h1">{t.home.evidenceTitle}</h2>
+          <h2 id="evidence-title" className="h1">
+            {t.home.evidenceTitle}
+          </h2>
           <p className="lead">{t.home.droughtCaption(dryYears)}</p>
-          <ButtonLink to="/bang-chung" variant="secondary" icon="arrowRight">{t.home.evidenceCta}</ButtonLink>
+          <ButtonLink to="/bang-chung" variant="secondary" icon="arrowRight">
+            {t.home.evidenceCta}
+          </ButtonLink>
         </Reveal>
         <Reveal className={s.card} delay={90}>
           <div className={s.chartHead}>
-            <h3 className="h3">{pick(RULES[rule].name)} · {RULES[rule].article}</h3>
+            <h3 className="h3">
+              {pick(RULES[rule].name)} · {RULES[rule].article}
+            </h3>
             <span className="muted">{t.home.droughtAxis}</span>
           </div>
           <YearBars years={YEARS} values={values} color="var(--data-drought)" label={t.home.evidenceTitle} />
@@ -195,7 +243,9 @@ function Steps() {
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
         <Reveal className={s.sectionHead}>
           <p className="eyebrow">{t.home.stepsEyebrow}</p>
-          <h2 id="steps-title" className="h1">{t.home.stepsTitle}</h2>
+          <h2 id="steps-title" className="h1">
+            {t.home.stepsTitle}
+          </h2>
         </Reveal>
         <ol className={s.steps}>
           {t.home.steps.map((step, i) => (
@@ -223,35 +273,73 @@ function Observatory() {
   const shape = useMemo(() => {
     const [minLon, minLat, maxLon, maxLat] = geo.bounds;
     const k = Math.cos((19.3 * Math.PI) / 180);
-    const W = (maxLon - minLon) * k * 100 + 20, H = (maxLat - minLat) * 100 + 20;
+    const W = (maxLon - minLon) * k * 100 + 20,
+      H = (maxLat - minLat) * 100 + 20;
     const x = (lon: number) => (lon - minLon) * k * 100 + 10;
     const y = (lat: number) => (maxLat - lat) * 100 + 10;
     const outline = geo.outline.map((r) => r.map(([lo, la]) => `${x(lo).toFixed(1)},${y(la).toFixed(1)}`).join(' '));
-    const cells = geo.grid.map((c) => ({ id: c.id, w: c.weight, x: x(c.lon - 0.3125), y: y(c.lat + 0.25), cw: 0.625 * k * 100, ch: 50 }));
+    const cells = geo.grid.map((c) => ({
+      id: c.id,
+      w: c.weight,
+      x: x(c.lon - 0.3125),
+      y: y(c.lat + 0.25),
+      cw: 0.625 * k * 100,
+      ch: 50,
+    }));
     return { W, H, outline, cells };
   }, []);
   return (
     <section id="ch-6" className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
       <Reveal className={s.obsStage}>
-        <span className={s.obsPhoto}><Media slug="lam-river-vinh-ben-thuy" sizes="100vw" label="none" decorative /></span>
-        <svg className={s.obsSvg} viewBox={`0 0 ${shape.W} ${shape.H}`} aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+        <span className={s.obsPhoto}>
+          <Media slug="lam-river-vinh-ben-thuy" sizes="100vw" label="none" decorative />
+        </span>
+        <svg
+          className={s.obsSvg}
+          viewBox={`0 0 ${shape.W} ${shape.H}`}
+          aria-hidden="true"
+          preserveAspectRatio="xMidYMid meet"
+        >
           {shape.cells.map((c, i) => (
-            <rect key={c.id} x={c.x} y={c.y} width={c.cw} height={c.ch} className={s.drawCell} pathLength={1}
-              style={{ transitionDelay: `${300 + i * 90}ms`, fillOpacity: c.w > 0 ? 0.08 + c.w * 0.5 : 0 }} />
+            <rect
+              key={c.id}
+              x={c.x}
+              y={c.y}
+              width={c.cw}
+              height={c.ch}
+              className={s.drawCell}
+              pathLength={1}
+              style={{ transitionDelay: `${300 + i * 90}ms`, fillOpacity: c.w > 0 ? 0.08 + c.w * 0.5 : 0 }}
+            />
           ))}
-          {shape.outline.map((pts, i) => <polygon key={i} points={pts} className={s.drawLine} pathLength={1} />)}
+          {shape.outline.map((pts, i) => (
+            <polygon key={i} points={pts} className={s.drawLine} pathLength={1} />
+          ))}
         </svg>
       </Reveal>
       <div className={`container ${s.obsText}`}>
         <p className="eyebrow">{t.home.obsEyebrow}</p>
-        <h2 id="obs-title" className="h1">{t.home.obsTitle}</h2>
+        <h2 id="obs-title" className="h1">
+          {t.home.obsTitle}
+        </h2>
         <p className="lead">{t.home.obsLead}</p>
         <dl className={s.obsFacts}>
-          <div><dt className="num">{hazards.cells.length}</dt><dd>{t.home.obsCells}</dd></div>
-          <div><dt className="num">{CLIMATE_YEARS.length}</dt><dd>{t.home.obsYears}</dd></div>
+          <div>
+            <dt className="num">{hazards.cells.length}</dt>
+            <dd>{t.home.obsCells}</dd>
+          </div>
+          <div>
+            <dt className="num">{CLIMATE_YEARS.length}</dt>
+            <dd>{t.home.obsYears}</dd>
+          </div>
         </dl>
-        <ButtonLink to="/dai-quan-sat" size="lg" icon="globe">{t.home.obsCta}</ButtonLink>
-        <p className={s.obsCredit}>{pick(media('lam-river-vinh-ben-thuy').caption)} · {pick(media('lam-river-vinh-ben-thuy').credit ?? { vi: '', en: '' })}</p>
+        <ButtonLink to="/dai-quan-sat" size="lg" icon="globe">
+          {t.home.obsCta}
+        </ButtonLink>
+        <p className={s.obsCredit}>
+          {pick(media('lam-river-vinh-ben-thuy').caption)} ·{' '}
+          {pick(media('lam-river-vinh-ben-thuy').credit ?? { vi: '', en: '' })}
+        </p>
       </div>
     </section>
   );
@@ -262,21 +350,53 @@ function Honesty() {
   const pick = usePick();
   const f = useFormat();
   const status = (season: 'spring' | 'winter') => model.seasons.find((x) => x.season === season)?.model_status;
-  const m1 = (season: 'spring' | 'winter') => model.metrics.find((m) => m.model_id === 'm1_ridge' && m.season === season && m.subset === 'national' && m.scheme === 'rolling_origin');
+  const m1 = (season: 'spring' | 'winter') =>
+    model.metrics.find(
+      (m) =>
+        m.model_id === 'm1_ridge' && m.season === season && m.subset === 'national' && m.scheme === 'rolling_origin',
+    );
   const g2 = (season: 'spring' | 'winter') => model.gates.find((g) => g.gate === 'G2' && g.season === season);
-  const cards: { key: 'spring' | 'winter' | 'summer'; title: string; body: string; ok: boolean; skill: number | undefined }[] = [
-    { key: 'spring' as const, title: t.science.seasons.spring, body: t.home.honestySpring, ok: status('spring') === 'shown', skill: m1('spring')?.skill_vs_bnw?.value },
-    { key: 'winter' as const, title: t.science.seasons.winter, body: t.home.honestyWinter, ok: status('winter') === 'shown', skill: m1('winter')?.skill_vs_bnw?.value },
-    { key: 'summer' as const, title: t.science.seasons.summer_autumn, body: t.home.honestySummer, ok: false, skill: undefined as number | undefined },
+  const cards: {
+    key: 'spring' | 'winter' | 'summer';
+    title: string;
+    body: string;
+    ok: boolean;
+    skill: number | undefined;
+  }[] = [
+    {
+      key: 'spring' as const,
+      title: t.science.seasons.spring,
+      body: t.home.honestySpring,
+      ok: status('spring') === 'shown',
+      skill: m1('spring')?.skill_vs_bnw?.value,
+    },
+    {
+      key: 'winter' as const,
+      title: t.science.seasons.winter,
+      body: t.home.honestyWinter,
+      ok: status('winter') === 'shown',
+      skill: m1('winter')?.skill_vs_bnw?.value,
+    },
+    {
+      key: 'summer' as const,
+      title: t.science.seasons.summer_autumn,
+      body: t.home.honestySummer,
+      ok: false,
+      skill: undefined as number | undefined,
+    },
   ];
   return (
     <section id="ch-7" className="band surface-paper" aria-labelledby="honesty-title">
       <div className={`container ${s.honesty}`}>
         <Reveal className={s.sectionHead}>
           <p className="eyebrow">{t.home.honestyEyebrow}</p>
-          <h2 id="honesty-title" className="h1">{t.home.honestyTitle}</h2>
+          <h2 id="honesty-title" className="h1">
+            {t.home.honestyTitle}
+          </h2>
           <p className="lead">{t.home.honestyLead}</p>
-          <ButtonLink to="/khoa-hoc" variant="secondary" icon="arrowRight">{t.home.honestyCta}</ButtonLink>
+          <ButtonLink to="/khoa-hoc" variant="secondary" icon="arrowRight">
+            {t.home.honestyCta}
+          </ButtonLink>
         </Reveal>
         <div className={s.seasonCards}>
           {cards.map((c, i) => (
@@ -287,12 +407,21 @@ function Honesty() {
               </span>
               <h3 className="h3">{c.title}</h3>
               <p>{c.body}</p>
-              {c.key === 'winter' && <p><strong>{t.home.honestyWinterFragile}</strong></p>}
+              {c.key === 'winter' && (
+                <p>
+                  <strong>{t.home.honestyWinterFragile}</strong>
+                </p>
+              )}
               {c.skill !== undefined && c.key !== 'summer' && (
                 <p className={s.skillLine}>
                   <span className="muted">{t.science.models.m1_ridge} vs BNW</span>
-                  <SourceValue sourceId="e012" kind="model" value={f.n(c.skill, 2)} label={`${c.title} · skill vs BNW`}
-                    detail={pick(g2(c.key as 'spring' | 'winter')?.detail ?? { vi: '', en: '' })} />
+                  <SourceValue
+                    sourceId="e012"
+                    kind="model"
+                    value={f.n(c.skill, 2)}
+                    label={`${c.title} · skill vs BNW`}
+                    detail={pick(g2(c.key as 'spring' | 'winter')?.detail ?? { vi: '', en: '' })}
+                  />
                 </p>
               )}
             </Reveal>
@@ -310,13 +439,20 @@ function Faq() {
       <div className={`container ${s.faqGrid}`}>
         <Reveal className={s.sectionHead}>
           <p className="eyebrow">{t.home.faqEyebrow}</p>
-          <h2 id="faq-title" className="h1">{t.home.faqTitle}</h2>
+          <h2 id="faq-title" className="h1">
+            {t.home.faqTitle}
+          </h2>
           <p className="muted">{t.common.support}</p>
         </Reveal>
         <Reveal className={s.faq}>
           {t.home.faq.map((item, i) => (
             <details key={item.q} open={i === 0}>
-              <summary>{item.q}<span className={s.faqIcon} aria-hidden="true"><Icon name="chevronDown" size={18} /></span></summary>
+              <summary>
+                {item.q}
+                <span className={s.faqIcon} aria-hidden="true">
+                  <Icon name="chevronDown" size={18} />
+                </span>
+              </summary>
               <p>{item.a}</p>
             </details>
           ))}
@@ -330,13 +466,21 @@ function Invite() {
   const t = useT();
   return (
     <section id="ch-8" className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
-      <span className={s.inviteArt}><Media slug="d1-horizon" sizes="100vw" /></span>
+      <span className={s.inviteArt}>
+        <Media slug="d1-horizon" sizes="100vw" />
+      </span>
       <div className={`container ${s.inviteInner}`}>
-        <h2 id="invite-title" className={`display ${s.inviteTitle}`}>{t.home.inviteTitle}</h2>
+        <h2 id="invite-title" className={`display ${s.inviteTitle}`}>
+          {t.home.inviteTitle}
+        </h2>
         <p className="lead">{t.home.inviteLead}</p>
         <div className={s.ctas}>
-          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowUpRight">{t.home.ctaFarmer}</ButtonLink>
-          <ButtonLink to="/tro-ly" size="lg" variant="secondary" icon="spark">{t.home.ctaCopilot}</ButtonLink>
+          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowUpRight">
+            {t.home.ctaFarmer}
+          </ButtonLink>
+          <ButtonLink to="/tro-ly" size="lg" variant="secondary" icon="spark">
+            {t.home.ctaCopilot}
+          </ButtonLink>
         </div>
       </div>
     </section>

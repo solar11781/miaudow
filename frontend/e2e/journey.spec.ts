@@ -52,7 +52,9 @@ test('links shared before the four water situations still open', async ({ page }
 
 test('the farmer route loads no WebGL and no 3D code', async ({ page }) => {
   const scripts: string[] = [];
-  page.on('request', (r) => { if (r.resourceType() === 'script') scripts.push(r.url()); });
+  page.on('request', (r) => {
+    if (r.resourceType() === 'script') scripts.push(r.url());
+  });
   await page.goto(PLANS_URL);
   await page.waitForLoadState('networkidle');
   expect(scripts.some((u) => /three|observatory|Observatory|cesium|globe|EarthPage/i.test(u))).toBe(false);
@@ -90,7 +92,10 @@ test('language switch changes the whole interface', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: 'Nghệ An qua 30 mùa vụ' })).toBeVisible();
   const lang = page.getByRole('button', { name: 'Switch to English' });
   if (await lang.isVisible()) await lang.click();
-  else { await page.getByRole('button', { name: 'Mở menu' }).click(); await page.getByRole('dialog').getByRole('button', { name: 'Switch to English' }).click(); }
+  else {
+    await page.getByRole('button', { name: 'Mở menu' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Switch to English' }).click();
+  }
   await expect(page.getByRole('heading', { level: 1, name: 'Nghệ An across 30 seasons' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
@@ -109,7 +114,9 @@ function canonicalRain(cell: string, year: number): number {
   return climate.series.cells[cell][String(year)].annual_rain_mm;
 }
 
-test('the Earth observatory walks its eight scenes, keeps them in the link and shows the canonical numbers', async ({ page }) => {
+test('the Earth observatory walks its eight scenes, keeps them in the link and shows the canonical numbers', async ({
+  page,
+}) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/#/dai-quan-sat');
   const rail = page.getByRole('navigation', { name: 'Các cảnh của chuyến đi' });
@@ -151,19 +158,24 @@ test('NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async
   const dialog = page.getByRole('dialog', { name: 'Sao Hỏa' });
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('iframe')).toHaveAttribute('src', 'https://eyes.nasa.gov/apps/solar-system/#/mars');
-  await expect(dialog.getByRole('link', { name: /Mở ở thẻ mới/ })).toHaveAttribute('href', 'https://eyes.nasa.gov/apps/solar-system/#/mars');
+  await expect(dialog.getByRole('link', { name: /Mở ở thẻ mới/ })).toHaveAttribute(
+    'href',
+    'https://eyes.nasa.gov/apps/solar-system/#/mars',
+  );
   await dialog.getByRole('button', { name: 'Trở về Trái Đất — Khám phá đồng lúa Nghệ An' }).click();
   await expect(dialog).toBeHidden();
   await expect(page).toHaveURL(/canh=nghe-an/);
 });
 
-const canonical = (name: string) => JSON.parse(readFileSync(new URL(`../data/canonical/${name}`, import.meta.url), 'utf-8'));
+const canonical = (name: string) =>
+  JSON.parse(readFileSync(new URL(`../data/canonical/${name}`, import.meta.url), 'utf-8'));
 
 test('the evidence page shows the data-quality report as written, warnings included', async ({ page }) => {
   const q = canonical('quality.json');
   await page.goto('/#/bang-chung');
   const section = page.locator('section[aria-labelledby="ev-quality"]');
-  for (const st of ['pass', 'warn', 'fail']) await expect(section.locator(`p[data-status="${st}"] strong`)).toHaveText(String(q.counts[st]));
+  for (const st of ['pass', 'warn', 'fail'])
+    await expect(section.locator(`p[data-status="${st}"] strong`)).toHaveText(String(q.counts[st]));
   await expect(section.locator('li[data-status="warn"]')).toHaveCount(q.counts.warn);
   await expect(section.locator('li[data-status="fail"]')).toHaveCount(q.counts.fail);
 });
@@ -174,35 +186,69 @@ test('the copilot answers from data and abstains otherwise', async ({ page }) =>
   await expect(page.locator('ol[aria-live] > li').first()).toContainText('Năm 2010', { timeout: 30_000 });
   await page.getByLabel('Câu hỏi của bạn').fill('công thức nấu phở');
   await page.getByRole('button', { name: 'Hỏi', exact: true }).click();
-  await expect(page.locator('ol[aria-live] > li').last()).toContainText(/Chưa đủ dữ liệu|chưa có bằng chứng/, { timeout: 30_000 });
+  await expect(page.locator('ol[aria-live] > li').last()).toContainText(/Chưa đủ dữ liệu|chưa có bằng chứng/, {
+    timeout: 30_000,
+  });
 });
 
-test('with the API running, the farmer question returns the six plans in study order and never a ranking', async ({ page }) => {
+test('with the API running, the farmer question returns the six plans in study order and never a ranking', async ({
+  page,
+}) => {
   test.skip(!(await copilotUp(page)), 'no copilot backend is running');
   await page.goto('/#/tro-ly');
-  await page.getByRole('button', { name: /cuối kênh/ }).first().click();
+  await page
+    .getByRole('button', { name: /cuối kênh/ })
+    .first()
+    .click();
   const answer = page.locator('ol[aria-live] > li').first();
   await expect(answer).toContainText('không chọn cách trồng thay gia đình bạn', { timeout: 30_000 });
   await expect(answer.getByRole('link', { name: /Xem thẻ so sánh/ })).toHaveCount(6);
   await expect(answer).not.toContainText('tốt nhất');
 });
 
-for (const url of ['/#/', '/#/nong-dan/ruong', PLANS_URL, '/#/can-bo', '/#/khoa-hoc', '/#/dai-quan-sat?canh=insight', '/#/bang-chung', '/#/tro-ly']) {
+for (const url of [
+  '/#/',
+  '/#/nong-dan/ruong',
+  PLANS_URL,
+  '/#/can-bo',
+  '/#/khoa-hoc',
+  '/#/dai-quan-sat?canh=insight',
+  '/#/bang-chung',
+  '/#/tro-ly',
+]) {
   test(`no WCAG 2.2 AA violations on ${url}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(url);
     await page.waitForLoadState('networkidle');
-    const result = await new AxeBuilder({ page } as unknown as ConstructorParameters<typeof AxeBuilder>[0]).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
-    const summary = result.violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`);
+    const result = await new AxeBuilder({ page } as unknown as ConstructorParameters<typeof AxeBuilder>[0])
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    const summary = result.violations.map(
+      (v) =>
+        `${v.id} (${v.impact}): ${v.nodes
+          .slice(0, 3)
+          .map((n) => n.target.join(' '))
+          .join(' | ')}`,
+    );
     expect(summary).toEqual([]);
   });
 }
 
 test('the page never scrolls sideways', async ({ page }) => {
-  for (const url of ['/#/', PLANS_URL, '/#/can-bo', '/#/khoa-hoc', '/#/dai-quan-sat?canh=satellites', '/#/bang-chung', '/#/tro-ly']) {
+  for (const url of [
+    '/#/',
+    PLANS_URL,
+    '/#/can-bo',
+    '/#/khoa-hoc',
+    '/#/dai-quan-sat?canh=satellites',
+    '/#/bang-chung',
+    '/#/tro-ly',
+  ]) {
     await page.goto(url);
     await page.waitForTimeout(400);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
     expect(overflow, url).toBeLessThanOrEqual(0);
   }
 });
@@ -239,8 +285,23 @@ test('no page outside the observatory makes a third-party request', async ({ pag
   const outside: string[] = [];
   // an antivirus on a team laptop injects its own script into every page; that request is not the app's
   const local = (u: URL) => u.hostname.endsWith('.kaspersky-labs.com');
-  page.on('request', (r) => { const u = new URL(r.url()); if (/^https?:$/.test(u.protocol) && u.origin !== own && !local(u)) outside.push(r.url()); });
-  for (const url of ['/#/', '/#/nong-dan', '/#/nong-dan/ruong', '/#/nong-dan/nam?ruong=canal_end&nam=2010', '/#/nong-dan/uu-tien?ruong=canal_end&nam=2010', PLANS_URL, '/#/phuong-phap', '/#/can-bo', '/#/khoa-hoc', '/#/bang-chung', '/#/tro-ly']) {
+  page.on('request', (r) => {
+    const u = new URL(r.url());
+    if (/^https?:$/.test(u.protocol) && u.origin !== own && !local(u)) outside.push(r.url());
+  });
+  for (const url of [
+    '/#/',
+    '/#/nong-dan',
+    '/#/nong-dan/ruong',
+    '/#/nong-dan/nam?ruong=canal_end&nam=2010',
+    '/#/nong-dan/uu-tien?ruong=canal_end&nam=2010',
+    PLANS_URL,
+    '/#/phuong-phap',
+    '/#/can-bo',
+    '/#/khoa-hoc',
+    '/#/bang-chung',
+    '/#/tro-ly',
+  ]) {
     await page.goto(url);
     await page.waitForLoadState('networkidle');
   }

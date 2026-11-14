@@ -19,11 +19,16 @@ for (const [name, url] of PAGES) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(url);
     await page.evaluate(async () => {
-      for (let y = 0; y < document.documentElement.scrollHeight; y += 500) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 50)); }
+      for (let y = 0; y < document.documentElement.scrollHeight; y += 500) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 50));
+      }
       document.querySelectorAll('img[loading="lazy"]').forEach((img) => img.setAttribute('loading', 'eager'));
       window.scrollTo(0, 0);
     });
-    await page.waitForFunction(() => [...document.images].every((i) => i.complete), undefined, { timeout: 30_000 }).catch(() => undefined);
+    await page
+      .waitForFunction(() => [...document.images].every((i) => i.complete), undefined, { timeout: 30_000 })
+      .catch(() => undefined);
     await page.waitForTimeout(500);
     await page.screenshot({ path: `review-shots/${info.project.name}-${name}.png`, fullPage: true });
   });

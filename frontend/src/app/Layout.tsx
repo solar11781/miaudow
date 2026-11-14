@@ -13,10 +13,17 @@ function OfflineNotice() {
     const off = () => setOffline(true);
     window.addEventListener('online', on);
     window.addEventListener('offline', off);
-    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
+    return () => {
+      window.removeEventListener('online', on);
+      window.removeEventListener('offline', off);
+    };
   }, []);
   if (!offline) return null;
-  return <p className={s.offline} role="status">{t.errors.offline}</p>;
+  return (
+    <p className={s.offline} role="status">
+      {t.errors.offline}
+    </p>
+  );
 }
 
 /** The home hero runs under a see-through header; other dark-topped areas get a dark header. */
@@ -27,10 +34,18 @@ export function Layout() {
   const { pathname } = useLocation();
   return (
     <>
-      <a className="skip" href="#main">{t.nav.skip}</a>
+      <a className="skip" href="#main">
+        {t.nav.skip}
+      </a>
       <Header tone={tone(pathname)} />
       <OfflineNotice />
-      <Suspense fallback={<div className={s.loading} role="status">{t.common.loading}</div>}>
+      <Suspense
+        fallback={
+          <div className={s.loading} role="status">
+            {t.common.loading}
+          </div>
+        }
+      >
         <Outlet />
       </Suspense>
       <Footer />

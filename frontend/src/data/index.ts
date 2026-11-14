@@ -79,13 +79,20 @@ export interface ModelData {
   freeze_commit: string;
   test_years: { first: number; last: number };
   seasons: { season: RiceSeason; model_status: 'shown' | 'not_shown' | 'not_modeled'; model_id: string | null }[];
-  history: Record<RiceSeason, { anom_history: (number | null)[]; anom_oos: (number | null)[]; oos_low_80: (number | null)[]; oos_high_80: (number | null)[] }>;
+  history: Record<
+    RiceSeason,
+    {
+      anom_history: (number | null)[];
+      anom_oos: (number | null)[];
+      oos_low_80: (number | null)[];
+      oos_high_80: (number | null)[];
+    }
+  >;
   metrics: MetricRow[];
   gates: Gate[];
   weather_claims: { season: RiceSeason; model_id: string; made: boolean }[];
   reports: { id: string; title: { vi: string; en: string }; text: { vi: string; en: string } }[];
 }
-
 
 export const hazards = hazardsJson as unknown as HazardData;
 export const soil = soilJson as unknown as SoilData;

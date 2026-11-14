@@ -13,8 +13,12 @@ export function useApi<T>(load: (signal: AbortSignal) => Promise<T>, key: string
   useEffect(() => {
     const ctrl = new AbortController();
     load(ctrl.signal).then(
-      (data) => { if (!ctrl.signal.aborted) setDone({ id, result: { status: 'ok', data } }); },
-      () => { if (!ctrl.signal.aborted) setDone({ id, result: { status: 'error' } }); },
+      (data) => {
+        if (!ctrl.signal.aborted) setDone({ id, result: { status: 'ok', data } });
+      },
+      () => {
+        if (!ctrl.signal.aborted) setDone({ id, result: { status: 'error' } });
+      },
     );
     return () => ctrl.abort();
     // the request is named by id; load is a new closure on every render

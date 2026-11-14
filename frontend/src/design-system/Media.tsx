@@ -44,13 +44,15 @@ export function Media({ slug, sizes, priority, className, decorative, label = 'o
           decoding="async"
           fetchPriority={priority ? 'high' : 'auto'}
           onLoad={() => setLoaded(true)}
-          ref={(el) => { if (el?.complete && el.naturalWidth && !loaded) setLoaded(true); }}
+          ref={(el) => {
+            if (el?.complete && el.naturalWidth && !loaded) setLoaded(true);
+          }}
           style={{ objectPosition: pos, transformOrigin: pos }}
         />
       </picture>
       {label === 'overlay' && (
         <span className={[s.tag, illustration ? s.tagArt : ''].join(' ')}>
-          {illustration ? t.media.illustration : (m.credit ? pick(m.credit) : t.media.photo)}
+          {illustration ? t.media.illustration : m.credit ? pick(m.credit) : t.media.photo}
         </span>
       )}
     </span>

@@ -22,17 +22,23 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
       className={s.sheet}
       aria-labelledby="prov-title"
       onClose={onClose}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       {value && 'facts' in value && <ApiSheet value={value} onClose={onClose} />}
       {value && src && 'kind' in value && (
         <div className={s.inner}>
           <div className={s.grab} aria-hidden="true" />
           <header className={s.head}>
-            <span className={s.stamp} aria-hidden="true">{t.common.source}</span>
+            <span className={s.stamp} aria-hidden="true">
+              {t.common.source}
+            </span>
             <div className={s.headText}>
               <p className={s.label}>{value.label || t.sheet.aboutValue}</p>
-              <h2 id="prov-title" className={s.value}>{value.value}</h2>
+              <h2 id="prov-title" className={s.value}>
+                {value.value}
+              </h2>
               <KindBadge kind={value.kind} />
               <p className={s.kindHelp}>{t.kindHelp[value.kind]}</p>
             </div>
@@ -53,24 +59,40 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
               <h3 className={s.h3}>{t.sheet.chain}</h3>
               <ol className={s.chain}>
                 {value.chain.map((id) => (
-                  <li key={id}><KindBadge kind={SOURCES[id].kind} compact /> <span>{SOURCES[id].short}</span></li>
+                  <li key={id}>
+                    <KindBadge kind={SOURCES[id].kind} compact /> <span>{SOURCES[id].short}</span>
+                  </li>
                 ))}
               </ol>
             </section>
           )}
 
           <dl className={s.facts}>
-            <dt>{t.sheet.from}</dt><dd>{pick(src.title)}</dd>
-            <dt>{t.sheet.registerId}</dt><dd className="mono">{src.registerId}</dd>
-            <dt>{t.sheet.publisher}</dt><dd>{pick(src.publisher)}</dd>
-            <dt>{t.sheet.where}</dt><dd>{pick(src.where)}</dd>
-            <dt>{t.sheet.period}</dt><dd>{pick(src.period)}</dd>
-            <dt>{t.sheet.method}</dt><dd>{pick(src.method)}</dd>
-            <dt>{t.sheet.howRead}</dt><dd>{pick(src.howRead)}</dd>
-            {src.licence && (<><dt>{t.sheet.licence}</dt><dd>{pick(src.licence)}</dd></>)}
+            <dt>{t.sheet.from}</dt>
+            <dd>{pick(src.title)}</dd>
+            <dt>{t.sheet.registerId}</dt>
+            <dd className="mono">{src.registerId}</dd>
+            <dt>{t.sheet.publisher}</dt>
+            <dd>{pick(src.publisher)}</dd>
+            <dt>{t.sheet.where}</dt>
+            <dd>{pick(src.where)}</dd>
+            <dt>{t.sheet.period}</dt>
+            <dd>{pick(src.period)}</dd>
+            <dt>{t.sheet.method}</dt>
+            <dd>{pick(src.method)}</dd>
+            <dt>{t.sheet.howRead}</dt>
+            <dd>{pick(src.howRead)}</dd>
+            {src.licence && (
+              <>
+                <dt>{t.sheet.licence}</dt>
+                <dd>{pick(src.licence)}</dd>
+              </>
+            )}
           </dl>
 
-          <p className={s.caveat}><strong>{t.sheet.caveat}:</strong> {pick(src.caveat)}</p>
+          <p className={s.caveat}>
+            <strong>{t.sheet.caveat}:</strong> {pick(src.caveat)}
+          </p>
 
           {src.url && (
             <a className={s.link} href={src.url} target="_blank" rel="noreferrer noopener">
@@ -90,12 +112,36 @@ function FactsBlock({ facts }: { facts: SourceFacts }) {
   return (
     <section className={s.block}>
       <dl className={s.facts}>
-        <dt>{t.sheet.name}</dt><dd>{pick(facts.citation)}</dd>
-        <dt>{t.sheet.type}</dt><dd>{pick(facts.study_type)}</dd>
-        <dt>{t.sheet.placeYears}</dt><dd>{pick(facts.place_years)}</dd>
-        {facts.read_status !== null && (<><dt>{t.sheet.readStatus}</dt><dd>{facts.read_status}</dd></>)}
-        {facts.full_text_read !== null && (<><dt>{t.sheet.fullText}</dt><dd>{facts.full_text_read ? t.sheet.yes : t.sheet.no}</dd></>)}
-        {facts.limitations.length > 0 && (<><dt>{t.sheet.limits}</dt><dd><ul>{facts.limitations.map((l) => <li key={l.en}>{pick(l)}</li>)}</ul></dd></>)}
+        <dt>{t.sheet.name}</dt>
+        <dd>{pick(facts.citation)}</dd>
+        <dt>{t.sheet.type}</dt>
+        <dd>{pick(facts.study_type)}</dd>
+        <dt>{t.sheet.placeYears}</dt>
+        <dd>{pick(facts.place_years)}</dd>
+        {facts.read_status !== null && (
+          <>
+            <dt>{t.sheet.readStatus}</dt>
+            <dd>{facts.read_status}</dd>
+          </>
+        )}
+        {facts.full_text_read !== null && (
+          <>
+            <dt>{t.sheet.fullText}</dt>
+            <dd>{facts.full_text_read ? t.sheet.yes : t.sheet.no}</dd>
+          </>
+        )}
+        {facts.limitations.length > 0 && (
+          <>
+            <dt>{t.sheet.limits}</dt>
+            <dd>
+              <ul>
+                {facts.limitations.map((l) => (
+                  <li key={l.en}>{pick(l)}</li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        )}
       </dl>
       {facts.url !== null && (
         <a className={s.link} href={facts.url} target="_blank" rel="noopener noreferrer">
@@ -112,10 +158,14 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
     <div className={s.inner} data-testid="source-sheet">
       <div className={s.grab} aria-hidden="true" />
       <header className={s.head}>
-        <span className={s.stamp} aria-hidden="true">{t.common.source}</span>
+        <span className={s.stamp} aria-hidden="true">
+          {t.common.source}
+        </span>
         <div className={s.headText}>
           <p className={s.label}>{value.label || t.sheet.aboutValue}</p>
-          <h2 id="prov-title" className={s.value}>{value.value}</h2>
+          <h2 id="prov-title" className={s.value}>
+            {value.value}
+          </h2>
         </div>
         <button type="button" className={s.close} onClick={onClose} aria-label={t.common.close}>
           <Icon name="close" />
@@ -127,7 +177,9 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
           <p>{value.ruleText}</p>
         </section>
       )}
-      {value.facts.map((f) => <FactsBlock key={f.id} facts={f} />)}
+      {value.facts.map((f) => (
+        <FactsBlock key={f.id} facts={f} />
+      ))}
       {value.note && <p className={s.caveat}>{value.note}</p>}
     </div>
   );

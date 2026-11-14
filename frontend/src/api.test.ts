@@ -102,10 +102,16 @@ describe('requests', () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify(compare()), { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
     await api.compare(body);
-    expect(fetchMock).toHaveBeenCalledWith('/api/compare', expect.objectContaining({ method: 'POST', body: JSON.stringify(body) }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/compare',
+      expect.objectContaining({ method: 'POST', body: JSON.stringify(body) }),
+    );
   });
   it('turns a non-2xx status into an ApiError', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'Not Found' }), { status: 404 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ detail: 'Not Found' }), { status: 404 })),
+    );
     await expect(api.method()).rejects.toEqual(new ApiError(404, 'Not Found'));
   });
   it('loads past years once per page, shared by every screen and never cancelled by one (section 11)', async () => {
@@ -121,7 +127,10 @@ describe('requests', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
   it('rejects a response that fails the check', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ province: 'nghe_an' }), { status: 200 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ province: 'nghe_an' }), { status: 200 })),
+    );
     await expect((await freshApi()).pastYears()).rejects.toThrow(/rules: missing/);
   });
 });

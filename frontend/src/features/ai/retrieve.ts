@@ -6,12 +6,24 @@ import { hasDiacritics, tokens } from './normalize';
 const K1 = 1.4;
 const B = 0.72;
 
-interface Doc { passage: Passage; tf: Map<string, number>; len: number }
-interface Index { docs: Doc[]; df: Map<string, number>; avg: number; n: number }
+interface Doc {
+  passage: Passage;
+  tf: Map<string, number>;
+  len: number;
+}
+interface Index {
+  docs: Doc[];
+  df: Map<string, number>;
+  avg: number;
+  n: number;
+}
 
 function build(passages: Passage[], accented: boolean): Index {
   const docs: Doc[] = passages.map((p) => {
-    const toks = tokens(`${p.title.vi} ${p.title.en} ${p.title.vi} ${p.text.vi} ${p.text.en} ${p.keys} ${p.keys}`, accented);
+    const toks = tokens(
+      `${p.title.vi} ${p.title.en} ${p.title.vi} ${p.text.vi} ${p.text.en} ${p.keys} ${p.keys}`,
+      accented,
+    );
     const tf = new Map<string, number>();
     for (const t of toks) tf.set(t, (tf.get(t) ?? 0) + 1);
     return { passage: p, tf, len: toks.length };
@@ -49,7 +61,10 @@ export function search(question: string, limit = 3): Hit[] {
     }
     return { passage: d.passage, score, coverage: matched / q.length };
   });
-  return hits.filter((h) => h.score > 0).sort((a, b) => b.score - a.score).slice(0, limit);
+  return hits
+    .filter((h) => h.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
 }
 
 /** A match is strong enough to answer from only with both a score and a term coverage above these (see ai.test.ts). */

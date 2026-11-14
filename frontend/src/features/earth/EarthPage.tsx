@@ -17,7 +17,14 @@ const CELLS = geo.grid.filter((c) => c.weight > 0).map((c) => c.id);
 const OVERLAYS: Overlay[] = ['none', 's2', 'ndvi-modis', 'imerg', 'smap'];
 const YEARS = Array.from({ length: 34 }, (_, i) => 1991 + i);
 const PLANETS = ['moon', 'mars', 'jupiter', 'saturn'] as const;
-const COMPOSITE_IDS = ['summer_autumn-2020', 'autumn_winter-2020', 'spring-2021', 'spring-2024', 'summer_autumn-2024', 'autumn_winter-2024'] as const;
+const COMPOSITE_IDS = [
+  'summer_autumn-2020',
+  'autumn_winter-2020',
+  'spring-2021',
+  'spring-2024',
+  'summer_autumn-2024',
+  'autumn_winter-2024',
+] as const;
 const AUTOPLAY_MS = 9000;
 
 type Eyes = { id: string; name: string };
@@ -39,13 +46,22 @@ function useObservatoryState() {
   const y = Number(params.get('nam'));
   const year = YEARS.includes(y) ? y : 2020;
   const overlay = (OVERLAYS as string[]).includes(params.get('lop') ?? '') ? (params.get('lop') as Overlay) : 's2';
-  const composite = (COMPOSITE_IDS as readonly string[]).includes(params.get('mua') ?? '') ? (params.get('mua') as string) : COMPOSITE_IDS[0];
+  const composite = (COMPOSITE_IDS as readonly string[]).includes(params.get('mua') ?? '')
+    ? (params.get('mua') as string)
+    : COMPOSITE_IDS[0];
   const cell = CELLS.includes(params.get('o') ?? '') ? (params.get('o') as string) : (CELLS[2] ?? '19.0_105.0');
-  const set = useCallback((patch: Record<string, string>) => setParams((p) => {
-    const n = new URLSearchParams(p);
-    for (const [k, v] of Object.entries(patch)) n.set(k, v);
-    return n;
-  }, { replace: true, preventScrollReset: true }), [setParams]);
+  const set = useCallback(
+    (patch: Record<string, string>) =>
+      setParams(
+        (p) => {
+          const n = new URLSearchParams(p);
+          for (const [k, v] of Object.entries(patch)) n.set(k, v);
+          return n;
+        },
+        { replace: true, preventScrollReset: true },
+      ),
+    [setParams],
+  );
   return { scene, year, overlay, composite, cell, set };
 }
 type ObservatoryState = ReturnType<typeof useObservatoryState>;
@@ -60,12 +76,15 @@ function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: ()
   const globe = useRef<Globe | null>(null);
   const [ready, setReady] = useState(false);
   const pickRef = useRef((id: string) => st.set({ o: id }));
-  useEffect(() => { pickRef.current = (id: string) => st.set({ o: id }); }, [st]);
+  useEffect(() => {
+    pickRef.current = (id: string) => st.set({ o: id });
+  }, [st]);
 
   useEffect(() => {
     if (!on || !host.current || !credits.current) return;
     let disposed = false;
-    const el = host.current, creditEl = credits.current;
+    const el = host.current,
+      creditEl = credits.current;
     // CesiumJS reads its workers and sky textures from here (copied by pipeline/copy_cesium.mjs)
     (window as unknown as { CESIUM_BASE_URL?: string }).CESIUM_BASE_URL = new URL('cesium/', document.baseURI).href;
     import('./globe')
@@ -75,7 +94,12 @@ function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: ()
         setReady(true);
       })
       .catch(onFail);
-    return () => { disposed = true; globe.current?.dispose(); globe.current = null; setReady(false); };
+    return () => {
+      disposed = true;
+      globe.current?.dispose();
+      globe.current = null;
+      setReady(false);
+    };
   }, [on, lang, onFail]);
 
   const firstMove = useRef(true);
@@ -85,8 +109,12 @@ function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: ()
     globe.current.setOrbits(sceneDef.orbits, !calm);
     firstMove.current = false;
   }, [ready, sceneDef, calm]);
-  useEffect(() => { if (ready) globe.current?.setYear(st.year); }, [ready, st.year]);
-  useEffect(() => { if (ready) globe.current?.setSelected(st.cell); }, [ready, st.cell]);
+  useEffect(() => {
+    if (ready) globe.current?.setYear(st.year);
+  }, [ready, st.year]);
+  useEffect(() => {
+    if (ready) globe.current?.setSelected(st.cell);
+  }, [ready, st.cell]);
   useEffect(() => {
     if (ready) globe.current?.setOverlay(showsLayers(sceneDef) ? st.overlay : 'none', st.year, st.composite);
   }, [ready, sceneDef, st.overlay, st.year, st.composite]);
@@ -102,7 +130,10 @@ export function EarthPage() {
   const [globeOk, setGlobeOk] = useState(true);
   const onFail = useCallback(() => setGlobeOk(false), []);
   const live3d = supported && !calm && globeOk;
-  const idx = Math.max(0, SCENES.findIndex((x) => x.id === st.scene));
+  const idx = Math.max(
+    0,
+    SCENES.findIndex((x) => x.id === st.scene),
+  );
   const sceneDef = SCENES[idx] as Scene;
   const { host, credits, stop } = useGlobe(live3d, st, sceneDef, onFail);
   const [autoplay, setAutoplay] = useState(false);
@@ -114,13 +145,20 @@ export function EarthPage() {
     if (!autoplay || calm) return;
     const id = window.setTimeout(() => {
       const next = SCENES[idx + 1];
-      if (next) st.set({ canh: next.id }); else setAutoplay(false);
+      if (next) st.set({ canh: next.id });
+      else setAutoplay(false);
     }, AUTOPLAY_MS);
     return () => window.clearTimeout(id);
   }, [autoplay, calm, idx, st]);
 
-  const go = (id: SceneId) => { setAutoplay(false); st.set({ canh: id }); };
-  const openEyes: OpenEyes = (id, name) => { setEyes({ id, name }); requestAnimationFrame(() => eyesDialog.current?.showModal()); };
+  const go = (id: SceneId) => {
+    setAutoplay(false);
+    st.set({ canh: id });
+  };
+  const openEyes: OpenEyes = (id, name) => {
+    setEyes({ id, name });
+    requestAnimationFrame(() => eyesDialog.current?.showModal());
+  };
   const closeEyes = (backToNgheAn: boolean) => {
     eyesDialog.current?.close();
     setEyes(null);
@@ -131,19 +169,38 @@ export function EarthPage() {
     <main id="main" className={`${s.page} surface-forest`}>
       <section className={s.stage} aria-labelledby="earth-title">
         {live3d ? (
-          <div ref={host} className={s.globe} role="img" aria-label={t.earth.globeLabel} onPointerDown={() => { setAutoplay(false); stop(); }} />
+          <div
+            ref={host}
+            className={s.globe}
+            role="img"
+            aria-label={t.earth.globeLabel}
+            onPointerDown={() => {
+              setAutoplay(false);
+              stop();
+            }}
+          />
         ) : (
           <div className={s.fallback}>
             <p>{calm ? t.earth.calmNote : t.earth.noWebgl}</p>
-            <Link to={`/khoa-hoc?nam=${st.year}`} className={s.fallbackLink}>{t.earth.openScience}<Icon name="arrowRight" size={18} /></Link>
+            <Link to={`/khoa-hoc?nam=${st.year}`} className={s.fallbackLink}>
+              {t.earth.openScience}
+              <Icon name="arrowRight" size={18} />
+            </Link>
           </div>
         )}
         <div ref={credits} className={s.credits} />
 
         <header className={s.head}>
           <p className="eyebrow">{t.earth.eyebrow}</p>
-          <h1 id="earth-title" className={s.title}>{t.earth.title}</h1>
-          <p className={s.sceneName}><span className={s.sceneNum}>{String(idx + 1).padStart(2, '0')}/{String(SCENES.length).padStart(2, '0')}</span>{t.earth.scenes[st.scene].title}</p>
+          <h1 id="earth-title" className={s.title}>
+            {t.earth.title}
+          </h1>
+          <p className={s.sceneName}>
+            <span className={s.sceneNum}>
+              {String(idx + 1).padStart(2, '0')}/{String(SCENES.length).padStart(2, '0')}
+            </span>
+            {t.earth.scenes[st.scene].title}
+          </p>
         </header>
 
         <ScenePanel st={st} sceneDef={sceneDef} openEyes={openEyes} />
@@ -165,18 +222,29 @@ function ScenePanel({ st, sceneDef, openEyes }: { st: ObservatoryState; sceneDef
         <div className={s.planets}>
           <p className={s.small}>{t.earth.planetsLead}</p>
           <div className={s.chips}>
-            {PLANETS.map((p) => <button key={p} type="button" onClick={() => openEyes(p, t.earth.planets[p])}>{t.earth.planets[p]}</button>)}
+            {PLANETS.map((p) => (
+              <button key={p} type="button" onClick={() => openEyes(p, t.earth.planets[p])}>
+                {t.earth.planets[p]}
+              </button>
+            ))}
           </div>
         </div>
       )}
       {sceneDef.panel === 'missions' && (
         <div className={s.missions}>
-          <p className={s.illustrative}><Icon name="alert" size={18} />{t.earth.orbitNote}</p>
-          {MISSIONS.map((m) => <MissionCard key={m.id} m={m} onEyes={openEyes} />)}
+          <p className={s.illustrative}>
+            <Icon name="alert" size={18} />
+            {t.earth.orbitNote}
+          </p>
+          {MISSIONS.map((m) => (
+            <MissionCard key={m.id} m={m} onEyes={openEyes} />
+          ))}
         </div>
       )}
       {showsLayers(sceneDef) && <LayerControls st={st} overlays={!insight} />}
-      {(sceneDef.panel === 'metric' || insight) && <CellMetric cell={st.cell} year={st.year} onCell={(c) => st.set({ o: c })} insight={insight} />}
+      {(sceneDef.panel === 'metric' || insight) && (
+        <CellMetric cell={st.cell} year={st.year} onCell={(c) => st.set({ o: c })} insight={insight} />
+      )}
       {(st.scene === 'earth' || st.scene === 'vietnam') && <p className={s.small}>{t.earth.gibsCredit}</p>}
     </aside>
   );
@@ -191,21 +259,37 @@ function MissionCard({ m, onEyes }: { m: Mission; onEyes: OpenEyes }) {
       <header className={s.missionHead}>
         <span className={s.missionDot} aria-hidden="true" />
         <h3>{m.name}</h3>
-        <span className={s.status} data-status={m.status}>{t.earth.status[m.status]}</span>
+        <span className={s.status} data-status={m.status}>
+          {t.earth.status[m.status]}
+        </span>
       </header>
-      <p className={s.agency}>{m.agency} · {m.altitudeKm} km · {m.inclinationDeg}°</p>
+      <p className={s.agency}>
+        {m.agency} · {m.altitudeKm} km · {m.inclinationDeg}°
+      </p>
       <dl className={s.facts}>
-        <dt>{t.earth.observes}</dt><dd>{pick(m.observes)}</dd>
-        <dt>{t.earth.product}</dt><dd>{pick(m.product)}</dd>
-        <dt>{t.earth.resolution}</dt><dd>{pick(m.resolution)} · {pick(m.coverage)}</dd>
-        <dt>{t.earth.forFarming}</dt><dd>{pick(m.why)}</dd>
+        <dt>{t.earth.observes}</dt>
+        <dd>{pick(m.observes)}</dd>
+        <dt>{t.earth.product}</dt>
+        <dd>{pick(m.product)}</dd>
+        <dt>{t.earth.resolution}</dt>
+        <dd>
+          {pick(m.resolution)} · {pick(m.coverage)}
+        </dd>
+        <dt>{t.earth.forFarming}</dt>
+        <dd>{pick(m.why)}</dd>
       </dl>
       <p className={s.statusNote}>{pick(m.statusNote)}</p>
       <div className={s.missionLinks}>
         {m.eyesId && eyes && (
-          <button type="button" className={s.eyesBtn} onClick={() => onEyes(m.eyesId as string, m.name)}><Icon name="satellite" size={18} />{t.earth.openEyes}</button>
+          <button type="button" className={s.eyesBtn} onClick={() => onEyes(m.eyesId as string, m.name)}>
+            <Icon name="satellite" size={18} />
+            {t.earth.openEyes}
+          </button>
         )}
-        <a href={m.source} target="_blank" rel="noreferrer" className={s.srcLink}>{t.earth.missionPage}<Icon name="arrowUpRight" size={16} /></a>
+        <a href={m.source} target="_blank" rel="noreferrer" className={s.srcLink}>
+          {t.earth.missionPage}
+          <Icon name="arrowUpRight" size={16} />
+        </a>
       </div>
     </article>
   );
@@ -218,7 +302,11 @@ function LayerControls({ st, overlays }: { st: ObservatoryState; overlays: boole
       <label className={s.field}>
         <span>{t.earth.year}</span>
         <select value={st.year} onChange={(e) => st.set({ nam: e.target.value })}>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+          {YEARS.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
         </select>
       </label>
       {overlays && <OverlayPicker st={st} />}
@@ -234,9 +322,19 @@ function OverlayPicker({ st }: { st: ObservatoryState }) {
         <legend>{t.earth.overlayLabel}</legend>
         {OVERLAYS.map((o) => (
           <label key={o} className={s.radio}>
-            <input type="radio" name="overlay" value={o} checked={st.overlay === o} onChange={() => st.set({ lop: o })} />
+            <input
+              type="radio"
+              name="overlay"
+              value={o}
+              checked={st.overlay === o}
+              onChange={() => st.set({ lop: o })}
+            />
             <span>{t.earth.overlays[o].name}</span>
-            {o !== 'none' && <span className={s.kind} data-kind={o === 's2' ? 'data' : 'visual'}>{o === 's2' ? t.earth.kindData : t.earth.kindVisual}</span>}
+            {o !== 'none' && (
+              <span className={s.kind} data-kind={o === 's2' ? 'data' : 'visual'}>
+                {o === 's2' ? t.earth.kindData : t.earth.kindVisual}
+              </span>
+            )}
           </label>
         ))}
       </fieldset>
@@ -244,7 +342,11 @@ function OverlayPicker({ st }: { st: ObservatoryState }) {
         <label className={s.field}>
           <span>{t.earth.season}</span>
           <select value={st.composite} onChange={(e) => st.set({ mua: e.target.value })}>
-            {COMPOSITE_IDS.map((c) => <option key={c} value={c}>{t.earth.composites[c]}</option>)}
+            {COMPOSITE_IDS.map((c) => (
+              <option key={c} value={c}>
+                {t.earth.composites[c]}
+              </option>
+            ))}
           </select>
         </label>
       )}
@@ -253,7 +355,17 @@ function OverlayPicker({ st }: { st: ObservatoryState }) {
   );
 }
 
-function SceneRail({ idx, go, autoplay, onAutoplay }: { idx: number; go: (id: SceneId) => void; autoplay: boolean; onAutoplay: () => void }) {
+function SceneRail({
+  idx,
+  go,
+  autoplay,
+  onAutoplay,
+}: {
+  idx: number;
+  go: (id: SceneId) => void;
+  autoplay: boolean;
+  onAutoplay: () => void;
+}) {
   const t = useT();
   const { calm } = useSettings();
   const prev = SCENES[idx - 1];
@@ -269,7 +381,13 @@ function SceneRail({ idx, go, autoplay, onAutoplay }: { idx: number; go: (id: Sc
   }, [idx, calm]);
   return (
     <nav className={s.rail} aria-label={t.earth.railLabel}>
-      <button type="button" className={s.railStep} onClick={() => prev && go(prev.id)} disabled={!prev} aria-label={t.earth.prev}>
+      <button
+        type="button"
+        className={s.railStep}
+        onClick={() => prev && go(prev.id)}
+        disabled={!prev}
+        aria-label={t.earth.prev}
+      >
         <Icon name="arrowLeft" size={20} />
       </button>
       <ol ref={list} className={s.scenes}>
@@ -282,12 +400,19 @@ function SceneRail({ idx, go, autoplay, onAutoplay }: { idx: number; go: (id: Sc
           </li>
         ))}
       </ol>
-      <button type="button" className={s.railStep} onClick={() => next && go(next.id)} disabled={!next} aria-label={t.earth.next}>
+      <button
+        type="button"
+        className={s.railStep}
+        onClick={() => next && go(next.id)}
+        disabled={!next}
+        aria-label={t.earth.next}
+      >
         <Icon name="arrowRight" size={20} />
       </button>
       {!calm && (
         <button type="button" className={s.play} aria-pressed={autoplay} onClick={onAutoplay}>
-          <Icon name={autoplay ? 'pause' : 'play'} size={16} />{autoplay ? t.earth.pause : t.earth.play}
+          <Icon name={autoplay ? 'pause' : 'play'} size={16} />
+          {autoplay ? t.earth.pause : t.earth.play}
         </button>
       )}
     </nav>
@@ -295,8 +420,16 @@ function SceneRail({ idx, go, autoplay, onAutoplay }: { idx: number; go: (id: Sc
 }
 
 /** NASA Eyes (official, public, frameable) in a modal; "back to Earth" lands on the Nghệ An scene. */
-function EyesDialog({ dialog, eyes, onClose, onDismiss }: {
-  dialog: RefObject<HTMLDialogElement | null>; eyes: Eyes | null; onClose: (backToNgheAn: boolean) => void; onDismiss: () => void;
+function EyesDialog({
+  dialog,
+  eyes,
+  onClose,
+  onDismiss,
+}: {
+  dialog: RefObject<HTMLDialogElement | null>;
+  eyes: Eyes | null;
+  onClose: (backToNgheAn: boolean) => void;
+  onDismiss: () => void;
 }) {
   const t = useT();
   const url = eyes ? eyesUrl(eyes.id) : undefined;
@@ -310,12 +443,26 @@ function EyesDialog({ dialog, eyes, onClose, onDismiss }: {
               <h2>{eyes.name}</h2>
             </div>
             <div className={s.eyesActions}>
-              <a href={url} target="_blank" rel="noreferrer" className={s.srcLink}>{t.earth.newTab}<Icon name="arrowUpRight" size={16} /></a>
-              <button type="button" className={s.backEarth} onClick={() => onClose(true)}><Icon name="leaf" size={18} />{t.earth.backToEarth}</button>
-              <button type="button" className={s.closeBtn} onClick={() => onClose(false)} aria-label={t.common.close}><Icon name="close" size={20} /></button>
+              <a href={url} target="_blank" rel="noreferrer" className={s.srcLink}>
+                {t.earth.newTab}
+                <Icon name="arrowUpRight" size={16} />
+              </a>
+              <button type="button" className={s.backEarth} onClick={() => onClose(true)}>
+                <Icon name="leaf" size={18} />
+                {t.earth.backToEarth}
+              </button>
+              <button type="button" className={s.closeBtn} onClick={() => onClose(false)} aria-label={t.common.close}>
+                <Icon name="close" size={20} />
+              </button>
             </div>
           </header>
-          <iframe className={s.eyesFrame} src={url} title={`NASA Eyes · ${eyes.name}`} allow="fullscreen" referrerPolicy="no-referrer" />
+          <iframe
+            className={s.eyesFrame}
+            src={url}
+            title={`NASA Eyes · ${eyes.name}`}
+            allow="fullscreen"
+            referrerPolicy="no-referrer"
+          />
           <p className={s.small}>{t.earth.eyesNote}</p>
         </div>
       )}
@@ -323,13 +470,28 @@ function EyesDialog({ dialog, eyes, onClose, onDismiss }: {
   );
 }
 
-function plainInsight(t: ReturnType<typeof useT>, f: ReturnType<typeof useFormat>, year: number, anomaly: number): string {
+function plainInsight(
+  t: ReturnType<typeof useT>,
+  f: ReturnType<typeof useFormat>,
+  year: number,
+  anomaly: number,
+): string {
   if (anomaly < -0.1) return t.earth.plainDry(year, f.pct(-anomaly));
   if (anomaly > 0.1) return t.earth.plainWet(year, f.pct(anomaly));
   return t.earth.plainNormal(year);
 }
 
-function CellMetric({ cell, year, onCell, insight }: { cell: string; year: number; onCell: (c: string) => void; insight: boolean }) {
+function CellMetric({
+  cell,
+  year,
+  onCell,
+  insight,
+}: {
+  cell: string;
+  year: number;
+  onCell: (c: string) => void;
+  insight: boolean;
+}) {
   const t = useT();
   const f = useFormat();
   const v = cellYear(cell, year);
@@ -340,10 +502,18 @@ function CellMetric({ cell, year, onCell, insight }: { cell: string; year: numbe
       {insight && v && (
         <div className={s.insight}>
           <p className={s.insightText}>{plainInsight(t, f, year, v.anomaly)}</p>
-          <p className={s.small}>{t.common.notForecast}. {t.earth.insightLimits}</p>
+          <p className={s.small}>
+            {t.common.notForecast}. {t.earth.insightLimits}
+          </p>
           <div className={s.insightLinks}>
-            <Link to={`/tro-ly?${ask}`} className={s.askBtn}><Icon name="spark" size={18} />{t.earth.ask}</Link>
-            <Link to={`/khoa-hoc?nam=${year}`} className={s.srcLink}>{t.earth.openScience}<Icon name="arrowRight" size={16} /></Link>
+            <Link to={`/tro-ly?${ask}`} className={s.askBtn}>
+              <Icon name="spark" size={18} />
+              {t.earth.ask}
+            </Link>
+            <Link to={`/khoa-hoc?nam=${year}`} className={s.srcLink}>
+              {t.earth.openScience}
+              <Icon name="arrowRight" size={16} />
+            </Link>
           </div>
         </div>
       )}
@@ -359,17 +529,46 @@ function CellMetric({ cell, year, onCell, insight }: { cell: string; year: numbe
       {v ? (
         <dl className={s.metricVals}>
           <dt>{t.earth.annualRain}</dt>
-          <dd><SourceValue size="lg" sourceId="nasa-power" kind="derived" value={`${f.n(v.rain)} mm`} label={`${t.earth.annualRain} · ${year} · ${cell}`}
-            detail={t.earth.rainDetail} chain={['nasa-power']} /></dd>
+          <dd>
+            <SourceValue
+              size="lg"
+              sourceId="nasa-power"
+              kind="derived"
+              value={`${f.n(v.rain)} mm`}
+              label={`${t.earth.annualRain} · ${year} · ${cell}`}
+              detail={t.earth.rainDetail}
+              chain={['nasa-power']}
+            />
+          </dd>
           <dt>{t.earth.vsNormal}</dt>
-          <dd><SourceValue size="lg" sourceId="nasa-power" kind="derived" value={f.signedPct(v.anomaly, 0)} label={`${t.earth.vsNormal} · ${year} · ${cell}`}
-            detail={t.earth.anomalyDetail} chain={['nasa-power']} /></dd>
+          <dd>
+            <SourceValue
+              size="lg"
+              sourceId="nasa-power"
+              kind="derived"
+              value={f.signedPct(v.anomaly, 0)}
+              label={`${t.earth.vsNormal} · ${year} · ${cell}`}
+              detail={t.earth.anomalyDetail}
+              chain={['nasa-power']}
+            />
+          </dd>
         </dl>
-      ) : <p className={s.small}>{t.common.noData}</p>}
+      ) : (
+        <p className={s.small}>{t.common.noData}</p>
+      )}
       <div className={s.legend}>
-        <span><i style={{ background: '#b8861b' }} />{t.earth.drier}</span>
-        <span><i style={{ background: '#c9d1c6' }} />{t.earth.normal}</span>
-        <span><i style={{ background: '#2e6f9b' }} />{t.earth.wetter}</span>
+        <span>
+          <i style={{ background: '#b8861b' }} />
+          {t.earth.drier}
+        </span>
+        <span>
+          <i style={{ background: '#c9d1c6' }} />
+          {t.earth.normal}
+        </span>
+        <span>
+          <i style={{ background: '#2e6f9b' }} />
+          {t.earth.wetter}
+        </span>
       </div>
       <p className={s.small}>{t.earth.cellNote}</p>
     </div>

@@ -3,7 +3,16 @@ export function BrandMark({ size = 36 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true" focusable="false">
       <rect x="1" y="1" width="38" height="38" rx="12" fill="var(--c-forest-900)" />
-      <rect x="1.5" y="1.5" width="37" height="37" rx="11.5" fill="none" stroke="var(--c-gold-500)" strokeOpacity=".35" />
+      <rect
+        x="1.5"
+        y="1.5"
+        width="37"
+        height="37"
+        rx="11.5"
+        fill="none"
+        stroke="var(--c-gold-500)"
+        strokeOpacity=".35"
+      />
       <path d="M10.5 15.5c0-4.8 1.6-7.8 3.6-8.8 1 2.7 1.5 5.6 1.2 8.8Z" fill="var(--c-paddy-300)" />
       <path d="M29.5 15.5c0-4.8-1.6-7.8-3.6-8.8-1 2.7-1.5 5.6-1.2 8.8Z" fill="var(--c-paddy-300)" />
       <path d="M20 33c0-6 .7-11 4-15" stroke="var(--c-gold-500)" strokeWidth="1.7" fill="none" strokeLinecap="round" />

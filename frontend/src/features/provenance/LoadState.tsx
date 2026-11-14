@@ -10,14 +10,18 @@ export function LoadState({ state, retry }: { state: Loaded<unknown>; retry: () 
     return (
       <div className={s.error} role="alert">
         <p>{t.common.error}</p>
-        <Button variant="secondary" onClick={retry}>{t.common.retry}</Button>
+        <Button variant="secondary" onClick={retry}>
+          {t.common.retry}
+        </Button>
       </div>
     );
   }
   return (
     <div className={s.blocks} aria-busy="true">
       <span className="visually-hidden">{t.common.loading}</span>
-      <i /><i /><i />
+      <i />
+      <i />
+      <i />
     </div>
   );
 }
