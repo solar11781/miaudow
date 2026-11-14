@@ -1,9 +1,10 @@
 """The Nghệ An grid figure of the method page (UI-UX-SPEC section 11b item 4; D-135 (3); 05-DATA-CONTRACTS 5c).
 
-Plain words: the province boundary drawn over the NASA POWER weather cells it overlaps. Each cell with farmland is
-shaded by its farmland weight (its share of the province's farmland, D-26) and the weight is printed in it; a cell that
-overlaps the boundary but holds no farmland in the fixed mask is an outline only. The weights are the ones in
-data/processed/cell_weights.csv; the figure adds no number (D-135). No map projection and no base map: longitude and
+Plain words: the province boundary drawn over its NASA POWER weather cells. Each cell with farmland is shaded by its
+farmland weight (its share of the province's farmland, D-26) and the weight is printed in it; a cell of the province
+that holds no farmland in the fixed mask is an outline only. Both lists come from the pipeline, so the figure cannot
+disagree with it: the weights of data/processed/cell_weights.csv and the zero-weight cells of
+data/processed/cell_weights_zero.csv (scripts/build_cell_weights.py); the figure adds no number (D-135). No map projection and no base map: longitude and
 latitude are drawn as a plain grid, longitude scaled by the cosine of the middle latitude so a degree of longitude
 is about as long on screen as on the ground.
 """
@@ -34,7 +35,8 @@ CAPTION = (
     f"Sources: NASA POWER cells of {POWER_DLAT} x {POWER_DLON} degrees (R-N01). Farmland weights from NASA MODIS land"
     " cover MCD12C1 with the fixed farmland mask (R-N02; D-106, D-146), data/processed/cell_weights.csv. Boundary:"
     " geoBoundaries gbOpen VNM ADM1 (R-D04). Drawn as plain longitude and latitude, longitude scaled by cos(latitude)"
-    " at the middle latitude; no base map."
+    " at the middle latitude; no base map. Weights rounded to 2 decimals, so the printed values may not sum to"
+    " exactly 1."
 )
 
 # layout in px (routine choice, D-102): narrow, so the labels stay readable when a phone scales the figure down
@@ -60,13 +62,9 @@ def _cell(lat: float, lon: float) -> Polygon:
     return box(lon - POWER_DLON / 2, lat - POWER_DLAT / 2, lon + POWER_DLON / 2, lat + POWER_DLAT / 2)
 
 
-def _overlapping_cells(boundary: BaseGeometry) -> list[tuple[float, float]]:
-    """Centres of every POWER cell whose rectangle shares area with the boundary, south to north, west to east."""
-    minx, miny, maxx, maxy = boundary.bounds
-    rows = range(math.floor(miny / POWER_DLAT + 0.5), math.floor(maxy / POWER_DLAT + 0.5) + 1)
-    cols = range(math.floor(minx / POWER_DLON + 0.5), math.floor(maxx / POWER_DLON + 0.5) + 1)
-    centres = [(round(i * POWER_DLAT, 6), round(j * POWER_DLON, 6)) for i in rows for j in cols]
-    return [c for c in centres if _cell(*c).intersection(boundary).area > 0]
+def _zero_cells(zero_table: pd.DataFrame) -> set[tuple[float, float]]:
+    rows = zero_table[zero_table["province_nso"] == PROVINCE]
+    return {(float(r.lat), float(r.lon)) for r in rows.itertuples()}
 
 
 def _cell_id(lat: float, lon: float) -> str:
@@ -90,15 +88,18 @@ def _legend(y: float) -> list[str]:
     ]
 
 
-def grid_figure_svg(table: pd.DataFrame, boundary: BaseGeometry) -> str:
-    """The figure as standalone SVG text, from the cell weights table (05 section 3) and the Nghệ An boundary."""
+def grid_figure_svg(table: pd.DataFrame, zero_table: pd.DataFrame, boundary: BaseGeometry) -> str:
+    """The figure as standalone SVG text, from the cell weights table and the zero-weight cell list (05 section 3)
+    and the Nghệ An boundary."""
     weights = _weights(table)
-    cells = _overlapping_cells(boundary)
-    outside = sorted(set(weights) - set(cells))
+    zero_cells = _zero_cells(zero_table)
+    both = sorted(zero_cells & set(weights))
+    if both:
+        raise ValueError(f"cells listed both with a weight and with weight 0: {[_cell_id(*c) for c in both]}")
+    cells = sorted(set(weights) | zero_cells)
+    outside = [c for c in cells if _cell(*c).intersection(boundary).area <= 0]
     if outside:
-        raise ValueError(
-            f"weighted cells that do not overlap the {PROVINCE} boundary: {[_cell_id(*c) for c in outside]}"
-        )
+        raise ValueError(f"cells that do not overlap the {PROVINCE} boundary: {[_cell_id(*c) for c in outside]}")
     west, south, east, north = (
         min(lo for _, lo in cells) - POWER_DLON / 2,
         min(la for la, _ in cells) - POWER_DLAT / 2,

@@ -1,11 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="583" viewBox="0 0 400 583" role="img" aria-labelledby="grid-figure-title grid-figure-desc" font-family="sans-serif" font-size="14" fill="#1a1a1a">
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="617" viewBox="0 0 400 617" role="img" aria-labelledby="grid-figure-title grid-figure-desc" font-family="sans-serif" font-size="14" fill="#1a1a1a">
 <title id="grid-figure-title">NASA POWER weather cells over Nghệ An, shaded by farmland weight</title>
-<desc id="grid-figure-desc">The Nghệ An boundary drawn over the 11 NASA POWER cells of 0.5 by 0.625 degrees that it overlaps. Farmland weight of each cell, by its centre: 18.5 N, 105.625 E: 0.20; 19.0 N, 105.0 E: 0.14; 19.0 N, 105.625 E: 0.47; 19.5 N, 105.0 E: 0.04; 19.5 N, 105.625 E: 0.16; cells with farmland weight 0: 18.5 N, 105.0 E; 19.0 N, 103.75 E; 19.0 N, 104.375 E; 19.5 N, 103.75 E; 19.5 N, 104.375 E; 20.0 N, 105.0 E; Sources: NASA POWER cells of 0.5 x 0.625 degrees (R-N01). Farmland weights from NASA MODIS land cover MCD12C1 with the fixed farmland mask (R-N02; D-106, D-146), data/processed/cell_weights.csv. Boundary: geoBoundaries gbOpen VNM ADM1 (R-D04). Drawn as plain longitude and latitude, longitude scaled by cos(latitude) at the middle latitude; no base map.</desc>
-<rect width="400" height="583" fill="#ffffff"/>
+<desc id="grid-figure-desc">The Nghệ An boundary drawn over the 10 NASA POWER cells of 0.5 by 0.625 degrees that it overlaps. Farmland weight of each cell, by its centre: 18.5 N, 105.625 E: 0.20; 19.0 N, 105.0 E: 0.14; 19.0 N, 105.625 E: 0.47; 19.5 N, 105.0 E: 0.04; 19.5 N, 105.625 E: 0.16; cells with farmland weight 0: 18.5 N, 105.0 E; 19.0 N, 104.375 E; 19.5 N, 103.75 E; 19.5 N, 104.375 E; 20.0 N, 105.0 E; Sources: NASA POWER cells of 0.5 x 0.625 degrees (R-N01). Farmland weights from NASA MODIS land cover MCD12C1 with the fixed farmland mask (R-N02; D-106, D-146), data/processed/cell_weights.csv. Boundary: geoBoundaries gbOpen VNM ADM1 (R-D04). Drawn as plain longitude and latitude, longitude scaled by cos(latitude) at the middle latitude; no base map. Weights rounded to 2 decimals, so the printed values may not sum to exactly 1.</desc>
+<rect width="400" height="617" fill="#ffffff"/>
 <text x="16.0" y="28.0" font-size="18" font-weight="bold">NASA POWER weather cells over Nghệ An,</text>
 <text x="16.0" y="52.0" font-size="18" font-weight="bold">shaded by farmland weight</text>
 <g data-cell="18.5_105.0"><rect x="200.0" y="289.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
-<g data-cell="19.0_103.75"><rect x="23.0" y="214.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
 <g data-cell="19.0_104.375"><rect x="111.5" y="214.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
 <g data-cell="19.5_103.75"><rect x="23.0" y="139.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
 <g data-cell="19.5_104.375"><rect x="111.5" y="139.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
@@ -29,4 +28,6 @@
 <text x="16.0" y="532.0" font-size="12">geoBoundaries gbOpen VNM ADM1 (R-D04). Drawn as plain</text>
 <text x="16.0" y="549.0" font-size="12">longitude and latitude, longitude scaled by</text>
 <text x="16.0" y="566.0" font-size="12">cos(latitude) at the middle latitude; no base map.</text>
+<text x="16.0" y="583.0" font-size="12">Weights rounded to 2 decimals, so the printed values may</text>
+<text x="16.0" y="600.0" font-size="12">not sum to exactly 1.</text>
 </svg>
