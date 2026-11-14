@@ -1006,7 +1006,7 @@ export const vi = {
       'Đăng nhập chỉ để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất), để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào.',
       'Chúng tôi chỉ lưu mã tài khoản Google của bạn (một mã do Google cấp) và các câu trả lời bạn lưu. Không lưu tên, email hay ảnh.',
       'Dữ liệu nằm trong một cơ sở dữ liệu do Railway lưu trữ, ở vùng máy chủ Singapore, cho đến khi bạn xóa.',
-      'Google tự làm việc đăng nhập, theo chính sách quyền riêng tư của Google. Mã của Google chỉ chạy trên trang này và trang câu trả lời đã lưu, và có thể đặt cookie ở đó.',
+      'Google tự làm việc đăng nhập, theo chính sách quyền riêng tư của Google. Đoạn mã của Google chỉ chạy trên trang này và trang câu trả lời đã lưu, và có thể đặt cookie ở đó.',
     ],
     noticeFull: 'Đọc đầy đủ về quyền riêng tư',
     agree: 'Tôi đã đọc, đăng nhập bằng Google',
