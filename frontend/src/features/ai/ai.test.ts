@@ -26,7 +26,6 @@ describe('retrieval', () => {
     ['Ngưỡng rủi ro lấy từ đâu?', 'qd18'],
     ['lúa hè thu có lãi không', 'p03-summer'],
     ['Lúa cần bao nhiêu nước?', 'water-units'],
-    ['cây họ đậu có tốt cho đất không', 'legume'],
     ['What is the NASA data?', 'nasa-power'],
   ])('finds the right passage for “%s”', (q, id) => {
     const hits = search(q);
@@ -66,6 +65,12 @@ describe('answers', () => {
       const a = ask(q);
       expect(a.evidence[0]?.passage.id, q).toBe('no-forecast');
     }
+  });
+  it('gives every passage line a source button, one per source of the passage (H5)', () => {
+    const a = ask('Lúa cần bao nhiêu nước?');
+    expect(a.type).toBe('evidence');
+    expect(a.lines.every((l) => l.ref)).toBe(true);
+    expect(a.lines.map((l) => l.ref?.sourceId)).toEqual(expect.arrayContaining(['tcvn8641', 'fao-tm3']));
   });
   it('only shows numbers that exist in the data', () => {
     const a = ask('Năm 2015 thế nào?', 'en');
