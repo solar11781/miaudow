@@ -156,13 +156,14 @@ def test_explain_is_not_available_without_flag_and_key(
     assert api.requests == []
 
 
-def test_an_empty_body_tells_off_from_on_without_a_call(
+def test_health_tells_the_page_whether_explain_is_on_without_a_call(
     monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]
 ) -> None:
-    # D-172: the cards ask once with {} whether to show the button; off answers 503 before the body is read
+    # the cards read this flag once to decide on the button, so no probe request is needed
     api = fake_api()
-    assert app_client(monkeypatch, None, None).post("/api/explain", json={}).status_code == 503
-    assert app_client(monkeypatch).post("/api/explain", json={}).status_code == 422
+    assert app_client(monkeypatch, None, None).get("/api/health").json()["explain"] is False
+    assert app_client(monkeypatch, "1", None).get("/api/health").json()["explain"] is False
+    assert app_client(monkeypatch).get("/api/health").json()["explain"] is True
     assert api.requests == []
 
 
