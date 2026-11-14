@@ -11,6 +11,7 @@ years, priority of one saved set). SQL is parameterised; nothing personal is log
 
 from __future__ import annotations
 
+import http.client
 import logging
 import re
 import ssl
@@ -158,7 +159,7 @@ class HttpsRequest(transport.Request):
                 status, answer_headers = answer.status, dict(answer.headers)
         except urllib.error.HTTPError as err:
             return _Answer(err.code, {}, b"")
-        except OSError as err:
+        except (OSError, http.client.HTTPException) as err:  # http.client: IncompleteRead, BadStatusLine, LineTooLong
             raise exceptions.TransportError("Google's keys could not be downloaded") from err
         if len(data) > KEYS_MAX_BYTES:
             raise exceptions.TransportError(f"Google's key answer is over {KEYS_MAX_BYTES} bytes")
@@ -226,14 +227,18 @@ class Accounts:
         return SavedList(saved=[SavedSet(id=i, land=land, years=y, priority=p) for i, land, y, p in found])
 
     def save(self, sub: str, answers: SavedAnswers) -> SavedSet:
-        """Save a set for the account of `sub`; finding the account and inserting is one statement, so a
-        delete-everything in between leaves no set behind and gives NotSignedInError."""
-        with self._db() as conn:
-            row = conn.execute(
-                "INSERT INTO saved_answers (account_id, land, years, priority)"
-                " SELECT id, %s, %s, %s FROM account WHERE google_sub = %s RETURNING id",
-                (answers.land, answers.years, answers.priority, sub),
-            ).fetchone()
+        """Save a set for the account of `sub`; finding the account and inserting is one statement, and a
+        delete-everything that commits during it fails the foreign key, so either way no set is left behind and the
+        answer is NotSignedInError."""
+        try:
+            with self._db() as conn:
+                row = conn.execute(
+                    "INSERT INTO saved_answers (account_id, land, years, priority)"
+                    " SELECT id, %s, %s, %s FROM account WHERE google_sub = %s RETURNING id",
+                    (answers.land, answers.years, answers.priority, sub),
+                ).fetchone()
+        except psycopg.errors.ForeignKeyViolation as err:  # the delete committed after the insert read the account
+            raise NotSignedInError from err
         if row is None:
             raise NotSignedInError
         return SavedSet(id=row[0], **answers.model_dump())
