@@ -433,8 +433,9 @@ def method() -> dict:
     return read("method.yaml")
 
 
-def test_method_has_the_five_parts() -> None:
-    assert set(method()) == {"coverage", "explain_terms", "limitations", "stability_scope", "season_labels"}
+def test_method_has_the_six_parts() -> None:
+    parts = {"coverage", "explain_terms", "datasets_not_used", "limitations", "stability_scope", "season_labels"}
+    assert set(method()) == parts  # D-165: datasets considered and not used get their own list
     assert is_text(method()["stability_scope"])
     assert method()["limitations"]
     assert all(is_text(line) for line in method()["limitations"])
