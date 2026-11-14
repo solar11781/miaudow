@@ -39,6 +39,7 @@ function Row({
   const t = useT();
   return (
     <section
+      id={hook}
       className={[s.row, highlight ? s.hl : ''].join(' ')}
       data-testid={hook}
       data-highlighted={highlight ? 'true' : undefined}
@@ -402,7 +403,45 @@ function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: bool
   );
 }
 
-function CardHead({ plan }: { plan: Plan }) {
+/** The card's money total, or the P-03 text, and a pointer to the water row (D-172); no new value: the money is the
+ * money row's own value with its source, and the water line names no number, since one TCVN row would hide the other
+ * region (D-68) and TCVN and FAO are never combined (D-64). */
+function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
+  const t = useT();
+  const pick = usePick();
+  const m = plan.money;
+  const textIds = plan.calendar.flatMap((c) => c.source_ids);
+  const water = `card-${plan.id}-row-water`;
+  return (
+    <div className={s.summary}>
+      {m.total ? (
+        <p>
+          {t.farmer.rows.money}:{' '}
+          <SourceValue {...refs.value(m.total, t.farmer.ourSum)}>{refs.number(m.total)}</SourceValue>{' '}
+          {refs.unit(m.total)} · {t.farmer.ourSum}
+        </p>
+      ) : (
+        m.text_only && (
+          <p>
+            {t.farmer.rows.money}: <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} />
+          </p>
+        )
+      )}
+      <a
+        href={`#${water}`}
+        className={s.summaryLink}
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById(water)?.scrollIntoView({ block: 'start' });
+        }}
+      >
+        {t.farmer.summaryWater(t.farmer.rows.water)}
+      </a>
+    </div>
+  );
+}
+
+function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   const t = useT();
   const pick = usePick();
   return (
@@ -428,6 +467,7 @@ function CardHead({ plan }: { plan: Plan }) {
           </span>
         ))}
       </h2>
+      <Summary plan={plan} refs={refs} />
     </header>
   );
 }
@@ -499,7 +539,7 @@ export function PlanCard({
       className={[s.card, focused ? s.focused : ''].join(' ')}
       aria-labelledby={`title-${plan.id}`}
     >
-      <CardHead plan={plan} />
+      <CardHead plan={plan} refs={refs} />
       <div className={s.body}>
         <div data-testid={`card-${plan.id}-row-calendar`}>
           {hasDates ? (

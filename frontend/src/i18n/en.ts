@@ -333,6 +333,7 @@ export const en: Messages = {
     profit: 'Net profit in the trial (Table 13)',
     cost: 'Total cost in the trial',
     ourSum: 'our addition of the profit values, not reported as a sequence',
+    summaryWater: (row: string) => `${row}: see each crop in the ${row} row below`,
     priceYear: (y: string) => `Prices of ${y}.`,
     priceYearNotStated: 'The source does not state the price year.',
     trialNote:

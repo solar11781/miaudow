@@ -231,3 +231,63 @@ describe('per-year tables', () => {
     }
   });
 });
+
+// D-172: under the plan name, the card's money total and where its water facts are, each reusing the card's values.
+// Values from /api/compare (2026-11-15): the usual plan's total and the P-03 text of usual_p03.
+describe('card summary', () => {
+  afterEach(cleanup);
+  const P03_TEXT = {
+    vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha". Vụ Thu Đông: bỏ hoang.',
+    en: 'Spring-season rice 2021 (control): economic return ("hiệu quả kinh tế") 5.36 million đ/ha. Summer-autumn rice 2020 (control): "almost no profit, the economic return only reaches 1.16 million/ha" (our translation). Autumn-winter: fallow.',
+  };
+  const head = (planIndex: number) => {
+    const res = validateCompare(compare(), body);
+    const usual = res.plans[0];
+    const p03 = res.plans[1];
+    if (!usual || !p03) throw new Error('no plan');
+    usual.money.total = {
+      value: '30,799',
+      unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' },
+      source_ids: ['R-P02', 'E-022'],
+    };
+    p03.money = { ...p03.money, items: [], total: null, text_only: P03_TEXT };
+    res.sources = { ...res.sources, 'E-022': { ...res.sources['R-P02'], id: 'E-022' } } as typeof res.sources;
+    const plan = res.plans[planIndex];
+    if (!plan) throw new Error('no plan');
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const box = document.querySelector(`[data-testid="card-${plan.id}-row-header"]`);
+    if (!box) throw new Error('no head');
+    return { box, id: plan.id };
+  };
+  it('shows the money total with its label, its source button and the trial wording', () => {
+    const { box } = head(0);
+    const text = box.textContent ?? '';
+    expect(text).toContain(vi.farmer.rows.money);
+    expect(text).toContain(vi.farmer.ourSum);
+    const button = box.querySelector('[data-value="30.799 nghìn đồng/ha"]');
+    expect(button?.tagName).toBe('BUTTON');
+  });
+  it('shows the P-03 money as its text only, with no total', () => {
+    const { box } = head(1);
+    const button = [...box.querySelectorAll('[data-value]')].find((e) => e.getAttribute('data-value') === P03_TEXT.vi);
+    expect(button?.tagName).toBe('BUTTON');
+    expect(box.textContent).not.toContain(vi.farmer.ourSum);
+    expect(box.textContent).not.toContain('30.799');
+  });
+  it('points to the water row without a number of its own', () => {
+    for (const i of [0, 1]) {
+      const { box, id } = head(i);
+      const link = box.querySelector(`a[href="#card-${id}-row-water"]`);
+      expect(link?.textContent, id).toBe(vi.farmer.summaryWater(vi.farmer.rows.water));
+      expect(link?.textContent ?? '', id).not.toMatch(/\d/);
+      expect(document.getElementById(`card-${id}-row-water`), id).not.toBeNull();
+      cleanup();
+    }
+  });
+});

@@ -331,6 +331,7 @@ export const vi = {
     profit: 'Lãi thuần trong thử nghiệm (Bảng 13)',
     cost: 'Tổng chi trong thử nghiệm',
     ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
+    summaryWater: (row: string) => `${row}: xem từng cây ở hàng ${row} bên dưới`,
     priceYear: (y: string) => `Giá bán năm ${y}.`,
     priceYearNotStated: 'Nguồn không ghi năm của giá bán.',
     trialNote:
