@@ -11,7 +11,7 @@ test('field-phone performance: LCP and CLS', async ({ page }, info) => {
   await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 150, downloadThroughput: (1.6 * 1024 * 1024) / 8, uploadThroughput: (750 * 1024) / 8 });
   await page.goto('/#/'); // warm the local server once
   const lines: string[] = [];
-  for (const url of ['/#/', '/#/nong-dan/ruong', '/#/nong-dan/phuong-an?ruong=dry&nam=2010,2020', '/#/khoa-hoc']) {
+  for (const url of ['/#/', '/#/nong-dan/ruong', '/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020', '/#/khoa-hoc', '/#/bang-chung', '/#/tro-ly']) {
     const lcps: number[] = [];
     let cls = 0;
     for (let i = 0; i < 3; i++) {

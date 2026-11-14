@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { geo, hazards, model, YEARS, type MetricRow, type RiceSeason, type RuleCode } from '../../data';
 import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
-import { Observatory3D } from './Observatory3D';
+// three.js arrives in its own chunk after the page's text and numbers are on screen
+const Observatory3D = lazy(() => import('./Observatory3D').then((m) => ({ default: m.Observatory3D })));
 import { YearBars } from '../charts/YearBars';
 import { RiceHistoryChart } from '../charts/RiceHistoryChart';
 import { SkillChart, type SkillRow } from '../charts/SkillChart';
@@ -61,7 +62,9 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
         <div className={s.observatory}>
           <div className={s.stageCol}>
             <h2 id="grid-title" className="visually-hidden">{t.science.mapTitle}</h2>
-            <Observatory3D rule={rule} year={year} selected={cell} onSelect={setCell} />
+            <Suspense fallback={<div className={s.stagePlaceholder} role="status">{t.common.loading}</div>}>
+              <Observatory3D rule={rule} year={year} selected={cell} onSelect={setCell} />
+            </Suspense>
           </div>
 
           <aside className={s.side} aria-label={t.science.readingFor(year)}>

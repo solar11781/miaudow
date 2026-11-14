@@ -29,7 +29,7 @@ function Hero() {
   return (
     <section className={`${s.hero} surface-forest`} aria-labelledby="hero-title">
       <div className={s.heroMedia}>
-        <Media slug={HERO} priority sizes="100vw" label="none" drift={!calm && !paused} />
+        <Media slug={HERO} priority sizes="(max-width: 700px) 320px, 100vw" label="none" drift={!calm && !paused} />
       </div>
       <div className={s.heroScrim} aria-hidden="true" />
       <div className={`container ${s.heroInner}`}>
