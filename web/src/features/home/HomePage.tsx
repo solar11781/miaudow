@@ -90,7 +90,7 @@ function Hero() {
   );
 }
 
-/** One statement, one photograph, two sourced numbers. */
+/** The trial land in the paper's own words, one photograph, one study's money with its own definition (D-52, D-160). */
 function Problem() {
   const t = useT();
   const f = useFormat();
@@ -113,19 +113,14 @@ function Problem() {
       <div className={s.problemText}>
         <h2 id="problem-title" className="h1">{t.home.problemTitle}</h2>
         <p className="lead">{t.home.problemLead}</p>
-        <div className={s.pair}>
-          {rice && (
-            <div className={s.pairItem}>
-              <SourceValue size="xl" {...refs.cropProfit(rice)}><CountUp text={f.million(rice.profit)} /><span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
-              <span>{t.home.riceSpring}</span>
-            </div>
-          )}
-          <div className={s.pairItem}>
-            <SourceValue size="xl" sourceId="p03" kind="study" value={`${f.n(1.16, 2)} ${t.common.millionPerHa}`} label={t.home.riceSummer}
-              detail={t.home.riceSummerDetail}><CountUp text={f.n(1.16, 2)} /><span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
-            <span>{t.home.riceSummer}</span>
+        {/* one study's money only: the second paper defines profit differently (team decision D-52) */}
+        {rice && (
+          <div className={s.money}>
+            <SourceValue size="xl" {...refs.cropProfit(rice)}><CountUp text={f.million(rice.profit)} /><span className={s.unit}>{t.common.millionPerHa}</span></SourceValue>
+            <span className={s.moneyLabel}>{t.home.riceSpring}</span>
+            <span className={s.moneyDefinition}>{t.home.problemDefinition}</span>
           </div>
-        </div>
+        )}
         <p className={s.note}>{t.home.trialNote}</p>
       </div>
     </section>
