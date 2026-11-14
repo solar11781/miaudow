@@ -217,8 +217,7 @@ def test_an_unreachable_database_at_start_turns_sign_in_off(
 ) -> None:
     # §12c: every farmer route MUST keep working without signing in, so a database that is down never stops the start
     monkeypatch.setenv("GOOGLE_CLIENT_ID", CLIENT_ID)
-    # nothing listens on port 1; connect_timeout keeps the test short (psycopg waits 130 s by default)
-    url = "postgresql://zz-secret-user:zz-secret-pass@127.0.0.1:1/zz-secret-db?connect_timeout=2"
+    url = "postgresql://zz-secret-user:zz-secret-pass@127.0.0.1:1/zz-secret-db"  # nothing listens on port 1
     monkeypatch.setenv("DATABASE_URL", url)
     with caplog.at_level(logging.DEBUG):
         c = TestClient(create_app(root=REPO))
@@ -232,6 +231,21 @@ def test_an_unreachable_database_at_start_turns_sign_in_off(
     assert not [rec for rec in caplog.records if rec.exc_info]  # no traceback: it may hold the address
     for secret in ("zz-secret", "postgresql", "127.0.0.1"):
         assert secret not in lines[0]
+
+
+def test_every_database_connection_gives_up_after_5_seconds(on: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    # team, 2026-11-14: a database that is down holds the start (and the farmer routes) for 5 s, not psycopg's 130 s
+    timeouts: list[object] = []
+    real_connect = psycopg.connect
+
+    def connect(*args: object, **kwargs: object) -> psycopg.Connection:
+        timeouts.append(kwargs.get("connect_timeout"))
+        return real_connect(*args, **kwargs)
+
+    monkeypatch.setattr(psycopg, "connect", connect)
+    TestClient(create_app(root=REPO))
+    assert timeouts
+    assert set(timeouts) == {5}
 
 
 def test_config_names_the_client_id_when_on(on: str) -> None:
@@ -352,7 +366,7 @@ def test_the_key_download_checks_tls_with_the_default_context_and_has_a_timeout(
     calls = fake_download(monkeypatch, Answer(public_keys(keys)))
     assert accounts.HttpsRequest()(GOOGLE_CERTS).status == 200
     [call] = calls
-    assert call.timeout == accounts.GOOGLE_TIMEOUT_SECONDS
+    assert call.timeout == 10  # team, 2026-11-14: an account request never hangs for minutes
     # Python ssl docs: ssl.create_default_context() requires a valid certificate and checks the host name
     assert call.context.verify_mode == ssl.CERT_REQUIRED
     assert call.context.check_hostname
