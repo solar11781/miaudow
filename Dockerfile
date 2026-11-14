@@ -4,11 +4,14 @@
 # Exact patch version and digest of python:3.13-slim (Docker Hub tag list, read 2026-11-14), so every build gets the same image.
 FROM python:3.13.18-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90
 WORKDIR /app
-COPY pyproject.toml requirements.lock ./
+# The locked packages are installed before the code is copied, so a code change does not reinstall them.
+COPY requirements.lock ./
+RUN pip install --no-cache-dir -r requirements.lock
+COPY pyproject.toml ./
 COPY src ./src
+RUN pip install --no-cache-dir --no-deps .
 COPY rules ./rules
 COPY artifacts ./artifacts
-RUN pip install --no-cache-dir -r requirements.lock && pip install --no-cache-dir --no-deps .
 # frontend/dist is copied here once the frontend build exists (UI-UX-SPEC §13).
 # The installed package lives in site-packages; FIELDSHIFT_ROOT points it at /app/rules and /app/artifacts.
 ENV PORT=8000 FIELDSHIFT_ROOT=/app
