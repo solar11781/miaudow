@@ -71,7 +71,10 @@ def monthly_climatology(rain: pd.Series) -> pd.Series:
 
 def drought_months(month_rain: pd.Series, clim: pd.Series) -> pd.Series:
     """True where the month's rain is more than 50% below the climatological mean (deficit strictly above 50%)."""
-    return (month_rain < (1 - DROUGHT_DEFICIT) * clim.reindex(month_rain.index)).astype(bool)
+    normal = clim.reindex(month_rain.index)
+    if normal.isna().any():
+        raise ValueError(f"no climatology for months {list(normal.index[normal.isna()])}: no drought reading")
+    return (month_rain < (1 - DROUGHT_DEFICIT) * normal).astype(bool)
 
 
 def drought_consecutive(flags) -> bool:
