@@ -533,7 +533,7 @@ export const vi = {
       G1: 'Đủ số liệu',
       G2: 'Thắng B0 và BNW',
       G3: 'Ổn định ở Bắc Trung Bộ',
-      G4: 'Khoảng dự báo đúng 70–90%',
+      G4: 'Khoảng 80% chứa số thật ở 70–90% năm kiểm tra',
     },
     passed: 'Đạt',
     failed: 'Không đạt',

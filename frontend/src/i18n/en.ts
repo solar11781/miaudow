@@ -537,7 +537,7 @@ export const en: Messages = {
       G1: 'Enough data',
       G2: 'Beats B0 and BNW',
       G3: 'Stable in the North Central region',
-      G4: 'Range covers 70–90%',
+      G4: '80% range holds the actual value in 70–90% of test years',
     },
     passed: 'Passed',
     failed: 'Failed',
