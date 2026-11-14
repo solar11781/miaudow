@@ -1,0 +1,63 @@
+"""Assemble the training table: one row per cleaned rice label with its weather features (D-37, D-38, D-39, D-72).
+
+Rain against a normal and the drought rain months need a normal from each fold's training years (D-66), so they are
+computed in the evaluation harness, not stored here.
+
+Rows that cannot be built (no calendar window, e.g. Mekong summer-autumn, D-37) are returned in `skipped` with the
+reason; missing inputs (weights, cell data, days) raise instead of being filled.
+"""
+
+from __future__ import annotations
+
+import pandas as pd
+
+from fieldshift.features.climate import official_counts, province_daily_weather, season_features
+from fieldshift.features.season_windows import season_window
+
+RICE_SEASONS = ("spring", "autumn", "winter")
+
+
+def build_feature_table(labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict):
+    # D-106: one fixed farmland mask for all years (cell_weights.csv, 05-DATA-CONTRACTS §3)
+    # iter(): a GroupBy has a non-callable .keys attribute, so dict() alone would treat it as a mapping
+    w_index = dict(iter(weights[weights["method"] == "farmland_weighted"].groupby("province_nso")))
+    daily_cache: dict = {}
+
+    def daily(province: str, stat_year: int) -> pd.DataFrame:
+        if province not in daily_cache:
+            if province not in w_index:
+                raise KeyError(f"no farmland weights for {province}")
+            g = w_index[province]
+            wts = {(la, lo): wt for la, lo, wt in zip(g["lat"], g["lon"], g["farmland_weight"], strict=True)}
+            daily_cache[province] = province_daily_weather({c: cell_frames[c] for c in wts}, wts)
+        return daily_cache[province]
+
+    def cell_weights(province: str) -> dict:
+        g = w_index[province]
+        return {(la, lo): wt for la, lo, wt in zip(g["lat"], g["lon"], g["farmland_weight"], strict=True)}
+
+    rows, skipped = [], []
+    lab = labels[(labels["crop"] == "rice") & labels["season"].isin(RICE_SEASONS)]
+    for rec in lab.itertuples(index=False):
+        region = regions[rec.province_nso]
+        try:
+            start, end = season_window(rec.season, region, rec.year)
+        except ValueError as err:
+            skipped.append(
+                {"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, "reason": str(err)}
+            )
+            continue
+        feats = season_features(daily(rec.province_nso, rec.year), start, end)
+        feats.update(official_counts(cell_frames, cell_weights(rec.province_nso), start, end))
+        feats["n_points"] = len(cell_weights(rec.province_nso))  # 05 §4: cells aggregated
+        rows.append(
+            {
+                **rec._asdict(),
+                "calendar_region": region,
+                "window_start": pd.Timestamp(start),
+                "window_end": pd.Timestamp(end),
+                **feats,
+            }
+        )
+    skipped_df = pd.DataFrame(skipped, columns=["province_nso", "season", "year", "reason"])
+    return pd.DataFrame(rows), skipped_df
