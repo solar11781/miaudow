@@ -171,9 +171,28 @@ def risk_seasons(root: Path) -> dict[SeasonCode, RiskSeason]:
     return by_season
 
 
+class GatesFile(BaseModel):
+    """artifacts/gates.json (05-DATA-CONTRACTS §5b): the gate verdicts per season."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: str
+    generated_at: str
+    freeze_commit: str = Field(min_length=1)
+    gates: list[GateRow]
+
+
+def gates_file(root: Path) -> GatesFile:
+    """The checked content of artifacts/gates.json; a bad entry fails naming the file and the field."""
+    try:
+        return GatesFile.model_validate(_artifact(root, GATES))
+    except ValidationError as err:
+        raise ValueError(f"artifacts/{GATES}: {err}") from err
+
+
 def gate_rows(root: Path) -> list[GateRow]:
-    """The gate verdicts of artifacts/gates.json (05-DATA-CONTRACTS §5b), in file order."""
-    return _artifact_list(root, GATES, "gates", GateRow)
+    """The gate verdicts of artifacts/gates.json, in file order."""
+    return gates_file(root).gates
 
 
 class MetricsFile(BaseModel):
@@ -183,7 +202,7 @@ class MetricsFile(BaseModel):
 
     schema_version: str
     generated_at: str
-    freeze_commit: str
+    freeze_commit: str = Field(min_length=1)
     test_years: YearSpan
     metrics: list[MetricRow]
     weather_claims: list[WeatherClaim]
@@ -196,22 +215,6 @@ def metrics_file(root: Path) -> MetricsFile:
         return MetricsFile.model_validate(_artifact(root, METRICS))
     except ValidationError as err:
         raise ValueError(f"artifacts/{METRICS}: {err}") from err
-
-
-def freeze_commit(root: Path, name: str) -> str:
-    """The `freeze_commit` of one method artifact (05-DATA-CONTRACTS §5b)."""
-    commit = _artifact(root, name).get("freeze_commit")
-    if not isinstance(commit, str) or not commit:
-        raise ValueError(f"artifacts/{name}: freeze_commit must be a non-empty string")
-    return commit
-
-
-def load_test_years(root: Path) -> YearSpan:
-    """The out-of-sample test years of artifacts/metrics.json (05-DATA-CONTRACTS §5b)."""
-    try:
-        return YearSpan.model_validate(_artifact(root, METRICS).get("test_years"))
-    except ValidationError as err:
-        raise ValueError(f"artifacts/{METRICS}: test_years: {err}") from err
 
 
 def _read_yaml(root: Path, name: str) -> object:

@@ -13,8 +13,7 @@ from pathlib import Path
 from fieldshift.engine.rules import (
     GATES,
     METRICS,
-    freeze_commit,
-    gate_rows,
+    gates_file,
     load_method_texts,
     load_sources,
     metrics_file,
@@ -25,12 +24,13 @@ from fieldshift.engine.schemas import MethodResponse, source_ids_in
 
 def method(root: Path) -> MethodResponse:
     metrics = metrics_file(root)
-    gates_commit = freeze_commit(root, GATES)
-    if gates_commit != metrics.freeze_commit:
+    gates_doc = gates_file(root)
+    if gates_doc.freeze_commit != metrics.freeze_commit:
         raise ValueError(
-            f"artifacts/{GATES} freeze_commit {gates_commit} differs from artifacts/{METRICS} {metrics.freeze_commit}"
+            f"artifacts/{GATES} freeze_commit {gates_doc.freeze_commit} differs from artifacts/{METRICS} "
+            f"{metrics.freeze_commit}"
         )
-    gates = gate_rows(root)
+    gates = gates_doc.gates
     texts = load_method_texts(root)
     parts = (*metrics.metrics, *gates, *metrics.weather_claims, *metrics.reports, *texts.coverage, *texts.explain_terms)
     return MethodResponse(
