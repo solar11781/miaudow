@@ -151,6 +151,24 @@ test('grouped short flags, a second number and another repository are refused', 
   assert.match(mergeRequest('gh pr merge --merge --subject 12 99').problem, /one pull request/);
   assert.match(mergeRequest('gh pr merge 12 --merge -R other/repo').problem, /repo/);
   assert.match(mergeRequest('gh pr merge 12 --merge --repo=other/repo').problem, /repo/);
+  assert.match(mergeRequest('gh pr merge 12 -m -Rother/repo').problem, /repo/);
+});
+
+test('only the exact shape gh pr merge <number> --merge is allowed', () => {
+  assert.deepEqual(mergeRequest('gh pr merge --merge 12'), { pr: '12', problem: null });
+  for (const cmd of [
+    'gh pr merge --merge --subject 12 other-branch',
+    'gh pr merge --merge --subject 12 https://github.com/o/r/pull/99',
+    'gh pr merge 12 --merge --body x',
+    'gh pr merge 12 --merge feat/x',
+  ]) assert.match(mergeRequest(cmd).problem, /only/, cmd);
+  for (const cmd of [
+    'gh pr merge --merge # 12',
+    'gh pr merge 12 --merge $(echo --admin)',
+    'gh pr merge 12 --merge `echo -d`',
+    'gh pr merge 12 --merge --ad`min',
+    'gh pr merge 12 --merge > out.txt',
+  ]) assert.match(mergeRequest(cmd).problem, /shell/, cmd);
 });
 
 const GATE = 'review-gates: spec-review=pass security-review=pass tests=pass';
