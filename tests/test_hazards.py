@@ -322,3 +322,34 @@ def test_an_unknown_region_or_central_coast_province_fails_loudly(province, regi
     # Python rules: unknown data symbols fail loudly; a renamed region must not silently drop the cold rule
     with pytest.raises(ValueError, match=province):
         hz.cold_rule_of(province, region)
+
+
+def _monthly_rain(totals: dict[str, float]) -> pd.Series:
+    """Daily rain whose month totals are `totals` ({"YYYY-MM": mm}), spread evenly over the days of each month."""
+    parts = []
+    for month, total in totals.items():
+        days = pd.date_range(f"{month}-01", pd.Timestamp(f"{month}-01") + pd.offsets.MonthEnd(0), freq="D")
+        parts.append(pd.Series(total / len(days), index=days))
+    return pd.concat(parts)
+
+
+def test_season_drought_readings_follow_the_window_months_in_order_across_the_year_end():
+    # E-014 (D-58): both readings over an NSO season window of whole months; Art. 48.1 "thiếu hụt ... trên 50%": 40 of
+    # a 100 mm normal is a drought month, 60 is not. December and January are consecutive months although 12 + 1 != 1.
+    clim = pd.Series(100.0, index=range(1, 13))
+    split = _monthly_rain({"2009-11": 40.0, "2009-12": 60.0, "2010-01": 40.0, "2010-02": 60.0})
+    assert hz.season_drought_readings(split, date(2009, 11, 1), date(2010, 2, 28), clim) == (False, True)
+    joined = _monthly_rain({"2009-11": 60.0, "2009-12": 40.0, "2010-01": 40.0, "2010-02": 60.0})
+    assert hz.season_drought_readings(joined, date(2009, 11, 1), date(2010, 2, 28), clim) == (True, True)
+    one = _monthly_rain({"2009-11": 40.0, "2009-12": 60.0, "2010-01": 60.0, "2010-02": 60.0})
+    assert hz.season_drought_readings(one, date(2009, 11, 1), date(2010, 2, 28), clim) == (False, False)
+
+
+def test_season_drought_readings_refuse_a_partial_month_or_a_missing_day():
+    # Art. 48.1 uses "tổng lượng mưa tháng": a window that cuts a month, or a missing day, has no monthly total
+    clim = pd.Series(100.0, index=range(1, 13))
+    rain = _monthly_rain({"2010-01": 40.0, "2010-02": 40.0})
+    with pytest.raises(ValueError, match="whole months"):
+        hz.season_drought_readings(rain, date(2010, 1, 5), date(2010, 2, 28), clim)
+    with pytest.raises(ValueError, match="rain missing"):
+        hz.season_drought_readings(rain.drop(pd.Timestamp("2010-02-10")), date(2010, 1, 1), date(2010, 2, 28), clim)

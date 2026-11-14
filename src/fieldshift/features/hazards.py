@@ -130,6 +130,22 @@ def drought_any2(flags: Iterable[bool]) -> bool:
     return sum(bool(x) for x in flags) >= DROUGHT_MONTHS
 
 
+def season_drought_readings(rain: pd.Series, start: date, end: date, clim: pd.Series) -> tuple[bool, bool]:
+    """(consecutive, any 2 months) readings of the drought rain rule (D-58, E-014) over a window of whole calendar
+    months on a daily rain series, against the monthly normal `clim` (index 1..12). The months are taken in window
+    order, so December and January of a window across the year end are consecutive."""
+    first, last = pd.Timestamp(start), pd.Timestamp(end)
+    if first.day != 1 or not last.is_month_end:
+        raise ValueError(f"window {start}..{end} is not made of whole months: no monthly rain totals")
+    days = pd.date_range(first, last, freq="D")
+    win = rain.reindex(days)
+    if win.isna().any():
+        raise ValueError(f"rain missing in the window {start}..{end}: no monthly total (no guessing)")
+    totals = win.resample("MS").sum()
+    flags = list(drought_months(pd.Series(totals.to_numpy(), index=totals.index.month), clim))
+    return drought_consecutive(flags), drought_any2(flags)
+
+
 def field_days(year: int, field_dates: Iterable[tuple[str, str]]) -> pd.DatetimeIndex:
     days = set()
     for start, end in field_dates:
