@@ -462,8 +462,11 @@ export function PlanCard({
         <WhyRows plan={plan} refs={refs} />
       </div>
       <footer className={s.foot}>
+        {/* the four warnings stay inside the card, so a screenshot of one card keeps them (H17, T16) */}
+        <p>{t.farmer.trialNote}</p>
         <p>{plan.money.price_year ? t.farmer.priceYear(plan.money.price_year) : t.farmer.priceYearNotStated}</p>
-        <p>{t.farmer.cardFoot}</p>
+        <p>{t.common.notForecast}</p>
+        <p>{t.common.support}</p>
         <div className={s.shareRow} data-testid={`card-${plan.id}-row-share`}>
           <button
             type="button"

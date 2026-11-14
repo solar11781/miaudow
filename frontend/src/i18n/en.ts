@@ -334,8 +334,6 @@ export const en: Messages = {
     localReview: 'Check these with farmers or agricultural experts where you live before you change.',
     whyParts: { why: 'Why', evidence: 'Evidence', benefits: 'Benefits', gaps: 'Gaps' },
     needAnswers: 'An answer from an earlier step is missing.',
-    cardFoot:
-      'One plot, one year (2020–21). Past years, not a forecast. The app supports, and does not replace, your judgement.',
     share: 'Send this card',
     shareCopied: 'Link to this card copied',
     shareFailed: 'Could not copy. Copy the address from the browser bar.',

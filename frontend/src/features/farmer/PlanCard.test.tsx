@@ -6,6 +6,7 @@ import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
 import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
+import { vi } from '../../i18n/vi';
 
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
@@ -52,5 +53,16 @@ describe('plan card test hooks', () => {
     renderCard(['en-GB', 'en']);
     expect(values()).toEqual(expect.arrayContaining(['30,799 thousand đ/ha', '6,500-7,500 m³/ha']));
     Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+  });
+});
+
+// UI-UX-SPEC T16 card-warnings (H17): a screenshot of one card keeps its four warnings
+describe('card warnings', () => {
+  afterEach(cleanup);
+  it('T16 card-warnings: the trial note, the price year, not a forecast and the support note are inside the card', () => {
+    const id = renderCard();
+    const card = document.querySelector(`[data-testid="card-${id}"]`)?.textContent ?? '';
+    for (const line of [vi.farmer.trialNote, vi.common.notForecast, vi.common.support]) expect(card).toContain(line);
+    expect(card).toContain(vi.farmer.priceYearNotStated); // the fixture plan states no price year
   });
 });
