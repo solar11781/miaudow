@@ -93,7 +93,12 @@ function useGlobe(on: boolean, st: ObservatoryState, sceneDef: Scene, onFail: ()
         globe.current = createGlobe(el, creditEl, (id) => pickRef.current(id), lang);
         setReady(true);
       })
-      .catch(onFail);
+      .catch((err: unknown) => {
+        // the page shows its 2D fallback; the cause stays visible to whoever debugs it (security review 2026-11-14)
+        // eslint-disable-next-line no-console
+        console.error('3D globe failed to start', err);
+        onFail();
+      });
     return () => {
       disposed = true;
       globe.current?.dispose();

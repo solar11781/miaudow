@@ -487,9 +487,8 @@ def test_the_csp_allows_only_the_d167_outside_origins(tmp_path: Path) -> None:
     csp = built_frontend(tmp_path).get("/").headers["content-security-policy"]
     outside = set(re.findall(r"https://[^\s;]+", csp))
     assert outside == {"https://gibs.earthdata.nasa.gov", "https://eyes.nasa.gov"}  # D-167 exception, /dai-quan-sat
-    assert "'unsafe-eval'" not in csp
-    # the observatory's Cesium workers compile WebAssembly (checked in the browser, 2026-11-14); eval stays blocked
-    assert "script-src 'self' 'wasm-unsafe-eval'" in csp
+    # Knockout, bundled in Cesium, runs (0,eval)('this') when the observatory chunk loads (security review 2026-11-14)
+    assert "script-src 'self' 'unsafe-eval';" in csp
 
 
 def test_start_command_turns_off_the_access_log() -> None:

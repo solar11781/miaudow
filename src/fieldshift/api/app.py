@@ -69,11 +69,11 @@ ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
 # H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat.
-# Inline style attributes are React style props; data: and blob: images, blob: workers and WebAssembly are Cesium's.
+# Inline style attributes are React style props; data: and blob: images, blob: workers and eval are Cesium's.
 CSP = "; ".join(
     (
         "default-src 'self'",
-        "script-src 'self' 'wasm-unsafe-eval'",  # Cesium's workers compile WebAssembly; eval stays blocked
+        "script-src 'self' 'unsafe-eval'",  # Knockout, bundled in Cesium, runs (0,eval)('this') as the globe loads
         "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov",
         "connect-src 'self' https://gibs.earthdata.nasa.gov",
         "frame-src https://eyes.nasa.gov",
