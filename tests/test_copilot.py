@@ -232,7 +232,7 @@ def test_the_two_statements_hidden_by_the_audit_are_not_in_the_corpus() -> None:
             assert "1981" not in text  # D-169: "NASA POWER ... since 1981" has no source
             for word in ("đạm", "nitrogen", "nito", "họ đậu", "legume"):  # D-169: the legume passage, misattributed
                 assert word not in text.lower(), (p.id, word)
-        assert p.source_id in REGISTER_IDS
+        assert set(p.source_ids) <= REGISTER_IDS
 
 
 # ---- invalid input: 422 without echo and without a call
@@ -491,6 +491,19 @@ def test_the_winter_model_passage_says_the_result_is_narrow_and_fragile() -> Non
         assert title[lang] in winter.text[lang]
     spring = next(p for p in copilot.load_corpus(REPO).passages if p.id == "model-spring")
     assert title["en"] not in spring.text["en"]
+
+
+def test_the_winter_model_answer_cites_the_fragile_claim_sources(det: TestClient) -> None:
+    # the winter passage carries the E-018 sentence, so it cites that report's own sources (artifacts/metrics.json,
+    # src/fieldshift/ml/reports.py: E-012, E-018, E-008) next to the gate figure's E-012
+    reports = json.loads((REPO / "artifacts" / "metrics.json").read_text(encoding="utf-8"))["reports"]
+    report_ids = next(r["source_ids"] for r in reports if r["id"] == "E-018")
+    out = ask(det, "Mô hình dự đoán lúa vụ Mùa có tốt không?")
+    winter = [c for c in out["citations"] if c["passage_id"].startswith("model-winter")]
+    assert winter[0]["source_id"] == "E-012"
+    assert {c["source_id"] for c in winter} == {"E-012", *report_ids}
+    assert {"E-018", "E-008"} <= {c["source_id"] for c in winter}
+    assert len({c["passage_id"] for c in out["citations"]}) == len(out["citations"])  # React keys (AssistantPage)
 
 
 def test_the_two_water_sources_are_never_combined_or_converted() -> None:
