@@ -361,7 +361,7 @@ def test_prepare_series_threshold_is_passed_through(prepare_input):
 
 
 @pytest.fixture(scope="module")
-def real_kept() -> pd.DataFrame:
+def real_kept() -> tuple[pd.DataFrame, pd.DataFrame]:
     if not HAVE_RAW:
         pytest.skip("NSO raw exports not present")
 
