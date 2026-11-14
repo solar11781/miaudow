@@ -23,8 +23,7 @@ import anthropic
 
 from fieldshift.engine.schemas import CompareRequest, CompareResponse, Contract, PlanId
 
-# A proposal pending a team decision: the claude-api skill defaults to claude-opus-5-5, and a cheaper model is the
-# team's choice; this is the skill's current small, fast model (models cached 2026-11-03) for a short rewording.
+# decided by the team in D-165: the claude-api skill's current small, fast model for a short rewording
 MODEL = "claude-haiku-5-5"
 EFFORT = "low"  # claude-api skill: low effort for simple tasks
 # claude-api skill: Haiku 5.5 accepts disabled thinking at effort high or below, so all of max_tokens is reply text
