@@ -190,7 +190,8 @@ def fit_ridge(x: ArrayLike, y: ArrayLike, alpha: float) -> Pipeline:
 
 # ---------- secondary models M2, M3 (03-ML-SPEC section 6; team 2026-11-14) ----------
 # M3 random forest: Meroni et al. 2021 Table 4 (max depth 7 values from 10 to 40 in steps of 5; max features all or
-# sqrt; min samples split as 6 values in [0.2, 0.8], the count their table states); 100 trees fixed to keep the run short
+# sqrt; min samples split as 6 values in [0.2, 0.8], the count their table states); 100 trees fixed to keep the run
+# short
 M3_GRID = [
     {"max_depth": d, "max_features": f, "min_samples_split": round(s, 2)}
     for d in range(10, 41, 5)
