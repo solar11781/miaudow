@@ -349,7 +349,7 @@ export const en: Messages = {
       'The plans come from one unreplicated trial in Lưu Sơn, Đô Lương (2020–21). Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
     rice: {
       real: 'Actual',
-      prediction: 'Out-of-sample prediction',
+      prediction: 'Model estimate for a test year',
       range: '80% range',
       min: 'Lowest',
       median: 'Middle',

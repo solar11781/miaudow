@@ -341,7 +341,7 @@ export const vi = {
       'Các cách trồng lấy từ một thử nghiệm không lặp lại ở Lưu Sơn, Đô Lương (2020–21). Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
     rice: {
       real: 'Số thật',
-      prediction: 'Dự đoán ngoài mẫu',
+      prediction: 'Ước tính của mô hình cho năm kiểm tra',
       range: 'Khoảng 80%',
       min: 'Thấp nhất',
       median: 'Ở giữa',
