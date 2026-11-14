@@ -29,6 +29,7 @@ DROUGHT_DEFICIT = 0.5  # Art. 48.1 "thiếu hụt tổng lượng mưa tháng tr
 DROUGHT_MONTHS = 2  # D-58 second reading: any 2 drought months in the season
 CLIM_YEARS = (1991, 2020)  # "trung bình nhiều năm": NCHMF rainfall TBNN period 1991-2020 (R-K15, D-118; WMO R-A15)
 RULES = ("heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold")
+RISK_SHARE_COLS = ("risk_heavy_rain", "risk_heat", "risk_cold")  # sensitivity run c features (team 2026-11-14)
 # Art. 53 level 1 or higher in "vùng núi, trung du Bắc Bộ": (lowest, lowest included, highest, highest included, days)
 MOUNTAIN_COLD_BANDS = (
     (8.0, False, 13.0, True, 11),  # 53.1 a "từ trên 8°c đến 13°c, ... kéo dài trên 10 ngày"
@@ -184,7 +185,7 @@ def risk_level_shares(
     rule of the province's region (None: Art. 53 names none, so no farmland meets it); the drought
     readings stay the model's per-fold features, because their normal must come from the training years (D-66).
     """
-    out = {"risk_heavy_rain": 0.0, "risk_heat": 0.0, "risk_cold": 0.0}
+    out = dict.fromkeys(RISK_SHARE_COLS, 0.0)
     for cell, w in weights.items():
         days = pd.date_range(start, end, freq="D")
         win = cell_frames[cell].reindex(days)[["PRECTOTCORR", "T2M_MAX", "T2M"]]

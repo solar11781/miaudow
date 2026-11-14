@@ -6,13 +6,12 @@ All steps are tested library functions; this script only wires them together and
 
 import pandas as pd
 
-from fieldshift.data.power import load_cells
+from fieldshift.data.power import POWER_CACHE_FILES, load_cells
 from fieldshift.data.series import prepare_series
 from fieldshift.features.feature_table import build_cell_month_rain, build_feature_table
 from fieldshift.features.season_windows import calendar_region
 
 NSO_EXPORT = "data/raw/nso/E06.14.csv"
-POWER_FILES = "power_*_19900101_20241231_*.json"  # the cached 1990-2024 daily series
 
 labels = pd.read_csv("data/processed/crop_stats.csv")
 series, removed = prepare_series(labels[~labels["is_preliminary"]])
@@ -20,7 +19,7 @@ series = series[series["yield_t_ha"].notna()]
 weights = pd.read_csv("data/processed/cell_weights.csv")  # fixed mask, D-106 (scripts/build_cell_weights.py)
 
 # daily mean T2M (D-72 cold counts) joins from its own cache
-cells, unmatched_t2m = load_cells("data/raw/power", "data/raw/power_t2m", POWER_FILES)
+cells, unmatched_t2m = load_cells("data/raw/power", "data/raw/power_t2m", POWER_CACHE_FILES)
 
 provinces = sorted(set(series["province_nso"]))
 regions = {p: calendar_region(p, NSO_EXPORT) for p in provinces}

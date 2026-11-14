@@ -146,6 +146,9 @@ def fetch_daily(
     return parse_daily(payload), payload
 
 
+POWER_CACHE_FILES = "power_*_19900101_20241231_*.json"  # the cached 1990-2024 daily series per cell
+
+
 def load_cells(main_dir: Path | str, t2m_dir: Path | str, pattern: str) -> tuple[dict, list]:
     """Cached POWER cells {(lat, lon): daily frame}, with daily mean T2M joined from its own cache (D-72).
 
