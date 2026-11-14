@@ -109,8 +109,8 @@ CONTRACT_FIELDS = {
         "reports",
         "coverage",
         "explain_terms",
-        "datasets_not_used",  # D-165
         "limitations",
+        "datasets_not_used",  # D-165
         "rain_check",
         "sources",
     ],

@@ -50,8 +50,8 @@ def method(root: Path) -> MethodResponse:
         reports=metrics.reports,
         coverage=texts.coverage,
         explain_terms=texts.explain_terms,
-        datasets_not_used=texts.datasets_not_used,
         limitations=texts.limitations,
+        datasets_not_used=texts.datasets_not_used,
         rain_check=None,
         sources=pick_sources(load_sources(root), source_ids_in([item.model_dump() for item in parts])),
     )

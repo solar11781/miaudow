@@ -446,8 +446,8 @@ class MethodResponse(Contract):
     reports: list[ReportItem]
     coverage: list[CoverageCell]
     explain_terms: list[ExplainTerm]
-    datasets_not_used: list[NotUsedDataset]
     limitations: list[Text]
+    datasets_not_used: list[NotUsedDataset]
     rain_check: RainCheck | None
     sources: dict[SourceId, SourceFacts]
 
