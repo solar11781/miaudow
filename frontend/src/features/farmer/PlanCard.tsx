@@ -252,10 +252,17 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
     <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight}>
       <ShareTable plan={plan} codes={DROUGHT_RULES} rules={res.rules} refs={refs} />
       <ul className={s.kv}>
-        {plan.calendar.map((c) =>
-          plan.water
-            .filter((w) => w.crop_key === c.crop_key)
-            .map((w, i) => (
+        {plan.calendar.map((c) => {
+          const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
+          // a note shared by the crop's rows (e.g. the standard does not place Nghệ An, D-68) is said once, above them
+          const notes = [...new Map(facts.flatMap((w) => (w.note ? [[w.note.en, w.note] as const] : []))).values()];
+          return [
+            ...notes.map((n) => (
+              <li key={`${c.crop_key}-note-${n.en}`} className={s.waterNote}>
+                {pick(c.crop)}: {pick(n)}
+              </li>
+            )),
+            ...facts.map((w, i) => (
               <li key={`${c.crop_key}-${i}`}>
                 <span>
                   {pick(c.crop)} · {w.measure === 'not_listed' ? t.common.notListed : t.farmer.waterLead[w.measure]}
@@ -270,11 +277,11 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
                     />
                   )}
                   {w.scope && <span className="muted small">{pick(w.scope)}</span>}
-                  {w.note && <span className="muted small">{pick(w.note)}</span>}
                 </span>
               </li>
             )),
-        )}
+          ];
+        })}
       </ul>
       {plan.exposure.length > 0 && (
         <div className={s.sub}>

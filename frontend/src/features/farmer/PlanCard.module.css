@@ -380,3 +380,9 @@
     transition: none;
   }
 }
+.waterNote {
+  color: var(--fg-3);
+  font-size: var(--t-small);
+  line-height: 1.45;
+  padding-block: var(--s-2);
+}

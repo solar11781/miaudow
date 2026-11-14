@@ -142,3 +142,33 @@ describe('calendar axis', () => {
     );
   });
 });
+
+// walkthrough 2026-11-14 and D-68: a note shared by several TCVN rows of one crop is said once, above those rows
+describe('water notes', () => {
+  afterEach(cleanup);
+  it('say a shared note once per crop', () => {
+    const res = validateCompare(compare(), body);
+    const plan = res.plans[2];
+    const key = plan?.calendar[0]?.crop_key;
+    if (!plan || !key) throw new Error('no plan');
+    const note = { vi: 'Tiêu chuẩn không nói Nghệ An thuộc vùng nào.', en: 'The standard does not place Nghệ An.' };
+    const value = { value: '6,500-7,500', unit: { vi: 'm3/ha', en: 'm3/ha' }, source_ids: ['R-P02'] };
+    plan.water = ['Trung bộ, cấy', 'Trung bộ, gieo thẳng', 'Bắc bộ'].map((region) => ({
+      crop_key: key,
+      measure: 'to_apply' as const,
+      value,
+      scope: { vi: region, en: region },
+      note,
+    }));
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const water = document.querySelector(`[data-testid="card-${plan.id}-row-water"]`)?.textContent ?? '';
+    expect(water.split(note.vi)).toHaveLength(2);
+    expect(water.indexOf(note.vi)).toBeLessThan(water.indexOf('Trung bộ, cấy'));
+  });
+});
