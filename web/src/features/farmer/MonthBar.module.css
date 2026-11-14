@@ -9,10 +9,11 @@
 .bare { background: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--fg) 9%, transparent) 5px 6px); }
 .seg {
   position: absolute; border-radius: 7px; border-left: 3px solid; display: flex; align-items: center; padding-left: .45rem;
-  font: 600 .78rem/1.1 var(--font-ui); overflow: hidden; white-space: nowrap; box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+  font: 600 17px/1.1 var(--font-ui); overflow: hidden; white-space: nowrap; box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
 }
 .segName { overflow: hidden; text-overflow: ellipsis; }
-.ticks { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); font: 400 .72rem/1 var(--font-mono); color: var(--fg-3); text-align: center; }
+.ticks { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); font: 400 17px/1 var(--font-mono); color: var(--fg-3); text-align: center; }
+@media (max-width: 480px) { .ticks span:nth-child(even) { visibility: hidden; } }
 .legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: var(--t-micro); color: var(--fg-3); }
 .legend span { display: inline-flex; align-items: center; gap: .4rem; }
 .bareKey { display: inline-block; width: 16px; height: 11px; border-radius: 3px; border: 1px solid var(--line-2); background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--fg) 20%, transparent) 3px 4px); }

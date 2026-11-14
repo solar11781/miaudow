@@ -33,7 +33,7 @@
 .startLead { color: var(--fg-2); }
 .startList { list-style: none; display: flex; flex-direction: column; gap: .5rem; margin-block: var(--s-2); }
 .startList li { display: flex; align-items: center; gap: .8rem; color: var(--fg); }
-.startNum { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-2); font: 500 .85rem/1 var(--font-mono); color: var(--c-gold-300); }
+.startNum { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-2); font: 500 17px/1 var(--font-mono); color: var(--c-gold-300); }
 
 /* choices */
 .choices { display: flex; flex-direction: column; gap: var(--s-3); }

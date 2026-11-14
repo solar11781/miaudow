@@ -1,6 +1,6 @@
 import { bareMonths, formatDayMonth, segments } from '../../domain/calendar';
 import { CROPS, type Plan } from '../../domain/plans';
-import { usePick, useSettings, useT } from '../../app/settings';
+import { usePick, useT } from '../../app/settings';
 import s from './MonthBar.module.css';
 
 const FAMILY_FILL: Record<string, [string, string]> = {
@@ -10,13 +10,11 @@ const FAMILY_FILL: Record<string, [string, string]> = {
   root: ['#eed3c7', '#a8532f'],
   other: ['#e6d9e7', '#7b5579'],
 };
-const EN_MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 
 /** Twelve-month field calendar. Overlapping reported dates go on separate lanes instead of hiding each other. */
 export function MonthBar({ plan }: { plan: Plan }) {
   const t = useT();
   const pick = usePick();
-  const { lang } = useSettings();
   const segs = segments(plan);
   const lanes = Math.max(1, ...segs.map((x) => x.lane + 1));
   const bare = bareMonths(plan);
@@ -40,7 +38,7 @@ export function MonthBar({ plan }: { plan: Plan }) {
         })}
       </div>
       <div className={s.ticks} aria-hidden="true">
-        {Array.from({ length: 12 }, (_, i) => <span key={i}>{lang === 'vi' ? `T${i + 1}` : EN_MONTHS[i]}</span>)}
+        {Array.from({ length: 12 }, (_, i) => <span key={i}>{i + 1}</span>)}
       </div>
       <figcaption className={s.legend}>
         <span><i className={s.bareKey} />{t.farmer.bare}</span>
