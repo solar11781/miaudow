@@ -986,6 +986,7 @@ export const en: Messages = {
     signInTitle: 'Sign in to save your answers',
     signInLead: 'You do not have to. Every page works without signing in.',
     noticeTitle: 'Please read before you sign in',
+    noticeLead: 'Only your answers are saved, and you can delete them at any time.',
     notice: [
       'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you), so you can open them again on another phone. Saving does not change any number.',
       'We store only your Google account id (a code that Google gives) and the answers you save. No name, email or picture.',
@@ -1012,6 +1013,9 @@ export const en: Messages = {
     openLabel: (name: string) => `Open: ${name}`,
     remove: 'Delete',
     removeLabel: (name: string) => `Delete: ${name}`,
+    removeAsk: 'Delete this set of answers?',
+    removeYes: 'Yes, delete',
+    removeNo: 'No, keep it',
     removed: 'The set of answers is deleted.',
     signOut: 'Sign out',
     signedOut: 'You are signed out.',

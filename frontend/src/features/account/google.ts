@@ -2,7 +2,8 @@
 // is added to the page only by the sign-in page after the farmer has read the notice (UI-UX-SPEC §12c, H14).
 // https://developers.google.com/identity/gsi/web/reference/js-reference
 
-export const GSI_CLIENT = 'https://accounts.google.com/gsi/client';
+const GSI = 'https://accounts.google.com/gsi/';
+export const GSI_CLIENT = `${GSI}client`;
 
 export interface GoogleId {
   initialize(config: { client_id: string; callback: (answer: { credential: string }) => void }): void;
@@ -20,6 +21,14 @@ declare global {
 }
 
 let loading: Promise<GoogleId> | null = null;
+
+/** Takes Google's script, its stylesheet and its API off the page when the sign-in page is left, so they are there
+ * only on the sign-in pages (H14). */
+export function unloadGoogle() {
+  loading = null;
+  for (const el of document.querySelectorAll(`script[src^="${GSI}"], link[href^="${GSI}"]`)) el.remove();
+  delete window.google;
+}
 
 /** Adds Google's script once and resolves with its sign-in API; a failed load can be tried again. */
 export function loadGoogle(): Promise<GoogleId> {

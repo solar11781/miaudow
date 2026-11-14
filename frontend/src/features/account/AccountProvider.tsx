@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import { ApiError } from '../../api';
+import { api, ApiError } from '../../api';
+import { useApi } from '../../hooks/useApi';
 
 interface Account {
   /** Google's ID token, kept in memory only (UI-UX-SPEC H14): never in the browser's storage, a cookie or an address. */
@@ -41,6 +42,15 @@ export function useAccount() {
   const c = useContext(Ctx);
   if (!c) throw new Error('useAccount outside AccountProvider');
   return c;
+}
+
+/** The sign-in config, read once per page. */
+export const useSignInConfig = () => useApi(api.account.config, 'account-config');
+
+/** True once the server said sign-in is on; false while loading, off or unreachable. */
+export function useSignInAvailable() {
+  const [config] = useSignInConfig();
+  return config.status === 'ok' && config.data.available;
 }
 
 // the pages a finished sign-in may return to; anything else goes to the saved answers page

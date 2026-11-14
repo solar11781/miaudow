@@ -2,11 +2,10 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, ApiError } from '../../api';
 import { Button, ButtonLink } from '../../design-system/Button';
-import { useApi } from '../../hooks/useApi';
 import { useSettings, useT } from '../../app/settings';
 import { LoadState } from '../provenance/LoadState';
-import { safeBack, useAccount } from './AccountProvider';
-import { loadGoogle } from './google';
+import { safeBack, useAccount, useSignInConfig } from './AccountProvider';
+import { loadGoogle, unloadGoogle } from './google';
 import s from './account.module.css';
 
 /** Google's own button; Google's script is added only when this mounts, after the notice was read. */
@@ -75,6 +74,9 @@ function Notice() {
       <h2 id="sign-in-notice" className="h3">
         {t.account.noticeTitle}
       </h2>
+      <p>
+        <strong>{t.account.noticeLead}</strong>
+      </p>
       <ul className="stack">
         {t.account.notice.map((line) => (
           <li key={line}>{line}</li>
@@ -97,8 +99,9 @@ export function SignInPage() {
   const back = safeBack(params.get('ve'));
   const navigate = useNavigate();
   const { token, signIn } = useAccount();
-  const [config, retry] = useApi(api.account.config, 'account-config');
+  const [config, retry] = useSignInConfig();
   const [step, setStep] = useState<Step>('notice');
+  useEffect(() => unloadGoogle, []);
 
   const onToken = async (credential: string) => {
     setStep('busy');
