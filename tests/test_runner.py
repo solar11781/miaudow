@@ -255,3 +255,17 @@ def test_secondary_models_are_reproducible_with_a_fixed_seed():
         one = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=7), grid))
         two = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=7), grid))
         assert np.allclose(one["pred"], two["pred"])
+
+
+def test_left_out_rows_are_never_trained_on_or_scored_but_stay_the_last_year_of_b2():
+    # Source: E-018 run (a) as the team read it (2026-11-14): FAO-flagged rows are left out of training and scoring
+    # only; the normals and B2's last-year lookup stay as in the primary test (one change per sensitivity run)
+    df = _synthetic(n_series=6, years=range(2008, 2025))
+    df["flag"] = (df.series_id == "s1") & df.year.isin([2012, 2017])
+    p = run_rolling_origin(df, ["x"], ["ctx"], ALPHAS, left_out="flag")["predictions"]
+    assert not ((p.series_id == "s1") & (p.year == 2017)).any()  # a flagged test row is not scored
+    row = p[(p.series_id == "s1") & (p.year == 2018)].iloc[0]
+    assert row["b2"] == pytest.approx(df[(df.series_id == "s1") & (df.year == 2017)]["anom"].iloc[0])
+    trained = df[(df.series_id == "s1") & (df.year < 2018) & ~df.flag]
+    assert row["b0"] == pytest.approx(trained["anom"].mean())  # B0 is fit without the flagged rows
+    assert len(p) == 6 * 9 - 1  # every other series-year of 2016-2024 is scored
