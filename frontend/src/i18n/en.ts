@@ -423,7 +423,8 @@ export const en: Messages = {
     matrixLead:
       'Each cell gives the value, the kind of evidence and the source. An empty cell means the source has no value; Miaudow does not fill it in.',
     colPlan: 'Plan',
-    colMoney: 'Yearly profit',
+    colMoney: 'Profit in the trial',
+    p03Money: 'Summer-autumn rice 2020 only, in the second paper of Trịnh Đức Toàn et al. (2023); not a yearly sum',
     colWeather: 'Weather',
     colWater: 'Irrigation',
     colLand: 'Soil',

@@ -416,7 +416,9 @@ export const vi = {
     matrixLead:
       'Mỗi ô ghi giá trị, loại bằng chứng và nguồn. Ô trống nghĩa là nguồn không có số liệu; Miaudow không điền thay.',
     colPlan: 'Cách trồng',
-    colMoney: 'Lãi cả năm',
+    colMoney: 'Lãi trong thử nghiệm',
+    p03Money:
+      'Chỉ lúa vụ Hè Thu 2020, trong bài báo thứ hai của Trịnh Đức Toàn và cs. (2023); không phải tổng của một năm',
     colWeather: 'Thời tiết',
     colWater: 'Nước tưới',
     colLand: 'Đất',
