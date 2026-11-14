@@ -177,6 +177,11 @@ def run_rolling_origin(
     return _summary(parts, alphas)
 
 
+def _refuse_left_out(df: pd.DataFrame, run: str) -> None:
+    if LEFT_OUT in df:
+        raise ValueError(f"{run} does not honour the {LEFT_OUT} column; only run_rolling_origin leaves rows out")
+
+
 def run_spatial_holdout(
     df: pd.DataFrame,
     weather_cols: Sequence[str],
@@ -189,6 +194,7 @@ def run_spatial_holdout(
 
     df also needs a `region` column: the block of each row. B0 is each held-out series' own earlier mean (D-146).
     """
+    _refuse_left_out(df, "run_spatial_holdout")
     m1_cols = list(context_cols) + list(weather_cols)
     data = _checked(df, alphas, m1_cols)
     block = data["region"]
@@ -223,6 +229,7 @@ def run_secondary(
     model: (fit(x, y, params) with its seed bound, the grid). Returns series_id, year, y, pred and param (grid index).
     """
     fit, grid = model
+    _refuse_left_out(df, "run_secondary")
     m1_cols = list(context_cols) + list(weather_cols)
     data = _checked(df, grid, m1_cols)
     parts = []
