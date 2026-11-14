@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from fieldshift.engine.compare import compare
+from fieldshift.engine.compare import compare, load_compare_data
 from fieldshift.engine.schemas import PLAN_IDS, CompareRequest
 from source_trace import check_response
 
@@ -63,7 +63,7 @@ def root(tmp_path: Path) -> Path:
 
 @pytest.fixture(scope="module")
 def resp(real: Path) -> dict:
-    return compare(request(), real).model_dump(by_alias=True)
+    return compare(request(), load_compare_data(real)).model_dump(by_alias=True)
 
 
 def plan(resp: dict, plan_id: str) -> dict:
@@ -87,9 +87,16 @@ def test_land_and_priority_change_nothing_but_the_echo_t3(real: Path, resp: dict
     base = {k: v for k, v in resp.items() if k != "request"}
     for land in ("dry", "unsure"):
         for priority in ("income", "stability", "water", "land"):
-            out = compare(request(land=land, priority=priority), real).model_dump(by_alias=True)
+            out = compare(request(land=land, priority=priority), load_compare_data(real)).model_dump(by_alias=True)
             assert out["request"] == {"province": "nghe_an", "land": land, "years": YEARS, "priority": priority}
             assert {k: v for k, v in out.items() if k != "request"} == base
+
+
+def test_compare_reads_no_file_after_loading(root: Path, resp: dict) -> None:
+    # team note for queue item 20: the API loads the rules files and artifacts once at startup, not per request
+    data = load_compare_data(root)
+    shutil.rmtree(root)
+    assert compare(request(), data).model_dump(by_alias=True) == resp
 
 
 def test_test_years_cells_and_rules(resp: dict) -> None:
@@ -240,7 +247,7 @@ def test_a_cost_the_source_does_not_report_is_null(root: Path) -> None:
         del plans[0]["reported_economics"]["cost_per_crop"]["usual_spring_rice"]
 
     edit_yaml(root, "rotations.yaml", drop_cost)
-    money = plan(compare(request(), root).model_dump(by_alias=True), "usual")["money"]
+    money = plan(compare(request(), load_compare_data(root)).model_dump(by_alias=True), "usual")["money"]
     assert money["items"][0]["cost"] is None  # UI-UX-SPEC §11 MoneyItem.cost: null when the source reports none
     assert money["total"]["value"] == "30,799"  # the total sums the profit values only
 
@@ -251,7 +258,7 @@ def test_a_crop_without_a_profit_fails_naming_it(root: Path) -> None:
 
     edit_yaml(root, "rotations.yaml", drop_profit)
     with pytest.raises(ValueError, match="usual_spring_rice"):
-        compare(request(), root)
+        compare(request(), load_compare_data(root))
 
 
 # ---- exposure
@@ -292,7 +299,7 @@ def test_a_missing_soil_wetness_row_fails_naming_the_crop_and_year(root: Path) -
 
     edit_json(root, "soil_wetness.json", drop)
     with pytest.raises(ValueError, match=r"usual_spring_rice.*2007"):
-        compare(request(), root)
+        compare(request(), load_compare_data(root))
 
 
 def test_a_null_soil_wetness_stays_null(root: Path) -> None:
@@ -302,7 +309,7 @@ def test_a_null_soil_wetness_stays_null(root: Path) -> None:
                 r["value"] = None
 
     edit_json(root, "soil_wetness.json", null)
-    rice = plan(compare(request(), root).model_dump(by_alias=True), "usual")["exposure"][0]
+    rice = plan(compare(request(), load_compare_data(root)).model_dump(by_alias=True), "usual")["exposure"][0]
     assert rice["per_year"][0]["soil_wetness"] == {"value": None, "normal": pct("65", SOIL_IDS)}
 
 
@@ -351,12 +358,16 @@ def test_summer_autumn_rice_worst_year(resp: dict) -> None:
 
 def test_the_median_of_an_even_count_is_rounded_once(real: Path) -> None:
     # D-156: 1998 0.07565789473684204 and 1999 0.09090909090909127 -> exact mean 0.08328... -> 8 (rounding first: 9)
-    block = plan(compare(request([1998, 1999]), real).model_dump(by_alias=True), "usual")["stability"][0]
+    block = plan(compare(request([1998, 1999]), load_compare_data(real)).model_dump(by_alias=True), "usual")[
+        "stability"
+    ][0]
     assert [v["value"] for v in block["summary"].values()] == ["8", "8", "9"]
 
 
 def test_no_summary_from_fewer_than_two_real_values(real: Path) -> None:
-    block = plan(compare(request([1995, 2007]), real).model_dump(by_alias=True), "usual")["stability"][0]
+    block = plan(compare(request([1995, 2007]), load_compare_data(real)).model_dump(by_alias=True), "usual")[
+        "stability"
+    ][0]
     assert (block["years_count"], block["summary"], block["worst_years"]) == (1, None, [])  # D-95; 1995 has no normal
 
 
@@ -371,7 +382,9 @@ def show_spring(data: dict, passed_g4: bool = True) -> None:
 
 def test_a_prediction_only_in_test_years_and_its_range_only_where_g4_passed(root: Path) -> None:
     edit_json(root, "risk_table.json", show_spring)
-    rows = plan(compare(request([2010, 2016]), root).model_dump(by_alias=True), "usual")["stability"][0]["per_year"]
+    rows = plan(compare(request([2010, 2016]), load_compare_data(root)).model_dump(by_alias=True), "usual")[
+        "stability"
+    ][0]["per_year"]
     assert (rows[0]["oos_prediction"], rows[0]["range_80"]) == (None, None)  # 2010 is before test_years (D-82)
     assert rows[1]["oos_prediction"] == pct("1", ["E-012"])  # 0.0123 -> 1.23 -> 1
     assert rows[1]["range_80"] == {"low": pct("-2", ["E-012"]), "high": pct("5", ["E-012"])}  # gates.json G4 spring
@@ -386,7 +399,9 @@ def test_no_range_where_g4_failed(root: Path) -> None:
                 g["passed"] = False
 
     edit_json(root, "gates.json", fail_g4)
-    row = plan(compare(request([2016]), root).model_dump(by_alias=True), "usual")["stability"][0]["per_year"][0]
+    row = plan(compare(request([2016]), load_compare_data(root)).model_dump(by_alias=True), "usual")["stability"][0][
+        "per_year"
+    ][0]
     assert (row["oos_prediction"]["value"], row["range_80"]) == ("1", None)  # D-94
 
 
@@ -398,7 +413,7 @@ def test_a_missing_risk_row_fails_naming_the_season_and_year(root: Path) -> None
 
     edit_json(root, "risk_table.json", drop)
     with pytest.raises(ValueError, match=r"spring.*2007"):
-        compare(request(), root)
+        compare(request(), load_compare_data(root))
 
 
 # ---- water
@@ -517,4 +532,4 @@ def test_why_parts_and_risks_come_from_rotations_yaml(resp: dict) -> None:
 def test_plans_out_of_order_fail_naming_the_file(root: Path) -> None:
     edit_yaml(root, "rotations.yaml", lambda plans: plans.reverse())
     with pytest.raises(ValueError, match=r"rotations\.yaml"):
-        compare(request(), root)
+        compare(request(), load_compare_data(root))
