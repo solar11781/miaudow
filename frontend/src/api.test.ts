@@ -122,6 +122,12 @@ describe('source ids', () => {
   });
 });
 
+// a new module instance, so the in-memory past-years response of another test is not reused
+const freshApi = async () => {
+  vi.resetModules();
+  return (await import('./api')).api;
+};
+
 describe('requests', () => {
   afterEach(() => vi.unstubAllGlobals());
 
@@ -135,8 +141,20 @@ describe('requests', () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ detail: 'Not Found' }), { status: 404 })));
     await expect(api.method()).rejects.toEqual(new ApiError(404, 'Not Found'));
   });
+  it('loads past years once per page, shared by every screen and never cancelled by one (section 11)', async () => {
+    const fetchMock = vi.fn(async (_: string, init: RequestInit) => {
+      await Promise.resolve();
+      if (init.signal?.aborted) throw new DOMException('aborted', 'AbortError');
+      return new Response(JSON.stringify(pastYears()), { status: 200 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const fresh = await freshApi();
+    const first = fresh.pastYears();
+    await expect(fresh.pastYears()).resolves.toBe(await first);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
   it('rejects a response that fails the check', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ province: 'nghe_an' }), { status: 200 })));
-    await expect(api.pastYears()).rejects.toBeInstanceOf(ContractError);
+    await expect((await freshApi()).pastYears()).rejects.toThrow(/rules: missing/);
   });
 });

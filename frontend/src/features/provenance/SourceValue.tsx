@@ -1,19 +1,21 @@
 import type { ReactNode } from 'react';
-import type { SourceRef } from '../../domain/provenance';
+import type { SheetRef } from '../../domain/provenance';
 import { SealGlyph } from '../../design-system/Icon';
 import { useT } from '../../app/settings';
 import { useProvenance } from './ProvenanceProvider';
 import s from './SourceValue.module.css';
 
-interface Props extends SourceRef {
+type Props = SheetRef & {
   children?: ReactNode;
   size?: 'md' | 'lg' | 'xl';
   /** Show the short source name under the value (officer mode). */
   showSource?: string;
-}
+};
 
 /** A sourced number: the number itself is the button, and the red seal says "tap for the source". */
-export function SourceValue({ children, size = 'md', showSource, ...ref }: Props) {
+export function SourceValue(props: Props) {
+  const { children, size = 'md', showSource } = props;
+  const ref: SheetRef = props;
   const open = useProvenance();
   const t = useT();
   return (

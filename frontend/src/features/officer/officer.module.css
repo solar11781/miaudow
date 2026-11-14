@@ -87,7 +87,6 @@
 }
 .step { color: var(--accent-ink); font-weight: 600; }
 .conclusion { font: 400 clamp(1.35rem, 1.2rem + .6vw, 1.75rem)/1.3 var(--font-display); }
-.deskMonths { margin-top: var(--s-2); }
 .deskCrops { list-style: none; display: flex; flex-direction: column; gap: .3rem; }
 .deskCrops li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-2); border-bottom: 1px dashed var(--line); padding-block: .2rem; }
 .limits { padding-left: 1.2rem; color: var(--fg-2); display: flex; flex-direction: column; gap: .2rem; }

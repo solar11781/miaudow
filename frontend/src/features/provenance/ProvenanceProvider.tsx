@@ -1,15 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import type { SourceRef } from '../../domain/provenance';
+import type { SheetRef } from '../../domain/provenance';
 import { ProvenanceSheet } from './ProvenanceSheet';
 
-const Ctx = createContext<((ref: SourceRef) => void) | null>(null);
+const Ctx = createContext<((ref: SheetRef) => void) | null>(null);
 
 /** One shared sheet for the whole app; any sourced number opens it with its own reference. */
 export function ProvenanceProvider({ children }: { children: ReactNode }) {
-  const [current, setCurrent] = useState<SourceRef | null>(null);
+  const [current, setCurrent] = useState<SheetRef | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
 
-  const open = useCallback((ref: SourceRef) => setCurrent(ref), []);
+  const open = useCallback((ref: SheetRef) => setCurrent(ref), []);
 
   useEffect(() => {
     const d = dialog.current;

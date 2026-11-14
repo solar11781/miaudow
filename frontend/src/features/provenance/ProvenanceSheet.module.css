@@ -38,3 +38,5 @@
 @media (max-width: 420px) { .facts { grid-template-columns: minmax(0, 1fr); gap: 2px var(--s-4); } .facts dd { margin-bottom: var(--s-2); } }
 .caveat { border-left: 3px solid var(--hl-line); background: var(--hl-bg); color: var(--hl-fg); padding: var(--s-3) var(--s-4); border-radius: 0 var(--r-sm) var(--r-sm) 0; font-size: var(--t-small); }
 .link { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent-ink); font-weight: 500; text-underline-offset: 4px; }
+.block { display: flex; flex-direction: column; gap: var(--s-3); padding-top: var(--s-4); border-top: 1px solid var(--line-2); }
+.facts ul { padding-left: 1.1em; }

@@ -3,7 +3,6 @@ import { CROPS, PLANS, planProfitMillion, type Plan } from '../../domain/plans';
 import { LANDS, type Land } from '../../domain/farmerState';
 import { decisionPlan, rulebookPlan } from '../../data/rulebook';
 import { Icon } from '../../design-system/Icon';
-import { MonthBar } from '../farmer/MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { usePick, useT } from '../../app/settings';
@@ -65,7 +64,6 @@ function Ladder({ plan }: { plan: Plan }) {
                 ? <SourceValue size="xl" {...refs.planProfit(plan, total)} />
                 : plan.textOnly && <SourceValue size="lg" sourceId="p03" kind="study" value={pick(plan.textOnly.profitNote)} label={t.officer.colMoney} />}
             </div>
-            {plan.crops.length > 0 && <div className={s.deskMonths}><MonthBar plan={plan} /></div>}
             {plan.crops.length > 0 && (
               <ul className={s.deskCrops}>
                 {plan.crops.map((c) => <li key={c.key}><span>{pick(CROPS[c.crop].name)} {c.variety}</span><SourceValue {...refs.cropProfit(c)} /></li>)}

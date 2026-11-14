@@ -72,7 +72,7 @@ function Matrix() {
                 <td>
                   {p.crops.length ? (
                     <span className={s.land}>
-                      <span>{t.farmer.livingDays(livingDays(p))}</span>
+                      <span>{t.farmer.livingDays}: {livingDays(p)}/365</span>
                       <span>{planHasLegume(p) ? t.farmer.legumeYes : t.farmer.legumeNo}</span>
                     </span>
                   ) : <span className={s.empty}>—</span>}

@@ -226,8 +226,9 @@ export const GRID_FIGURE_URL = '/api/figures/nghe_an_grid.svg';
 let pastYearsOnce: Promise<PastYearsResponse> | null = null;
 
 export const api = {
-  pastYears(signal?: AbortSignal): Promise<PastYearsResponse> {
-    pastYearsOnce ??= call('/past-years?province=nghe_an', { signal }).then(validatePastYears);
+  /** Shared by every screen of the page, so one screen leaving does not cancel it; callers ignore a late answer. */
+  pastYears(): Promise<PastYearsResponse> {
+    pastYearsOnce ??= call('/past-years?province=nghe_an').then(validatePastYears);
     pastYearsOnce.catch(() => { pastYearsOnce = null; });
     return pastYearsOnce;
   },

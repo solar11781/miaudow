@@ -1,27 +1,22 @@
-import { decisionPlan, rulebookPlan } from '../../data/rulebook';
-import type { Land } from '../../domain/farmerState';
 import { useState, type ReactNode } from 'react';
-import { livingDays } from '../../domain/calendar';
-import { cropShare, cropShareRange, soilReading } from '../../domain/hazards';
-import { CROPS, planCropCount, planHasLegume, planProfitMillion, type Plan } from '../../domain/plans';
-import { riceSummary } from '../../domain/rice';
-import type { Priority } from '../../domain/farmerState';
-import type { RiceSeason } from '../../data';
-import { SOURCES } from '../../domain/sources';
+import type { CompareResponse, Plan, Priority, RuleCode, Stability, Value } from '../../types';
+import { RULES } from '../../domain/hazards';
 import { Icon, type IconName } from '../../design-system/Icon';
-import { MonthBar } from './MonthBar';
+import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
-import { useRefs } from '../provenance/useRefs';
-import { useFormat, usePick, useT } from '../../app/settings';
+import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
+import { usePick, useT } from '../../app/settings';
 import s from './PlanCard.module.css';
 
 const FAMILY_DOT: Record<string, string> = { rice: '#6e9e3c', legume: '#c9962e', maize: '#d8c03c', root: '#c06a44', other: '#9a73a0' };
-const CARD_RULES = ['drought_rain_any2', 'heat', 'heavy_rain'] as const;
+// UI-UX-SPEC section 9: heavy rain, heat and cold in the weather row; both drought readings in the water row (D-58)
+const WEATHER_RULES: RuleCode[] = ['heavy_rain', 'heat', 'cold'];
+const DROUGHT_RULES: RuleCode[] = ['drought_rain_consecutive', 'drought_rain_any2'];
 
 function Row({ icon, title, note, highlight, children }: { icon: IconName; title: string; note?: string; highlight?: boolean; children: ReactNode }) {
   const t = useT();
   return (
-    <section className={[s.row, highlight ? s.hl : ''].join(' ')}>
+    <section className={[s.row, highlight ? s.hl : ''].join(' ')} data-highlighted={highlight ? 'true' : undefined}>
       <h3 className={s.rowHead}>
         <Icon name={icon} size={18} />
         {title}
@@ -33,149 +28,190 @@ function Row({ icon, title, note, highlight, children }: { icon: IconName; title
   );
 }
 
-function RiceRows({ seasons, years }: { seasons: RiceSeason[]; years: number[] }) {
+interface Ctx { plan: Plan; res: CompareResponse; refs: ApiRefs }
+
+function NumberOr({ v, label, refs }: { v: Value | null; label: string; refs: ApiRefs }) {
   const t = useT();
-  const f = useFormat();
-  const refs = useRefs();
-  return (
-    <div className={s.riceRows}>
-      {seasons.map((season) => {
-        const sum = riceSummary(season, years);
-        const one = sum.years[0];
-        return (
-          <p key={season} className={s.riceLine}>
-            <span className={s.riceSeason}>{t.science.seasons[season]}</span>
-            {sum.min && sum.max ? (
-              <span className={s.riceVals}>
-                <SourceValue {...refs.rice(season, sum.min.year, sum.min.actual as number)} />
-                <span className="muted">→</span>
-                <SourceValue {...refs.rice(season, sum.max.year, sum.max.actual as number)} />
-                <span className="muted small">{t.farmer.riceVs(f.signedPct(sum.min.actual as number), f.signedPct(sum.max.actual as number), sum.min.year)}</span>
-              </span>
-            ) : one ? <SourceValue {...refs.rice(season, one.year, one.actual as number)} /> : <span className="muted">{t.common.noData}</span>}
-          </p>
-        );
-      })}
-    </div>
-  );
+  return v ? <SourceValue {...refs.value(v, label)} /> : <span className="muted">{t.common.notAvailable}</span>;
 }
 
-function MoneyRow({ plan, highlight }: { plan: Plan; highlight: boolean }) {
+function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) {
   const t = useT();
   const pick = usePick();
-  const f = useFormat();
-  const refs = useRefs();
-  const total = planProfitMillion(plan);
+  const m = plan.money;
+  const seasonLabel = (code: string) => res.seasons.find((x) => x.code === code);
+  const textIds = plan.calendar.flatMap((c) => c.source_ids);
   return (
-    <Row icon="coin" title={t.farmer.rows.money} note={plan.crops.length ? t.farmer.rows.moneyNote : undefined} highlight={highlight}>
-      {total !== null && (
-        <>
-          <div className={s.money}><SourceValue size="xl" {...refs.planProfit(plan, total)}>{f.n(total, 1)}</SourceValue><span className={s.unit}>{t.common.millionPerHa}</span></div>
-          <ul className={s.cropMoney}>
-            {plan.crops.map((c) => (
-              <li key={c.key}><span>{pick(CROPS[c.crop].name)}</span><SourceValue {...refs.cropProfit(c)}>{f.million(c.profit)}</SourceValue></li>
-            ))}
-          </ul>
-        </>
-      )}
-      {total === null && plan.textOnly && (
-        <SourceValue sourceId="p03" kind="study" value={pick(plan.textOnly.profitNote)} label={t.farmer.rows.money} />
-      )}
-    </Row>
-  );
-}
-
-function WeatherRow({ plan, years, highlight }: { plan: Plan; years: number[]; highlight: boolean }) {
-  const t = useT();
-  const pick = usePick();
-  const f = useFormat();
-  const refs = useRefs();
-  const riceSeasons: RiceSeason[] = plan.id === 'p03' ? ['spring', 'summer_autumn'] : plan.crops.some((c) => c.crop === 'rice') ? ['spring'] : [];
-  return (
-    <Row icon="sun" title={t.farmer.rows.weather} note={plan.crops.length ? t.farmer.rows.weatherNote : undefined} highlight={highlight}>
-      {plan.crops.length > 0 && years.length > 0 && (
-        <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.farmer.rows.weather}>
-          <table className={s.wTable}>
-            <thead><tr><th scope="col">{t.farmer.crop}</th><th scope="col">{t.farmer.drought}</th><th scope="col">{t.farmer.heat}</th><th scope="col">{t.farmer.rain}</th></tr></thead>
-            <tbody>
-              {plan.crops.map((c) => (
-                <tr key={c.key}>
-                  <th scope="row">{pick(CROPS[c.crop].name)}</th>
-                  {CARD_RULES.map((rule) => {
-                    const r = cropShareRange(c.key, rule, years);
-                    if (!r) return <td key={rule}>—</td>;
-                    const worst = years.find((y) => cropShare(c.key, rule, y) === r.max) ?? (years[0] as number);
-                    const label = r.min === r.max ? f.pct(r.min) : `${f.n(r.min * 100)}–${f.pct(r.max)}`;
-                    return <td key={rule}><SourceValue {...refs.share(rule, worst, r.max, c)}>{label}</SourceValue></td>;
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <Row icon="coin" title={t.farmer.rows.money} note={pick(m.definition)} highlight={highlight}>
+      {m.total && (
+        <div className={s.money}>
+          <SourceValue size="xl" {...refs.value(m.total, t.farmer.ourSum)}>{m.total.value}</SourceValue>
+          <span className={s.unit}>{pick(m.total.unit)} · {t.farmer.ourSum}</span>
         </div>
       )}
-      {riceSeasons.length > 0 && (
-        <div className={s.sub}>
-          <p className={s.subHead}>{t.farmer.rows.rice}</p>
-          <RiceRows seasons={riceSeasons} years={years} />
-        </div>
-      )}
-    </Row>
-  );
-}
-
-function WaterRow({ plan, years, highlight }: { plan: Plan; years: number[]; highlight: boolean }) {
-  const t = useT();
-  const pick = usePick();
-  const f = useFormat();
-  const refs = useRefs();
-  const unique = [...new Map(plan.crops.map((c) => [c.crop, c])).values()];
-  return (
-    <Row icon="drop" title={t.farmer.rows.water} note={t.farmer.rows.waterNote} highlight={highlight}>
-      <ul className={s.kv}>
-        {unique.map((c) => {
-          const info = CROPS[c.crop] as { tcvn?: { vi: string; en: string }; fao?: string };
-          return (
-            <li key={c.key}>
-              <span>{pick(CROPS[c.crop].name)}</span>
-              <span className={s.kvVals}>
-                {info.tcvn ? <SourceValue {...refs.tcvn(c, pick(info.tcvn))} /> : <span className="muted small">{t.common.notListed}</span>}
-                {info.fao && <SourceValue {...refs.fao(c, info.fao)} />}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      <div className={s.sub}>
-        <p className={s.subHead}>{t.farmer.rows.soil}</p>
-        <ul className={s.kv}>
-          {plan.crops.map((c) => {
-            const sr = soilReading(c.key, years);
-            if (!sr) return null;
-            const mean = sr.values.reduce((a, b) => a + b, 0) / sr.values.length;
+      {m.items.length > 0 && (
+        <ul className={s.cropMoney}>
+          {m.items.map((item) => {
+            const season = seasonLabel(item.season);
+            const name = `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
             return (
-              <li key={c.key}>
-                <span>{pick(CROPS[c.crop].name)}</span>
-                <SourceValue {...refs.soil(c, f.n(mean, 2), f.n(sr.normal, 2))}>{t.farmer.soilVs(f.n(mean, 2), f.n(sr.normal, 2))}</SourceValue>
+              <li key={item.crop_key}>
+                <span>{name}</span>
+                <span>{t.farmer.profit}</span>
+                <SourceValue {...refs.value(item.profit, `${t.farmer.profit} · ${name}`)} />
+                <span>{t.farmer.cost}</span>
+                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} />
+                {item.flag && <span>{pick(item.flag)}</span>}
               </li>
             );
           })}
         </ul>
-        <p className={s.rowNote}>{t.farmer.rows.soilNote}</p>
-      </div>
+      )}
+      {m.text_only && <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} />}
     </Row>
   );
 }
 
-function LandRow({ plan, highlight }: { plan: Plan; highlight: boolean }) {
+function ShareTable({ plan, rules, refs }: { plan: Plan; rules: RuleCode[]; refs: ApiRefs }) {
   const t = useT();
+  const pick = usePick();
+  if (!plan.exposure.length) return null;
   return (
-    <Row icon="sprout" title={t.farmer.rows.land} note={t.farmer.legumeNote} highlight={highlight}>
+    <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.farmer.rows.weather}>
+      <table className={s.wTable}>
+        <thead><tr><th scope="col">{t.farmer.crop}</th>{rules.map((r) => <th key={r} scope="col">{pick(RULES[r].short)}</th>)}</tr></thead>
+        <tbody>
+          {plan.exposure.flatMap((c) => c.per_year.map((y) => (
+            <tr key={`${c.crop_key}-${y.year}`}>
+              <th scope="row">{pick(c.crop)} · {y.year}</th>
+              {rules.map((r) => {
+                const v = y.shares[r];
+                return <td key={r} data-rule={r}>{v ? <SourceValue {...refs.share(r, v, `${pick(RULES[r].name)} · ${pick(c.crop)} · ${y.year}`)} /> : <span className="muted">{t.common.notAvailable}</span>}</td>;
+              })}
+            </tr>
+          )))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function RiceBlock({ st, refs }: { st: Stability; refs: ApiRefs }) {
+  const t = useT();
+  const pick = usePick();
+  const label = pick(st.label);
+  return (
+    <div className={s.riceRows}>
+      <p className={s.subHead}>{label}</p>
+      {st.per_year.map((y) => (
+        <p key={y.year} className={s.riceLine}>
+          <span className={s.riceSeason}>{y.year}</span>
+          <span className={s.riceVals}>
+            <span className="muted small">{t.farmer.rice.real}</span>
+            <NumberOr v={y.real} label={`${label} · ${y.year}`} refs={refs} />
+            {y.oos_prediction && <><span className="muted small">{t.farmer.rice.prediction}</span><SourceValue {...refs.value(y.oos_prediction, `${t.farmer.rice.prediction} · ${y.year}`)} /></>}
+            {y.range_80 && (
+              <>
+                <span className="muted small">{t.farmer.rice.range}</span>
+                <SourceValue {...refs.value(y.range_80.low, `${t.farmer.rice.range} · ${y.year}`)} />
+                <SourceValue {...refs.value(y.range_80.high, `${t.farmer.rice.range} · ${y.year}`)} />
+              </>
+            )}
+          </span>
+        </p>
+      ))}
+      {st.summary && (
+        <p className={s.riceLine}>
+          <span className={s.riceVals}>
+            <span className="muted small">{t.farmer.rice.min}</span><SourceValue {...refs.value(st.summary.min, `${t.farmer.rice.min} · ${label}`)} />
+            <span className="muted small">{t.farmer.rice.median}</span><SourceValue {...refs.value(st.summary.median, `${t.farmer.rice.median} · ${label}`)} />
+            <span className="muted small">{t.farmer.rice.max}</span><SourceValue {...refs.value(st.summary.max, `${t.farmer.rice.max} · ${label}`)} />
+          </span>
+          <span className="muted small">{t.farmer.rice.worstYears(st.worst_years.join(', '))}</span>
+        </p>
+      )}
+      <p className={s.rowNote}>{t.farmer.rice.yearsCount(st.years_count)} · {pick(st.scope)}</p>
+      {st.model_status === 'not_modeled' && <p className={s.rowNote}>{t.science.notModeled}</p>}
+      {st.model_status === 'not_shown' && <p className={s.rowNote}>{t.science.modelHidden}</p>}
+    </div>
+  );
+}
+
+function WeatherRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boolean }) {
+  const t = useT();
+  const pick = usePick();
+  const rice = plan.stability ?? [];
+  const nonRice = plan.calendar.filter((c) => !rice.some((st) => st.crop_key === c.crop_key));
+  return (
+    <Row icon="sun" title={t.farmer.rows.weather} note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined} highlight={highlight}>
+      <ShareTable plan={plan} rules={WEATHER_RULES} refs={refs} />
+      {rice.length > 0 && (
+        <div className={s.sub}>
+          <p className={s.subHead}>{t.farmer.rows.rice}</p>
+          {rice.map((st) => <RiceBlock key={st.crop_key} st={st} refs={refs} />)}
+          <p className={s.rowNote}>{t.farmer.rice.nsoCredit}</p>
+        </div>
+      )}
+      {nonRice.length > 0 && <p className={s.rowNote}>{nonRice.map((c) => pick(c.crop)).join(', ')}: {t.farmer.rice.noData}</p>}
+    </Row>
+  );
+}
+
+function WaterRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boolean }) {
+  const t = useT();
+  const pick = usePick();
+  return (
+    <Row icon="drop" title={t.farmer.rows.water} highlight={highlight}>
+      <ShareTable plan={plan} rules={DROUGHT_RULES} refs={refs} />
+      <ul className={s.kv}>
+        {plan.calendar.map((c) => plan.water.filter((w) => w.crop_key === c.crop_key).map((w, i) => (
+          <li key={`${c.crop_key}-${i}`}>
+            <span>{pick(c.crop)} · {w.measure === 'not_listed' ? t.common.notListed : t.farmer.waterLead[w.measure]}</span>
+            <span className={s.kvVals}>
+              {w.value && <SourceValue {...refs.value(w.value, `${t.farmer.waterLead[w.measure === 'not_listed' ? 'to_apply' : w.measure]} · ${pick(c.crop)}`)} />}
+              {w.scope && <span className="muted small">{pick(w.scope)}</span>}
+              {w.note && <span className="muted small">{pick(w.note)}</span>}
+            </span>
+          </li>
+        )))}
+      </ul>
+      {plan.exposure.length > 0 && (
+        <div className={s.sub}>
+          <p className={s.subHead}>{t.farmer.rows.soil}</p>
+          <ul className={s.kv}>
+            {plan.exposure.flatMap((c) => c.per_year.map((y) => (
+              <li key={`${c.crop_key}-${y.year}`}>
+                <span>{pick(c.crop)} · {y.year}</span>
+                <span className={s.kvVals}>
+                  <NumberOr v={y.soil_wetness.value} label={`${t.farmer.rows.soil} · ${pick(c.crop)} · ${y.year}`} refs={refs} />
+                  <span className="muted small">{t.farmer.soilNormal}</span>
+                  <NumberOr v={y.soil_wetness.normal} label={`${t.farmer.soilNormal} · ${pick(c.crop)}`} refs={refs} />
+                </span>
+              </li>
+            )))}
+          </ul>
+          <p className={s.rowNote}>{t.farmer.rows.soilNote}</p>
+        </div>
+      )}
+      <p className={s.rowNote}>{t.farmer.rows.waterNote}</p>
+    </Row>
+  );
+}
+
+function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boolean }) {
+  const t = useT();
+  const pick = usePick();
+  const { crops_in_year: crops, living_days: days, legume } = plan.land;
+  const why = (ids: string[], name: string) => <SourceValue {...refs.sources(ids, t.farmer.principle, name)} />;
+  return (
+    <Row icon="sprout" title={t.farmer.rows.land} note={legume.present ? t.farmer.legumeNote : undefined} highlight={highlight}>
       <ul className={s.checks}>
-        <li><SourceValue sourceId="p02" kind="derived" value={t.farmer.cropsInYear(planCropCount(plan))} label={t.farmer.rows.land} chain={['p02']} /></li>
-        <li><SourceValue sourceId="p02" kind="derived" value={t.farmer.livingDays(livingDays(plan))} label={t.farmer.rows.land}
-          detail={plan.crops.map((c) => `${c.sow} → ${c.harvest}`).join(' ∪ ')} chain={['p02']} /></li>
-        <li className={s.legume}>{planHasLegume(plan) ? <><Icon name="check" size={16} strokeWidth={2.4} />{t.farmer.legumeYes}</> : t.farmer.legumeNo}</li>
+        <li>{t.farmer.cropsInYear}: <NumberOr v={crops.value} label={t.farmer.cropsInYear} refs={refs} />{why(crops.principle_source_ids, t.farmer.cropsInYear)}</li>
+        <li>{t.farmer.livingDays}: <NumberOr v={days.value} label={t.farmer.livingDays} refs={refs} />{why(days.principle_source_ids, t.farmer.livingDays)}</li>
+        <li className={s.legume}>
+          {legume.present ? <><Icon name="check" size={16} strokeWidth={2.4} />{t.farmer.legumeYes}: {legume.crops.map(pick).join(', ')}</> : t.farmer.legumeNo}
+          {why(legume.principle_source_ids, t.farmer.legumeYes)}
+        </li>
       </ul>
     </Row>
   );
@@ -184,114 +220,75 @@ function LandRow({ plan, highlight }: { plan: Plan; highlight: boolean }) {
 function CardHead({ plan }: { plan: Plan }) {
   const t = useT();
   const pick = usePick();
-  const kicker = plan.current ? (plan.source === 'p03' ? t.farmer.describedByP03 : t.farmer.describedByP02) : t.farmer.trialPlan(plan.id.toUpperCase());
   return (
     <header className={`${s.head} surface-forest`}>
       <p className={s.kicker}>
-        {plan.current && <span className={s.currentTag}>{t.farmer.current}</span>}
-        <span>{kicker}</span>
+        {plan.is_usual && <span className={s.currentTag}>{t.farmer.current}</span>}
+        <span>{pick(plan.name)}</span>
       </p>
       <h2 id={`title-${plan.id}`} className={s.chain}>
-        {plan.textOnly ? pick(plan.textOnly.sequence) : plan.crops.map((c, i) => (
-          <span key={c.key} className={s.link}>
+        {plan.calendar.map((c, i) => (
+          <span key={c.crop_key} className={s.link}>
             {i > 0 && <span className={s.arrow} aria-hidden="true">→</span>}
-            <i className={s.dot} style={{ background: FAMILY_DOT[CROPS[c.crop].family] }} aria-hidden="true" />
-            {pick(CROPS[c.crop].name)}
+            <i className={s.dot} style={{ background: FAMILY_DOT[CROP_FAMILY[c.crop_id] ?? 'other'] }} aria-hidden="true" />
+            {pick(c.crop)}
           </span>
         ))}
       </h2>
-      <p className={s.source}>{SOURCES[plan.source].short}</p>
     </header>
   );
 }
 
-/** Risk lines, reasons, fit with the farmer's field and questions for the officer: all from the governed rulebook and
- * the API's decision core (src/data/rulebook.ts), never written in the web app. */
-function GovernedRows({ plan, land }: { plan: Plan; land: Land | null }) {
+/** Risks and the four reasons of the API's Why (UI-UX-SPEC section 9 rows check and why). */
+function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
   const t = useT();
-  const rb = rulebookPlan(plan.id);
+  const pick = usePick();
+  const { why } = plan;
   return (
-    <>
-      <FitRow plan={plan} land={land} />
-      <details className={s.more}>
-        <summary><Icon name="alert" size={18} />{t.farmer.moreToWeigh(rb?.risk_lines.length ?? 0)}<Icon name="chevronDown" size={18} /></summary>
-        <RiskRows plan={plan} />
-        <WhyRows plan={plan} />
-        <AskRows plan={plan} />
-      </details>
-    </>
+    <details className={s.more}>
+      <summary><Icon name="alert" size={18} />{t.farmer.moreToWeigh(why.risks.length)}<Icon name="chevronDown" size={18} /></summary>
+      <Row icon="alert" title={t.farmer.rows.checks}>
+        {why.risks.length ? (
+          <ul className={s.risks}>
+            {why.risks.map((r) => (
+              <li key={r.text.en}>
+                <span>{pick(r.text)}</span>
+                {r.source_ids.length > 0 && <SourceValue {...refs.sources(r.source_ids, t.common.source, t.farmer.rows.checks)} />}
+              </li>
+            ))}
+          </ul>
+        ) : <p className={s.why}>{t.farmer.noneListed}</p>}
+        <p className={s.why}>{t.farmer.localReview}</p>
+      </Row>
+      <Row icon="question" title={t.farmer.rows.why}>
+        {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
+          <p key={k} className={s.why}><strong>{t.farmer.whyParts[k]}: </strong>{pick(why[k])}</p>
+        ))}
+      </Row>
+    </details>
   );
 }
 
-function FitRow({ plan, land }: { plan: Plan; land: Land | null }) {
-  const t = useT();
-  const pick = usePick();
-  const fit = decisionPlan(plan.id)?.applicability[land && land !== 'ask' ? land : 'unknown'];
-  return fit ? <Row icon="canal" title={t.farmer.rows.fit}><p className={s.why}>{pick(fit)}</p></Row> : null;
-}
-
-function RiskRows({ plan }: { plan: Plan }) {
-  const t = useT();
-  const pick = usePick();
-  const risks = rulebookPlan(plan.id)?.risk_lines ?? [];
-  if (!risks.length) return null;
-  return (
-    <Row icon="alert" title={t.farmer.rows.checks}>
-      <ul className={s.risks}>
-        {risks.map((r) => <li key={r.quote}><span>{pick(r.text)}</span><span className={s.where}>{t.farmer.riskWhere(sourceName(r.source_id), r.location)}</span></li>)}
-      </ul>
-    </Row>
-  );
-}
-
-function WhyRows({ plan }: { plan: Plan }) {
-  const t = useT();
-  const pick = usePick();
-  const why = rulebookPlan(plan.id)?.why;
-  if (!why) return null;
-  return (
-    <Row icon="question" title={t.farmer.rows.why}>
-      <p className={s.why}>{pick(why.why)}</p>
-      <p className={s.why}>{pick(why.gaps)}</p>
-    </Row>
-  );
-}
-
-function AskRows({ plan }: { plan: Plan }) {
-  const t = useT();
-  const pick = usePick();
-  const qs = decisionPlan(plan.id)?.questions_for_officer ?? [];
-  if (!qs.length) return null;
-  return (
-    <Row icon="user" title={t.farmer.rows.askOfficer}>
-      <ul className={s.bullets}>{qs.slice(0, 4).map((q) => <li key={q.vi}>{pick(q)}</li>)}</ul>
-    </Row>
-  );
-}
-
-/** Study names by first author and year (D-160); other sources by their short name. */
-function sourceName(id: string): string {
-  return ({ 'R-P02': 'Trịnh Đức Toàn và cs. 2023', 'R-P03': 'Trịnh Đức Toàn và cs. 2023 (bài 2)', 'R-G06': 'Nghị định 112/2024/NĐ-CP', 'R-G27': 'Nghị định 112/2024/NĐ-CP', 'R-C13': 'VietNamNet 31/08/2020' } as Record<string, string>)[id] ?? id;
-}
-
-export function PlanCard({ plan, years, priority, land, focused, onShare }: {
-  plan: Plan; years: number[]; priority: Priority | null; land: Land | null; focused?: boolean; onShare: (plan: Plan) => Promise<boolean>;
+export function PlanCard({ plan, res, priority, focused, onShare }: {
+  plan: Plan; res: CompareResponse; priority: Priority; focused?: boolean; onShare: (plan: Plan) => Promise<boolean>;
 }) {
   const t = useT();
+  const refs = useApiRefs(res.sources, res.rules);
   const [shareMsg, setShareMsg] = useState('');
-  const hasCrops = plan.crops.length > 0;
+  const hasDates = plan.calendar.some((c) => c.sow_from !== null);
   return (
-    <article id={`the-${plan.id}`} className={[s.card, focused ? s.focused : ''].join(' ')} aria-labelledby={`title-${plan.id}`}>
+    <article id={`the-${plan.id}`} data-testid={`card-${plan.id}`} className={[s.card, focused ? s.focused : ''].join(' ')} aria-labelledby={`title-${plan.id}`}>
       <CardHead plan={plan} />
       <div className={s.body}>
-        {hasCrops ? <MonthBar plan={plan} /> : <p className={s.noCal}><Icon name="calendar" size={18} />{t.farmer.p03NoCalendar}</p>}
-        <MoneyRow plan={plan} highlight={priority === 'income'} />
-        <WeatherRow plan={plan} years={years} highlight={priority === 'stability'} />
-        {hasCrops && <WaterRow plan={plan} years={years} highlight={priority === 'water'} />}
-        {hasCrops && <LandRow plan={plan} highlight={priority === 'land'} />}
-        <GovernedRows plan={plan} land={land} />
+        {hasDates ? <MonthBar plan={plan} refs={refs} /> : <p className={s.noCal}><Icon name="calendar" size={18} />{t.farmer.p03NoCalendar}</p>}
+        <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} />
+        <WeatherRow plan={plan} refs={refs} highlight={priority === 'stability'} />
+        <WaterRow plan={plan} refs={refs} highlight={priority === 'water'} />
+        <LandRow plan={plan} refs={refs} highlight={priority === 'land'} />
+        <WhyRows plan={plan} refs={refs} />
       </div>
       <footer className={s.foot}>
+        <p>{plan.money.price_year ? t.farmer.priceYear(plan.money.price_year) : t.farmer.priceYearNotStated}</p>
         <p>{t.farmer.cardFoot}</p>
         <div className={s.shareRow}>
           <button type="button" className={s.share} onClick={async () => setShareMsg((await onShare(plan)) ? t.farmer.shareCopied : t.farmer.shareFailed)}>

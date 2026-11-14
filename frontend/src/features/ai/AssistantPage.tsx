@@ -18,8 +18,6 @@ type Turn =
   | { id: number; question: string; kind: 'pending' };
 
 const WATERS: WaterSituation[] = ['canal_end', 'high_field', 'water_short', 'reliable'];
-// API plan ids → the farmer page's plan ids
-const PLAN_LINK: Record<string, string> = { usual: 'cc5', usual_p03: 'p03', cc1: 'cc1', cc2: 'cc2', cc3: 'cc3', cc4: 'cc4' };
 
 function YearCard({ year }: { year: number }) {
   const t = useT();
@@ -62,7 +60,7 @@ function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituat
         <div className={s.cards}>
           {plans.map((c) => (
             <Link key={c.ref_id} className={s.card} viewTransition
-              to={`/nong-dan/phuong-an?${new URLSearchParams({ ...(water ? { ruong: water } : {}), the: PLAN_LINK[c.ref_id] ?? 'cc1' }).toString()}`}>
+              to={`/nong-dan/phuong-an?${new URLSearchParams({ ...(water ? { ruong: water } : {}), the: c.ref_id }).toString()}`}>
               <span className={s.cardKind}><Icon name="sprout" size={18} />{t.copilot.cardPlan}</span>
               <strong className={s.cardTitle}>{pick(c.title)}</strong>
               <span className={s.cardGo}>{t.copilot.openPlan}<Icon name="arrowRight" size={16} /></span>

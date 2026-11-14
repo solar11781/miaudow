@@ -6,7 +6,7 @@
 }
 .month { border-right: 1px solid var(--line); }
 .month:last-child { border-right: 0; }
-.bare { background: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--fg) 9%, transparent) 5px 6px); }
+.bare { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--fg) 9%, transparent) 5px 6px); }
 .seg {
   position: absolute; border-radius: 7px; border-left: 3px solid; display: flex; align-items: center; padding-left: .45rem;
   font: 600 17px/1.1 var(--font-ui); overflow: hidden; white-space: nowrap; box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
@@ -17,3 +17,7 @@
 .legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: var(--t-micro); color: var(--fg-3); }
 .legend span { display: inline-flex; align-items: center; gap: .4rem; }
 .bareKey { display: inline-block; width: 16px; height: 11px; border-radius: 3px; border: 1px solid var(--line-2); background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--fg) 20%, transparent) 3px 4px); }
+.dates { list-style: none; display: flex; flex-direction: column; font-size: var(--t-small); }
+.dates li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--s-3); }
+.dates li + li { border-top: 1px dashed var(--line); }
+.dates li > span:first-child { color: var(--fg-2); display: inline-flex; align-items: center; gap: .4rem; }

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { hazards, model, YEARS } from '../data';
-import { bareMonths, dayOfYear, livingDays, segments } from './calendar';
+import { bareMonths, dateRange, dayOfYear, livingDays, periodPieces, segments, spanSegments } from './calendar';
 import { cropShare, cropShareRange, RULES, soilReading, yearShare } from './hazards';
-import { parseFarmerState, serializeFarmerState, toggleYear, MAX_YEARS } from './farmerState';
+import { compareRequest, parseFarmerState, serializeFarmerState, toggleYear, MAX_YEARS } from './farmerState';
 import { planById, planProfitMillion, PLANS } from './plans';
 import { riceSummary, riceYear, seasonStatus } from './rice';
 import { SOURCES } from './sources';
@@ -110,6 +110,22 @@ describe('farmer state in the URL', () => {
     expect(years).toHaveLength(MAX_YEARS);
     expect(toggleYear([2010, 2020], 2010)).toEqual([2020]);
   });
+  it('keeps the shared plan id of the api', () => {
+    expect(parseFarmerState(new URLSearchParams('the=usual_p03')).plan).toBe('usual_p03');
+  });
+  // UI-UX-SPEC section 7: the dry answer carries the words cao cưỡng, cuối kênh, thiếu nước; section 6b rule 4: an
+  // irrigated field gets no compare request
+  it('builds the compare body from the answers', () => {
+    const base = { years: [2010, 2020], priority: 'water' as const, plan: null };
+    for (const land of ['high_field', 'canal_end', 'water_short'] as const) {
+      expect(compareRequest({ ...base, land })).toEqual({ province: 'nghe_an', land: 'dry', years: [2010, 2020], priority: 'water' });
+    }
+    expect(compareRequest({ ...base, land: 'ask' })?.land).toBe('unsure');
+    expect(compareRequest({ ...base, land: 'reliable' })).toBeNull();
+    expect(compareRequest({ ...base, land: null })).toBeNull();
+    expect(compareRequest({ ...base, land: 'ask', priority: null })).toBeNull();
+    expect(compareRequest({ ...base, land: 'ask', years: [] })).toBeNull();
+  });
 });
 
 describe('source registry', () => {
@@ -120,5 +136,31 @@ describe('source registry', () => {
         expect(field.en.length).toBeGreaterThan(0);
       }
     }
+  });
+});
+
+// UI-UX-SPEC section 9a: lanes keep overlapping spans visible; a bare period whose from is later than to wraps across
+// 31 December and is drawn as two pieces; section 6d: "01-17" is shown as "17/1"
+describe('month bar of an api plan', () => {
+  const span = (key: string, from: string, to: string) => ({
+    crop_key: key, crop_id: 'x', crop: { vi: 'x', en: 'x' }, variety: null, season: 'spring' as const,
+    sow_from: from, sow_to: from, harvest_from: to, harvest_to: to, source_ids: ['R-P02'],
+  });
+  it('puts overlapping spans on separate lanes', () => {
+    const segs = spanSegments([span('a', '01-17', '05-17'), span('b', '05-10', '08-25'), span('c', '09-01', '12-22')]);
+    expect(segs.map((x) => x.lane)).toEqual([0, 1, 0]);
+    expect(segs[0]?.start).toBeCloseTo(16 / 365);
+    expect(segs[0]?.end).toBeCloseTo(137 / 365);
+  });
+  it('skips spans without dates', () => {
+    expect(spanSegments([{ ...span('a', '01-17', '05-17'), sow_from: null, sow_to: null, harvest_from: null, harvest_to: null }])).toEqual([]);
+  });
+  it('splits a period that wraps across the year end', () => {
+    expect(periodPieces({ from: '12-11', to: '01-16' })).toEqual([{ start: 344 / 365, end: 1 }, { start: 0, end: 16 / 365 }]);
+    expect(periodPieces({ from: '05-18', to: '06-05' })).toEqual([{ start: 137 / 365, end: 156 / 365 }]);
+  });
+  it('writes a date range as day/month', () => {
+    expect(dateRange('01-17', '01-18')).toBe('17/1–18/1');
+    expect(dateRange('05-17', '05-17')).toBe('17/5');
   });
 });

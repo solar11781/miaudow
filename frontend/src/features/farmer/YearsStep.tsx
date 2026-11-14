@@ -1,52 +1,97 @@
 import { StepShell, useFarmer } from './FarmerLayout';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { YEARS } from '../../data';
-import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
-import { riceYear } from '../../domain/rice';
+import { api } from '../../api';
+import type { PastYearsResponse, YearRow as Row } from '../../types';
+import { RULES } from '../../domain/hazards';
 import { MAX_YEARS, toggleYear } from '../../domain/farmerState';
+import { useApi } from '../../hooks/useApi';
+import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
-import { useRefs } from '../provenance/useRefs';
+import { useApiRefs } from '../provenance/useApiRefs';
 import { useFormat, usePick, useT } from '../../app/settings';
 import s from './farmer.module.css';
 
-function YearRow({ year }: { year: number }) {
+// the bar only draws the API's whole-percent share; the number itself is the source button next to it
+const barWidth = (value: string) => `${Math.max(2, Math.min(100, Number(value)))}%`;
+
+function YearRow({ row, res }: { row: Row; res: PastYearsResponse }) {
   const t = useT();
   const pick = usePick();
-  const f = useFormat();
-  const refs = useRefs();
-  const rice = riceYear('spring', year);
+  const refs = useApiRefs(res.sources, res.rules);
   return (
-    <article className={s.yearCard} aria-labelledby={`y-${year}`}>
+    <article className={s.yearCard} aria-labelledby={`y-${row.year}`}>
       <header className={s.yearHead}>
-        <h2 id={`y-${year}`} className={s.yearNum}>{year}</h2>
+        <h2 id={`y-${row.year}`} className={s.yearNum}>{row.year}</h2>
         <p className={s.yearSub}>{t.farmer.yearRowLabel}</p>
       </header>
       <ul className={s.hzList}>
-        {FARMER_RULES.map((rule) => {
-          const v = yearShare(rule, year);
+        {res.rules.map((rule) => {
+          const v = row.shares[rule.code];
           return (
-            <li key={rule} className={s.hz}>
-              <span className={s.hzName}><i style={{ background: RULES[rule].color }} />{pick(RULES[rule].name)}</span>
-              <span className={s.bar} aria-hidden="true"><i style={{ width: `${Math.max(2, v * 100)}%`, background: RULES[rule].color }} /></span>
-              <SourceValue {...refs.share(rule, year, v)} />
+            <li key={rule.code} className={s.hz} data-rule={rule.code}>
+              <span className={s.hzName}><i style={{ background: RULES[rule.code].color }} />{pick(rule.label)}</span>
+              <span className={s.bar} aria-hidden="true">{v && <i style={{ width: barWidth(v.value), background: RULES[rule.code].color }} />}</span>
+              {v ? <SourceValue {...refs.share(rule.code, v, `${pick(rule.label)} · ${row.year}`)} /> : <span className="muted">{t.common.notAvailable}</span>}
             </li>
           );
         })}
       </ul>
-      <p className={s.riceLine}>
-        <span>{t.farmer.riceLine}</span>
-        {rice.actual === null ? <span className="muted">{t.farmer.riceNone}</span> : <SourceValue {...refs.rice('spring', year, rice.actual)}>{f.signedPct(rice.actual)}</SourceValue>}
-      </p>
     </article>
+  );
+}
+
+function Years({ res }: { res: PastYearsResponse }) {
+  const t = useT();
+  const f = useFormat();
+  const { state, update } = useFarmer();
+  const offered = res.years.map((y) => y.year);
+  const picked = state.years.filter((y) => offered.includes(y));
+  return (
+    <>
+      <div className={s.yearGridHead}>
+        <span>{t.farmer.yearsPicked(picked.length)}</span>
+        <span className="muted small">{f.n(picked.length)}/{MAX_YEARS}</span>
+      </div>
+      <div className={s.yearGrid} role="group" aria-label={t.farmer.yearsTitle}>
+        {res.years.map((row) => {
+          const on = picked.includes(row.year);
+          const dry = row.shares.drought_rain_any2;
+          return (
+            <button key={row.year} type="button" aria-pressed={on} className={[s.yearChip, on ? s.on : ''].join(' ')}
+              data-testid={`year-${row.year}`}
+              onClick={() => update({ years: toggleYear(picked, row.year) })}
+              disabled={!on && picked.length >= MAX_YEARS}>
+              <span className="num">{row.year}</span>
+              {dry && <i aria-hidden="true" style={{ width: barWidth(dry.value) }} />}
+            </button>
+          );
+        })}
+      </div>
+      <p className="muted small">{t.farmer.yearChipLegend}</p>
+      {picked.length ? (
+        <div className={s.yearCards}>
+          {res.years.filter((row) => picked.includes(row.year)).map((row) => <YearRow key={row.year} row={row} res={res} />)}
+        </div>
+      ) : (
+        <p className={s.note}>{t.farmer.noYears}</p>
+      )}
+      <details className={s.limits}>
+        <summary>{t.farmer.limitsTitle}</summary>
+        <ul>
+          <li>{t.farmer.cellsNote(res.n_cells)}</li>
+          {t.farmer.limits.map((l) => <li key={l}>{l}</li>)}
+        </ul>
+      </details>
+    </>
   );
 }
 
 export function YearsStep() {
   const t = useT();
-  const f = useFormat();
-  const { state, update, search } = useFarmer();
-  const picked = state.years;
+  const { state, search } = useFarmer();
+  const [res, retry] = useApi(api.pastYears, 'past-years');
+  const ready = state.years.length > 0 && res.status === 'ok';
   return (
     <StepShell
       step={2}
@@ -54,41 +99,15 @@ export function YearsStep() {
       help={t.farmer.yearsHelp}
       actions={
         <ButtonLink to={{ pathname: '/nong-dan/uu-tien', search }} size="lg" block icon="arrowRight"
-          aria-disabled={!picked.length} onClick={(e) => { if (!picked.length) e.preventDefault(); }}
-          className={!picked.length ? s.disabledLink : undefined}>
+          aria-disabled={!ready} onClick={(e) => { if (!ready) e.preventDefault(); }}
+          className={!ready ? s.disabledLink : undefined}>
           {t.common.next}
         </ButtonLink>
       }
     >
       <p className={s.notForecast}><Icon name="alert" size={18} />{t.common.notForecast}</p>
-      <div className={s.yearGridHead}>
-        <span>{t.farmer.yearsPicked(picked.length)}</span>
-        <span className="muted small">{f.n(picked.length)}/{MAX_YEARS}</span>
-      </div>
-      <div className={s.yearGrid} role="group" aria-label={t.farmer.yearsTitle}>
-        {YEARS.map((y) => {
-          const on = picked.includes(y);
-          const dry = yearShare('drought_rain_any2', y);
-          return (
-            <button key={y} type="button" aria-pressed={on} className={[s.yearChip, on ? s.on : ''].join(' ')}
-              onClick={() => update({ years: toggleYear(picked, y) })}
-              disabled={!on && picked.length >= MAX_YEARS}>
-              <span className="num">{y}</span>
-              <i aria-hidden="true" style={{ width: `${Math.max(8, dry * 100)}%` }} />
-            </button>
-          );
-        })}
-      </div>
-      <p className="muted small">{t.farmer.yearChipLegend}</p>
-      {picked.length ? (
-        <div className={s.yearCards}>{picked.map((y) => <YearRow key={y} year={y} />)}</div>
-      ) : (
-        <p className={s.note}>{t.farmer.noYears}</p>
-      )}
-      <details className={s.limits}>
-        <summary>{t.farmer.limitsTitle}</summary>
-        <ul>{t.farmer.limits.map((l) => <li key={l}>{l}</li>)}</ul>
-      </details>
+      <p className="muted small">{t.common.dataLine}</p>
+      {res.status === 'ok' ? <Years res={res.data} /> : <LoadState state={res} retry={retry} />}
     </StepShell>
   );
 }
