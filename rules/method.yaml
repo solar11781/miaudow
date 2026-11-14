@@ -109,7 +109,6 @@ explain_terms:
 
 # datasets_not_used: UI-UX-SPEC §11b item 4b (D-165): the dataset, its official facts and why it is not used, from the
 # planning research/datasets-considered.md (dates from NASA CMR, R-N07).
-# GEDI is left out until its gedi.umd.edu quote is verified and has a REFERENCES row (team, D-165).
 datasets_not_used:
   - dataset: ECOSTRESS
     reason:
@@ -157,6 +156,13 @@ datasets_not_used:
       en: "Mascons on an equal-area 3-degree grid, from 4 April 2002. Not used: one 3-degree mascon is larger than the
         area of the five NASA POWER cells of Nghệ An; it starts in 2002."
     source_ids: [R-N07, R-N01]
+  - dataset: GEDI
+    reason:
+      vi: "GEDI đo chính xác chiều cao tán rừng, cấu trúc theo chiều đứng của tán và độ cao bề mặt; số liệu từ ngày
+        4/4/2019. Không dùng: nó đo cấu trúc rừng, không đo cây trồng; bắt đầu từ năm 2019."
+      en: "GEDI makes precise measurements of forest canopy height, canopy vertical structure and surface elevation;
+        data from 4 April 2019. Not used: it measures forest structure, not crops; it starts in 2019."
+    source_ids: [R-N07, R-N10]
   - dataset: FAO GAEZ
     reason:
       vi: "Các lớp bản đồ thích nghi nông nghiệp - khí hậu toàn cầu, có trong thẻ Resources của thử thách. Không dùng:

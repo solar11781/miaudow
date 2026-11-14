@@ -514,6 +514,17 @@
     - {vi: "Chúng tôi chỉ đọc trang mô tả, không tải số liệu.", en: "We read only the dataset page, not the data."}
   url: "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
   nso_credit: false
+- id: R-N10
+  citation: {vi: "GEDI (Global Ecosystem Dynamics Investigation), Mission Overview, University of Maryland",
+             en: "GEDI (Global Ecosystem Dynamics Investigation), Mission Overview, University of Maryland"}
+  study_type: {vi: "Trang mô tả sứ mệnh vệ tinh", en: "Satellite mission page"}
+  place_years: {vi: "Toàn cầu; đọc ngày 14/11/2026", en: "Global; read 2026-11-14"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc trang mô tả, không tải số liệu.", en: "We read only the mission page, not the data."}
+  url: "https://gedi.umd.edu/mission/mission-overview/"
+  nso_credit: false
 - id: R-P02
   citation:
     vi: "Trịnh Đức Toàn, Phạm Duy Trình, Đào Thị Minh Hiền, Cao Đỗ Mười, Lê Thị Thơm (2023). Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An. Tạp chí Khoa học và Công nghệ Nông nghiệp Việt Nam 04(146): 43-51"

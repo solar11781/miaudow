@@ -116,11 +116,14 @@ def test_datasets_not_used_come_from_method_yaml_each_with_its_reason_and_source
         "Sentinel-2 (ESA)",
         "GLDAS",
         "GRACE / GRACE-FO",
+        "GEDI",
         "FAO GAEZ",
         "ERA5 (ECMWF)",
     ]
     era5 = next(d for d in resp["datasets_not_used"] if d["dataset"] == "ERA5 (ECMWF)")
     assert "R-N09" in era5["source_ids"]  # REFERENCES R-N09: the Copernicus CDS ERA5 page holds its facts
+    gedi = next(d for d in resp["datasets_not_used"] if d["dataset"] == "GEDI")
+    assert gedi["source_ids"] == ["R-N07", "R-N10"]  # CMR GEDI02_A start date; GEDI mission overview page
     register = load_sources(REPO)
     for entry in resp["datasets_not_used"]:
         assert entry["reason"]["vi"].strip()
