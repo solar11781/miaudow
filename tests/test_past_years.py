@@ -13,8 +13,8 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from fieldshift.engine.past_years import past_years
 
+from fieldshift.engine.past_years import past_years
 from source_trace import check_response
 
 FIX = Path(__file__).resolve().parent / "fixtures" / "engine"
