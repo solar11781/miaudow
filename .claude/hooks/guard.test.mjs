@@ -286,6 +286,9 @@ test('rule 3c: a folder whose branch cannot be read is refused for merges, rebas
   blocked('git -C $W merge origin/main', at('feat/y'));
   blocked('cd /repo/missing && git rebase origin/main', at('feat/y'));
   blocked('cd "$W" && git push', at('feat/y'));
+  blocked('cd /repo/wt && cd - && git merge feat/x', at('main'));
+  blocked('pushd /repo/wt && popd && git merge feat/x', at('main'));
+  blocked('cd && git merge feat/x', at('feat/y'));
   allowed('cd $W && git status && git log --oneline -1', at('feat/y'));
   allowed('cd $W && git push -u origin feat/z', at('feat/y'));
   allowed('git -C $W pull', at('feat/y'));
