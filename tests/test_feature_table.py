@@ -10,7 +10,7 @@ D-37) are returned in a skipped list with a reason, never silently dropped; miss
 import pandas as pd
 import pytest
 
-from fieldshift.features.feature_table import build_cell_month_rain, build_feature_table
+from fieldshift.features.feature_table import build_cell_month_rain, build_feature_table, build_risk_level_features
 
 CELL_A, CELL_B = (19.0, 105.0), (19.0, 105.625)
 
@@ -104,3 +104,23 @@ def test_cell_month_rain_holds_each_cells_monthly_total_over_the_window():
     b = p10[(p10.lat == 19.0) & (p10.lon == 105.625)].set_index("month")
     assert b.loc["2010-02", "rain_mm"] == pytest.approx(84.0)
     assert m[(m.province_nso == "M") & (m.season == "autumn")].empty  # Mekong summer-autumn has no window (D-37)
+
+
+def test_a_shifted_window_moves_its_start_and_end_by_whole_months():
+    # Source: E-008 (03-ML-SPEC section 7, team 2026-11-14): windows one month earlier, later, or wider on both ends;
+    # P spring (north_central) is 1 Feb - 30 Jun 2010; wider: 1 Jan - 31 Jul; later: 1 Mar - 31 Jul
+    wide, _ = build_feature_table(_labels(), _weights(), _cells(), REGIONS, shift=(-1, 1))
+    row = wide[(wide.province_nso == "P") & (wide.year == 2010)].iloc[0]
+    assert (row.window_start, row.window_end) == (pd.Timestamp("2010-01-01"), pd.Timestamp("2010-07-31"))
+    later = build_cell_month_rain(_labels(), _weights(), _cells(), REGIONS, shift=(1, 1))
+    months = sorted(later[(later.province_nso == "P") & (later.year == 2010)]["month"].unique())
+    assert months == ["2010-03", "2010-04", "2010-05", "2010-06", "2010-07"]
+
+
+def test_risk_level_features_give_one_row_per_label_with_the_three_shares():
+    # Source: 03-ML-SPEC section 7 sensitivity (c) (team 2026-11-14): the farmland shares meeting the heavy-rain, heat
+    # and cold rules over each row's season window; the toy weather meets none of them (30 C, 25 C, at most 3 mm)
+    risk = build_risk_level_features(_labels(), _weights(), _cells(), REGIONS)
+    assert len(risk) == 2  # the Mekong summer-autumn row has no window (D-37)
+    assert set(risk.columns) == {"province_nso", "season", "year", "risk_heavy_rain", "risk_heat", "risk_cold"}
+    assert (risk[["risk_heavy_rain", "risk_heat", "risk_cold"]] == 0.0).all(axis=None)
