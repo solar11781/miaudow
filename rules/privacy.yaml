@@ -9,7 +9,7 @@ draft_note: {vi: "Bản nháp, chờ duyệt lời văn.", en: "Draft, awaiting 
 paragraphs:
   - vi: "Mọi trang đều dùng được mà không cần đăng nhập. Khi bạn không đăng nhập, câu trả lời chỉ nằm trong địa chỉ trang (sau dấu #); máy chủ của chúng tôi không lưu câu trả lời và không ghi nhật ký yêu cầu."
     en: "Every page works without signing in. When you do not sign in, your answers stay only in the page address (after the # sign); our server does not store them and keeps no request log."
-  - vi: "Đăng nhập bằng Google là tùy chọn. Nó chỉ dùng để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn coi trọng nhất) để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào."
+  - vi: "Đăng nhập bằng Google là tùy chọn. Nó chỉ dùng để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất) để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào."
     en: "Signing in with Google is optional. It is used only to save your answers (the type of field, the past years you picked, what matters most to you) so you can reopen them on another phone. Saving does not change any number."
   - vi: "Chúng tôi chỉ lưu mã tài khoản Google của bạn (một mã do Google cấp) và các bộ câu trả lời bạn lưu: không lưu tên, email hay ảnh."
     en: "We store only your Google account id (a code that Google gives) and the sets of answers you save: no name, email or picture."
@@ -17,7 +17,7 @@ paragraphs:
     en: "This data is kept in a PostgreSQL database hosted by Railway, in the Singapore region."
   - vi: "Dữ liệu được giữ cho đến khi bạn xóa. Trang câu trả lời đã lưu có một nút xóa tài khoản và mọi câu trả lời đã lưu cùng một lúc."
     en: "The data is kept until you delete it. The saved answers page has one button that deletes your account and all saved answers at once."
-  - vi: "Việc đăng nhập do Google thực hiện, theo chính sách quyền riêng tư của Google. Mã đăng nhập của Google chỉ chạy trên trang đăng nhập và trang câu trả lời đã lưu, và có thể đặt cookie ở đó."
+  - vi: "Việc đăng nhập do Google thực hiện, theo chính sách quyền riêng tư của Google. Đoạn mã đăng nhập của Google chỉ chạy trên trang đăng nhập và trang câu trả lời đã lưu, và có thể đặt cookie ở đó."
     en: "Google carries out the sign-in itself, under Google's privacy policy. Google's sign-in script runs only on the sign-in page and the saved answers page, and may set cookies there."
   - vi: "Nhật ký mạng của Railway giữ địa chỉ IP và đường dẫn trang trong 7 ngày; câu trả lời của bạn không bao giờ nằm trong đường dẫn đó."
     en: "Railway's network logs keep the IP address and the page path for 7 days; your answers are never in that path."
