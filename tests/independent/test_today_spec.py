@@ -1,7 +1,7 @@
 """Independent spec tests for code written on 2026-11-12.
 
 Written only from the specifications (docs/03-ML-SPEC.md, docs/05-DATA-CONTRACTS.md, the team decisions they cite by
-number) and the cited source text. No file under src/ or the
+number, the team's evidence audit notes) and the cited source text. No file under src/ or the
 other test files was read. Every expected value is computed by hand in the comments. Synthetic data only.
 """
 
