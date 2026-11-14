@@ -42,7 +42,9 @@ def add_drought_months(df: pd.DataFrame, month_rain: pd.DataFrame, before_year: 
     month_rain: the cell monthly rain of features.feature_table.build_cell_month_rain. A row without that table's
     months, or with a month that has no earlier year, gets no value (not scored).
     """
-    mr = month_rain.assign(moy=month_rain["month"].str[5:])
+    rows = pd.MultiIndex.from_frame(df[ROW_KEY].drop_duplicates())
+    mr = month_rain[pd.MultiIndex.from_frame(month_rain[ROW_KEY]).isin(rows)]  # training years = years of model rows
+    mr = mr.assign(moy=mr["month"].str[5:])
     key = [*UNIT_SEASON, *CELL, "moy"]
     normal = mr[mr["year"] < before_year].groupby(key)["rain_mm"].mean()
     mr = mr.assign(normal=normal.reindex(pd.MultiIndex.from_frame(mr[key])).to_numpy())
@@ -84,18 +86,21 @@ def make_fold_transform(
 ) -> Callable[[pd.DataFrame, pd.Index], pd.DataFrame]:
     """The runner's fold_transform: rain anomaly, drought months (when month_rain is given), context means and season
     terms, all from years before the fold. The result depends only on the data and the cutoff year, so it is cached."""
-    cache: dict[tuple[int, int], pd.DataFrame] = {}
+    cache: dict[int, tuple[pd.DataFrame, pd.DataFrame]] = {}  # cutoff year -> (the frame it was built from, result)
 
     def transform(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
         before_year = int(df.loc[train_idx, "year"].max()) + 1
-        key = (id(df), before_year)
-        if key not in cache:
+        if before_year not in cache or cache[before_year][0] is not df:
             out = add_precip_anom(df, df.index[df["year"] < before_year])
             if month_rain is not None:
                 out = add_drought_months(out, month_rain, before_year)
             out = add_context_means(out, before_year, stored)
             weather = [c for c in [*stored, FOLD_RAIN, *DROUGHT_COLS] if c in out.columns]
-            cache[key] = add_season_terms(out, weather).replace([np.inf, -np.inf], np.nan)
-        return cache[key]
+            out = add_season_terms(out, weather)
+            infinite = np.isinf(out.select_dtypes("number")).any()
+            if infinite.any():
+                raise ValueError(f"infinite fold-time features (a zero normal?): {sorted(infinite[infinite].index)}")
+            cache[before_year] = (df, out)
+        return cache[before_year][1]
 
     return transform
