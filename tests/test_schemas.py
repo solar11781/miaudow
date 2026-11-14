@@ -191,6 +191,11 @@ def test_crop_span_dates_are_all_set_or_all_null_and_in_order() -> None:
         s.CropSpan.model_validate(span(harvest_from="01-15"))
     with pytest.raises(ValidationError):
         s.CropSpan.model_validate(span(harvest_to="6-01"))  # not "MM-DD"
+    for not_a_day in ("13-01", "04-31", "02-29"):  # no such day in a 365-day year (D-103)
+        with pytest.raises(ValidationError):
+            s.CropSpan.model_validate(span(harvest_to=not_a_day))
+    with pytest.raises(ValidationError):
+        s.Period.model_validate({"from": "00-10", "to": "01-31"})
 
 
 def source(sid: str) -> dict:
@@ -218,12 +223,15 @@ def rule(code: str) -> dict:
     }
 
 
+RULE_SOURCES = {sid: source(sid) for sid in ("R-A01", "R-N01", "R-N02", "E-019")}  # the ids rule() uses
+
+
 def past_years(years: list[int], codes: list[str] = RULE_CODES) -> dict:
     return {
         "province": "nghe_an",
         "rules": [rule(c) for c in codes],
         "years": [{"year": y, "shares": dict.fromkeys(RULE_CODES)} for y in years],
-        "sources": {},
+        "sources": RULE_SOURCES,
         "n_cells": 0,
     }
 
@@ -314,7 +322,7 @@ def compare(plans: list[dict], years: list[int] | None = None) -> dict:
         "rules": [rule(c) for c in RULE_CODES],
         "gates": [],
         "plans": plans,
-        "sources": {},
+        "sources": RULE_SOURCES,
     }
 
 
@@ -387,3 +395,44 @@ def test_method_coverage_cells_are_unique_and_explain_terms_ordered() -> None:
 
 def test_source_facts_shape_round_trips() -> None:
     assert s.SourceFacts.model_validate(source("R-A01")).model_dump() == source("R-A01")
+
+
+def test_every_source_id_is_a_key_of_the_responses_sources() -> None:
+    # §11 validation: every id in any source_ids, threshold_source_id, values_source_ids or computed_by (and
+    # principle_source_ids, LandCheck) is a key of the same response's `sources`
+    for field in ("threshold_source_id", "computed_by"):
+        bad = past_years([1995])
+        bad["rules"][0][field] = "R-X01"
+        with pytest.raises(ValidationError, match="R-X01"):
+            s.PastYearsResponse.model_validate(bad)
+    bad = past_years([1995])
+    bad["years"][0]["shares"]["heat"] = val()
+    bad["sources"] = {k: v for k, v in RULE_SOURCES.items() if k != "E-019"}
+    with pytest.raises(ValidationError, match="E-019"):
+        s.PastYearsResponse.model_validate(bad)
+    plans = [empty_plan(p) for p in PLAN_IDS]
+    plans[2]["land"]["crops_in_year"]["principle_source_ids"] = ["R-E13"]
+    with pytest.raises(ValidationError, match="R-E13"):
+        s.CompareResponse.model_validate(compare(plans))
+    bad_method = method([("rice", "money")])
+    bad_method["coverage"][0]["source_ids"] = ["R-P02"]
+    with pytest.raises(ValidationError, match="R-P02"):
+        s.MethodResponse.model_validate(bad_method)
+
+
+def test_facts_must_carry_the_id_they_are_listed_under() -> None:
+    bad = past_years([1995])
+    bad["sources"] = {**RULE_SOURCES, "R-A01": source("R-N01")}
+    with pytest.raises(ValidationError, match="R-A01"):
+        s.PastYearsResponse.model_validate(bad)
+
+
+@pytest.mark.parametrize("years", [[1994], [2025], [2001, 2000], [2000, 2000]])
+def test_compare_request_years_are_ascending_inside_1995_2024(years: list[int]) -> None:
+    # 04-TECH-DESIGN §3, 05-DATA-CONTRACTS §10: years not strictly ascending or outside 1995-2024 are rejected (422)
+    with pytest.raises(ValidationError):
+        s.CompareRequest.model_validate({"province": "nghe_an", "land": "dry", "years": years, "priority": "income"})
+
+
+def test_compare_request_accepts_the_range_ends() -> None:
+    s.CompareRequest.model_validate({"province": "nghe_an", "land": "dry", "years": [1995, 2024], "priority": "land"})

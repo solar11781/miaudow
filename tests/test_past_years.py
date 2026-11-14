@@ -122,3 +122,18 @@ def test_an_id_without_source_facts_fails_loudly(tmp_path: Path) -> None:
     root = copy_with_rows(tmp_path, lambda rows: year_rows(rows)[0].update(computed_by="E-999"))
     with pytest.raises(ValueError, match="E-999"):
         past_years("nghe_an", root)
+
+
+def test_an_unknown_row_level_fails_loudly(tmp_path: Path) -> None:
+    # 05-DATA-CONTRACTS §4b: level is `crop` or `year`; python.md: unknown data symbols fail loudly
+    root = copy_with_rows(tmp_path, lambda rows: year_rows(rows)[0].update(level="Year"))
+    with pytest.raises(ValueError, match="Year"):
+        past_years("nghe_an", root)
+
+
+@pytest.mark.parametrize("share", [1.5, -0.1])
+def test_a_share_outside_0_1_fails_loudly(tmp_path: Path, share: float) -> None:
+    # 05-DATA-CONTRACTS §4b: share_farmland is a float 0..1 or null
+    root = copy_with_rows(tmp_path, lambda rows: year_rows(rows)[0].update(share_farmland=share))
+    with pytest.raises(ValueError, match="share_farmland"):
+        past_years("nghe_an", root)
