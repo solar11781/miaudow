@@ -54,6 +54,8 @@ KEYS_RETRY_SECONDS = 30  # D-164: a short pause after a failed download, so repe
 # the farmer's own field answer in member B's names (D-169), so a saved set reopens as that answer; "reliable" (an
 # irrigated field) gets no compare (UI-UX-SPEC §6b rule 4), so it is never saved
 FieldAnswer = Literal["high_field", "canal_end", "water_short", "ask"]
+# rows of the first API (PR #48) kept the compare request's land; they read as the answers the page reopened them as
+LEGACY_LAND = {"dry": "water_short", "unsure": "ask"}
 MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
 NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
 
@@ -241,7 +243,9 @@ class Accounts:
             found = conn.execute(
                 "SELECT id, land, years, priority FROM saved_answers WHERE account_id = %s ORDER BY id", (account,)
             ).fetchall()
-        return SavedList(saved=[SavedSet(id=i, land=land, years=y, priority=p) for i, land, y, p in found])
+        return SavedList(
+            saved=[SavedSet(id=i, land=LEGACY_LAND.get(land, land), years=y, priority=p) for i, land, y, p in found]
+        )
 
     def save(self, sub: str, answers: SavedAnswers) -> SavedSet:
         """Save a set for the account of `sub` in one transaction that first locks the account row, so parallel saves

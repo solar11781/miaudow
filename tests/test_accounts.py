@@ -525,6 +525,24 @@ def test_saved_sets_round_trip(on: str, keys: dict, fetched: list) -> None:
     assert listed.headers["cache-control"] == "no-store"
 
 
+def test_rows_saved_by_the_first_api_list_with_the_field_answer_they_reopen_as(
+    on: str, keys: dict, fetched: list
+) -> None:
+    # PR #48 stored the compare request's land ("dry", "unsure") and production holds such rows (security review of
+    # PR #53); they read as the answers the page reopened them as, while a new save takes only the field answers
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    with psycopg.connect(on) as conn:
+        conn.execute(
+            "INSERT INTO saved_answers (account_id, land, years, priority)"
+            " SELECT id, land, ARRAY[2010], 'income' FROM account, (VALUES ('dry'), ('unsure')) AS old (land)"
+        )
+    listed = c.get("/api/account/saved", headers=me)
+    assert listed.status_code == 200, listed.text
+    assert [s["land"] for s in listed.json()["saved"]] == ["water_short", "ask"]
+    assert c.post("/api/account/saved", headers=me, json={**ANSWERS, "land": "dry"}).status_code == 422
+
+
 def test_saved_sets_survive_a_restart_and_the_schema_is_kept(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     c.post("/api/account/saved", headers=sign_in(c, keys), json=ANSWERS)

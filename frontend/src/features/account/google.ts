@@ -12,6 +12,7 @@ export interface GoogleId {
     options: { type: 'standard'; theme: 'outline'; size: 'large'; text: 'signin_with'; shape: 'pill'; locale: string },
   ): void;
   disableAutoSelect(): void;
+  cancel(): void;
 }
 
 declare global {
@@ -26,6 +27,7 @@ let loading: Promise<GoogleId> | null = null;
  * only on the sign-in pages (H14). */
 export function unloadGoogle() {
   loading = null;
+  window.google?.accounts.id.cancel(); // closes any prompt or popup Google still has open
   for (const el of document.querySelectorAll(`script[src^="${GSI}"], link[href^="${GSI}"]`)) el.remove();
   delete window.google;
 }

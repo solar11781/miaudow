@@ -20,7 +20,7 @@ const OTHER_ROUTES = [
 // token, and Google's stylesheet link, as the real script adds one
 const FAKE_GSI = `let done = () => {};
 window.google = { accounts: { id: {
-  initialize(c) { done = c.callback; }, disableAutoSelect() {},
+  initialize(c) { done = c.callback; }, disableAutoSelect() {}, cancel() {},
   renderButton(el) {
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://accounts.google.com/gsi/style';
     document.head.append(css);

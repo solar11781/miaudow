@@ -71,6 +71,7 @@ function fakeGoogle() {
     }),
     renderButton: vi.fn(),
     disableAutoSelect: vi.fn(),
+    cancel: vi.fn(),
   };
   vi.mocked(loadGoogle).mockResolvedValue(id);
   return { id, answer: (credential: string) => act(() => callback({ credential })) };
