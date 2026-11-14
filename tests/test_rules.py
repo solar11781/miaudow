@@ -7,6 +7,7 @@ entry per source id); .claude/rules/python.md: unknown data symbols fail loudly,
 
 import json
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -90,3 +91,47 @@ def test_pick_sources_keeps_only_the_ids_used_and_names_a_missing_one() -> None:
     assert list(pick_sources(facts, ["R-N01", "R-A01", "R-N01"])) == ["R-A01", "R-N01"]
     with pytest.raises(ValueError, match="R-X01"):
         pick_sources(facts, ["R-X01"])
+
+
+def crop_row(**changes: object) -> dict:
+    row = json.loads((FIX / "artifacts" / "hazard_labels.json").read_text(encoding="utf-8"))["rows"][0]
+    return {**row, **changes}
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        a_row(plan_id="cc1"),  # level year: plan_id, crop_key and season are null (§4b)
+        a_row(crop_key="cc1_spring_peanut"),
+        a_row(season="spring"),
+        crop_row(plan_id="usual_p03"),  # level crop: usual, cc1..cc4 (P-03 reports no dates)
+        crop_row(plan_id=None),
+        crop_row(crop_key=None),
+        crop_row(season="winter"),  # crop seasons: spring, summer_autumn, autumn_winter
+        crop_row(season=None),
+        a_row(months=[13]),  # calendar months
+        a_row(months=[0]),
+        a_row(n_cells=-1),  # a count of cells
+        a_row(field_dates=[["03-01", "02-01"]]),  # sowing date, then first harvest date, inside one year
+    ],
+)
+def test_a_hazard_row_against_its_level_fails(root: Path, row: dict) -> None:
+    write_rows(root, [row])
+    with pytest.raises(ValueError, match=r"hazard_labels\.json"):
+        hazard_rows(root)
+
+
+def test_a_valid_crop_row_is_read(root: Path) -> None:
+    write_rows(root, [crop_row()])
+    assert hazard_rows(root)[0].crop_key == "cc1_spring_peanut"
+
+
+@pytest.mark.parametrize(("name", "load"), [("conditions.yaml", load_rules), ("sources.yaml", load_sources)])
+def test_a_bad_entry_fails_naming_the_file(root: Path, name: str, load: Callable[[Path], object]) -> None:
+    path = root / "rules" / name
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("citation:", "citaton:", 1).replace("label:", "lable:", 1),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match=name.replace(".", r"\.")):
+        load(root)
