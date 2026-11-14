@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAreas } from './Header';
 import { hazards } from '../data';
 import { BrandMark } from './Brand';
 import { useSettings, useT } from './settings';
@@ -7,6 +8,7 @@ import s from './Footer.module.css';
 export function Footer() {
   const t = useT();
   const { lang } = useSettings();
+  const areas = useAreas().slice(1);
   const built = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Ho_Chi_Minh' })
     .format(new Date(hazards.generated_at));
   return (
@@ -18,10 +20,7 @@ export function Footer() {
           <p className={s.support}>{t.common.support}</p>
         </div>
         <nav className={s.links} aria-label={t.nav.main}>
-          <Link to="/nong-dan" viewTransition>{t.nav.farmer}</Link>
-          <Link to="/can-bo" viewTransition>{t.nav.officer}</Link>
-          <Link to="/khoa-hoc" viewTransition>{t.nav.science}</Link>
-          <Link to="/hoi" viewTransition>{t.nav.assistant}</Link>
+          {areas.map((a) => <Link key={a.to} to={a.to} viewTransition>{a.label}</Link>)}
         </nav>
         <div className={s.meta}>
           <p>{t.common.dataLine}</p>

@@ -18,6 +18,8 @@
 .link:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 7%, transparent); }
 .active, .active:hover { background: var(--c-gold-500); color: var(--on-accent); }
 .settings { display: none; gap: 6px; }
+.settingsFarmer { display: flex; gap: 6px; }
+.settingsFarmer .chip span { display: inline; }
 .chip {
   min-height: 44px; min-width: 44px; padding: 0 .75rem; display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
   border-radius: var(--r-pill); border: 1px solid var(--line-2); background: transparent; color: var(--fg-2); font-size: var(--t-small); font-weight: 500;
@@ -27,7 +29,8 @@
 .cta { display: none !important; }
 .menuBtn { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--fg); display: grid; place-items: center; }
 @media (min-width: 760px) { .settings { display: flex; } .cta { display: inline-flex !important; } }
-@media (min-width: 1180px) { .nav { display: flex; } .menuBtn { display: none; } }
+@media (min-width: 1260px) { .nav { display: flex; } .menuBtn { display: none; } }
+@media (min-width: 1260px) and (max-width: 1380px) { .link { padding: 0 .7rem; } .tag { display: none; } }
 @media (max-width: 420px) { .tag { display: none; } }
 
 .menu {

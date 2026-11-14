@@ -9,12 +9,12 @@ import s from './Header.module.css';
 const NEXT_THEME: Record<Theme, Theme> = { auto: 'light', light: 'dark', dark: 'auto' };
 const THEME_ICON: Record<Theme, IconName> = { auto: 'reset', light: 'sun', dark: 'moon' };
 
-function Settings({ inMenu }: { inMenu?: boolean }) {
+function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
   const t = useT();
   const { lang, setLang, lite, setLite, theme, setTheme } = useSettings();
   const themeLabel = { auto: t.nav.themeAuto, light: t.nav.themeLight, dark: t.nav.themeDark }[theme];
   return (
-    <div className={inMenu ? s.settingsMenu : s.settings}>
+    <div className={inMenu ? s.settingsMenu : farmer ? s.settingsFarmer : s.settings}>
       <button type="button" className={s.chip} aria-pressed={lite} onClick={() => setLite(!lite)} title={t.nav.liteHelp}>
         <Icon name="feather" size={17} /> <span>{t.nav.lite}</span>
       </button>
@@ -28,7 +28,42 @@ function Settings({ inMenu }: { inMenu?: boolean }) {
   );
 }
 
+/** The six areas, in the order a visitor meets them. */
+export function useAreas() {
+  const t = useT();
+  return [
+    { to: '/', label: t.nav.home, end: true },
+    { to: '/nong-dan', label: t.nav.farmer },
+    { to: '/can-bo', label: t.nav.officer },
+    { to: '/khoa-hoc', label: t.nav.science },
+    { to: '/bang-chung', label: t.nav.evidence },
+    { to: '/tro-ly', label: t.nav.assistant },
+  ];
+}
+
+/** Farmer routes get a flat header: the brand (home) and the settings, no menu and no other links (UI-UX-SPEC H12). */
+function FarmerHeader() {
+  const t = useT();
+  return (
+    <header className={`${s.header} ${s.paper}`}>
+      <div className={`container ${s.bar}`}>
+        <Link to="/" className={s.brand} viewTransition aria-label={`Miaudow · ${t.nav.home}`}>
+          <BrandMark />
+          <span className={s.word}><span className={s.name}>Miaudow</span><span className={s.tag}>{t.nav.farmer}</span></span>
+        </Link>
+        <Settings farmer />
+      </div>
+    </header>
+  );
+}
+
 export function Header({ tone }: { tone: 'forest' | 'paper' }) {
+  const { pathname } = useLocation();
+  if (pathname.startsWith('/nong-dan')) return <FarmerHeader />;
+  return <SiteHeader tone={tone} />;
+}
+
+function SiteHeader({ tone }: { tone: 'forest' | 'paper' }) {
   const t = useT();
   const { pathname } = useLocation();
   const menu = useRef<HTMLDialogElement>(null);
@@ -42,13 +77,7 @@ export function Header({ tone }: { tone: 'forest' | 'paper' }) {
   }, []);
   useEffect(() => { menu.current?.close(); }, [pathname]);
 
-  const links: { to: string; label: string; end?: boolean }[] = [
-    { to: '/', label: t.nav.home, end: true },
-    { to: '/nong-dan', label: t.nav.farmer },
-    { to: '/can-bo', label: t.nav.officer },
-    { to: '/khoa-hoc', label: t.nav.science },
-    { to: '/hoi', label: t.nav.assistant },
-  ];
+  const links = useAreas();
 
   return (
     <header className={[s.header, tone === 'forest' ? 'surface-forest' : s.paper, scrolled ? s.scrolled : ''].join(' ')}>

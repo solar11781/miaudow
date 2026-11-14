@@ -1,4 +1,4 @@
-import { createHashRouter } from 'react-router-dom';
+import { Navigate, createHashRouter } from 'react-router-dom';
 import { HomePage } from '../features/home/HomePage';
 import { Layout } from './Layout';
 import { NotFound, RouteError } from './RouteError';
@@ -24,7 +24,9 @@ export const router = createHashRouter([
       },
       { path: 'can-bo', lazy: async () => ({ Component: (await import('../features/officer/OfficerPage')).OfficerPage }) },
       { path: 'khoa-hoc', lazy: async () => ({ Component: (await import('../features/science/SciencePage')).SciencePage }) },
-      { path: 'hoi', lazy: async () => ({ Component: (await import('../features/ai/AssistantPage')).AssistantPage }) },
+      { path: 'bang-chung', lazy: async () => ({ Component: (await import('../features/evidence/EvidencePage')).EvidencePage }) },
+      { path: 'tro-ly', lazy: async () => ({ Component: (await import('../features/ai/AssistantPage')).AssistantPage }) },
+      { path: 'hoi', element: <Navigate to="/tro-ly" replace /> },
       { path: '*', element: <NotFound /> },
     ],
   },

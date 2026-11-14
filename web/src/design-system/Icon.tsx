@@ -41,6 +41,12 @@ const PATHS = {
   terrain: 'M3 19 9 9l4 6 3-4 5 8H3Z',
   moon: 'M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z',
   feather: 'M20 4c-6 0-11 4-12 11l-3 5M8 15h6M10 11h7',
+  chevronDown: 'M6 9l6 6 6-6',
+  mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM5 11a7 7 0 0 0 14 0M12 18v3M9 21h6',
+  volume: 'M4 9.5h3.5L12 6v12l-4.5-3.5H4v-5ZM16 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',
+  stop: 'M7 7h10v10H7z',
+  send: 'M4 12 20 4l-5 16-3.5-6.5L4 12ZM11.5 13.5 20 4',
+  database: 'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3ZM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
 } as const;
 
 export type IconName = keyof typeof PATHS;
