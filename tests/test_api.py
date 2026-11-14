@@ -8,6 +8,7 @@ D-92 / 04 §10: uvicorn runs with --no-access-log.
 
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from fieldshift.api.app import FRONTEND_ROUTES, create_app
@@ -28,6 +29,17 @@ def test_health_lists_each_artifact_with_version_and_time() -> None:
 def test_health_without_artifacts_is_still_ok(tmp_path: Path) -> None:
     r = TestClient(create_app(artifacts_dir=tmp_path / "none")).get("/api/health")
     assert r.json() == {"status": "ok", "artifacts": {}}
+
+
+def test_artifact_without_schema_version_names_the_file_and_leaks_nothing(tmp_path: Path) -> None:
+    # python.md: errors name the input; the HTTP answer is a plain 500 without paths or traceback
+    (tmp_path / "broken.json").write_text('{"generated_at": "2000-01-01T00:00:00+07:00"}', encoding="utf-8")
+    app = create_app(artifacts_dir=tmp_path)
+    with pytest.raises(ValueError, match=r"^broken\.json: no schema_version$"):
+        TestClient(app).get("/api/health")
+    r = TestClient(app, raise_server_exceptions=False).get("/api/health")
+    assert r.status_code == 500
+    assert r.text == "Internal Server Error"
 
 
 def test_frontend_routes_return_index_html(tmp_path: Path) -> None:
