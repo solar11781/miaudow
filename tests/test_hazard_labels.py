@@ -68,7 +68,7 @@ def test_plan_crops_use_the_sowing_and_first_harvest_dates_of_p02_plans_only() -
 
 def test_year_window_joins_the_field_time_of_every_crop() -> None:
     usual = _plan("usual", [("usual_summer_autumn_black_bean", "summer_autumn", "06-06", "08-25", "08-25")])
-    same = _plan("cc9", [("cc9_spring_peanut", "spring", "01-18", "05-12", "05-12")])  # a pair already in cc1
+    same = _plan("cc2", [("cc2_spring_peanut", "spring", "01-18", "05-12", "05-12")])  # a pair already in cc1
     window = year_window(plan_crops([CC1, usual, same]))
     assert window == {
         "field_dates": [("01-18", "05-12"), ("06-06", "08-25"), ("06-10", "08-30")],
@@ -137,7 +137,7 @@ def test_drought_month_flags_follow_the_1991_2020_monthly_mean() -> None:
 def test_missing_weather_of_a_weighted_cell_fails_loudly() -> None:
     gap = _cell()
     gap.loc["2000-07-01", "T2M"] = np.nan
-    with pytest.raises(ValueError, match="2000"):
+    with pytest.raises(ValueError, match=r"cc1_summer_autumn_mung_bean 2000 cell \(19\.0, 105\.0\)"):
         hazard_label_rows(plan_crops([CC1]), {(19.0, 105.0): gap}, {(19.0, 105.0): 1.0}, [2000])
 
 
@@ -160,3 +160,11 @@ def test_the_exported_artifact_has_every_p02_crop_year_and_rule() -> None:
     assert all(r.share_farmland is not None for r in rows)
     doc = json.loads((REPO / "artifacts" / "hazard_labels.json").read_text(encoding="utf-8"))
     assert set(doc) == {"schema_version", "generated_at", "freeze_commit", "rows"}  # §4b
+
+
+def test_a_sowing_range_fails_loudly():
+    # 03-ML-SPEC section 5a: P-02 reports one sowing date per crop, so a range in the rules file is an input error
+    ranged = _plan("cc1", [("cc1_spring_peanut", "spring", "01-18", "05-12", "05-12")])
+    ranged["seasons"][0]["sow_to"] = "01-25"
+    with pytest.raises(ValueError, match="cc1_spring_peanut"):
+        plan_crops([ranged])
