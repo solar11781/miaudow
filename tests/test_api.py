@@ -10,8 +10,10 @@ with --no-access-log. Team note for queue item 20: rules and artifacts are loade
 error answers a generic 500 without internals, and the request body has a size limit.
 """
 
+import asyncio
 import ipaddress
 import json
+import logging
 import shutil
 import socket
 from collections.abc import Iterator
@@ -19,6 +21,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from fieldshift.api import app as api
@@ -182,6 +185,56 @@ def test_compare_rejects_a_streamed_body_over_the_limit(client: TestClient) -> N
         yield b" " * MAX_BODY_BYTES
 
     rejected(client.post("/api/compare", content=chunks(), headers={"content-type": "application/json"}))
+
+
+def post_slowly(app: FastAPI, messages: list[dict]) -> list[dict]:
+    """POST /api/compare straight to the app: the client sends `messages`, then nothing more arrives."""
+
+    async def run() -> list[dict]:
+        sent: list[dict] = []
+        waiting = list(messages)
+
+        async def receive() -> dict:
+            if waiting:
+                return waiting.pop(0)
+            await asyncio.Event().wait()  # the rest of the body never comes
+            return {}
+
+        async def send(message: dict) -> None:
+            sent.append(message)
+
+        scope = {
+            "type": "http",
+            "asgi": {"version": "3.0"},
+            "http_version": "1.1",
+            "method": "POST",
+            "scheme": "http",
+            "path": "/api/compare",
+            "raw_path": b"/api/compare",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"content-type", b"application/json")],
+            "client": ("127.0.0.1", 50000),
+            "server": ("testserver", 80),
+        }
+        await asyncio.wait_for(app(scope, receive, send), timeout=10)  # the test itself never hangs
+        return sent
+
+    return asyncio.run(run())
+
+
+def test_a_body_that_stops_arriving_gets_422_after_the_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(api, "BODY_TIMEOUT_SECONDS", 0.2)
+    sent = post_slowly(create_app(root=REPO), [{"type": "http.request", "body": b'{"province"', "more_body": True}])
+    assert sent[0]["status"] == 422
+
+
+def test_a_client_that_leaves_mid_body_gets_no_500_and_no_traceback(caplog: pytest.LogCaptureFixture) -> None:
+    partial = {"type": "http.request", "body": b'{"province"', "more_body": True}
+    with caplog.at_level(logging.DEBUG):
+        sent = post_slowly(create_app(root=REPO), [partial, {"type": "http.disconnect"}])
+    assert all(m.get("status") != 500 for m in sent)
+    assert not [rec for rec in caplog.records if rec.exc_info or rec.levelno >= logging.ERROR]
 
 
 # ---- other errors
