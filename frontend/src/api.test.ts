@@ -1,6 +1,15 @@
 // Response checks of UI-UX-SPEC section 11 ("Validation in src/api.ts"); placeholder values as the spec's fixtures use.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { api, ApiError, ContractError, sourceIdsIn, validateCompare, validateMethod, validatePastYears } from './api';
+import {
+  api,
+  ApiError,
+  ContractError,
+  sourceIdsIn,
+  validateCompare,
+  validateMethod,
+  validatePastYears,
+  type SavedAnswers,
+} from './api';
 import { PLAN_IDS } from './types';
 import { body, compare, facts, method, pastYears, rule, shares, text, value } from './tests/fixtures';
 
@@ -149,5 +158,71 @@ describe('requests', () => {
       vi.fn(async () => new Response(JSON.stringify({ province: 'nghe_an' }), { status: 200 })),
     );
     await expect((await freshApi()).pastYears()).rejects.toThrow(/rules: missing/);
+  });
+});
+
+// UI-UX-SPEC §12c: the optional Google sign-in (server: src/fieldshift/api/accounts.py, tests/test_accounts.py)
+describe('account requests', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  const answers: SavedAnswers = { land: 'dry', years: [2010, 2020], priority: 'income' };
+  const reply = (status: number, json?: unknown) =>
+    vi.fn<(path: string, init: RequestInit) => Promise<Response>>(async () =>
+      json === undefined ? new Response(null, { status }) : new Response(JSON.stringify(json), { status }),
+    );
+
+  it('reads the sign-in config once per page', async () => {
+    const fetchMock = reply(200, { available: true, client_id: 'id.apps.googleusercontent.com' });
+    vi.stubGlobal('fetch', fetchMock);
+    const fresh = await freshApi();
+    await expect(fresh.account.config()).resolves.toEqual({
+      available: true,
+      client_id: 'id.apps.googleusercontent.com',
+    });
+    await fresh.account.config();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith('/api/account/config', expect.anything());
+  });
+  it('rejects a config that is on without a client id', async () => {
+    vi.stubGlobal('fetch', reply(200, { available: true, client_id: null }));
+    await expect((await freshApi()).account.config()).rejects.toThrow(/client_id must be set/);
+  });
+  it('sends the google token as a bearer header and takes 204 as done', async () => {
+    const fetchMock = reply(204);
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(api.account.signIn('tok')).resolves.toBeUndefined();
+    const [path, init] = fetchMock.mock.calls[0] ?? [];
+    expect(path).toBe('/api/account/sign-in');
+    expect(init?.method).toBe('POST');
+    expect(new Headers(init?.headers).get('Authorization')).toBe('Bearer tok');
+  });
+  it('saves land, years and priority only, and checks the saved set', async () => {
+    const fetchMock = reply(201, { id: 7, ...answers });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(api.account.save('tok', answers)).resolves.toEqual({ id: 7, ...answers });
+    expect(fetchMock.mock.calls[0]?.[1].body).toBe(JSON.stringify(answers));
+  });
+  it('lists the saved sets and rejects a set of another shape', async () => {
+    vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers }] }));
+    await expect(api.account.saved('tok')).resolves.toEqual([{ id: 1, ...answers }]);
+    vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers, land: 'wet' }] }));
+    await expect(api.account.saved('tok')).rejects.toThrow(ContractError);
+  });
+  it('deletes one set and the whole account', async () => {
+    const fetchMock = reply(204);
+    vi.stubGlobal('fetch', fetchMock);
+    await api.account.remove('tok', 7);
+    await api.account.deleteAccount('tok');
+    expect(fetchMock.mock.calls.map(([p, i]) => `${i.method} ${p}`)).toEqual([
+      'DELETE /api/account/saved/7',
+      'DELETE /api/account',
+    ]);
+  });
+  it.each([
+    [409, 'saved sets are full'],
+    [401, 'not signed in'],
+    [503, 'sign-in is not available'],
+  ])('turns %i into an ApiError with its status', async (status, detail) => {
+    vi.stubGlobal('fetch', reply(status, { detail }));
+    await expect(api.account.save('tok', answers)).rejects.toEqual(new ApiError(status, detail));
   });
 });
