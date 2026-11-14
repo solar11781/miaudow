@@ -111,20 +111,41 @@ function checkRm(args, shell) {
 }
 
 const RM_WORDS = new Set(['rm', 'remove-item', 'ri', 'del', 'rd', 'rmdir', 'erase']);
+const WRAPPERS = new Set(['env', 'command', 'exec', 'nohup', 'sudo', 'time', 'nice']);
+
+// True when gh would merge a pull request: `gh pr [-R x] merge ...` or a merge through `gh api`.
+function isGhMerge(args) {
+  if (args[0] === 'api') return args.some((a) => /\/pulls\/[^/\s]+\/merge\b/.test(a) || a.includes('mergePullRequest'));
+  if (args[0] !== 'pr') return false;
+  let j = 1;
+  while (j < args.length && args[j].startsWith('-')) j += (args[j] === '-R' || args[j] === '--repo') ? 2 : 1;
+  return args[j] === 'merge';
+}
 
 // Returns a reason string when the command must be blocked, or null when it may run.
-export function evaluate(command, { currentBranch = null, shell = 'bash' } = {}) {
+// nested: the command runs inside bash -c or powershell -Command, where the merge gate cannot see it.
+export function evaluate(command, { currentBranch = null, shell = 'bash', nested = false } = {}) {
   const state = { branch: currentBranch };
   for (const seg of segments(tokenize(command))) {
     let words = seg;
     while (words.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(words[0])) words = words.slice(1);
+    // env, command and similar run the next word; skip them with their options and assignments
+    while (words.length && WRAPPERS.has(words[0].toLowerCase())) {
+      words = words.slice(1);
+      while (words.length && (words[0].startsWith('-') || /^[A-Za-z_][A-Za-z0-9_]*=/.test(words[0]))) words = words.slice(1);
+    }
     if (!words.length) continue;
     const head = words[0].split(/[\\/]/).pop().toLowerCase().replace(/\.exe$/, '');
     let reason = null;
-    if ((head === 'bash' || head === 'sh' || head === 'zsh') && words[1] === '-c' && words[2]) {
-      reason = evaluate(words[2], { currentBranch: state.branch, shell: 'bash' });
+    // a Windows path loses its backslashes in this bash-style reader (C:\tools\gh.exe reads as C:toolsgh.exe)
+    if ((head === 'gh' || /gh$/.test(head)) && isGhMerge(words.slice(1))) {
+      // only the plain top-level form reaches the merge gate (mergeRequest); every other way to merge is blocked
+      const plain = !nested && words === seg && seg[0] === 'gh' && seg[1] === 'pr' && seg[2] === 'merge';
+      if (!plain) reason = 'merging a pull request in a form the merge gate cannot check; use gh pr merge <number> --merge';
+    } else if ((head === 'bash' || head === 'sh' || head === 'zsh') && words[1] === '-c' && words[2]) {
+      reason = evaluate(words[2], { currentBranch: state.branch, shell: 'bash', nested: true });
     } else if ((head === 'powershell' || head === 'pwsh') && /^-c(ommand)?$/i.test(words[1] || '') && words[2]) {
-      reason = evaluate(words.slice(2).join(' '), { currentBranch: state.branch, shell: 'powershell' });
+      reason = evaluate(words.slice(2).join(' '), { currentBranch: state.branch, shell: 'powershell', nested: true });
     } else if (head === 'git') {
       reason = checkGit(words.slice(1), state);
     } else if (RM_WORDS.has(head)) {
