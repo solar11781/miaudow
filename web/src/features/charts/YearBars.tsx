@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { useFormat } from '../../app/settings';
+import { useWidth, yearLabelStep } from './useWidth';
 import s from './charts.module.css';
 
 interface Props {
@@ -18,17 +19,19 @@ interface Props {
 export function YearBars({ years, values, color, selected, onSelect, reference = 0.5, height = 180, label }: Props) {
   const f = useFormat();
   const id = useId();
-  const W = 640, H = height, padL = 34, padB = 26, padT = 8, padR = 6;
+  const [ref, W] = useWidth<HTMLElement>();
+  const H = height, padL = 52, padB = 30, padT = 10, padR = 6;
   const bw = (W - padL - padR) / years.length;
+  const every = yearLabelStep(bw);
   const y = (v: number) => padT + (1 - v) * (H - padT - padB);
   return (
-    <figure className={s.figure}>
-      <svg viewBox={`0 0 ${W} ${H}`} className={s.svg} role="img" aria-labelledby={`${id}-t`}>
+    <figure className={s.figure} ref={ref}>
+      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className={s.svg} role="img" aria-labelledby={`${id}-t`}>
         <title id={`${id}-t`}>{label}</title>
         {[0, 0.5, 1].map((g) => (
           <g key={g}>
             <line x1={padL} x2={W - padR} y1={y(g)} y2={y(g)} className={g === reference ? s.ref : s.grid} />
-            <text x={padL - 6} y={y(g) + 4} textAnchor="end" className={s.tick}>{f.pct(g)}</text>
+            <text x={padL - 8} y={y(g) + 6} textAnchor="end" className={s.tick}>{f.pct(g)}</text>
           </g>
         ))}
         {years.map((yr, i) => {
@@ -44,8 +47,8 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
                 fill={color} opacity={isSel ? 1 : strong ? 0.92 : 0.38}
                 className={isSel ? s.sel : undefined}
               />
-              {(yr % 5 === 0 || isSel) && (
-                <text x={x + bw / 2} y={H - 8} textAnchor="middle" className={isSel ? s.tickSel : s.tick}>{yr}</text>
+              {(yr % every === 0 || isSel) && (
+                <text x={x + bw / 2} y={H - 6} textAnchor="middle" className={isSel ? s.tickSel : s.tick}>{yr}</text>
               )}
               <title>{`${yr}: ${f.pct(v)}`}</title>
             </g>

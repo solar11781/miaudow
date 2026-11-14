@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { YEARS, type RiceSeason } from '../../data';
 import { riceYear } from '../../domain/rice';
 import { useFormat, useT } from '../../app/settings';
+import { useWidth, yearLabelStep } from './useWidth';
 import s from './charts.module.css';
 
 /** Real NSO anomalies as bars around zero; out-of-sample predictions with their 80% range where the season passed. */
@@ -12,20 +13,22 @@ export function RiceHistoryChart({ season }: { season: RiceSeason }) {
   const rows = YEARS.map((y) => riceYear(season, y));
   const vals = rows.flatMap((r) => [r.actual, r.low80, r.high80]).filter((v): v is number => v !== null);
   const lim = Math.max(0.1, Math.ceil(Math.max(...vals.map(Math.abs)) * 20) / 20);
-  const W = 640, H = 240, padL = 40, padR = 8, padT = 10, padB = 28;
+  const [ref, W] = useWidth<HTMLElement>();
+  const H = 260, padL = 60, padR = 8, padT = 12, padB = 32;
   const bw = (W - padL - padR) / YEARS.length;
+  const every = yearLabelStep(bw);
   const y = (v: number) => padT + ((lim - v) / (2 * lim)) * (H - padT - padB);
   const ticks = [-lim, -lim / 2, 0, lim / 2, lim];
   const hasModel = rows.some((r) => r.predicted !== null);
   const label = `${t.science.riceTitle} · ${t.science.seasons[season]}`;
   return (
-    <figure className={s.figure}>
-      <svg viewBox={`0 0 ${W} ${H}`} className={s.svg} role="img" aria-labelledby={`${id}-t`}>
+    <figure className={s.figure} ref={ref}>
+      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className={s.svg} role="img" aria-labelledby={`${id}-t`}>
         <title id={`${id}-t`}>{label}</title>
         {ticks.map((v) => (
           <g key={v}>
             <line x1={padL} x2={W - padR} y1={y(v)} y2={y(v)} className={v === 0 ? s.zero : s.grid} />
-            <text x={padL - 6} y={y(v) + 4} textAnchor="end" className={s.tick}>{f.signedPct(v, 0)}</text>
+            <text x={padL - 8} y={y(v) + 6} textAnchor="end" className={s.tick}>{f.signedPct(v, 0)}</text>
           </g>
         ))}
         {rows.map((r, i) => {
@@ -46,7 +49,7 @@ export function RiceHistoryChart({ season }: { season: RiceSeason }) {
                   <title>{`${r.year}: ${t.science.predicted} ${f.signedPct(r.predicted)} (${f.signedPct(r.low80)} … ${f.signedPct(r.high80)})`}</title>
                 </g>
               )}
-              {r.year % 5 === 0 && <text x={x + bw / 2} y={H - 8} textAnchor="middle" className={s.tick}>{r.year}</text>}
+              {r.year % every === 0 && <text x={x + bw / 2} y={H - 6} textAnchor="middle" className={s.tick}>{r.year}</text>}
             </g>
           );
         })}

@@ -25,13 +25,13 @@
 .land { fill: rgba(110, 158, 60, .2); stroke: var(--c-gold-300); stroke-width: 1.6; stroke-linejoin: round; }
 .cellLine { stroke: rgba(244, 240, 229, .32); stroke-width: 1; stroke-dasharray: 4 4; }
 .place circle { fill: #f4f0e5; }
-.place text { fill: #f4f0e5; font: 500 11px var(--font-ui); paint-order: stroke; stroke: rgba(8, 20, 11, .8); stroke-width: 3px; }
+.place text { fill: #f4f0e5; font: 500 17px var(--font-ui); paint-order: stroke; stroke: rgba(8, 20, 11, .8); stroke-width: 3px; }
 .prism { position: absolute; transform-style: preserve-3d; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .prism:focus-visible { outline: none; }
 .prism:focus-visible .top, .sel .top { outline: 3px solid #f4f0e5; outline-offset: 3px; }
 .face { position: absolute; display: block; transition: height 520ms var(--ease-out), width 520ms var(--ease-out), transform 520ms var(--ease-out), top 520ms var(--ease-out), left 520ms var(--ease-out), background-color 300ms var(--ease-out); }
 .top { border-radius: 3px; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
-.topLabel { font: 600 13px/1 var(--font-mono); color: #0b160d; opacity: 0; transition: opacity 200ms; }
+.topLabel { font: 600 17px/1 var(--font-mono); color: #0b160d; opacity: 0; transition: opacity 200ms; }
 .flat .topLabel { opacity: 1; }
 .hint { position: absolute; left: 14px; bottom: 12px; margin: 0; font: 400 12px/1.3 var(--font-mono); color: rgba(244, 240, 229, .7); }
 .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; font-size: var(--t-micro); color: var(--fg-3); }
