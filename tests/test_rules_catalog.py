@@ -358,6 +358,21 @@ def test_spring_season_is_named_as_the_glossary_names_it() -> None:
             assert not SHORT_SPRING_ANY_CASE.search(cell["text"]["vi"]), cell["row_key"]
 
 
+WHY_PARTS = ("why", "evidence", "benefits", "gaps")  # UI-UX-SPEC section 11 Why
+
+
+def test_each_plan_explains_where_it_comes_from_in_both_languages() -> None:
+    # team 2026-11-14: the four parts hold short lines from the studies; where a study says nothing, the gap is stated
+    for plan_id, plan in plans().items():
+        why = plan["why"]
+        assert set(why) == set(WHY_PARTS), plan_id
+        for part in WHY_PARTS:
+            assert is_text(why[part]), (plan_id, part)
+            assert not INTERNAL_LABEL.search(why[part]["vi"] + why[part]["en"]), (plan_id, part)
+        assert "Trịnh Đức Toàn" in why["why"]["vi"], plan_id  # R-P02 and R-P03 first author (REFERENCES)
+        assert "Lưu Sơn" in why["why"]["vi"], plan_id  # P-02 and P-03 site
+
+
 def test_plan_risks() -> None:
     for plan_id, plan in plans().items():
         cited = set()
