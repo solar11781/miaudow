@@ -35,13 +35,15 @@ LABEL_X = 16
 COLUMN_X = 184
 COLUMN_W = 256
 PAD = 12
-LABEL_HALF_W = 64  # about half a "-0.00 [-0.00, -0.00]" label at 12 px, so a label stays inside its column
+LABEL_HALF_W = 64  # about half a "-0.52 [-1.98, -0.05]" label at 12 px, so a label stays inside its column
 ROW_H = 44
 TOP = 76
 
 
 def _fmt(x: float) -> str:
-    return f"{x:.2f}"  # method-page metric precision: 2 decimals (D-160)
+    """2 decimals (D-160); minus zero prints as 0.00, like the engine (coordinator decision 2026-11-14)."""
+    text = f"{x:.2f}"
+    return "0.00" if text == "-0.00" else text
 
 
 def _main_model_rows(doc: dict) -> dict[str, dict[str, dict]]:
