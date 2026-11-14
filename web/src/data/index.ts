@@ -1,9 +1,10 @@
-// Typed access to the generated data files (pipeline/build_data.py, pipeline/build_photos.mjs). Values are not changed.
-import geoJson from './generated/geo.json';
-import hazardsJson from './generated/hazards.json';
-import modelJson from './generated/model.json';
+// Typed access to the canonical data (data/canonical, built by pipeline/build_canonical.py; the API serves the same
+// files). Values are not changed here.
+import geoJson from '@data/geo.json';
+import hazardsJson from '@data/hazards.json';
+import modelJson from '@data/model.json';
 import photosJson from './generated/photos.json';
-import soilJson from './generated/soil.json';
+import soilJson from '@data/soil.json';
 
 export type RuleCode = 'heavy_rain' | 'heat' | 'drought_rain_consecutive' | 'drought_rain_any2' | 'cold';
 export type Magnitude = 'max_rain_mm' | 'hot_days' | 'cold_days' | 'drought_months';
