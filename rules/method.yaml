@@ -14,7 +14,7 @@ coverage:
      source_ids: [E-019, R-A01]}
   - {row_key: rice_spring, crop: *rice_spring, axis: rice_history, text: &yes {vi: "Có", en: "Yes"}, source_ids: [R-D01]}
   - {row_key: rice_spring, crop: *rice_spring, axis: model,
-     text: {vi: "Chỉ các năm 2016-2024, nếu vụ Đông Xuân qua được kiểm tra", en: "2016-2024 only, if the spring test passes"},
+     text: {vi: "Không: kiểm tra vụ Đông Xuân (G2) không đạt", en: "No: the spring test (G2) did not pass"},
      source_ids: [E-012]}
   - {row_key: rice_spring, crop: *rice_spring, axis: water_tcvn,
      text: {vi: "Có (các dòng Trung bộ và Bắc bộ)", en: "Yes (Trung bộ and Bắc bộ rows)"}, source_ids: [R-W15]}
