@@ -10,6 +10,7 @@ Google's public keys is replaced, so no test touches the network.
 """
 
 import json
+import logging
 import os
 import shutil
 import socket
@@ -188,6 +189,28 @@ def test_sign_in_is_off_without_both_settings(monkeypatch: pytest.MonkeyPatch, s
         r = getattr(c, method)(path)
         assert r.status_code == 503, path
         assert r.json() == {"detail": "sign-in is not available"}, path
+
+
+def test_an_unreachable_database_at_start_turns_sign_in_off(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    # §12c: every farmer route MUST keep working without signing in, so a database that is down never stops the start
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", CLIENT_ID)
+    # nothing listens on port 1; connect_timeout keeps the test short (psycopg waits 130 s by default)
+    url = "postgresql://zz-secret-user:zz-secret-pass@127.0.0.1:1/zz-secret-db?connect_timeout=2"
+    monkeypatch.setenv("DATABASE_URL", url)
+    with caplog.at_level(logging.DEBUG):
+        c = TestClient(create_app(root=REPO))
+    assert c.get("/api/health").status_code == 200
+    assert c.post("/api/compare", json={"province": "nghe_an", **ANSWERS}).status_code == 200
+    assert c.get("/api/account/config").json() == {"available": False, "client_id": None}
+    for method, path in ROUTES:
+        assert getattr(c, method)(path).json() == {"detail": "sign-in is not available"}, path
+    lines = [rec.getMessage() for rec in caplog.records if rec.name.startswith("fieldshift")]
+    assert len(lines) == 1, lines
+    assert not [rec for rec in caplog.records if rec.exc_info]  # no traceback: it may hold the address
+    for secret in ("zz-secret", "postgresql", "127.0.0.1"):
+        assert secret not in lines[0]
 
 
 def test_config_names_the_client_id_when_on(on: str) -> None:
