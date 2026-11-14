@@ -368,6 +368,37 @@ class PrivacyTexts(Entry):
     paragraphs: list[Text] = Field(min_length=1)
 
 
+class CopilotPassage(Entry):
+    """One hand-written passage of rules/copilot.yaml (D-169 audit, D-172): one source per passage."""
+
+    id: str = Field(pattern=r"^[a-z0-9-]+$")
+    source_id: SourceId
+    keys: str
+    title: Text
+    text: Text
+
+
+class CopilotAnswers(Entry):
+    """The copilot's fixed answer sentences of rules/copilot.yaml; `{year}`, `{unit}` and `{parts}` are filled in."""
+
+    insufficient: Text
+    forecast: Text
+    plans_head: Text
+    plans_tail: Text
+    year_head: Text
+    year_note: Text
+    no_value: Text
+    plan_money: Text
+    model_title: Text
+    extractive_head: Text
+    own_field: Text
+
+
+class CopilotTexts(Entry):
+    passages: list[CopilotPassage] = Field(min_length=1)
+    answers: CopilotAnswers
+
+
 class MethodTexts(BaseModel):
     """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2-5)."""
 
@@ -436,6 +467,30 @@ def load_method_texts(root: Path) -> MethodTexts:
 
 def load_privacy_texts(root: Path) -> PrivacyTexts:
     return _checked("privacy.yaml", PrivacyTexts, _read_mapping(root, "privacy.yaml"))
+
+
+def load_copilot_texts(root: Path) -> CopilotTexts:
+    texts = _checked("copilot.yaml", CopilotTexts, _read_mapping(root, "copilot.yaml"))
+    ids = [p.id for p in texts.passages]
+    if len(set(ids)) != len(ids):
+        raise ValueError("rules/copilot.yaml: a passage id is listed twice")
+    return texts
+
+
+def load_prompt(root: Path, name: str, placeholders: tuple[str, ...] = ()) -> str:
+    """The system prompt rules/prompts/<name>.md as sent to the model (team, 2026-11-15): the text without its final
+    line end. A missing or empty file, or a missing `{placeholder}`, stops the start."""
+    path = root / "rules" / "prompts" / f"{name}.md"
+    try:
+        text = path.read_text(encoding="utf-8").replace("\r\n", "\n").removesuffix("\n")
+    except FileNotFoundError as err:
+        raise ValueError(f"rules/prompts/{name}.md: missing") from err
+    if not text.strip():
+        raise ValueError(f"rules/prompts/{name}.md: empty")
+    missing = [p for p in placeholders if "{" + p + "}" not in text]
+    if missing:
+        raise ValueError(f"rules/prompts/{name}.md: no placeholder {missing}")
+    return text
 
 
 def load_calendar(root: Path) -> CalendarFile:

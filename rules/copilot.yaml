@@ -1,0 +1,105 @@
+# Texts of the copilot, POST /api/copilot (member B's /tro-ly, ported by D-172). `passages` are member B's hand-written
+# passages of frontend/src/features/ai/knowledge.ts as the D-169 audit kept them, each with the register id of its
+# source (the audit's key map: nasa-power = R-N01, modis = R-N02, qd18 = R-A01, p02 = R-P02, p03 = R-P03,
+# tcvn8641 = R-W15, fao-tm3 = R-M02). Left out: the legume passage and the "since 1981" clause (hidden by the audit),
+# and the "no-forecast" passage (its question gets the fixed `forecast` answer). The water passage is split by
+# source, so each passage has one source. The plan, rule and model passages are built by the server from
+# rules/rotations.yaml, rules/conditions.yaml and artifacts/gates.json. The answer sentences are member B's
+# deterministic answers without their numbers. The cell size is the audited wording of frontend/src/i18n (en.ts
+# line 189). All text is a draft for the copy review.
+passages:
+  - id: nasa-power
+    source_id: R-N01
+    keys: "nasa power du lieu thoi tiet reanalysis merra ve tinh luoi o"
+    title: {vi: "Dữ liệu NASA POWER là gì?", en: "What is the NASA POWER data?"}
+    text:
+      vi: "NASA POWER cho thời tiết theo ngày trên lưới ô, mỗi ô khoảng 55 × 66 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn."
+      en: "NASA POWER gives daily weather on a grid of cells about 55 × 66 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field."
+  - id: modis
+    source_id: R-N02
+    keys: "modis trong so dat trong farmland weight"
+    title: {vi: "Vì sao tính theo “phần đất trồng”?", en: "Why “share of farmland”?"}
+    text:
+      vi: "Mỗi ô NASA được cân theo phần đất trồng trong ô (bản đồ NASA MODIS). Con số trên thẻ là tổng trọng số của các ô đạt ngưỡng, nên ô có nhiều ruộng nặng ký hơn ô núi rừng."
+      en: "Each NASA cell is weighted by its farmland share (NASA MODIS map). The number on a card is the sum of weights of the cells meeting the rule, so cells with more fields count more than forest cells."
+  - id: qd18
+    source_id: R-A01
+    keys: "quyet dinh 18 2021 cap do rui ro nguong luat thien tai"
+    title: {vi: "Ngưỡng rủi ro lấy từ đâu?", en: "Where do the risk thresholds come from?"}
+    text:
+      vi: "Từ Quyết định 18/2021/QĐ-TTg về cấp độ rủi ro thiên tai: mưa lớn Điều 44, nắng nóng Điều 47, hạn (phần mưa) Điều 48, rét hại Điều 53. Miaudow tính từ cấp độ 1 trở lên. Đây là cách đọc máy móc các bảng, không phải cảnh báo chính thức."
+      en: "From Decision 18/2021/QĐ-TTg on disaster risk levels: heavy rain Art. 44, heat Art. 47, drought rain part Art. 48, damaging cold Art. 53. Miaudow counts level 1 or higher. It is a mechanical reading of the tables, not an official warning."
+  - id: p02-design
+    source_id: R-P02
+    keys: "p02 thu nghiem luu son do luong o 1000 m2 khong lap lai co cau"
+    title: {vi: "Thử nghiệm P-02 được làm thế nào?", en: "How was the P-02 trial done?"}
+    text:
+      vi: "Thử nghiệm ở xã Lưu Sơn, Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không."
+      en: "The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on inefficient, drought-prone rice land. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence."
+  - id: p03-summer
+    source_id: R-P03
+    keys: "p03 lua he thu loi nhuan 1 16 gan nhu khong co bo hoang"
+    title: {vi: "Lúa hè thu trên ruộng thiếu nước lãi bao nhiêu?", en: "What does summer rice earn on water-short land?"}
+    text:
+      vi: "Nghiên cứu P-03 ở Lưu Sơn ghi lúa hè thu năm 2020 lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác P-02. P-03 mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”."
+      en: "Study P-03 in Lưu Sơn records 2020 summer rice profit of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from P-02. P-03 describes current practice as “rice – rice – fallow”."
+  - id: water-tcvn
+    source_id: R-W15
+    keys: "nuoc tuoi m3 ha tcvn nhu cau nuoc lua lac ngo"
+    title: {vi: "Lúa và các cây khác cần tưới bao nhiêu nước?", en: "How much irrigation do rice and other crops need?"}
+    text:
+      vi: "Theo TCVN 8641:2011, lúa vụ xuân cần tưới dưỡng 6.500–7.500 m³/ha (Trung bộ, lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha (Bắc bộ); ngô 2.000–2.500; lạc và đậu tương khoảng 2.000; khoai lang 1.200–1.400 m³/ha. 1 m³/ha bằng 0,1 mm. Tiêu chuẩn không nói Nghệ An thuộc vùng nào."
+      en: "Under TCVN 8641:2011, spring rice needs 6,500–7,500 m³/ha of maintenance irrigation (Trung bộ, transplanted or direct-seeded) and 6,000–7,000 m³/ha (Bắc bộ); maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. 1 m³/ha is 0.1 mm. The standard does not say which region Nghệ An is in."
+  - id: water-fao
+    source_id: R-M02
+    keys: "nuoc mm fao nhu cau nuoc ca vu lua lac ngo"
+    title: {vi: "Cả vụ cây cần bao nhiêu nước theo FAO?", en: "How much water does a crop need over a season, by FAO?"}
+    text:
+      vi: "FAO ước tính thô nhu cầu nước cả vụ: lúa 450–700 mm, lạc 500–700, ngô 500–800."
+      en: "FAO’s rough seasonal water need: rice 450–700 mm, peanut 500–700, maize 500–800."
+  - id: soil-wetness
+    source_id: R-N01
+    keys: "do am dat gwetroot merra 2 soil wetness"
+    title: {vi: "Độ ẩm đất NASA nghĩa là gì?", en: "What does NASA soil wetness mean?"}
+    text:
+      vi: "Là giá trị mô hình MERRA-2 cho lớp đất quanh rễ, từ 0 (khô) đến 1 (bão hòa), trung bình trong thời gian cây trên ruộng, so với 1991–2020. Không phải số đo tại ruộng và không có ngưỡng tốt xấu."
+      en: "A MERRA-2 model value for the root zone, from 0 (dry) to 1 (saturated), averaged over the crop’s field time and compared with 1991–2020. Not a field measurement, with no good or bad threshold."
+  - id: officer
+    source_id: R-P02
+    keys: "can bo khuyen nong hoi ai giup vay von thu mua gia ban"
+    title: {vi: "Nên hỏi cán bộ khuyến nông điều gì?", en: "What to ask the extension officer?"}
+    text:
+      vi: "Ruộng nhà mình có giống ruộng thử nghiệm ở Lưu Sơn không; ở xã ai thu mua và giá bao nhiêu; cần bao nhiêu vốn và có được vay không. Giá trong thử nghiệm là giá lúc thu hoạch năm 2020–21."
+      en: "Whether your field is like the Lưu Sơn trial field; who buys in your commune and at what price; how much capital is needed and whether you can borrow. Trial prices are 2020–21 harvest prices."
+answers:
+  insufficient:
+    vi: "Chưa đủ dữ liệu để kết luận. Kho bằng chứng của Miaudow chưa có tài liệu đủ liên quan đến câu hỏi này. Hãy hỏi cán bộ khuyến nông của xã."
+    en: "Not enough evidence to conclude. Miaudow's evidence library has nothing relevant enough to this question. Please ask the commune's extension officer."
+  forecast:
+    vi: "Miaudow không có dự báo thời tiết hay dự báo mùa vụ. Ứng dụng chỉ cho xem những năm đã qua, và năm đã qua không phải dự báo. Hãy hỏi đài khí tượng thủy văn tỉnh hoặc cán bộ khuyến nông về mùa tới."
+    en: "Miaudow has no weather or season forecast. It only shows past years, and past years are not a forecast. Ask the provincial hydro-meteorological station or the extension officer about the coming season."
+  plans_head:
+    vi: "Miaudow không chọn cách trồng thay gia đình bạn. Đây là các cách trồng trong các nghiên cứu, theo thứ tự của nghiên cứu:"
+    en: "Miaudow does not choose a plan for your family. These are the plans of the studies, in the studies' order:"
+  plans_tail:
+    vi: "Mở từng thẻ bên dưới để xem tiền lãi trong thử nghiệm, nước tưới, giới hạn và câu hỏi nên mang tới cán bộ khuyến nông."
+    en: "Open each card below for the trial profit, water, limits and the questions to take to the extension officer."
+  year_head:
+    vi: "Năm {year} ở đất trồng Nghệ An, phần đất trồng gặp từng điều kiện chính thức:"
+    en: "{year} on Nghệ An farmland, the share of farmland that met each official condition:"
+  year_note:
+    vi: "Đây là năm đã qua, không phải dự báo. Số theo ô lưới mô hình, không đo tại ruộng."
+    en: "A past year, not a forecast. Model grid values, not measured on a farm."
+  no_value: {vi: "không có số liệu", en: "no value"}
+  plan_money:
+    vi: "Theo nghiên cứu, tiền lãi của từng cây ({unit}): {parts}."
+    en: "In the study, the profit of each crop ({unit}): {parts}."
+  extractive_head:
+    vi: "Các nguồn liên quan (số của nghiên cứu trong vùng, không phải ruộng nhà bạn):"
+    en: "Related sources (regional study values, not your field):"
+  own_field:
+    vi: "Miaudow không biết ruộng nhà bạn. Ứng dụng chỉ có số của nghiên cứu và số theo vùng, không phải số của ruộng nhà bạn. Hãy hỏi cán bộ khuyến nông của xã về ruộng nhà mình."
+    en: "Miaudow does not know your field. The app has only study values and regional values, never the values of your own field. Please ask the commune's extension officer about your field."
+  model_title:
+    vi: "Mô hình dự đoán lúa ({season}) có tốt không?"
+    en: "Is the rice model ({season}) any good?"
