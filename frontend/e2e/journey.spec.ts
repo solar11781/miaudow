@@ -47,6 +47,25 @@ test('T4 T14 a farmer completes the four steps by tapping only, and nothing is s
   await expect(page.getByRole('radio', { name: /Tiết kiệm nước/ })).toHaveAttribute('aria-checked', 'true');
 });
 
+test('T14 nothing is stored after a scroll, a reload and a navigation, and a new page opens at the top', async ({
+  page,
+}) => {
+  const stored = () => page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie.length]);
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  await page.evaluate(() => window.scrollTo(0, 600));
+  // the page writes scroll positions on unload, so the check comes after the reload
+  await page.reload();
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  expect(await stored()).toEqual([0, 0, 0]);
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await page.getByRole('link', { name: /Quay lại/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Bạn muốn ưu tiên điều gì?' })).toBeVisible();
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  await page.reload();
+  expect(await stored()).toEqual([0, 0, 0]);
+});
+
 test('T31 links shared before the four water situations still open', async ({ page }) => {
   await page.goto('/#/nong-dan/phuong-an?ruong=dry&nam=2010&uutien=income');
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
