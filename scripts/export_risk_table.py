@@ -10,11 +10,9 @@ from pathlib import Path
 import pandas as pd
 
 from fieldshift.data.series import prepare_series
+from fieldshift.features.feature_table import RICE_SEASONS
 from fieldshift.ml.export import risk_table
 from fieldshift.ml.normal import CHOSEN_METHOD, add_anomaly
-
-FREEZE_COMMIT = "ea7a60c21d1867c4096fc3b3c4822b4127b53839"  # E-010
-RICE_SEASONS = ("spring", "autumn", "winter")  # NSO rice seasons of the history (05-DATA-CONTRACTS section 2)
 
 
 def _sha(path: str) -> str:
@@ -26,12 +24,12 @@ series, _removed = prepare_series(stats[~stats["is_preliminary"]])
 rice = series[(series["crop"] == "rice") & series["season"].isin(RICE_SEASONS) & series["yield_t_ha"].notna()]
 history = add_anomaly(rice.reset_index(drop=True), CHOSEN_METHOD)
 pred = pd.read_csv("data/processed/e012_predictions.csv")
-gates = json.loads(Path("artifacts/gates.json").read_text(encoding="utf-8"))["gates"]
+gate_doc = json.loads(Path("artifacts/gates.json").read_text(encoding="utf-8"))  # written by run_primary_test.py
 table = risk_table(
     history,
     pred,
-    gates,
-    freeze_commit=FREEZE_COMMIT,
+    gate_doc["gates"],
+    freeze_commit=gate_doc["freeze_commit"],
     data_versions={
         "crop_stats": _sha("data/processed/crop_stats.csv"),
         "climate": _sha("data/processed/training_table.csv"),
