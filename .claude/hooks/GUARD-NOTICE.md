@@ -12,5 +12,11 @@ Changes: rewritten in Node (no jq); `git push` is allowed for task branches; add
 `main`, `gh pr merge`, force pushes of any kind, remote branch deletion, and recursive deletes outside scratch
 folders (Bash and PowerShell). Kept from the original: `git reset --hard`, `git clean -f`, `git branch -D`,
 `git checkout .`, `git restore .`.
+Added 2026-11-14: a merge, rebase or push runs in another git checkout that is not on `main` only when the bash
+command starts with `cd <literal path>` and joins every step with `&&`, or is a single `git -C <literal path>`, and
+every later step is git status, log, diff, show, add, commit, rev-parse, or fetch, merge, push without a refspec;
+`git -C` into a folder on `main` or an unreadable one is checked as `main`; `--git-dir <path>` as a separate word is
+read as an option; blocked too: a git alias defined inside a command, a push to `heads/main`, fetching into `main`,
+`update-ref` or `symbolic-ref` on `main`, and `branch -f/-m/-c` onto `main`.
 
 Tests: `node --test .claude/hooks/guard.test.mjs`.
