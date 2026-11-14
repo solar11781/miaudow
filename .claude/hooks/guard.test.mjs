@@ -112,19 +112,63 @@ test('rule 8: ordinary commands and quoted text are not blocked', () => {
   allowed('git log --oneline -5');
 });
 
-// ---- auto-merge gate (team decision D-124, 2026-11-13) ----
+// ---- auto-merge gate (team decisions D-124, 2026-11-13, and D-152, 2026-11-14: normal merges only) ----
 import { mergeRequest, checkMergeGate } from './guard.mjs';
 
-test('merge command shape: squash, explicit number, no bypass flags', () => {
-  assert.deepEqual(mergeRequest('gh pr merge 12 --squash'), { pr: '12', problem: null });
+test('merge command shape: normal merge, explicit number, no bypass flags', () => {
+  assert.deepEqual(mergeRequest('gh pr merge 12 --merge'), { pr: '12', problem: null });
+  assert.deepEqual(mergeRequest('gh pr merge 12 -m'), { pr: '12', problem: null });
   assert.equal(mergeRequest('git status'), null);
-  assert.match(mergeRequest('gh pr merge --squash').problem, /number/);
-  assert.match(mergeRequest('gh pr merge 12 --merge').problem, /squash/);
-  assert.match(mergeRequest('gh pr merge 12 --squash --admin').problem, /admin/);
-  assert.match(mergeRequest('gh pr merge 12 --squash --delete-branch').problem, /delete/);
-  assert.match(mergeRequest('gh pr merge 12 --squash -d').problem, /delete/);
-  assert.match(mergeRequest('gh pr merge 12 --squash --auto').problem, /auto/);
-  assert.match(mergeRequest('gh pr merge 12 --squash && git push origin main').problem, /alone/);
+  assert.match(mergeRequest('gh pr merge --merge').problem, /number/);
+  assert.match(mergeRequest('gh pr merge 12').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --admin').problem, /admin/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --delete-branch').problem, /delete/);
+  assert.match(mergeRequest('gh pr merge 12 --merge -d').problem, /delete/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --auto').problem, /auto/);
+  assert.match(mergeRequest('gh pr merge 12 --merge && git push origin main').problem, /alone/);
+});
+
+test('squash and rebase merges are refused', () => {
+  for (const flag of ['--squash', '-s', '--rebase', '-r']) {
+    assert.match(mergeRequest(`gh pr merge 12 ${flag}`).problem, /--merge/, flag);
+    assert.match(mergeRequest(`gh pr merge 12 --merge ${flag}`).problem, /--merge/, flag);
+  }
+});
+
+test('flags written as --flag=value are checked like the plain flag', () => {
+  assert.match(mergeRequest('gh pr merge 12 --merge --squash=true').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --rebase=true').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --admin=true').problem, /admin/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --auto=true').problem, /auto/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --delete-branch=true').problem, /delete/);
+  assert.deepEqual(mergeRequest('gh pr merge 12 --merge=true'), { pr: '12', problem: null });
+});
+
+test('grouped short flags, a second number and another repository are refused', () => {
+  assert.match(mergeRequest('gh pr merge 12 --merge -dm').problem, /delete/);
+  assert.match(mergeRequest('gh pr merge 12 -md').problem, /delete/);
+  assert.match(mergeRequest('gh pr merge 12 -ms').problem, /--merge/);
+  assert.match(mergeRequest('gh pr merge --merge --subject 12 99').problem, /one pull request/);
+  assert.match(mergeRequest('gh pr merge 12 --merge -R other/repo').problem, /repo/);
+  assert.match(mergeRequest('gh pr merge 12 --merge --repo=other/repo').problem, /repo/);
+  assert.match(mergeRequest('gh pr merge 12 -m -Rother/repo').problem, /repo/);
+});
+
+test('only the exact shape gh pr merge <number> --merge is allowed', () => {
+  assert.deepEqual(mergeRequest('gh pr merge --merge 12'), { pr: '12', problem: null });
+  for (const cmd of [
+    'gh pr merge --merge --subject 12 other-branch',
+    'gh pr merge --merge --subject 12 https://github.com/o/r/pull/99',
+    'gh pr merge 12 --merge --body x',
+    'gh pr merge 12 --merge feat/x',
+  ]) assert.match(mergeRequest(cmd).problem, /only/, cmd);
+  for (const cmd of [
+    'gh pr merge --merge # 12',
+    'gh pr merge 12 --merge $(echo --admin)',
+    'gh pr merge 12 --merge `echo -d`',
+    'gh pr merge 12 --merge --ad`min',
+    'gh pr merge 12 --merge > out.txt',
+  ]) assert.match(mergeRequest(cmd).problem, /shell/, cmd);
 });
 
 const GATE = 'review-gates: spec-review=pass security-review=pass tests=pass';
@@ -164,7 +208,7 @@ test('merge gate passes only when every condition holds', () => {
 });
 
 test('gh pr merge is no longer blocked by the static rules (the gate decides)', () => {
-  allowed('gh pr merge 12 --squash');
+  allowed('gh pr merge 12 --merge');
 });
 
 test('merge gate: changes to the shared queue are merged by a person only', () => {

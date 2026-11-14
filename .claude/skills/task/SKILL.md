@@ -28,6 +28,8 @@ Structure based on Matt Pocock's `implement` skill (mattpocock/skills, MIT), cha
 
 - Type: one of the commit types in `CLAUDE.md`. Name: `<type>/<short-name>`, lowercase with hyphens.
 - `git fetch origin`, then `git checkout -b <branch> origin/main` (use local `main` if `origin/main` does not exist yet).
+- A task from the queue: add `- in progress: <who>, branch <name>` under the item in the planning repository's queue
+  draft and push it there (replaced by the done line of step 8.6); without the planning repository, tell the team.
 - If the task needs another task branch that is not merged yet, branch from that branch instead and say so in the
   pull request ("based on <branch>; merge that first").
 
@@ -58,16 +60,26 @@ comes back to this task; a review never ends the task. Then continue with the ne
 3. For a user-facing screen: a Playwright check at 360 x 740 and the `cognitive-walkthrough` skill as described in
    `CLAUDE.md`.
 
+Every review is thorough and double-checked (team decision D-152, 2026-11-14):
+
+- Check each finding against the code before acting on it. Fix the real ones; for each one dismissed, write the reason
+  (the code line or spec line that shows it is not a problem).
+- After the fixes, run the full checks and every review of this step a second time on the final state. Only a clean
+  second pass counts; if it finds something new, fix it and run that pass again.
+- Report both passes in the pull request: findings, fixes and dismissals with their reasons.
+
 ## 6. Commit and push
 
-- Commits in the format of `CLAUDE.md`.
+- Commits as in `CLAUDE.md` ("Branches, commits and merging"): one logical step each, for example the failing test,
+  the implementation, each review fix, the docs.
 - `git push -u origin <branch>`. Never push to `main`, never force push. The safety hook blocks these; if it blocks
   something, do not work around it, report it.
 
 ## 7. Pull request
 
 Write the body: what and why (one or two lines), the spec lines it implements, the tests run and their real result,
-review findings fixed and left open, what was skipped, risks.
+review findings fixed and left open, what was skipped, risks. A task from the queue names its item in the title, for
+example `chore: switch the gate to normal merges (queue item 0)`.
 
 - If `gh` is installed and signed in (`gh auth status`): `gh pr create --base main --head <branch> --title
   "<type>: <summary>" --body "<body>"`.
@@ -81,14 +93,19 @@ review findings fixed and left open, what was skipped, risks.
    branch, run the local checks, push, watch again. After three failed rounds, stop and report the evidence.
 2. If `main` moved: `git fetch origin && git merge origin/main` on this branch (never rebase pushed work), run the
    local checks, push, and let CI run again.
-3. Run the `security-review` skill on the branch (inside an Agent subagent, as in step 5). Fix real findings (back to 1). A finding that needs a decision
-   about science, rules, numbers or scope: stop and ask (under the autopilot: park it, do not merge).
-4. When CI is green, spec-review and security-review have no open issue, and no commit came after them, post the gate
-   record as a pull request comment, with this exact last line:
+3. Run the `security-review` skill on the branch (inside an Agent subagent, as in step 5), double-checked as in step
+   5 (a fix goes back to 1). A finding that needs a decision about science, rules, numbers or scope: stop and ask
+   (under the autopilot: park it, do not merge).
+4. When CI is green, the second passes of spec-review and security-review have no open issue, and no commit came
+   after them, post the gate record as a pull request comment, with this exact last line:
    `review-gates: spec-review=pass security-review=pass tests=pass`
-   Above it, list the evidence: check names and results, review findings fixed.
-5. Merge: `gh pr merge <number> --squash`, run alone. If the hook refuses, read its reason, fix that, and retry;
-   never change the command to get around it.
+   Above it, list the evidence: check names and results, findings of both passes and what was done with each.
+5. Merge: `gh pr merge <number> --merge` (or `-m`; the merge rule in `CLAUDE.md`), run alone. If the hook refuses,
+   read its reason, fix that, and retry; never change the command to get around it.
+6. A task from the queue: add the line `- done: <date time ICT>, pull request #<n>` under the item in the planning
+   repository's queue draft (not `.autopilot/queue.md`, which a person merges) and push it there at once, so a member
+   who joins later sees it. If this session does not have the planning repository, give that line to the team in the
+   report instead. Never name, link or give a path to the planning repository in this repository.
 
 ## 9. Report
 

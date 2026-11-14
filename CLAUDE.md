@@ -25,9 +25,11 @@ Never let the code decide.
   for example `feat/plan-cards`, `fix/month-bar-overflow`, `chore/pin-versions`. The type is one of the commit types
   below.
 - Commit and push to the task branch freely. Pull before pushing. Never push directly to `main`.
-- Merging into `main` (team decision, 2026-11-13): only by `gh pr merge <number> --squash` through the gate in the
-  `task` skill: every CI check passed, the branch contains the latest `main`, and a gate record shows spec-review and
-  security-review found no open issue. The safety hook enforces the gate. Without `gh`, the team merges.
+- Merging into `main` (team decisions, 2026-11-13 and 2026-11-14): only by `gh pr merge <number> --merge` (or `-m`; a
+  normal merge, so every branch commit stays on `main` with its real time; squash and rebase are refused) through the gate
+  in the `task` skill: every CI check passed, the branch contains the latest `main`, and a gate record shows that the
+  double-checked spec-review and security-review found no open issue. The safety hook enforces the gate. Without
+  `gh`, the team merges. Each branch commit is one clean, logical step; no work-in-progress commits.
 - Commit format: `<type>: <description>`. Types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `perf`,
   `style`, `build`, `ci`.
 - Subject and body all lowercase, including names and acronyms (`nasa`, `modis`). No emojis. No en dashes or em
