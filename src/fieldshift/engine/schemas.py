@@ -42,6 +42,7 @@ MonthDay = Annotated[str, Field(pattern=r"^\d{2}-\d{2}$"), AfterValidator(_real_
 
 RULE_CODES: tuple[RuleCode, ...] = get_args(RuleCode)
 PLAN_IDS: tuple[PlanId, ...] = get_args(PlanId)
+SEASON_CODES: tuple[SeasonCode, ...] = get_args(SeasonCode)
 EXPLAIN_KEYS: tuple[ExplainKey, ...] = get_args(ExplainKey)
 
 
