@@ -383,7 +383,7 @@ async function call(path: string, init: RequestInit & { timeoutMs?: number } = {
 // ---------------------------------------------------------------- demo-day snapshot (04-TECH-DESIGN section 9)
 
 /** True only in `npm run build:snapshot` (vite --mode snapshot): the product calls then read the saved real answers of
- * scripts/build_snapshot.py from public/snapshot/ instead of /api, and every page says so. */
+ * scripts/build_snapshot.py (frontend/snapshot/, copied in by vite.config.ts) instead of /api, and every page says so. */
 export const SNAPSHOT_MODE = import.meta.env.MODE === 'snapshot';
 const SNAPSHOT_URL = `${import.meta.env.BASE_URL}snapshot/`;
 

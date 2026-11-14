@@ -18,7 +18,7 @@ spec = importlib.util.spec_from_file_location("build_snapshot", REPO / "scripts"
 build_snapshot = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build_snapshot)
 
-SNAPSHOT = REPO / "frontend" / "public" / "snapshot"
+SNAPSHOT = REPO / "frontend" / "snapshot"
 
 
 @pytest.fixture(scope="module")

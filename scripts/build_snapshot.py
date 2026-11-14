@@ -3,9 +3,8 @@ demo video, D-151).
 
 Usage: PYTHONPATH=src python scripts/build_snapshot.py
 Loads the API in-process (FastAPI TestClient on create_app, as tests/test_api.py does; no network) and writes
-frontend/public/snapshot/: past-years.json, method.json, figures/nghe_an_grid.svg, one compare/<land>-<priority>-<years>.json
-per demo answer set, and index.json (the saved answer sets, the commit and the time made). `npm run build:snapshot`
-reads only these files. tests/test_build_snapshot.py fails when a file differs from what the API answers now.
+frontend/snapshot/ (copied into the build only by `npm run build:snapshot`): past-years.json, method.json, figures/nghe_an_grid.svg, one compare/<land>-<priority>-<years>.json
+per demo answer set, and index.json (the saved answer sets, the commit and the time made). tests/test_build_snapshot.py fails when a file differs from what the API answers now.
 
 Demo answer set, chosen from the past-years response with no threshold of our own:
 - land: both API land types, dry and unsure; priority: each of the four;
@@ -25,7 +24,7 @@ from fastapi.testclient import TestClient
 from fieldshift.api.app import create_app
 
 REPO = Path(__file__).resolve().parents[1]
-OUT = REPO / "frontend" / "public" / "snapshot"
+OUT = REPO / "frontend" / "snapshot"
 LANDS = ("dry", "unsure")  # UI-UX-SPEC section 11 CompareRequest.land
 PRIORITIES = ("income", "stability", "water", "land")  # UI-UX-SPEC section 11 CompareRequest.priority
 
