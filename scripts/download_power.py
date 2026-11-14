@@ -37,11 +37,13 @@ added = append_rows(
         for r in new
     ],
 )
+failed = [r for r in report if r["status"] != "ok"]
 print(
     "ok:",
     sum(r["status"] == "ok" for r in report),
     "| new manifest rows:",
     added,
     "| failed:",
-    [r for r in report if r["status"] != "ok"],
+    failed,
 )
+sys.exit(1 if failed else 0)  # a failed cell stops reproduce.sh (set -e) instead of building with cells missing
