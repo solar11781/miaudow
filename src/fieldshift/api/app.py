@@ -2,7 +2,8 @@
 
 It serves GET /api/past-years, POST /api/compare, GET /api/method and GET /api/health. The rules files and artifacts
 are read once when the app is created, so a broken or missing file stops the start instead of failing a farmer's
-request, and no request reads a file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
+request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API (FR-15), is the
+one stated exception to NFR-01: off by default, it answers 503 until it is turned on (explain.py). Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
 generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
 every frontend route, so browser history routing and deep links work (D-102).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
@@ -12,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from pathlib import Path
 from typing import TypeVar, get_args
 
@@ -23,6 +25,7 @@ from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import ClientDisconnect
 
+from fieldshift.api.explain import MAX_EXPLAIN_BODY_BYTES, ExplainError, ExplainRequest, claude_client, explain
 from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
@@ -101,6 +104,10 @@ async def _internal_error(_: Request, __: Exception) -> JSONResponse:
     return JSONResponse({"detail": "Internal Server Error"}, status_code=500)
 
 
+async def _bad_gateway(_: Request, __: ExplainError) -> JSONResponse:
+    return JSONResponse({"detail": "Bad Gateway"}, status_code=502)
+
+
 def _read_every_year_row(compare_data: CompareData) -> None:
     """Compare once with every year, so a missing year row stops the start, not a farmer's request."""
     every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
@@ -119,9 +126,11 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     method_body = _json(method(base))
     compare_data = load_compare_data(base)
     _read_every_year_row(compare_data)
+    claude = claude_client(os.environ)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
+    app.add_exception_handler(ExplainError, _bad_gateway)
     app.add_exception_handler(Exception, _internal_error)
 
     @app.get("/api/health")
@@ -136,6 +145,13 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     async def compare_route(request: Request) -> Response:
         body = await _read_body(request, CompareRequest, MAX_BODY_BYTES)
         return _respond(_json(await run_in_threadpool(compare, body, compare_data)))
+
+    @app.post("/api/explain")
+    async def explain_route(request: Request) -> Response:
+        if claude is None:
+            return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+        body = await _read_body(request, ExplainRequest, MAX_EXPLAIN_BODY_BYTES)
+        return _respond(_json(await run_in_threadpool(explain, body, claude)))
 
     @app.get("/api/method")
     def method_route() -> Response:
