@@ -145,15 +145,16 @@ export function mergeRequest(command) {
   if (idx === -1) return null;
   const args = segs[idx].slice(3);
   const pr = args.find((a) => /^\d+$/.test(a)) ?? null;
-  const has = (...f) => args.some((a) => f.includes(a));
+  // a flag counts by its name, so --squash=true is checked like --squash
+  const has = (...f) => args.some((a) => f.includes(a.split('=')[0]));
   let problem = null;
   if (segs.length > 1) problem = 'run the merge command alone, not chained with other commands';
   else if (!pr) problem = 'name the pull request number';
   else if (has('--admin')) problem = 'no --admin (it bypasses checks)';
   else if (has('--delete-branch', '-d')) problem = 'no --delete-branch (branches are kept)';
   else if (has('--auto')) problem = 'no --auto (merge only after the gate passes now)';
-  // normal merges only (team, 2026-11-14): main keeps every branch commit; squash and rebase would rewrite them
-  else if (!has('--merge', '-m') || has('--squash', '-s', '--rebase', '-r')) problem = 'use --merge only';
+  // normal merges only (team decision D-152, 2026-11-14): main keeps every branch commit; squash and rebase rewrite them
+  else if (!has('--merge', '-m') || has('--squash', '-s', '--rebase', '-r')) problem = 'use --merge (or -m) only';
   return { pr, problem };
 }
 
