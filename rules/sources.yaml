@@ -57,6 +57,34 @@
        en: "Reported only; M1 stays the model used. Same rows and test years as E-012."}
   url: null
   nso_credit: false
+- id: E-014
+  citation: {vi: "Thực nghiệm E-014 của nhóm: hai cách đọc số tháng của quy tắc hạn hán (2 tháng liền nhau; 2 tháng bất kỳ)",
+             en: "Our experiment E-014: the two readings of the drought rule's months (2 months in a row; any 2 months)"}
+  study_type: {vi: "Tính toán của chúng tôi, không phải ghi nhận chính thức", en: "Our computation, not an official record"}
+  place_years: {vi: "Các tỉnh Việt Nam; các vụ lúa 1995-2024, mức thường 1991-2020",
+                en: "Provinces of Viet Nam; rice seasons 1995-2024, normal 1991-2020"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Mỗi cách đọc được tính cho từng ô thời tiết NASA POWER, rồi tính theo tỉ lệ đất trồng; chỉ các vụ có số liệu năng suất của Cục Thống kê.",
+       en: "Each reading is made per NASA POWER weather cell, then weighted by farmland; only the seasons with NSO yield data."}
+    - {vi: "Chỉ phần lượng mưa của quy tắc hạn hán.", en: "Only the rain part of the drought rule."}
+  url: null
+  nso_credit: false
+- id: E-016
+  citation: {vi: "Thực nghiệm E-016 của nhóm: năm mưa lớn so với thiệt hại lúa do lũ được ghi trong DesInventar",
+             en: "Our experiment E-016: heavy-rain years checked against rice flood damage recorded in DesInventar"}
+  study_type: {vi: "Kiểm tra của chúng tôi với các bản ghi được báo cáo", en: "Our check against reported records"}
+  place_years: {vi: "Nghệ An; 1995-2008", en: "Nghệ An; 1995-2008"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chỉ tính các bản ghi lũ, lũ quét và lụt; các bản ghi bão không được tính (lựa chọn của chúng tôi).",
+       en: "Only flood, flash flood and inundation records count; storm records are left out (our choice)."}
+    - {vi: "Chỉ có số năm trùng nhau; các bản ghi của DesInventar không được hiển thị.",
+       en: "Agreement counts only; the DesInventar records are not shown."}
+  url: null
+  nso_credit: false
 - id: E-017
   citation: {vi: "Thực nghiệm E-017 của nhóm: mô hình rừng ngẫu nhiên (M3) cho độ lệch năng suất lúa",
              en: "Our experiment E-017: random forest model (M3) of rice yield anomalies"}
@@ -173,6 +201,19 @@
   limitations:
     - {vi: "Tin báo, không phải số liệu đo.", en: "A news report, not measured data."}
   url: null
+  nso_credit: false
+- id: R-A19
+  citation: {vi: "DesInventar Sendai, cơ sở dữ liệu thiệt hại do thiên tai của Việt Nam (số liệu của CCFSC)",
+             en: "DesInventar Sendai, Viet Nam national disaster loss database (data from CCFSC)"}
+  study_type: {vi: "Cơ sở dữ liệu thiệt hại do thiên tai (các bản ghi được báo cáo)",
+               en: "Disaster loss database (reported records)"}
+  place_years: {vi: "Việt Nam; dùng các bản ghi của Nghệ An 1995-2008", en: "Viet Nam; Nghệ An records 1995-2008 used"}
+  read_status: "READ (data); licence unclear"
+  full_text_read: true
+  limitations:
+    - {vi: "Không có giấy phép dữ liệu rõ ràng: chỉ dùng để kiểm tra năm mưa lớn của chúng tôi; các bản ghi không được hiển thị hay chia sẻ.",
+       en: "No clear data licence: used only to check our heavy-rain years; its records are not shown or shared."}
+  url: "https://www.desinventar.net/DesInventar/download/DI_export_vnm.zip"
   nso_credit: false
 - id: R-B01
   citation: {vi: "USDA ARS, GRIN-Global Taxonomy, các trang loài của 11 cây trồng (họ thực vật ghi trên từng trang)",
@@ -323,6 +364,56 @@
     - {vi: "Chỉ số không tính lại được từ bài báo nếu chúng tôi không tự thêm các lựa chọn của mình.",
        en: "The index cannot be rebuilt from the paper without choices of our own."}
   url: "https://vjol.info.vn/index.php/TCKHTV/article/download/67642/57186/"
+  nso_credit: false
+- id: R-M12
+  citation:
+    vi: "Meroni, M. et al. (2021) Yield forecasting with machine learning and small data. Agric For Meteorol 308-309:108555"
+    en: "Meroni, M. et al. (2021) Yield forecasting with machine learning and small data. Agric For Meteorol 308-309:108555"
+  study_type: {vi: "Bài báo khoa học trên tạp chí (nghiên cứu phương pháp)", en: "Journal article (method study)"}
+  place_years: {vi: "Nguồn về phương pháp; xuất bản năm 2021", en: "Method source; published 2021"}
+  read_status: "READ (arXiv)"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi đọc bản arXiv, không phải bản trên tạp chí.", en: "We read the arXiv version, not the journal version."}
+  url: "https://doi.org/10.1016/j.agrformet.2021.108555"
+  nso_credit: false
+- id: R-M25
+  citation:
+    vi: "Lobell, D.B., Burke, M.B. (2010). On the use of statistical models to predict crop yield responses to climate change. Agricultural and Forest Meteorology 150: 1443-1452"
+    en: "Lobell, D.B., Burke, M.B. (2010). On the use of statistical models to predict crop yield responses to climate change. Agricultural and Forest Meteorology 150: 1443-1452"
+  study_type: {vi: "Bài báo khoa học trên tạp chí (nghiên cứu phương pháp)", en: "Journal article (method study)"}
+  place_years: {vi: "Nguồn về phương pháp; xuất bản năm 2010", en: "Method source; published 2010"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi đọc bản của tác giả.", en: "We read the author copy."}
+  url: "https://web.stanford.edu/~mburke/papers/lobell_burke_2010_AFM.pdf"
+  nso_credit: false
+- id: R-M26
+  citation:
+    vi: "Ortiz-Bobea, A. (2021). Climate, agriculture and food. Handbook of Agricultural Economics 5: 3981-4073"
+    en: "Ortiz-Bobea, A. (2021). Climate, agriculture and food. Handbook of Agricultural Economics 5: 3981-4073"
+  study_type: {vi: "Chương tổng quan trong sách chuyên khảo", en: "Review chapter in a handbook"}
+  place_years: {vi: "Nguồn về phương pháp; xuất bản năm 2021", en: "Method source; published 2021"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Chúng tôi đọc bản arXiv.", en: "We read the arXiv preprint."}
+    - {vi: "Nguồn này cảnh báo rằng các số hạng so sánh giữa các nơi (như trung bình khí hậu của tỉnh) vẫn có thể mang theo những khác biệt khác không đo được.",
+       en: "The source warns that terms compared across places (such as province climate means) can still carry other, unmeasured differences."}
+  url: "https://arxiv.org/pdf/2105.12044"
+  nso_credit: false
+- id: R-M27
+  citation:
+    vi: "LightGBM documentation, Parameters Tuning (\"Tune Parameters for the Leaf-wise (Best-first) Tree\")"
+    en: "LightGBM documentation, Parameters Tuning (\"Tune Parameters for the Leaf-wise (Best-first) Tree\")"
+  study_type: {vi: "Tài liệu hướng dẫn của phần mềm", en: "Software documentation"}
+  place_years: {vi: "Không gắn với nơi nào; trang đọc ngày 14/11/2026", en: "Not about a place; page read on 2026-11-14"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Hướng dẫn chỉnh tham số, không phải một nghiên cứu.", en: "Tuning guidance, not a study."}
+  url: "https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html"
   nso_credit: false
 - id: R-N01
   citation:

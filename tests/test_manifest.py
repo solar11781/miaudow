@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from fieldshift.data.manifest import append_rows, fetch_recorded
+from fieldshift.data.manifest import append_rows, check_recorded, fetch_recorded
 
 HEADER = ["path", "source_id", "table", "title", "url", "retrieved_on", "method", "sha256"]
 
@@ -141,3 +141,17 @@ def test_fetch_recorded_refuses_a_changed_file_an_unknown_path_and_http(tmp_path
         fetch_recorded(
             "data/raw/b.geojson", _recorded(tmp_path, url="http://example.org/b.geojson"), _Opener(b"boundary")
         )
+
+
+def test_check_recorded_accepts_only_the_recorded_file_version(tmp_path):
+    # CR-07 provenance: a file is used only if its sha256 is the one recorded for its path
+    f = tmp_path / "a.zip"
+    f.write_bytes(b"recorded")
+    m = tmp_path / "MANIFEST.csv"
+    _write(m, [[f.as_posix(), "s", "", "t", "https://x/a.zip", "2026-11-14", "m", sha256(b"recorded").hexdigest()]])
+    assert check_recorded(f.as_posix(), m) == f
+    f.write_bytes(b"changed")
+    with pytest.raises(ValueError, match="does not match"):
+        check_recorded(f.as_posix(), m)
+    with pytest.raises(ValueError, match="no manifest row"):
+        check_recorded((tmp_path / "other.zip").as_posix(), m)
