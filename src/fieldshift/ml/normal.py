@@ -29,6 +29,12 @@ def past_normal(df: pd.DataFrame, method: str) -> pd.Series:
     """Normal yield per row (same index as df), computed per `series_id` from earlier rows only; NaN without one."""
     if method not in WINDOWS:
         raise ValueError(f"unknown normal method {method!r}; candidates are {sorted(WINDOWS)} (D-72)")
+    if not df.index.is_unique:
+        raise ValueError("past_normal needs a unique row index; reset it after concatenating series")
+    dup = df.duplicated(["series_id", "year"], keep=False)
+    if dup.any():
+        bad = df.loc[dup, ["series_id", "year"]].drop_duplicates().to_dict("records")
+        raise ValueError(f"more than one row per series and year, the target year would enter its own window: {bad}")
     k = WINDOWS[method]
     out = pd.Series(np.nan, index=df.index, dtype=float)
     for _, g in df.sort_values("year").groupby("series_id", sort=False):
