@@ -151,18 +151,14 @@ export const en: Messages = {
       },
     ],
     problemEyebrow: '02 · The season worry',
-    problemTitle: 'On high fields at the canal end, summer-autumn rice makes almost no profit',
+    // the paper's own land words (D-160), in the translation rules/rotations.yaml and the officer page use
+    problemTitle: 'Low-return (inefficient) rice land, often in drought',
+    // rules/rotations.yaml `usual` why.evidence (P-02 p. 45)
     problemLead:
-      'Two studies in Lưu Sơn commune, Đô Lương recorded what many families already know: when the water does not arrive in time, little is left of a season’s work.',
-    studyLand: 'đất lúa kém hiệu quả, thường xuyên khô hạn',
+      'One trial in Lưu Sơn commune, Đô Lương district, from June 2020 to June 2021 (p. 45); one unreplicated plot of 1,000 m² per crop and season.',
     studyLandBy:
-      'How the paper by Trịnh Đức Toàn et al. (2023) names the trial land: “low-return (inefficient) rice land, often in drought”',
-    quote: 'almost no profit',
-    quoteBy: 'Trịnh Đức Toàn et al. (2023), on summer-autumn rice in 2020 in Lưu Sơn (our translation)',
+      'How the paper by Trịnh Đức Toàn et al. (2023) names the trial land: “đất lúa kém hiệu quả, thường xuyên khô hạn” (our translation above)',
     riceSpring: 'profit of spring rice 2021 on the trial plot',
-    riceSummer: 'profit of summer-autumn rice 2020 on the control plot',
-    riceSummerDetail:
-      'The paper says: “almost no profit, the economic return only reaches 1.16 million/ha” (our translation). Profit in this paper subtracts material costs only.',
     trialNote:
       'Results of one plot in one year (2020–2021), at that harvest’s prices. Not the profit to expect on your field.',
     climateEyebrow: '03 · 34 years of rain',
