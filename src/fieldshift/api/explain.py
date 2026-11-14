@@ -5,10 +5,10 @@ call). Off by default: it runs only when FIELDSHIFT_EXPLAIN is "1" and ANTHROPIC
 environment. The browser sends only what identifies a shown text: the compare answers, a plan id and one of the card's
 four "why" parts; the server takes that part's text from its own compare answer (D-165), so no browser can choose the
 text the model reads. The request holds only the system prompt and that text, with < > & escaped, inside <text> tags
-(H14: no personal data); neither the text nor the key is logged. The reply is plain text, marked AI-generated (R-H15). A reply
-is refused when its numbers, read in order with their sign and the first unit word from UNITS within the next few
-words, differ from the text's; the check sees only numbers and units, so it cannot show that the words around them keep
-their meaning.
+(H14: no personal data); neither the text nor the key is logged. The reply is plain text, marked AI-generated
+(R-H15). A reply is refused when its numbers, read in order with their sign and the first unit word from UNITS
+within the next few words, differ from the text's; the check sees only numbers and units, so it cannot show that
+the words around them keep their meaning.
 """
 
 from __future__ import annotations
