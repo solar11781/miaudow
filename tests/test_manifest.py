@@ -5,8 +5,12 @@ second row with a later date, or the retrieval date of the data becomes ambiguou
 """
 
 import csv
+from hashlib import sha256
+from pathlib import Path
 
-from fieldshift.data.manifest import append_rows
+import pytest
+
+from fieldshift.data.manifest import append_rows, fetch_recorded
 
 HEADER = ["path", "source_id", "table", "title", "url", "retrieved_on", "method", "sha256"]
 
@@ -73,3 +77,57 @@ def test_committed_manifest_has_one_row_per_file_version():
         pairs = [(r["path"], r["sha256"]) for r in csv.DictReader(f)]
     repeated = sorted({p for p in pairs if pairs.count(p) > 1})
     assert repeated == []
+
+
+class _Reply:
+    def __init__(self, body: bytes) -> None:
+        self.body = body
+
+    def read(self) -> bytes:
+        return self.body
+
+    def __enter__(self) -> "_Reply":
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+
+class _Opener:
+    def __init__(self, body: bytes) -> None:
+        self.body, self.urls = body, []
+
+    def open(self, url: str, timeout: float) -> _Reply:
+        self.urls.append(url)
+        return _Reply(self.body)
+
+
+def _recorded(tmp_path, url="https://example.org/b.geojson", body=b"boundary"):
+    manifest = tmp_path / "MANIFEST.csv"
+    _write(
+        manifest,
+        [["data/raw/b.geojson", "geoboundaries", "t", "t", url, "2026-11-11", "curl", sha256(body).hexdigest()]],
+    )
+    return manifest
+
+
+def test_fetch_recorded_downloads_the_manifest_url_and_checks_its_sha256(tmp_path, monkeypatch):
+    # Source: CR-07, NFR-02: a fresh clone re-downloads the recorded file and verifies it against its recorded sha256
+    monkeypatch.chdir(tmp_path)
+    manifest, opener = _recorded(tmp_path), _Opener(b"boundary")
+    assert fetch_recorded("data/raw/b.geojson", manifest, opener) == Path("data/raw/b.geojson")
+    assert Path("data/raw/b.geojson").read_bytes() == b"boundary"
+    assert opener.urls == ["https://example.org/b.geojson"]
+
+
+def test_fetch_recorded_refuses_a_changed_file_an_unknown_path_and_http(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(ValueError, match="sha256"):
+        fetch_recorded("data/raw/b.geojson", _recorded(tmp_path), _Opener(b"changed upstream"))
+    assert not Path("data/raw/b.geojson").exists()
+    with pytest.raises(ValueError, match="no manifest row"):
+        fetch_recorded("data/raw/other.geojson", _recorded(tmp_path), _Opener(b"boundary"))
+    with pytest.raises(ValueError, match="https"):
+        fetch_recorded(
+            "data/raw/b.geojson", _recorded(tmp_path, url="http://example.org/b.geojson"), _Opener(b"boundary")
+        )
