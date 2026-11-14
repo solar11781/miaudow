@@ -300,6 +300,16 @@ export const en: Messages = {
     plansLead:
       'Cards are in a fixed order, not ranked. The first two are current practice, as two different studies describe it.',
     yourPriority: 'Your priority',
+    priorityLine: {
+      income: (usual: string) =>
+        `Profit added over the year (our addition) for this plan and for current practice (${usual}), in the same trial by Trịnh Đức Toàn et al. (2023):`,
+      land: (usual: string) =>
+        `Care for the land for this plan and for current practice (${usual}), in the same trial by Trịnh Đức Toàn et al. (2023):`,
+      perYear: (usual: string) =>
+        `The values in this row are per crop and per past year. Compare this row with the same row on the current practice card (${usual}) from the same trial by Trịnh Đức Toàn et al. (2023).`,
+      thisPlan: 'this plan',
+      usualPlan: 'current practice',
+    },
     jumpTo: 'Go to card',
     current: 'Current practice',
     bare: 'Bare field',

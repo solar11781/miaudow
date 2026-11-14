@@ -291,6 +291,17 @@ export const vi = {
     plansLead:
       'Thẻ xếp theo thứ tự cố định, không xếp hạng. Hai thẻ đầu là cách làm hiện nay, theo hai nghiên cứu khác nhau.',
     yourPriority: 'Bạn quan tâm',
+    // the priority line of cards cc1..cc4 (UI-UX-SPEC section 9, D-136): values side by side, never a verdict
+    priorityLine: {
+      income: (usual: string) =>
+        `Tiền lãi cộng cả năm (phép cộng của chúng tôi) của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm của Trịnh Đức Toàn và cs. (2023):`,
+      land: (usual: string) =>
+        `Chăm sóc đất của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm của Trịnh Đức Toàn và cs. (2023):`,
+      perYear: (usual: string) =>
+        `Số liệu ở hàng này tính theo từng cây và từng năm đã qua. Hãy so hàng này với cùng hàng trên thẻ cách làm hiện nay (${usual}) của cùng thử nghiệm Trịnh Đức Toàn và cs. (2023).`,
+      thisPlan: 'cách này',
+      usualPlan: 'cách làm hiện nay',
+    },
     jumpTo: 'Đến thẻ',
     current: 'Cách làm hiện nay',
     bare: 'Ruộng trống',
