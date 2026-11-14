@@ -15,6 +15,8 @@ from pathlib import Path
 import pytest
 
 from fieldshift.engine.past_years import past_years
+from fieldshift.engine.schemas import RULE_CODES
+from fieldshift.features.hazards import RULES
 from source_trace import check_response
 
 FIX = Path(__file__).resolve().parent / "fixtures" / "engine"
@@ -73,6 +75,10 @@ def test_sources_hold_exactly_the_ids_used_and_every_id_traces() -> None:
     resp = response()
     assert sorted(resp["sources"]) == sorted(IDS)  # R-P02 is in the fixture file but unused
     assert check_response(resp, None) == []
+
+
+def test_the_pipeline_writes_the_rule_codes_the_engine_reads() -> None:
+    assert RULES == RULE_CODES  # features/hazards.py fills hazard_labels.json `rule`; the engine may not import it
 
 
 def test_province_and_cell_count() -> None:

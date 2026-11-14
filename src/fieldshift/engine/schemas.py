@@ -8,7 +8,7 @@ return a response the frontend rejects.
 from __future__ import annotations
 
 from itertools import pairwise
-from typing import Literal, Self, TypedDict
+from typing import Annotated, Literal, Self, TypedDict, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator, with_config
 
@@ -24,19 +24,13 @@ Sensitivity = Literal["no_fao_flagged", "mae_skill", "risk_level_features", "win
 CoverageAxis = Literal["money", "conditions", "rice_history", "model", "water_tcvn", "water_fao"]
 ExplainKey = Literal["evapotranspiration", "soil_moisture", "ndvi", "frost", "water_balance", "data_types"]
 SourceId = str
+MonthDay = Annotated[str, Field(pattern=r"^\d{2}-\d{2}$")]  # "MM-DD" (§11), so dates compare as strings
 
 SUMMARY_MIN_YEARS = 2  # min / median / max needs 2 real values (D-95; 03-ML-SPEC §5b)
 
-RULE_CODES: tuple[RuleCode, ...] = ("heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold")
-PLAN_IDS: tuple[PlanId, ...] = ("usual", "usual_p03", "cc1", "cc2", "cc3", "cc4")
-EXPLAIN_KEYS: tuple[ExplainKey, ...] = (
-    "evapotranspiration",
-    "soil_moisture",
-    "ndvi",
-    "frost",
-    "water_balance",
-    "data_types",
-)
+RULE_CODES: tuple[RuleCode, ...] = get_args(RuleCode)
+PLAN_IDS: tuple[PlanId, ...] = get_args(PlanId)
+EXPLAIN_KEYS: tuple[ExplainKey, ...] = get_args(ExplainKey)
 
 
 @with_config(ConfigDict(extra="forbid"))
@@ -127,10 +121,10 @@ class CropSpan(Contract):
     crop: Text
     variety: Text | None
     season: SeasonCode
-    sow_from: str | None
-    sow_to: str | None
-    harvest_from: str | None
-    harvest_to: str | None
+    sow_from: MonthDay | None
+    sow_to: MonthDay | None
+    harvest_from: MonthDay | None
+    harvest_to: MonthDay | None
     source_ids: list[SourceId]
 
     @model_validator(mode="after")
@@ -138,14 +132,14 @@ class CropSpan(Contract):
         dates = [self.sow_from, self.sow_to, self.harvest_from, self.harvest_to]
         if all(d is None for d in dates):
             return self
-        if any(d is None for d in dates) or dates != sorted(dates):  # "MM-DD" strings sort as dates within one year
+        if any(d is None for d in dates) or dates != sorted(dates):
             raise ValueError(f"{self.crop_key}: dates must be all set or all null, in order inside one year: {dates}")
         return self
 
 
 class Period(Contract):
-    from_: str = Field(alias="from")
-    to: str
+    from_: MonthDay = Field(alias="from")
+    to: MonthDay
 
 
 class MoneyItem(Contract):
@@ -328,15 +322,14 @@ class CompareResponse(Contract):
             raise ValueError(f"plans must be {PLAN_IDS} in this order, got {ids}")
         first, last = self.test_years.first, self.test_years.last
         for plan in self.plans:
-            per_year_lists = [[r.year for r in e.per_year] for e in plan.exposure]
-            for block in plan.stability or []:
-                per_year_lists.append([r.year for r in block.per_year])
-                for row in block.per_year:
-                    outside = not first <= row.year <= last
-                    if outside and (row.oos_prediction is not None or row.range_80 is not None):
-                        raise ValueError(f"{block.crop_key} {row.year}: prediction outside test years")
-            if any(years != self.request.years for years in per_year_lists):
+            blocks = [*plan.exposure, *(plan.stability or [])]
+            if any([r.year for r in b.per_year] != self.request.years for b in blocks):
                 raise ValueError(f"{plan.id}: every per_year must list exactly the requested years")
+            for block in plan.stability or []:
+                for row in block.per_year:
+                    predicted = row.oos_prediction is not None or row.range_80 is not None
+                    if predicted and not first <= row.year <= last:
+                        raise ValueError(f"{block.crop_key} {row.year}: prediction outside test years")
         return self
 
 

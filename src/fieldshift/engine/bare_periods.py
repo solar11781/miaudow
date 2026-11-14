@@ -43,5 +43,5 @@ def bare_periods(calendar: list[CropSpan]) -> list[Period]:
         end = start
         while not covered[(end + 1) % DAYS]:
             end = (end + 1) % DAYS
-        periods.append(Period.model_validate({"from": _mmdd(start), "to": _mmdd(end)}))
+        periods.append(Period(from_=_mmdd(start), to=_mmdd(end)))
     return periods

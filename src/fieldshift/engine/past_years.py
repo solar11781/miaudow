@@ -28,7 +28,7 @@ def past_years(province: Province, root: Path) -> PastYearsResponse:
         if row["rule"] in year_shares:
             raise ValueError(f"artifacts/{HAZARD_LABELS}: year {row['year']} has two {row['rule']} rows")
         year_shares[row["rule"]] = share_value(row)
-    for year, year_shares in shares.items():
+    for year, year_shares in shares.items():  # YearRow also checks this; here the error names the year
         missing = [code for code in RULE_CODES if code not in year_shares]
         if missing:
             raise ValueError(f"artifacts/{HAZARD_LABELS}: year {year} has no row for {missing}")

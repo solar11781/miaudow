@@ -189,6 +189,8 @@ def test_crop_span_dates_are_all_set_or_all_null_and_in_order() -> None:
         s.CropSpan.model_validate(span(harvest_to=None))
     with pytest.raises(ValidationError):
         s.CropSpan.model_validate(span(harvest_from="01-15"))
+    with pytest.raises(ValidationError):
+        s.CropSpan.model_validate(span(harvest_to="6-01"))  # not "MM-DD"
 
 
 def source(sid: str) -> dict:
