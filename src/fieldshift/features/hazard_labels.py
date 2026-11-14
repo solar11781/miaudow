@@ -53,7 +53,12 @@ def hazard_label_rows(
     crops: list[dict], cells: dict[tuple, pd.DataFrame], weights: dict[tuple, float], years: Iterable[int] = YEARS
 ) -> list[dict]:
     """One row per level x crop x year x rule; cells: daily PRECTOTCORR, T2M_MAX, T2M per weighted cell."""
-    clim = {c: monthly_climatology(cells[c]["PRECTOTCORR"]) for c in weights}
+    clim = {}
+    for c in weights:
+        try:
+            clim[c] = monthly_climatology(cells[c]["PRECTOTCORR"])
+        except ValueError as err:
+            raise ValueError(f"cell {c}: {err}") from err
     year_keys = {"level": "year", "plan_id": None, "crop_key": None, "season": None}
     windows = [({"level": "crop", **{k: c[k] for k in ("plan_id", "crop_key", "season")}}, c) for c in crops]
     windows.append((year_keys, year_window(crops)))
