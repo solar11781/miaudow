@@ -4,9 +4,11 @@ It serves GET /api/past-years, POST /api/compare, GET /api/method, GET /api/heal
 GET /api/figures/nghe_an_grid.svg (UI-UX-SPEC §11b item 4), the privacy notice of the optional sign-in at
 /quyen-rieng-tu (UI-UX-SPEC §12c), and that sign-in under /api/account (accounts.py; 503 while it is off). The rules
 files and artifacts are read once when the app is created, so a broken or missing file stops the start instead of
-failing a farmer's request, and no request reads a file. Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an
-unexpected error gets a generic 500 without internals. The same service serves the built frontend (frontend/dist) and
-returns index.html for every frontend route, so browser history routing and deep links work (D-102).
+failing a farmer's request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API
+(FR-15), is the one stated exception to NFR-01: off by default, it answers 503 until it is turned on, and also while
+its own thread limit is full (explain.py). Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
+generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
+every frontend route, so browser history routing and deep links work (D-102).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
 
@@ -15,12 +17,15 @@ from __future__ import annotations
 import asyncio
 import html
 import json
+import logging
 import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import Annotated, TypeVar, get_args
 
 import anyio
+import anyio.to_thread
+from anthropic import Anthropic
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
@@ -41,7 +46,8 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.engine.compare import compare, load_compare_data
+from fieldshift.api.explain import EXPLAIN_LIMIT, ExplainError, ExplainRequest, claude_client, explain, shown_text
+from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
 from fieldshift.engine.rules import PrivacyTexts, load_privacy_texts
@@ -62,13 +68,15 @@ FRONTEND_ROUTES = (
 )  # UI-UX-SPEC §6; later-feature routes are added with them
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
 # bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. A saved set of
-# answers is the same body without the province, so the same limit holds it.
+# answers is the same body without the province, so the same limit holds it; an explain request is that body with a
+# plan, a part and a language, 752 bytes at most indented by 4 spaces (tests/test_explain.py).
 MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 NO_STORE = {"cache-control": "no-store"}
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
 M = TypeVar("M", bound=BaseModel)
 T = TypeVar("T")
+LOG = logging.getLogger(__name__)
 
 
 def _artifact_versions(artifacts_dir: Path) -> HealthResponse:
@@ -247,6 +255,45 @@ async def delete_account_route(request: Request, service: Service, account: Acco
     return Response(status_code=204)
 
 
+async def _bad_gateway(_: Request, exc: ExplainError) -> JSONResponse:
+    LOG.warning("%s", exc)  # one line: exception class, status code, stop reason and request id only
+    return JSONResponse({"detail": "Bad Gateway"}, status_code=502)
+
+
+async def _explain(
+    request: Request,
+    compare_data: CompareData,
+    claude: Anthropic | None,
+    slots: anyio.CapacityLimiter,
+    threads: anyio.CapacityLimiter,
+) -> Response:
+    """A slot is taken without waiting (run_sync yields before it takes its limiter, so a burst would queue); the
+    compare and the call run on a second limiter of the same size, since the task holding a slot cannot borrow it."""
+    if claude is None:
+        return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+    body = await _body(request, ExplainRequest)
+    try:
+        slots.acquire_nowait()
+    except anyio.WouldBlock:
+        return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+    try:
+        answer = await anyio.to_thread.run_sync(compare, body.answers, compare_data, limiter=threads)
+        reply = await anyio.to_thread.run_sync(explain, shown_text(body, answer), body.lang, claude, limiter=threads)
+    finally:
+        slots.release()
+    return _respond(_json(reply))
+
+
+def _read_every_year_row(compare_data: CompareData) -> None:
+    """Compare once with every year, so a missing year row stops the start, not a farmer's request."""
+    every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
+    for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
+        request = CompareRequest(
+            province=province, land=get_args(Land)[0], years=every_year, priority=get_args(Priority)[0]
+        )
+        compare(request, compare_data)
+
+
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
@@ -256,15 +303,13 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     privacy_body = _privacy_page(load_privacy_texts(base))
     grid_figure = (base / "artifacts" / "figures" / "nghe_an_grid.svg").read_bytes()
     compare_data = load_compare_data(base)
-    every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
-    for province in get_args(Province):  # land and priority change nothing (UI-UX-SPEC T3): this reads every year row
-        request = CompareRequest(
-            province=province, land=get_args(Land)[0], years=every_year, priority=get_args(Priority)[0]
-        )
-        compare(request, compare_data)
+    _read_every_year_row(compare_data)
+    claude = claude_client(os.environ)
+    explain_slots, explain_threads = anyio.CapacityLimiter(EXPLAIN_LIMIT), anyio.CapacityLimiter(EXPLAIN_LIMIT)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
+    app.add_exception_handler(ExplainError, _bad_gateway)
     app.add_exception_handler(Exception, _internal_error)
 
     @app.get("/api/health")
@@ -279,6 +324,10 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     async def compare_route(request: Request) -> Response:
         body = await _body(request, CompareRequest)
         return _respond(_json(await run_in_threadpool(compare, body, compare_data)))
+
+    @app.post("/api/explain")
+    async def explain_route(request: Request) -> Response:
+        return await _explain(request, compare_data, claude, explain_slots, explain_threads)
 
     @app.get("/api/method")
     def method_route() -> Response:
