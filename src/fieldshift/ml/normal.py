@@ -15,7 +15,10 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from fieldshift.ml.evaluation import inner_test_years
+
 WINDOWS = {"mean3": 3, "trend5": 5}
+TIE_DECIMALS = 3  # team 2026-11-14: errors equal to 3 decimals keep the 3-year mean (more rows have a normal)
 
 
 def _normal_at(prev_years: np.ndarray, prev_yields: np.ndarray, year: int, method: str) -> float:
@@ -57,3 +60,33 @@ def add_anomaly(df: pd.DataFrame, method: str) -> pd.DataFrame:
         raise ValueError(f"normal yield <= 0, percent anomaly undefined: {bad} (ask the team)")
     out["anom"] = out["yield_t_ha"] / out["normal_t_ha"] - 1
     return out
+
+
+def compare_normal_methods(df: pd.DataFrame, before_year: int) -> dict:
+    """Score both normal methods as forecasts of the yield (03-ML-SPEC section 3; team 2026-11-14).
+
+    Rows: years before `before_year` (the first test year) where both methods have a normal; of those, the inner test
+    years of that first outer fold (D-107). Score: mean squared error of yield minus normal, lower wins, one pick for
+    all rows; the per-season errors are reported as the sensitivity.
+    """
+    normals = {m: past_normal(df, m) for m in WINDOWS}
+    both = df["yield_t_ha"].notna() & (df["year"] < before_year)
+    for n in normals.values():
+        both &= n.notna()
+    years = inner_test_years(df.loc[both, "year"])
+    rows = both & df["year"].isin(years)
+    err = {m: (df.loc[rows, "yield_t_ha"] - n[rows]) ** 2 for m, n in normals.items()}
+    mse = {m: float(e.mean()) for m, e in err.items()}
+    by_season = {
+        s: {m: float(e[df.loc[rows, "season"] == s].mean()) for m, e in err.items()}
+        for s in sorted(df.loc[rows, "season"].unique())
+    }
+    best = min(mse, key=mse.get)
+    tie = round(mse["mean3"], TIE_DECIMALS) == round(mse[best], TIE_DECIMALS)
+    return {
+        "years": years,
+        "n_rows": int(rows.sum()),
+        "mse": mse,
+        "mse_by_season": by_season,
+        "choice": "mean3" if tie else best,
+    }
