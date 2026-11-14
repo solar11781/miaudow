@@ -11,9 +11,9 @@ import { AccountProvider, useAccount } from './AccountProvider';
 import { SaveAnswers } from './SaveAnswers';
 import { SavedPage } from './SavedPage';
 import { SignInPage } from './SignInPage';
-import { loadGoogle, type GoogleId } from './google';
+import { loadGoogle, unloadGoogle, type GoogleId } from './google';
 
-vi.mock('./google', () => ({ loadGoogle: vi.fn() }));
+vi.mock('./google', () => ({ loadGoogle: vi.fn(), unloadGoogle: vi.fn() }));
 
 const ON = { available: true, client_id: 'test.apps.googleusercontent.com' } as const;
 const OFF = { available: false, client_id: null } as const;
@@ -80,6 +80,7 @@ const where = () => screen.getByTestId('where').textContent;
 
 beforeEach(() => {
   vi.mocked(loadGoogle).mockReset();
+  vi.mocked(unloadGoogle).mockReset();
 });
 afterEach(() => {
   cleanup();
@@ -98,7 +99,8 @@ describe('sign-in page', () => {
   it('shows the privacy notice with the full-notice link before Google is loaded', async () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     show('/dang-nhap');
-    expect(await screen.findByRole('heading', { name: t.noticeTitle })).toBeTruthy();
+    const heading = await screen.findByRole('heading', { name: t.noticeTitle });
+    expect(heading.nextElementSibling?.textContent).toBe(t.noticeLead);
     for (const line of t.notice) expect(screen.getByText(line)).toBeTruthy();
     expect(screen.getByRole('link', { name: t.noticeFull }).getAttribute('href')).toBe('/quyen-rieng-tu');
     expect(loadGoogle).not.toHaveBeenCalled();
@@ -116,6 +118,8 @@ describe('sign-in page', () => {
     await google.answer('google-id-token');
     await waitFor(() => expect(where()).toBe(back));
     expect(signIn).toHaveBeenCalledWith('google-id-token');
+    // H14: Google's script runs only on the sign-in pages, so it is taken off the page on the way back
+    expect(unloadGoogle).toHaveBeenCalled();
     // H14: the token stays in memory only
     expect([localStorage.length, sessionStorage.length, document.cookie]).toEqual([0, 0, '']);
   });
@@ -143,7 +147,15 @@ describe('sign-in page', () => {
 });
 
 describe('saved answers page', () => {
+  it('says sign-in is not available, with no sign-in link, when the server has it off', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(OFF);
+    show('/da-luu');
+    expect(await screen.findByText(t.notAvailable)).toBeTruthy();
+    expect(screen.queryByRole('link', { name: t.signInCta })).toBeNull();
+  });
+
   it('asks to sign in when signed out', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     show('/da-luu');
     expect(await screen.findByText(t.needSignIn)).toBeTruthy();
     expect(screen.getByRole('link', { name: t.signInCta }).getAttribute('href')).toBe('/dang-nhap?ve=%2Fda-luu');
@@ -167,7 +179,14 @@ describe('saved answers page', () => {
     const remove = vi.spyOn(api.account, 'remove').mockResolvedValue();
     show('/da-luu', 'tok');
     const name = `${text.farmer.lands.high_field.title} · ${t.yearsLabel('2010, 2020')} · ${text.farmer.prios.income.title}`;
-    await userEvent.click(await screen.findByRole('button', { name: t.removeLabel(name) }));
+    const open = await screen.findByRole('button', { name: t.removeLabel(name) });
+    await userEvent.click(open);
+    expect(document.activeElement?.textContent).toBe(t.removeAsk);
+    await userEvent.click(screen.getByRole('button', { name: t.removeNo }));
+    expect(document.activeElement).toBe(open);
+    expect(remove).not.toHaveBeenCalled();
+    await userEvent.click(open);
+    await userEvent.click(screen.getByRole('button', { name: t.removeYes }));
     expect(remove).toHaveBeenCalledWith('tok', 1);
     expect(await screen.findByText(t.removed)).toBeTruthy();
     await waitFor(() => expect(screen.queryByText(name)).toBeNull());
@@ -175,6 +194,7 @@ describe('saved answers page', () => {
   });
 
   it('deletes the account only after the confirm step, then forgets the token', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     vi.spyOn(api.account, 'saved').mockResolvedValue(SETS);
     const del = vi.spyOn(api.account, 'deleteAccount').mockResolvedValue();
     show('/da-luu', 'tok');
@@ -192,6 +212,7 @@ describe('saved answers page', () => {
   });
 
   it('signs out by dropping the token from memory', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     vi.spyOn(api.account, 'saved').mockResolvedValue(SETS);
     show('/da-luu', 'tok');
     await userEvent.click(await screen.findByRole('button', { name: t.signOut }));
@@ -200,6 +221,7 @@ describe('saved answers page', () => {
   });
 
   it('asks to sign in again when the token has expired', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     vi.spyOn(api.account, 'saved').mockRejectedValue(new ApiError(401, 'not signed in'));
     show('/da-luu', 'tok');
     expect(await screen.findByText(t.expired)).toBeTruthy();
@@ -222,8 +244,20 @@ describe('save these answers', () => {
     show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income');
     const link = await screen.findByRole('link', { name: t.saveSignIn });
     expect(link.getAttribute('href')).toBe(
-      `/dang-nhap?ve=${encodeURIComponent('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income')}`,
+      `/dang-nhap?ve=${encodeURIComponent('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1')}`,
     );
+  });
+
+  it('saves at once on the way back from signing in, then drops the pending mark', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
+    const save = vi
+      .spyOn(api.account, 'save')
+      .mockResolvedValue({ id: 3, land: 'canal_end', years: [2010], priority: 'income' });
+    show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1', 'tok');
+    expect(await screen.findByText(t.saved)).toBeTruthy();
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledWith('tok', { land: 'canal_end', years: [2010], priority: 'income' });
+    await waitFor(() => expect(where()).toBe('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income'));
   });
 
   it('saves land, years and priority with the token', async () => {

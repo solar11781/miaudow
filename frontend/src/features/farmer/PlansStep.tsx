@@ -152,6 +152,8 @@ export function PlansStep() {
             {t.farmer.yourPriority}: <strong>{t.farmer.prios[state.priority].title}</strong>
           </p>
         )}
+        {/* next to the answers, not after the six cards (walkthrough of PR #53) */}
+        {saved && <SaveAnswers answers={saved} />}
       </div>
       {/* one notice box instead of four (walkthrough 2026-11-14); each card repeats its warnings (H17) */}
       <div className={s.note}>
@@ -181,7 +183,6 @@ export function PlansStep() {
       )}
       {state.land !== 'reliable' && years.status !== 'ok' && <LoadState state={years} retry={retryYears} />}
       {body && <Compare body={body} />}
-      {saved && <SaveAnswers answers={saved} />}
 
       <section className={s.officerBox} aria-labelledby="ask-officer">
         <h2 id="ask-officer" className="h3">
