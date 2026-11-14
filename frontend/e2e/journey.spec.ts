@@ -60,7 +60,7 @@ test('T14 nothing is stored after a scroll, a reload and a navigation, and a new
   expect(await stored()).toEqual([0, 0, 0]);
   await page.evaluate(() => window.scrollTo(0, 600));
   await page.getByRole('link', { name: /Quay lại/ }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Bạn muốn ưu tiên điều gì?' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Gia đình quan tâm điều gì nhất?' })).toBeVisible();
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
   await page.reload();
   expect(await stored()).toEqual([0, 0, 0]);
