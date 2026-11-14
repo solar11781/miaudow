@@ -1,0 +1,437 @@
+"""Pydantic schemas mirroring the API contract of UI-UX-SPEC §11 one to one (04-TECH-DESIGN §3).
+
+TypeScript `T | null` is Python `T | None`. Inline object types of the contract get a model name here (routine
+choice). The validators are the response checks of UI-UX-SPEC §11 ("Validation in src/api.ts"), so the engine can never
+return a response the frontend rejects.
+"""
+
+from __future__ import annotations
+
+from itertools import pairwise
+from typing import Literal, Self, TypedDict
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator, with_config
+
+Province = Literal["nghe_an"]
+Land = Literal["dry", "unsure"]
+Priority = Literal["income", "stability", "water", "land"]
+PlanId = Literal["usual", "usual_p03", "cc1", "cc2", "cc3", "cc4"]
+SeasonCode = Literal["spring", "summer_autumn", "winter", "autumn_winter"]
+RuleCode = Literal["heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold"]
+ModelStatus = Literal["shown", "not_shown", "not_modeled"]
+ModelId = Literal["b0", "b2", "bnw", "m1_ridge", "m2_lgbm", "m3_rf"]
+Sensitivity = Literal["no_fao_flagged", "mae_skill", "risk_level_features", "window", "centroid_points"]
+CoverageAxis = Literal["money", "conditions", "rice_history", "model", "water_tcvn", "water_fao"]
+ExplainKey = Literal["evapotranspiration", "soil_moisture", "ndvi", "frost", "water_balance", "data_types"]
+SourceId = str
+
+SUMMARY_MIN_YEARS = 2  # min / median / max needs 2 real values (D-95; 03-ML-SPEC §5b)
+
+RULE_CODES: tuple[RuleCode, ...] = ("heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold")
+PLAN_IDS: tuple[PlanId, ...] = ("usual", "usual_p03", "cc1", "cc2", "cc3", "cc4")
+EXPLAIN_KEYS: tuple[ExplainKey, ...] = (
+    "evapotranspiration",
+    "soil_moisture",
+    "ndvi",
+    "frost",
+    "water_balance",
+    "data_types",
+)
+
+
+@with_config(ConfigDict(extra="forbid"))
+class Text(TypedDict):
+    """Record<Lang, string>: data-dependent text, always both languages (H15)."""
+
+    vi: str
+    en: str
+
+
+class Contract(BaseModel):
+    """Base of every contract model: unknown fields are an error (no score or extra field slips out, H3)."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+
+class SourceFacts(Contract):
+    id: SourceId
+    citation: Text
+    study_type: Text
+    place_years: Text
+    read_status: str | None
+    full_text_read: bool | None
+    limitations: list[Text]
+    url: str | None
+    nso_credit: bool
+
+
+class Value(Contract):
+    value: str
+    unit: Text
+    source_ids: list[SourceId] = Field(min_length=1)
+
+
+@with_config(ConfigDict(extra="forbid"))
+class RuleShares(TypedDict):
+    """Record<RuleCode, Value | null>: all five codes present."""
+
+    heavy_rain: Value | None
+    heat: Value | None
+    drought_rain_consecutive: Value | None
+    drought_rain_any2: Value | None
+    cold: Value | None
+
+
+class Season(Contract):
+    code: SeasonCode
+    label: Text
+    window: Text
+    source_ids: list[SourceId]
+
+
+class Rule(Contract):
+    code: RuleCode
+    label: Text
+    rule_text: Text
+    threshold_source_id: SourceId
+    values_source_ids: list[SourceId]
+    computed_by: SourceId
+
+
+class YearRow(Contract):
+    year: int
+    shares: RuleShares
+
+
+class PastYearsResponse(Contract):
+    province: Province
+    rules: list[Rule]
+    years: list[YearRow] = Field(min_length=1)
+    sources: dict[SourceId, SourceFacts]
+    n_cells: int
+
+    @model_validator(mode="after")
+    def _rules_in_order_years_ascending(self) -> Self:
+        codes = tuple(rule.code for rule in self.rules)
+        if codes != RULE_CODES:
+            raise ValueError(f"rules must be {RULE_CODES} in this order, got {codes}")
+        years = [row.year for row in self.years]
+        if any(a >= b for a, b in pairwise(years)):
+            raise ValueError(f"years must be strictly ascending: {years}")
+        return self
+
+
+class CropSpan(Contract):
+    crop_key: str
+    crop_id: str
+    crop: Text
+    variety: Text | None
+    season: SeasonCode
+    sow_from: str | None
+    sow_to: str | None
+    harvest_from: str | None
+    harvest_to: str | None
+    source_ids: list[SourceId]
+
+    @model_validator(mode="after")
+    def _all_or_no_dates_in_order(self) -> Self:
+        dates = [self.sow_from, self.sow_to, self.harvest_from, self.harvest_to]
+        if all(d is None for d in dates):
+            return self
+        if any(d is None for d in dates) or dates != sorted(dates):  # "MM-DD" strings sort as dates within one year
+            raise ValueError(f"{self.crop_key}: dates must be all set or all null, in order inside one year: {dates}")
+        return self
+
+
+class Period(Contract):
+    from_: str = Field(alias="from")
+    to: str
+
+
+class MoneyItem(Contract):
+    crop_key: str
+    crop: Text
+    season: SeasonCode
+    profit: Value
+    cost: Value | None
+    flag: Text | None
+
+
+class Money(Contract):
+    items: list[MoneyItem]
+    total: Value | None
+    price_year: str | None
+    definition: Text
+    text_only: Text | None
+
+
+class SoilWetness(Contract):
+    value: Value | None
+    normal: Value | None
+
+
+class ExposureYear(Contract):
+    year: int
+    shares: RuleShares
+    soil_wetness: SoilWetness
+
+
+class CropExposure(Contract):
+    crop_key: str
+    crop: Text
+    per_year: list[ExposureYear]
+
+
+class Range80(Contract):
+    low: Value
+    high: Value
+
+
+class StabilityYear(Contract):
+    year: int
+    real: Value | None
+    oos_prediction: Value | None
+    range_80: Range80 | None
+
+    @model_validator(mode="after")
+    def _range_only_with_prediction(self) -> Self:
+        if self.range_80 is not None and self.oos_prediction is None:
+            raise ValueError(f"{self.year}: range_80 without oos_prediction")
+        return self
+
+
+class Summary(Contract):
+    min: Value
+    median: Value
+    max: Value
+
+
+class Stability(Contract):
+    crop_key: str
+    season: SeasonCode
+    label: Text
+    model_status: ModelStatus
+    years_count: int
+    scope: Text
+    per_year: list[StabilityYear]
+    summary: Summary | None
+    worst_years: list[int]
+
+    @model_validator(mode="after")
+    def _summary_from_two_real_values(self) -> Self:
+        real = [(row.year, row.real.value) for row in self.per_year if row.real is not None]
+        if self.years_count != len(real):
+            raise ValueError(f"{self.crop_key}: years_count {self.years_count} but {len(real)} real values")
+        if (self.summary is None) != (len(real) < SUMMARY_MIN_YEARS):
+            raise ValueError(
+                f"{self.crop_key}: summary must be null exactly when fewer than {SUMMARY_MIN_YEARS} real values"
+            )
+        worst = [] if self.summary is None else [y for y, v in real if v == self.summary.min.value]
+        if self.worst_years != sorted(worst):
+            raise ValueError(f"{self.crop_key}: worst_years {self.worst_years} must be {sorted(worst)}")
+        return self
+
+
+class WaterFact(Contract):
+    crop_key: str
+    measure: Literal["to_apply", "crop_uses", "not_listed"]
+    value: Value | None
+    scope: Text | None
+    note: Text | None
+
+
+class LandCheck(Contract):
+    value: Value | None
+    principle_source_ids: list[SourceId]
+
+
+class Legume(Contract):
+    present: bool
+    crops: list[Text]
+    principle_source_ids: list[SourceId]
+
+
+class LandCare(Contract):
+    crops_in_year: LandCheck
+    living_days: LandCheck
+    legume: Legume
+
+
+class RiskItem(Contract):
+    text: Text
+    source_ids: list[SourceId]
+
+
+class Why(Contract):
+    why: Text
+    evidence: Text
+    benefits: Text
+    gaps: Text
+    risks: list[RiskItem]
+
+
+class Plan(Contract):
+    id: PlanId
+    name: Text
+    is_usual: bool
+    calendar: list[CropSpan]
+    bare_periods: list[Period]
+    money: Money
+    exposure: list[CropExposure]
+    stability: list[Stability] | None
+    water: list[WaterFact]
+    land: LandCare
+    why: Why
+
+
+class CompareRequest(Contract):
+    province: Province
+    land: Land
+    years: list[int]
+    priority: Priority
+
+
+class Interval(Contract):
+    value: float
+    ci90_low: float
+    ci90_high: float
+
+
+class GateRow(Contract):
+    gate: Literal["G1", "G2", "G3", "G4"]
+    season: SeasonCode
+    model_id: str | None
+    passed: bool | None
+    detail: Text
+    source_ids: list[SourceId]
+
+
+class YearSpan(Contract):
+    first: int
+    last: int
+
+
+class CompareResponse(Contract):
+    request: CompareRequest
+    test_years: YearSpan
+    n_cells: int
+    seasons: list[Season]
+    rules: list[Rule]
+    gates: list[GateRow]
+    plans: list[Plan]
+    sources: dict[SourceId, SourceFacts]
+
+    @model_validator(mode="after")
+    def _plans_years_and_predictions(self) -> Self:
+        ids = tuple(plan.id for plan in self.plans)
+        if ids != PLAN_IDS:
+            raise ValueError(f"plans must be {PLAN_IDS} in this order, got {ids}")
+        first, last = self.test_years.first, self.test_years.last
+        for plan in self.plans:
+            per_year_lists = [[r.year for r in e.per_year] for e in plan.exposure]
+            for block in plan.stability or []:
+                per_year_lists.append([r.year for r in block.per_year])
+                for row in block.per_year:
+                    outside = not first <= row.year <= last
+                    if outside and (row.oos_prediction is not None or row.range_80 is not None):
+                        raise ValueError(f"{block.crop_key} {row.year}: prediction outside test years")
+            if any(years != self.request.years for years in per_year_lists):
+                raise ValueError(f"{plan.id}: every per_year must list exactly the requested years")
+        return self
+
+
+class MetricRow(Contract):
+    model_id: ModelId
+    season: SeasonCode
+    role: Literal["primary", "secondary", "reference"]
+    scheme: Literal["rolling_origin", "spatial_holdout"]
+    sensitivity: Sensitivity | None
+    detail: Text | None
+    subset: str
+    rmse: float | None
+    mae: float | None
+    r2_oos: float | None
+    skill_vs_b0: Interval | None
+    skill_vs_b2: Interval | None
+    skill_vs_bnw: Interval | None
+    coverage_80: float | None
+    n_rows: int
+    n_test_years: int
+    source_ids: list[SourceId]
+
+
+class WeatherClaim(Contract):
+    season: SeasonCode
+    model_id: ModelId
+    made: bool
+    source_ids: list[SourceId]
+
+
+class ReportItem(Contract):
+    id: SourceId
+    title: Text
+    text: Text
+    source_ids: list[SourceId]
+
+
+class CoverageCell(Contract):
+    row_key: str
+    crop: Text
+    axis: CoverageAxis
+    text: Text
+    source_ids: list[SourceId]
+
+
+class ExplainTerm(Contract):
+    key: ExplainKey
+    title: Text
+    text: Text
+    source_ids: list[SourceId]
+
+
+class RainMonth(Contract):
+    month: str
+    imerg: Value
+    power: Value
+
+
+class RainCheck(Contract):
+    months: list[RainMonth]
+    cc: Value
+    mean_imerg: Value
+    mean_power: Value
+    source_ids: list[SourceId]
+
+
+class MethodResponse(Contract):
+    test_years: YearSpan
+    freeze_commit: str
+    metrics: list[MetricRow]
+    gates: list[GateRow]
+    weather_claims: list[WeatherClaim]
+    reports: list[ReportItem]
+    coverage: list[CoverageCell]
+    explain_terms: list[ExplainTerm]
+    limitations: list[Text]
+    rain_check: RainCheck | None
+    sources: dict[SourceId, SourceFacts]
+
+    @model_validator(mode="after")
+    def _coverage_once_terms_in_order(self) -> Self:
+        cells = [(c.row_key, c.axis) for c in self.coverage]
+        if len(cells) != len(set(cells)):
+            raise ValueError("each (row_key, axis) of coverage must occur once")
+        keys = tuple(t.key for t in self.explain_terms)
+        if keys != EXPLAIN_KEYS:
+            raise ValueError(f"explain_terms must be {EXPLAIN_KEYS} in this order, got {keys}")
+        return self
+
+
+class ArtifactInfo(Contract):
+    schema_version: str
+    generated_at: str
+
+
+class HealthResponse(Contract):
+    status: Literal["ok"]
+    artifacts: dict[str, ArtifactInfo]
