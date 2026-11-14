@@ -88,6 +88,10 @@ def run_rolling_origin(
         raise ValueError("rows without an anomaly (no normal) must be dropped before the run (03-ML-SPEC §3)")
     data = df.reset_index(drop=True)
     m1_cols = list(context_cols) + list(weather_cols)
+    given = [c for c in m1_cols if c in data.columns]  # fold-time features are added later by fold_transform
+    missing = sorted(c for c in given if data[c].isna().any())
+    if missing:
+        raise ValueError(f"input feature columns with missing values: {missing}")
     parts = []
     for t in test_years:
         train_idx = data.index[data["year"] < t]
