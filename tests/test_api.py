@@ -25,10 +25,21 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from fieldshift.api import app as api
-from fieldshift.api.app import FRONTEND_ROUTES, MAX_BODY_BYTES, create_app
+from fieldshift.api.app import MAX_BODY_BYTES, create_app
 from fieldshift.engine.schemas import CompareResponse, HealthResponse, MethodResponse, PastYearsResponse
 
 REPO = Path(__file__).resolve().parents[1]
+FRONTEND_ROUTES = (
+    "/",
+    "/ruong",
+    "/nam",
+    "/uu-tien",
+    "/phuong-an",
+    "/khong-co-phuong-an",
+    "/phuong-phap",
+    "/gioi-thieu",
+    "/nguon",
+)  # UI-UX-SPEC §6 (built routes)
 BODY = {"province": "nghe_an", "land": "dry", "years": [1995, 2007, 2013, 2020], "priority": "income"}
 
 
@@ -358,23 +369,59 @@ def test_frontend_routes_return_index_html(tmp_path: Path) -> None:
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
     c = TestClient(create_app(root=REPO, frontend_dir=tmp_path))
-    assert set(FRONTEND_ROUTES) == {
-        "/",
-        "/ruong",
-        "/nam",
-        "/uu-tien",
-        "/phuong-an",
-        "/khong-co-phuong-an",
-        "/phuong-phap",
-        "/gioi-thieu",
-        "/nguon",
-    }  # UI-UX-SPEC §6 (built routes)
     for route in FRONTEND_ROUTES:
         r = c.get(route)
         assert r.status_code == 200
         assert "app" in r.text
     assert c.get("/assets/app.js").text == "console.log(1)"
     assert c.get("/api/nothing").status_code == 404
+
+
+def built_frontend(tmp_path: Path) -> TestClient:
+    """A built web app as vite writes it: index.html, hashed assets and the public files (D-166)."""
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "media" / "photo").mkdir(parents=True)
+    (dist / "index.html").write_text("<html>app</html>", encoding="utf-8")
+    (dist / "favicon.svg").write_text("<svg/>", encoding="utf-8")
+    (dist / "media" / "photo" / "field.webp").write_bytes(b"webp")
+    (tmp_path / "secret.txt").write_text("outside", encoding="utf-8")
+    return TestClient(create_app(root=REPO, frontend_dir=dist))
+
+
+def test_every_built_file_is_served(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    assert c.get("/favicon.svg").text == "<svg/>"
+    assert c.get("/media/photo/field.webp").content == b"webp"
+
+
+def test_other_paths_fall_back_to_index_html(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/nong-dan", "/khoa-hoc/2010", "/media/missing.webp"):
+        r = c.get(path)
+        assert r.status_code == 200, path
+        assert r.text == "<html>app</html>", path
+
+
+def test_unknown_api_paths_stay_json_404_with_the_frontend_built(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/api", "/api/nothing", "/api/figures/missing.svg"):
+        r = c.get(path)
+        assert r.status_code == 404, path
+        assert r.json() == {"detail": "Not Found"}, path
+
+
+def test_api_and_privacy_routes_win_over_the_frontend(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    assert c.get("/api/health").json()["status"] == "ok"
+    assert c.get("/api/figures/nghe_an_grid.svg").headers["content-type"].startswith("image/svg+xml")
+    assert "<html>app</html>" not in c.get("/quyen-rieng-tu").text
+
+
+def test_no_file_outside_the_build_is_served(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for path in ("/../secret.txt", "/%2e%2e/secret.txt", "/..%2fsecret.txt"):
+        assert "outside" not in c.get(path).text, path
 
 
 def test_start_command_turns_off_the_access_log() -> None:

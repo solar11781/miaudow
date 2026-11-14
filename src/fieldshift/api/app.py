@@ -7,8 +7,8 @@ files and artifacts are read once when the app is created, so a broken or missin
 failing a farmer's request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API
 (FR-15), is the one stated exception to NFR-01: off by default, it answers 503 until it is turned on, and also while
 its own thread limit is full (explain.py). Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
-generic 500 without internals. The same service serves the built frontend (frontend/dist) and returns index.html for
-every frontend route, so browser history routing and deep links work (D-102).
+generic 500 without internals. The same service serves the built frontend (frontend/dist): every built file, and index.html
+for any other path outside /api (D-102, D-166).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
 
@@ -30,7 +30,6 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import ClientDisconnect
@@ -55,17 +54,6 @@ from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, Hea
 from fieldshift.paths import project_root
 
 ROOT = project_root()
-FRONTEND_ROUTES = (
-    "/",
-    "/ruong",
-    "/nam",
-    "/uu-tien",
-    "/phuong-an",
-    "/khong-co-phuong-an",
-    "/phuong-phap",
-    "/gioi-thieu",
-    "/nguon",
-)  # UI-UX-SPEC §6; later-feature routes are added with them
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
 # bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. A saved set of
 # answers is the same body without the province, so the same limit holds it; an explain request is that body with a
@@ -294,6 +282,21 @@ def _read_every_year_row(compare_data: CompareData) -> None:
         compare(request, compare_data)
 
 
+def _add_frontend(app: FastAPI, frontend: Path) -> None:
+    """The built web app (D-166): each file of the build at its own path, index.html for any other path outside /api
+    (the app routes in the URL fragment, so deep links work). The file list is fixed at start, so no request can reach
+    a file outside the build; an unknown /api path never falls back and stays a JSON 404."""
+    root = frontend.resolve()
+    index = root / "index.html"
+    files = {p.relative_to(root).as_posix(): p for p in root.rglob("*") if p.is_file()}
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def frontend_route(path: str) -> Response:
+        if path == "api" or path.startswith("api/"):
+            raise HTTPException(404, "Not Found")
+        return FileResponse(files.get(path, index))
+
+
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
@@ -343,11 +346,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     app.include_router(accounts_router)
 
     if (frontend / "index.html").exists():
-        index = frontend / "index.html"
-        for route in FRONTEND_ROUTES:
-            app.add_api_route(route, lambda: FileResponse(index), methods=["GET"], include_in_schema=False)
-        if (frontend / "assets").is_dir():
-            app.mount("/assets", StaticFiles(directory=frontend / "assets"), name="assets")
+        _add_frontend(app, frontend)  # last, so every route above wins over the fallback
     return app
 
 
