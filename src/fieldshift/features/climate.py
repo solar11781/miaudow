@@ -12,16 +12,15 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from fieldshift.features.hazards import drought_any2, drought_consecutive
+from fieldshift.features.hazards import _longest_run, drought_any2, drought_consecutive, drought_months
 
 DRY_DAY_MM = 1.0  # ETCCDI CDD: dry day = precipitation < 1 mm
 RX5_DAYS = 5  # ETCCDI Rx5day: highest total over 5 consecutive days
-HEAVY_RAIN_MM = 20.0  # ETCCDI R20mm: precipitation >= 20 mm
+R20_MM = 20.0  # ETCCDI R20mm: precipitation >= 20 mm
 HOT_DAY_C = 35.0  # QĐ 18/2021 Art. 5.21 "vượt quá 35°c": strictly above 35 C (R-A01, D-96)
 OFFICIAL_RAIN_MM = 50.0  # Art. 5.17: rain above 50 mm in 24 h
 RET_HAI_C = 13.0  # Art. 5.18 "dưới 13oc": daily mean strictly below 13 C
 RET_DAM_C = 15.0  # TT 25/2022/TT-BTNMT Art. 3.6: daily mean strictly below 15 C
-DROUGHT_DEFICIT = 0.5  # Art. 48 rain part: monthly rain more than 50% below the normal
 
 
 def province_daily_weather(cell_frames: dict, weights: dict) -> pd.DataFrame:
@@ -34,14 +33,6 @@ def province_daily_weather(cell_frames: dict, weights: dict) -> pd.DataFrame:
         part = cell_frames[cell] * w
         out = part if out is None else out.add(part, fill_value=np.nan)
     return out
-
-
-def _longest_run(mask: np.ndarray) -> int:
-    best = run = 0
-    for flag in mask:
-        run = run + 1 if flag else 0
-        best = max(best, run)
-    return best
 
 
 def season_features(daily: pd.DataFrame, start: date, end: date) -> dict:
@@ -59,7 +50,7 @@ def season_features(daily: pd.DataFrame, start: date, end: date) -> dict:
     return {
         "precip_sum_mm": float(rain.sum()),
         "dry_spell_max_d": _longest_run(rain < DRY_DAY_MM),
-        "heavy_rain_d": int((rain >= HEAVY_RAIN_MM).sum()),
+        "heavy_rain_d": int((rain >= R20_MM).sum()),
         "rx5day_mm": rx5,
         "tmax_mean_c": float(win["T2M_MAX"].mean()),
         "tmin_mean_c": float(win["T2M_MIN"].mean()),
@@ -96,7 +87,7 @@ def drought_rain_counts(cell_monthly: dict, cell_normal: dict, weights: dict) ->
         rain, normal = cell_monthly[cell], cell_normal[cell].reindex(cell_monthly[cell].index)
         if rain.isna().any() or normal.isna().any():
             raise ValueError(f"cell {cell}: monthly rain or normal missing")
-        flags = list(rain < (1 - DROUGHT_DEFICIT) * normal)
+        flags = list(drought_months(rain, normal))
         out["drought_rain_months"] += w * sum(flags)
         out["drought_rain_consecutive"] += w * drought_consecutive(flags)
         out["drought_rain_any2"] += w * drought_any2(flags)
