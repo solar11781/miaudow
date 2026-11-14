@@ -194,22 +194,22 @@ def test_missing_input_feature_fails_loudly():
         run_rolling_origin(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
 
 
-def _regions(df: pd.DataFrame) -> pd.Series:
-    return df["province_nso"].map(lambda u: f"r{int(u[1:]) % 3}")  # three blocks of whole provinces
+def _with_regions(df: pd.DataFrame) -> pd.DataFrame:
+    return df.assign(region=df["province_nso"].map(lambda u: f"r{int(u[1:]) % 3}"))  # three blocks of provinces
 
 
 def test_spatial_holdout_predicts_each_region_from_the_other_regions_only():
     # Source: 03-ML-SPEC section 7.2: blocks = regions, trained only on years < t; a held-out region's labels never
     # train the model that predicts it (Roberts et al. 2017); B0 = the held-out series' own earlier mean (D-146)
-    df = _synthetic(n_series=12, years=range(2004, 2025))
-    out = run_spatial_holdout(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS, regions=_regions(df))
+    df = _with_regions(_synthetic(n_series=12, years=range(2004, 2025)))
+    out = run_spatial_holdout(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
     p = out["predictions"]
     assert set(p["region"]) == {"r0", "r1", "r2"}
     assert sorted(p["year"].unique()) == list(range(2016, 2025))
     changed = df.copy()
-    held = (_regions(df) == "r1") & (df["year"] < 2020)
+    held = (df["region"] == "r1") & (df["year"] < 2020)
     changed.loc[held, "anom"] += 3.0  # only the held-out region's own earlier labels change
-    q = run_spatial_holdout(changed, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS, regions=_regions(changed))
+    q = run_spatial_holdout(changed, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
     a = p[(p.year == 2020) & (p.region == "r1")].set_index("series_id")["m1"]
     b = q["predictions"][(q["predictions"].year == 2020) & (q["predictions"].region == "r1")].set_index("series_id")[
         "m1"
@@ -218,9 +218,7 @@ def test_spatial_holdout_predicts_each_region_from_the_other_regions_only():
 
 
 def test_spatial_holdout_b0_is_each_series_own_earlier_mean():
-    df = _synthetic(n_series=6, years=range(2010, 2025))
-    p = run_spatial_holdout(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS, regions=_regions(df))[
-        "predictions"
-    ]
+    df = _with_regions(_synthetic(n_series=6, years=range(2010, 2025)))
+    p = run_spatial_holdout(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)["predictions"]
     row = p[(p.series_id == "s1") & (p.year == 2016)].iloc[0]
     assert row["b0"] == pytest.approx(df[(df.series_id == "s1") & (df.year < 2016)]["anom"].mean())
