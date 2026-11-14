@@ -110,6 +110,11 @@ describe('farmer state in the URL', () => {
     expect(years).toHaveLength(MAX_YEARS);
     expect(toggleYear([2010, 2020], 2010)).toEqual([2020]);
   });
+  // D-169, UI-UX-SPEC section 7: the farmer picks every year; none is picked for them
+  it('picks no year by default', () => {
+    expect(parseFarmerState(new URLSearchParams('ruong=canal_end')).years).toEqual([]);
+    expect(parseFarmerState(new URLSearchParams('nam=')).years).toEqual([]);
+  });
   it('keeps the shared plan id of the api', () => {
     expect(parseFarmerState(new URLSearchParams('the=usual_p03')).plan).toBe('usual_p03');
   });

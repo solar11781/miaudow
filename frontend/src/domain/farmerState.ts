@@ -18,17 +18,13 @@ const LEGACY_LAND: Record<string, Land> = { dry: 'water_short', wet: 'reliable' 
 const PRIORITIES: Priority[] = ['income', 'stability', 'water', 'land'];
 const MAX_YEARS = 10;
 
-export const DEFAULT_YEARS = [2010, 2015, 2020];
-
 const pick = <T extends string>(allowed: readonly T[], raw: string | null): T | null =>
   raw && (allowed as readonly string[]).includes(raw) ? (raw as T) : null;
 
 /** Reads the shareable state from URL search params; anything unknown is dropped, never guessed. */
 export function parseFarmerState(params: URLSearchParams): FarmerState {
-  const rawYears = params.get('nam');
-  const years = rawYears === null
-    ? DEFAULT_YEARS
-    : [...new Set(rawYears.split(',').map(Number).filter((y) => YEARS.includes(y)))].sort((a, b) => a - b).slice(0, MAX_YEARS);
+  // no year is picked for the farmer (D-169)
+  const years = [...new Set((params.get('nam') ?? '').split(',').map(Number).filter((y) => YEARS.includes(y)))].sort((a, b) => a - b).slice(0, MAX_YEARS);
   return {
     land: pick(LANDS, params.get('ruong')) ?? LEGACY_LAND[params.get('ruong') ?? ''] ?? null,
     years,
