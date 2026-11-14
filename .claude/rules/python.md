@@ -26,8 +26,9 @@ paths:
 - API and engine schemas are pydantic models whose names and fields mirror the UI/UX spec's data contract exactly.
 - Names: `snake_case` modules, functions and variables; `PascalCase` classes; `UPPER_CASE` module constants.
 - `pathlib.Path` for files; no absolute paths; paths relative to the repository root are built in one place per layer.
-- No number, threshold or label in code without a source: it lives in `rules/*.yaml` with its source id, and code
-  reads it from there.
+- No number, threshold or label in code without a source. What the app shows (plans, crop values, rule texts) lives
+  in `rules/*.yaml` with its source id, and code reads it from there. Pipeline numbers (cleaning, normal yield,
+  farmland mask, hazard counts) are named `UPPER_CASE` constants with their source cited next to them (team, 2026-11-14).
 - Errors: raise a specific exception with a message that names the input; never swallow an exception; unknown data
   symbols fail loudly. Invalid API input returns HTTP 422.
 - No `print` in `src/` (use return values; the API returns errors as responses). No personal data in logs.
