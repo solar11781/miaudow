@@ -38,7 +38,7 @@ describe('answers', () => {
   it('looks up a year with the exact computed shares', () => {
     const a = ask('Năm 2010 có hạn không?');
     expect(a.type).toBe('year');
-    const drought = a.lines.find((l) => l.ref?.label.startsWith('Hạn (phần mưa)'));
+    const drought = a.lines.find((l) => l.ref?.label.startsWith('Hạn hán (phần lượng mưa)'));
     expect(drought?.ref?.value).toBe(f.pct(yearShare('drought_rain_any2', 2010)));
   });
   it('abstains for a year outside the data', () => {

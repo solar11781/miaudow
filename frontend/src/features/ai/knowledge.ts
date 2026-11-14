@@ -24,8 +24,8 @@ const STATIC: Passage[] = [
     keys: 'nasa power du lieu thoi tiet reanalysis merra ve tinh luoi 50 km',
     title: { vi: 'Dữ liệu NASA POWER là gì?', en: 'What is the NASA POWER data?' },
     text: {
-      vi: 'NASA POWER cho thời tiết theo ngày trên lưới ô khoảng 50 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
-      en: 'NASA POWER gives daily weather on a grid of about 50 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
+      vi: 'NASA POWER cho thời tiết theo ngày trên lưới ô, mỗi ô khoảng 55 × 66 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
+      en: 'NASA POWER gives daily weather on a grid of cells about 55 × 66 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
     },
   },
   {
@@ -36,7 +36,7 @@ const STATIC: Passage[] = [
     title: { vi: 'Vì sao tính theo “phần đất trồng”?', en: 'Why “share of farmland”?' },
     text: {
       vi: 'Mỗi ô NASA được cân theo phần đất trồng trong ô (bản đồ NASA MODIS). Con số trên thẻ là tổng trọng số của các ô đạt ngưỡng, nên ô có nhiều ruộng nặng ký hơn ô núi rừng.',
-      en: 'Each NASA cell is weighted by its farmland share (NASA MODIS map). The number on a card is the sum of weights of the cells meeting the rule, so cells with more fields count more than forest cells.',
+      en: 'Each NASA cell is weighted by its farmland share (NASA MODIS map). The number on a card is the sum of weights of the cells meeting the threshold, so cells with more fields count more than forest cells.',
     },
   },
   {
@@ -46,8 +46,8 @@ const STATIC: Passage[] = [
     keys: 'quyet dinh 18 2021 cap do rui ro nguong luat thien tai',
     title: { vi: 'Ngưỡng rủi ro lấy từ đâu?', en: 'Where do the risk thresholds come from?' },
     text: {
-      vi: 'Từ Quyết định 18/2021/QĐ-TTg về cấp độ rủi ro thiên tai: mưa lớn Điều 44, nắng nóng Điều 47, hạn (phần mưa) Điều 48, rét hại Điều 53. Miaudow tính từ cấp độ 1 trở lên. Đây là cách đọc máy móc các bảng, không phải cảnh báo chính thức.',
-      en: 'From Decision 18/2021/QĐ-TTg on disaster risk levels: heavy rain Art. 44, heat Art. 47, drought rain part Art. 48, damaging cold Art. 53. Miaudow counts level 1 or higher. It is a mechanical reading of the tables, not an official warning.',
+      vi: 'Từ Quyết định 18/2021/QĐ-TTg về cấp độ rủi ro thiên tai: mưa lớn Điều 44, nắng nóng Điều 47, hạn hán (phần lượng mưa) Điều 48, rét hại Điều 53. Miaudow tính từ cấp độ 1 trở lên. Đây là cách đọc máy móc các bảng, không phải cảnh báo chính thức.',
+      en: 'From Decision 18/2021/QĐ-TTg on disaster risk levels: heavy rain Art. 44, heat Art. 47, drought (rain part) Art. 48, damaging cold Art. 53. Miaudow counts level 1 or higher. It is a mechanical reading of the tables, not an official warning.',
     },
   },
   {
@@ -55,10 +55,10 @@ const STATIC: Passage[] = [
     kind: 'study',
     sources: ['p02'],
     keys: 'p02 thu nghiem luu son do luong o 1000 m2 khong lap lai co cau',
-    title: { vi: 'Thử nghiệm P-02 được làm thế nào?', en: 'How was the P-02 trial done?' },
+    title: { vi: 'Thử nghiệm ở Lưu Sơn được làm thế nào?', en: 'How was the Lưu Sơn trial done?' },
     text: {
       vi: 'Thử nghiệm ở xã Lưu Sơn, Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không.',
-      en: 'The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on inefficient, drought-prone rice land. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
+      en: 'The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on low-return (inefficient) rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
     },
   },
   {
@@ -67,12 +67,12 @@ const STATIC: Passage[] = [
     sources: ['p03'],
     keys: 'p03 lua he thu loi nhuan 1 16 gan nhu khong co bo hoang',
     title: {
-      vi: 'Lúa hè thu trên ruộng thiếu nước lãi bao nhiêu?',
-      en: 'What does summer rice earn on water-short land?',
+      vi: 'Lúa vụ Hè Thu trên ruộng thiếu nước lãi bao nhiêu?',
+      en: 'What does summer-autumn rice earn on water-short land?',
     },
     text: {
-      vi: 'Nghiên cứu P-03 ở Lưu Sơn ghi lúa hè thu năm 2020 lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác P-02. P-03 mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”.',
-      en: 'Study P-03 in Lưu Sơn records 2020 summer rice profit of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from P-02. P-03 describes current practice as “rice – rice – fallow”.',
+      vi: 'Bài báo thứ hai của Trịnh Đức Toàn và cs. (2023) ghi lúa vụ Hè Thu năm 2020 ở Lưu Sơn lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác bài báo thứ nhất. Bài này mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”.',
+      en: 'The second paper of Trịnh Đức Toàn et al. (2023) records 2020 summer-autumn rice profit in Lưu Sơn of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from the first paper. It describes current practice as “rice – rice – fallow”.',
     },
   },
   {
@@ -137,8 +137,8 @@ function planPassages(): Passage[] {
         en: `${p.current ? 'Current practice' : `Plan ${p.id.toUpperCase()}`}: ${seq('en')}`,
       },
       text: {
-        vi: `Trong thử nghiệm P-02 (2020–21), lãi đã trừ công của từng vụ (triệu đồng/ha): ${parts('vi')}; cộng lại ${n1(total, 'vi')} triệu đồng/ha (phép cộng của Miaudow). Một ô thử, một năm; giá bán năm nay có thể khác.`,
-        en: `In the P-02 trial (2020–21), profit net of labour per season (million VND/ha): ${parts('en')}; ${n1(total, 'en')} in total (Miaudow’s sum). One plot, one year; this year’s prices may differ.`,
+        vi: `Trong thử nghiệm 2020–21 của Trịnh Đức Toàn và cs. (2023), lãi đã trừ công của từng vụ (triệu đồng/ha): ${parts('vi')}; cộng lại ${n1(total, 'vi')} triệu đồng/ha (phép cộng của Miaudow). Một ô thử, một năm; giá bán năm nay có thể khác.`,
+        en: `In the 2020–21 trial of Trịnh Đức Toàn et al. (2023), profit net of labour per season (million VND/ha): ${parts('en')}; ${n1(total, 'en')} in total (Miaudow’s sum). One plot, one year; this year’s prices may differ.`,
       },
     };
   });
@@ -163,9 +163,9 @@ function modelPassages(): Passage[] {
       kind: 'model',
       sources: ['e012'],
       keys: 'mo hinh du doan lua xuan spring skill bnw khong thang',
-      title: { vi: 'Mô hình dự đoán lúa xuân có tốt không?', en: 'Is the spring rice model any good?' },
+      title: { vi: 'Mô hình dự đoán lúa vụ Đông Xuân có tốt không?', en: 'Is the spring rice model any good?' },
       text: {
-        vi: `Chưa đủ tốt để hiện. Trên các năm kiểm tra 2016–2024, mô hình có thời tiết NASA không vượt rõ ràng cùng mô hình bỏ thời tiết: ${g('spring')?.detail.vi ?? ''} Vì vậy Miaudow không hiện dự đoán lúa xuân, chỉ hiện số liệu thật.`,
+        vi: `Chưa đủ tốt để hiện. Trên các năm kiểm tra 2016–2024, mô hình có thời tiết NASA không vượt rõ ràng cùng mô hình bỏ thời tiết: ${g('spring')?.detail.vi ?? ''} Vì vậy Miaudow không hiện dự đoán lúa vụ Đông Xuân, chỉ hiện số liệu thật.`,
         en: `Not good enough to show. On the 2016–2024 test years the model with NASA weather did not clearly beat the same model without weather: ${g('spring')?.detail.en ?? ''} So Miaudow shows no spring prediction, only real values.`,
       },
     },
@@ -174,10 +174,10 @@ function modelPassages(): Passage[] {
       kind: 'model',
       sources: ['e012'],
       keys: 'mo hinh du doan lua mua winter skill thang',
-      title: { vi: 'Mô hình dự đoán lúa mùa thì sao?', en: 'What about the winter rice model?' },
+      title: { vi: 'Mô hình dự đoán lúa vụ Mùa thì sao?', en: 'What about the winter rice model?' },
       text: {
-        vi: `Lúa mùa qua bài kiểm tra với mức hơn nhỏ: ${g('winter')?.detail.vi ?? ''} Dự đoán ngoài mẫu 2016–2024 được hiện cạnh số liệu thật, kèm khoảng 80%.`,
-        en: `Winter rice passed by a small margin: ${g('winter')?.detail.en ?? ''} Out-of-sample predictions for 2016–2024 are shown next to the real values, with an 80% range.`,
+        vi: `Lúa vụ Mùa qua bài kiểm tra, nhưng chỉ hơn một chút: ${g('winter')?.detail.vi ?? ''} Ước tính của mô hình cho năm kiểm tra 2016–2024 được hiện cạnh số liệu thật, kèm khoảng 80%.`,
+        en: `Winter rice passed by a small margin: ${g('winter')?.detail.en ?? ''} The model estimate for each test year 2016–2024 is shown next to the real values, with an 80% range.`,
       },
     },
   ];
