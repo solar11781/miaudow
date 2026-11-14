@@ -113,7 +113,7 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   `frontend/`. Deployed app: https://miaudow-production.up.railway.app (Railway project `miaudow`, one service).
   Railway deploys the branch `production`, not `main` (team, 2026-11-14). `production` moves to a gated, green
   `main` commit only at the planned deploy points (skeleton, real data, about 17:15 Saturday, the final check before
-  10:00 Sunday) with `git push origin main:production`, and it is frozen from 11:00 Sunday.
+  10:00 Sunday) with `git fetch origin && git push origin origin/main:production`, and it is frozen from 11:00 Sunday.
 - CI (`.github/workflows/ci.yml`, pull requests only): hook tests, secret scan, Python lint, format, tests and
   dependency audit, frontend allow-list, lint, format, type check, tests, build, audit and browser tests. Run the same
   checks locally before pushing (listed in the `task` skill).
