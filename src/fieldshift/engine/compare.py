@@ -234,13 +234,11 @@ def _money(plan: PlanEntry, calendar: list[CropSpan]) -> Money:
     """Money as the study reports it per crop; the total is our sum of the profit values (05-DATA-CONTRACTS §7)."""
     econ = plan.reported_economics
     keys = [span.crop_key for span in calendar]
-    for field, named in (("profit_per_crop", econ.profit_per_crop), ("cost_per_crop", econ.cost_per_crop)):
-        unknown = sorted(set(named) - set(keys))
+    named = (("profit_per_crop", econ.profit_per_crop.keys()), ("cost_per_crop", econ.cost_per_crop.keys()))
+    for field, crop_keys in (*named, ("flags", econ.flags.keys())):
+        unknown = sorted(set(crop_keys) - set(keys))
         if unknown:
             raise ValueError(f"rules/rotations.yaml: {plan.id} {field} names crops not in the plan: {unknown}")
-    unknown_flags = sorted(set(econ.flags) - set(keys))
-    if unknown_flags:
-        raise ValueError(f"rules/rotations.yaml: {plan.id} flags name crops not in the plan: {unknown_flags}")
     items: list[MoneyItem] = []
     if econ.profit_per_crop:  # P-03 reports money as text only (§7)
         missing = [key for key in keys if key not in econ.profit_per_crop]
