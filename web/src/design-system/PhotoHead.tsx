@@ -14,7 +14,7 @@ export function PhotoHead({ shot, id, title, lead, children }: { shot: Shot; id:
   }, [title]);
   return (
     <header ref={root} className={`${s.head} surface-forest`}>
-      <div className={s.photo} data-photo><Media slug={shot.slug} narrow={shot.narrow} sizes="100vw" priority decorative /></div>
+      <div className={s.photo} data-photo><Media slug={shot.slug} narrow={shot.narrow} sizes="(max-width: 480px) 320px, 100vw" priority decorative /></div>
       <div className={`container ${s.inner}`}>
         {/* keyed by its text: SplitText rewrites the heading's DOM, so a new language mounts a fresh heading */}
         <h1 key={title} id={id} className={`display ${s.title}`} data-rise>{title}</h1>

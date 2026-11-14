@@ -57,7 +57,7 @@ function Hero() {
       <div className={s.heroStage} data-hero-stage>
         {slides.map((shot, n) => (
           <div key={shot.slug} className={[s.slide, n === shown ? s.slideOn : ''].join(' ')}>
-            <Media slug={shot.slug} narrow={shot.narrow} priority={n === 0} sizes="100vw" decorative drift={playing && n === shown} />
+            <Media slug={shot.slug} narrow={shot.narrow} priority={n === 0} sizes="(max-width: 480px) 320px, 100vw" decorative drift={playing && n === shown} />
           </div>
         ))}
       </div>
@@ -108,7 +108,7 @@ function Problem() {
   return (
     <section ref={root} className={`${s.problem} surface-forest grain`} aria-labelledby="problem-title">
       <div className={s.problemPhoto} data-clip>
-        <Media slug={ART.problem.slug} narrow={ART.problem.narrow} sizes="(min-width: 900px) 50vw, 100vw" />
+        <Media slug={ART.problem.slug} narrow={ART.problem.narrow} sizes="(max-width: 480px) 320px, (min-width: 900px) 50vw, 100vw" />
       </div>
       <div className={s.problemText}>
         <h2 id="problem-title" className="h1">{t.home.problemTitle}</h2>
@@ -146,7 +146,7 @@ function Verse() {
   });
   return (
     <section ref={root} className={`${s.verse} surface-forest`} aria-labelledby="verse-title">
-      <div className={s.versePhoto} data-verse-photo><Media slug={ART.verse.slug} narrow={ART.verse.narrow} sizes="100vw" decorative /></div>
+      <div className={s.versePhoto} data-verse-photo><Media slug={ART.verse.slug} narrow={ART.verse.narrow} sizes="(max-width: 480px) 320px, 100vw" decorative /></div>
       <div className={`container ${s.verseInner}`}>
         <h2 id="verse-title" className="visually-hidden">{t.home.verseTitle}</h2>
         <Brocade className={s.verseBand} data-brocade />
@@ -214,7 +214,7 @@ function Cores() {
           <div className={s.coresStageInner} data-core-stage>
             {ART.cores.map((shot, n) => (
               <div key={shot.slug} className={[s.coreShot, n === active ? s.coreShotOn : ''].join(' ')}>
-                <Media slug={shot.slug} sizes="50vw" decorative />
+                <Media slug={shot.slug} sizes="(max-width: 480px) 320px, 50vw" decorative />
               </div>
             ))}
           </div>
@@ -224,7 +224,7 @@ function Cores() {
         <div className={s.coreList}>
           {cores.map((c, n) => (
             <article key={c.name} className={s.core} data-core={n} aria-labelledby={`core-${n}`}>
-              <span className={s.corePhoto}><Media slug={(ART.cores[n] ?? ART.cores[0]).slug} sizes="100vw" decorative /></span>
+              <span className={s.corePhoto}><Media slug={(ART.cores[n] ?? ART.cores[0]).slug} sizes="(max-width: 480px) 320px, 100vw" decorative /></span>
               <h3 id={`core-${n}`} className={s.coreName}>{c.name}</h3>
               <p className={s.coreDoes}>{c.does}</p>
               <dl className={s.coreFacts}>
@@ -279,7 +279,7 @@ function Steps() {
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
               <Link to={STEP_LINKS[i] ?? '/nong-dan'} className={s.step} viewTransition>
-                <span className={s.stepPhoto}><Media slug={ART.steps[i]?.slug ?? ART.steps[0].slug} decorative sizes="(min-width: 1000px) 320px, 80vw" /></span>
+                <span className={s.stepPhoto}><Media slug={ART.steps[i]?.slug ?? ART.steps[0].slug} decorative sizes="(max-width: 480px) 320px, (min-width: 1000px) 320px, 80vw" /></span>
                 <span className={s.stepText}>
                   <span className={s.stepLabel}>{t.home.stepLabel(i + 1)}</span>
                   <span className={s.stepTitle}>{step.title}</span>
@@ -319,7 +319,7 @@ function Invite() {
   });
   return (
     <section ref={root} className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
-      <span className={s.inviteArt} data-invite-art><Media slug={ART.invite.slug} sizes="100vw" decorative /></span>
+      <span className={s.inviteArt} data-invite-art><Media slug={ART.invite.slug} sizes="(max-width: 480px) 320px, 100vw" decorative /></span>
       <div className={`container ${s.inviteInner}`}>
         <h2 id="invite-title" className={`display ${s.inviteTitle}`}><Accent text={t.home.inviteTitle} /></h2>
         <p className="lead">{t.home.inviteLead}</p>
