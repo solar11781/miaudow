@@ -18,6 +18,7 @@ from fieldshift.ml import evaluation as ev
 
 FoldTransform = Callable[[pd.DataFrame, pd.Index], pd.DataFrame]
 ALPHA_GRID = np.logspace(-5, 0, 13)  # D-110: Meroni et al. 2021 grid (lasso scale; ev.fit_ridge converts, D-146)
+LEFT_OUT = "left_out"  # optional column: rows never trained on or scored (E-018 run a)
 
 
 def add_precip_anom(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
@@ -158,13 +159,16 @@ def run_rolling_origin(
     """Run the outer rolling origin. df: one row per series and year with `anom` (non-null), features, series_id.
 
     fold_transform(df, train_idx) -> df adds fold-time features (e.g. add_precip_anom) from training rows only.
+    An optional boolean column `left_out` marks rows that are never trained on or scored but stay in the frame, so B2
+    still reads them as the last year (E-018 run a, team 2026-11-14).
     Returns {"predictions": DataFrame (same rows only), "metrics": dict}.
     """
     m1_cols = list(context_cols) + list(weather_cols)
     data = _checked(df, alphas, m1_cols)
+    used = ~data[LEFT_OUT].astype(bool) if LEFT_OUT in data else pd.Series(True, index=data.index)
     parts = []
     for t in test_years:
-        train_idx, test_idx = data.index[data["year"] < t], data.index[data["year"] == t]
+        train_idx, test_idx = data.index[(data["year"] < t) & used], data.index[(data["year"] == t) & used]
         if len(test_idx) == 0:
             continue
         part = _fold(data, (train_idx, test_idx), (m1_cols, list(context_cols)), alphas, fold_transform, ev.predict_b0)
