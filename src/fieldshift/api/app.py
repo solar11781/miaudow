@@ -37,6 +37,8 @@ def _artifact_versions(artifacts_dir: Path) -> dict:
     if artifacts_dir.is_dir():
         for f in sorted(artifacts_dir.glob("*.json")):
             data = json.loads(f.read_text(encoding="utf-8"))
+            if "schema_version" not in data:
+                raise ValueError(f"{f.name}: no schema_version")
             out[f.name] = {"schema_version": data["schema_version"], "generated_at": data["generated_at"]}
     return out
 
