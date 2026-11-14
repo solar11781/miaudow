@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { pathFor, useLocalTo } from './paths';
 import { ButtonLink } from '../design-system/Button';
 import { Icon, type IconName } from '../design-system/Icon';
 import { BrandMark } from './Brand';
@@ -13,6 +14,14 @@ const THEME_ICON: Record<Theme, IconName> = { auto: 'reset', light: 'sun', dark:
 function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
   const t = useT();
   const { lang, setLang, lite, setLite, theme, setTheme } = useSettings();
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
+  // D-174: the other language's path of the same page, with the answers kept
+  const switchLang = () => {
+    const other = lang === 'vi' ? 'en' : 'vi';
+    navigate({ pathname: pathFor(pathname, other), search }, { replace: true, preventScrollReset: true });
+    setLang(other);
+  };
   const themeLabel = { auto: t.nav.themeAuto, light: t.nav.themeLight, dark: t.nav.themeDark }[theme];
   return (
     <div className={inMenu ? s.settingsMenu : farmer ? s.settingsFarmer : s.settings}>
@@ -37,7 +46,7 @@ function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
       <button
         type="button"
         className={s.chip}
-        onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}
+        onClick={switchLang}
         aria-label={`${t.meta.other} · ${t.meta.otherLabel}`}
         lang={lang === 'vi' ? 'en' : 'vi'}
       >
@@ -50,6 +59,7 @@ function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
 /** The areas, in the order a visitor meets them. */
 export function useAreas() {
   const t = useT();
+  const { lang } = useSettings();
   return [
     { to: '/', label: t.nav.home, end: true },
     { to: '/nong-dan', label: t.nav.farmer },
@@ -58,16 +68,17 @@ export function useAreas() {
     { to: '/phuong-phap', label: t.nav.method },
     { to: '/bang-chung', label: t.nav.evidence },
     { to: '/tro-ly', label: t.nav.assistant },
-  ];
+  ].map((a) => ({ ...a, to: pathFor(a.to, lang) }));
 }
 
 /** Farmer routes get a flat header: the brand (home) and the settings, no menu and no other links (UI-UX-SPEC H12). */
 function FarmerHeader() {
   const t = useT();
+  const local = useLocalTo();
   return (
     <header className={`${s.header} ${s.paper}`}>
       <div className={`container ${s.bar}`}>
-        <Link to="/" className={s.brand} viewTransition>
+        <Link to={local('/')} className={s.brand} viewTransition>
           <BrandMark />
           <span className={s.word}>
             <span className={s.name}>Miaudow</span>
@@ -82,12 +93,13 @@ function FarmerHeader() {
 
 export function Header({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
   const { pathname } = useLocation();
-  if (pathname.startsWith('/nong-dan')) return <FarmerHeader />;
+  if (pathFor(pathname, 'vi').startsWith('/nong-dan')) return <FarmerHeader />;
   return <SiteHeader tone={tone} />;
 }
 
 function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
   const t = useT();
+  const local = useLocalTo();
   const { pathname } = useLocation();
   const menu = useRef<HTMLDialogElement>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -114,7 +126,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
       ].join(' ')}
     >
       <div className={`container ${s.bar}`}>
-        <Link to="/" className={s.brand} viewTransition>
+        <Link to={local('/')} className={s.brand} viewTransition>
           <BrandMark />
           <span className={s.word}>
             <span className={s.name}>Miaudow</span>

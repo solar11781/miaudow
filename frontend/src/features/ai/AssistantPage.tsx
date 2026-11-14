@@ -11,6 +11,7 @@ import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { useSpeech } from './useSpeech';
 import { VoiceButton } from './VoiceButton';
 import s from './assistant.module.css';
+import { useLocalTo } from '../../app/paths';
 
 type Engine = 'checking' | 'server' | 'browser';
 type Turn =
@@ -22,11 +23,12 @@ const WATERS: WaterSituation[] = ['canal_end', 'high_field', 'water_short', 'rel
 
 function YearCard({ year }: { year: number }) {
   const t = useT();
+  const local = useLocalTo();
   const f = useFormat();
   const row = climateYear(year);
   if (!row) return null;
   return (
-    <Link to={`/khoa-hoc?nam=${year}`} className={s.card} viewTransition>
+    <Link to={local(`/khoa-hoc?nam=${year}`)} className={s.card} viewTransition>
       <span className={s.cardKind}>
         <Icon name="rain" size={18} />
         {t.copilot.cardYear}
@@ -58,6 +60,7 @@ function YearCard({ year }: { year: number }) {
 
 export function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituation | null }) {
   const t = useT();
+  const local = useLocalTo();
   const pick = usePick();
   const { lang } = useSettings();
   const speech = useSpeech(lang, () => undefined);
@@ -87,7 +90,9 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
               key={c.ref_id}
               className={s.card}
               viewTransition
-              to={`/nong-dan/phuong-an?${new URLSearchParams({ ...(water ? { ruong: water } : {}), the: c.ref_id }).toString()}`}
+              to={local(
+                `/nong-dan/phuong-an?${new URLSearchParams({ ...(water ? { ruong: water } : {}), the: c.ref_id }).toString()}`,
+              )}
             >
               <span className={s.cardKind}>
                 <Icon name="sprout" size={18} />

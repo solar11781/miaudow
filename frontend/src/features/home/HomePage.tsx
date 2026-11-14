@@ -15,6 +15,7 @@ import { RainStrip } from '../charts/RainStrip';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
+import { useLocalTo } from '../../app/paths';
 import s from './HomePage.module.css';
 
 const HERO = 'nam-dan-ql46-rice-plain';
@@ -248,6 +249,7 @@ function Evidence() {
 
 function Steps() {
   const t = useT();
+  const local = useLocalTo();
   return (
     <section id="ch-5" className={`band surface-forest grain ${s.stepsBand}`} aria-labelledby="steps-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
@@ -260,7 +262,7 @@ function Steps() {
         <ol className={s.steps}>
           {t.home.steps.map((step, i) => (
             <Reveal as="li" key={step.title} delay={i * 70}>
-              <Link to={STEP_LINKS[i] ?? '/nong-dan'} className={s.step} viewTransition>
+              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step} viewTransition>
                 <span className={s.stepArt}>
                   <Media slug={STEP_ART[i] ?? 'a3-rice'} decorative sizes="(min-width: 1000px) 300px, 90vw" />
                   <span className={s.stepNum}>{String(i + 1).padStart(2, '0')}</span>
