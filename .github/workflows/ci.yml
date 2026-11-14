@@ -37,6 +37,8 @@ jobs:
           echo "$files"
           all=false; echo "$files" | grep -q '^\.github/' && all=true
           py=false; echo "$files" | grep -v '^frontend/' | grep -qE '\.(py|toml|lock|cfg|ini|yaml|yml|json|csv)$' && py=true
+          # the stale-snapshot test (tests/test_build_snapshot.py) must run when only the saved answers change
+          echo "$files" | grep -q '^frontend/snapshot/' && py=true
           fe=false; echo "$files" | grep -q '^frontend/' && fe=true
           [ -f pyproject.toml ] || py=false
           [ -f frontend/package.json ] || fe=false
