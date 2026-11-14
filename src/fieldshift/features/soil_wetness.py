@@ -33,11 +33,17 @@ def soil_wetness_rows(
     crops: list[dict], cells: dict[tuple, pd.DataFrame], weights: dict[tuple, float], years: Iterable[int] = YEARS
 ) -> list[dict]:
     """One row per plan crop x year: the field-day mean (value) and its 1991-2020 normal; cells: daily GWETROOT."""
+    years = list(years)  # read twice below
     normal_years = range(CLIM_YEARS[0], CLIM_YEARS[1] + 1)
     rows = []
     for crop in crops:
         dates = crop["field_dates"]
-        means = {c: {y: _field_day_mean(cells[c], y, dates) for y in set(years) | set(normal_years)} for c in weights}
+        means = {}
+        for c in weights:
+            try:
+                means[c] = {y: _field_day_mean(cells[c], y, dates) for y in set(years) | set(normal_years)}
+            except (KeyError, ValueError) as err:
+                raise ValueError(f"{crop['crop_key']} cell {c}: {err!r}") from err
         normal_of = {
             c: None if any(m[y] is None for y in normal_years) else sum(m[y] for y in normal_years) / len(normal_years)
             for c, m in means.items()
