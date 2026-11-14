@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from decimal import ROUND_HALF_UP, Decimal
 
+from fieldshift.engine.rules import HazardRow
 from fieldshift.engine.schemas import Text, Value
 
 PERCENT: Text = {"vi": "%", "en": "%"}  # unit "%" in both languages (05-DATA-CONTRACTS §4b)
@@ -14,15 +15,12 @@ def whole_percent(fraction: float) -> str:
     return str((Decimal(str(fraction)) * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
-def share_value(row: dict) -> Value | None:
+def share_value(row: HazardRow) -> Value | None:
     """One hazard_labels.json row as its share Value (05-DATA-CONTRACTS §4b API conversion); null stays null."""
-    share = row["share_farmland"]
-    if share is None:
+    if row.share_farmland is None:
         return None
-    if not 0 <= share <= 1:
-        raise ValueError(f"share_farmland {share} is not a fraction 0..1 (year {row['year']}, rule {row['rule']})")
     return Value(
-        value=whole_percent(share),
+        value=whole_percent(row.share_farmland),
         unit=PERCENT,
-        source_ids=[row["threshold_source_id"], *row["values_source_ids"], row["computed_by"]],
+        source_ids=[row.threshold_source_id, *row.values_source_ids, row.computed_by],
     )

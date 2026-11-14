@@ -11,7 +11,7 @@ from datetime import datetime
 from itertools import pairwise
 from typing import Annotated, Literal, Self, TypedDict, get_args
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, with_config
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StrictInt, model_validator, with_config
 
 Province = Literal["nghe_an"]
 Land = Literal["dry", "unsure"]
@@ -54,9 +54,10 @@ class Text(TypedDict):
 
 
 class Contract(BaseModel):
-    """Base of every contract model: unknown fields are an error (no score or extra field slips out, H3)."""
+    """Base of every contract model: unknown fields are an error (no score or extra field slips out, H3); output uses
+    the contract names (Period `from`) however it is dumped."""
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+    model_config = ConfigDict(extra="forbid", populate_by_name=True, serialize_by_alias=True)
 
 
 class SourceFacts(Contract):
@@ -292,7 +293,7 @@ class Plan(Contract):
 class CompareRequest(Contract):
     province: Province
     land: Land
-    years: list[int]
+    years: list[StrictInt]  # the request body is a trust boundary: no text or fractions
     priority: Priority
 
     @model_validator(mode="after")

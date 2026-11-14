@@ -8,20 +8,58 @@ from __future__ import annotations
 import json
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Literal
 
 import yaml
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from fieldshift.engine.schemas import RULE_CODES, Rule, SourceFacts, SourceId
+from fieldshift.engine.schemas import (
+    FIRST_YEAR,
+    LAST_YEAR,
+    RULE_CODES,
+    MonthDay,
+    Rule,
+    RuleCode,
+    SeasonCode,
+    SourceFacts,
+    SourceId,
+)
+
+HAZARD_LABELS = "hazard_labels.json"
 
 
-def read_artifact(root: Path, name: str) -> dict:
-    data = json.loads((root / "artifacts" / name).read_text(encoding="utf-8"))
+class HazardRow(BaseModel):
+    """One row of artifacts/hazard_labels.json (05-DATA-CONTRACTS §4b); an artifact row, not an API type."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    level: Literal["crop", "year"]
+    plan_id: str | None
+    crop_key: str | None
+    season: SeasonCode | None
+    months: list[int]
+    field_dates: list[tuple[MonthDay, MonthDay]]
+    year: int = Field(ge=FIRST_YEAR, le=LAST_YEAR)
+    rule: RuleCode
+    share_farmland: float | None = Field(ge=0, le=1)
+    n_cells: int
+    threshold_source_id: SourceId
+    values_source_ids: list[SourceId]
+    computed_by: SourceId
+
+
+def hazard_rows(root: Path) -> list[HazardRow]:
+    """The checked rows of artifacts/hazard_labels.json; a bad row fails naming the file and the field."""
+    data = json.loads((root / "artifacts" / HAZARD_LABELS).read_text(encoding="utf-8"))
     if not isinstance(data, dict) or not isinstance(data.get("rows"), list):
-        raise ValueError(f"artifacts/{name}: expected an object with a rows list")
-    return data
+        raise ValueError(f"artifacts/{HAZARD_LABELS}: expected an object with a rows list")
+    try:
+        return TypeAdapter(list[HazardRow]).validate_python(data["rows"])
+    except ValidationError as err:
+        raise ValueError(f"artifacts/{HAZARD_LABELS}: {err}") from err
 
 
-def _read_entries(root: Path, name: str) -> list[dict]:
+def _read_entries(root: Path, name: str) -> list[dict[str, object]]:
     data = yaml.safe_load((root / "rules" / name).read_text(encoding="utf-8"))
     if not isinstance(data, list) or not all(isinstance(e, dict) for e in data):
         raise ValueError(f"rules/{name}: expected a list of entries")
