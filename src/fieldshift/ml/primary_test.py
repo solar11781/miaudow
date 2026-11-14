@@ -69,3 +69,128 @@ def g1_rows(model_rows: pd.DataFrame) -> list[dict]:
         passed = years >= G1_MIN_YEARS and provinces >= G1_MIN_PROVINCES[season]
         out.append({"season": season, "years": int(years), "provinces": int(provinces), "passed": bool(passed)})
     return out
+
+
+# ---------- artifact records (05-DATA-CONTRACTS section 5b; UI-UX-SPEC section 11) ----------
+EXPERIMENT = "E-012"
+APP_SEASONS = {"spring": "spring", "autumn": "summer_autumn", "winter": "winter"}  # NSO name -> UI-UX SeasonCode
+MODELS = {"b0": "b0", "b2": "b2", "bnw": "bnw", "m1": "m1_ridge"}  # prediction column -> ModelId
+
+
+def app_season(nso_season: str) -> str:
+    """The app's season code (UI-UX-SPEC section 11 SeasonCode) of an NSO rice season name."""
+    if nso_season not in APP_SEASONS:
+        raise ValueError(f"unknown NSO rice season {nso_season!r}; known: {sorted(APP_SEASONS)}")
+    return APP_SEASONS[nso_season]
+
+
+def _text(vi: str, en: str) -> dict:
+    return {"vi": vi, "en": en}
+
+
+def _num(x: float) -> tuple[str, str]:
+    """(vi, en) of a number with 3 decimals; Vietnamese writes a decimal comma."""
+    en = f"{x:.3f}"
+    return en.replace(".", ","), en
+
+
+def _role(col: str, season: str, scheme: str, subset: str) -> str:
+    if col in REFERENCES:
+        return "reference"
+    primary = season == "spring" and scheme == "rolling_origin" and subset == "national"  # the one test, D-83
+    return "primary" if primary else "secondary"
+
+
+def metric_records(
+    pred: pd.DataFrame, spatial_pred: pd.DataFrame, pilot: tuple[str, ...], seed: int, n_boot: int = ev.BOOTSTRAP_DRAWS
+) -> list[dict]:
+    """MetricRow records per ML season: rolling origin (national, the three-province subset, each pilot province,
+    each NSO region) and the spatial holdout (national). Frames need season, province_nso and region columns."""
+    out = []
+    for season in ev.ML_SEASONS:
+        sp, holdout = pred[pred["season"] == season], spatial_pred[spatial_pred["season"] == season]
+        runs = [("rolling_origin", "national", sp), ("rolling_origin", "na_ht_th", sp[sp["province_nso"].isin(pilot)])]
+        runs += [("rolling_origin", f"unit:{p}", sp[sp["province_nso"] == p]) for p in pilot]  # unit = province key
+        runs += [
+            ("rolling_origin", f"region:{r.lower().replace(' ', '_')}", sp[sp["region"] == r])
+            for r in sorted(sp["region"].unique())
+        ]
+        runs.append(("spatial_holdout", "national", holdout))
+        for scheme, subset, part in runs:
+            for col, model_id in MODELS.items():
+                out.append(
+                    {
+                        "model_id": model_id,
+                        "season": app_season(season),
+                        "role": _role(col, season, scheme, subset),
+                        "scheme": scheme,
+                        "sensitivity": None,
+                        "detail": None,
+                        "subset": subset,
+                        **metric_row(part, col, seed=seed, n_boot=n_boot),
+                        "source_ids": [EXPERIMENT],
+                    }
+                )
+    return out
+
+
+def find_row(rows: list[dict], season: str, subset: str, model_id: str = "m1_ridge") -> dict:
+    """The rolling-origin metric record of a model, app season and subset."""
+    for r in rows:
+        key = (r["model_id"], r["season"], r["scheme"], r["subset"])
+        if key == (model_id, season, "rolling_origin", subset):
+            return r
+    raise KeyError(f"no metric record for {model_id} {season} {subset}")
+
+
+def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
+    """Detail text of G2, G3 or G4 (drafts for the copy review; form of G2 from 03-ML-SPEC section 8)."""
+    if gate == "G2":
+        (v0, e0), (vl0, el0), (vh0, eh0) = (
+            _num(national["skill_vs_b0"][k]) for k in ("value", "ci90_low", "ci90_high")
+        )
+        (v1, e1), (vl1, el1), (vh1, eh1) = (
+            _num(national["skill_vs_bnw"][k]) for k in ("value", "ci90_low", "ci90_high")
+        )
+        return _text(
+            f"Mức hơn dự báo trung bình nhiều năm {v0} (khoảng tin cậy 90%: {vl0} đến {vh0}); "
+            f"hơn mô hình không dùng thời tiết {v1} (khoảng tin cậy 90%: {vl1} đến {vh1}).",
+            f"skill {e0} (90% CI {el0} to {eh0}) against the climatology reference; "
+            f"skill {e1} (90% CI {el1} to {eh1}) against the no-weather model.",
+        )
+    if gate == "G3":
+        (v, e), (vl, el), (vh, eh) = (_num(pilot["skill_vs_b2"][k]) for k in ("value", "ci90_low", "ci90_high"))
+        return _text(
+            f"Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước {v} (khoảng tin cậy 90%: {vl} đến {vh}).",
+            f"Nghe An, Ha Tinh, Thanh Hoa: skill {e} (90% CI {el} to {eh}) against persistence.",
+        )
+    cover = f"{100 * national['coverage_80']:.0f}"
+    return _text(
+        f"Khoảng dự báo 80% chứa {cover}% kết quả của các năm kiểm tra (cần 70% đến 90%).",
+        f"The 80% range covered {cover}% of the held-out outcomes (needs 70% to 90%).",
+    )
+
+
+def g1_detail(g: dict) -> dict:
+    need = G1_MIN_PROVINCES[g["season"]]
+    return _text(
+        f"{g['years']} năm và {g['provinces']} tỉnh có số liệu dùng được (cần ít nhất {G1_MIN_YEARS} năm và {need} tỉnh).",
+        f"{g['years']} usable years and {g['provinces']} provinces (needs at least {G1_MIN_YEARS} years and {need} "
+        "provinces).",
+    )
+
+
+def penalty_report(at_edge: dict[str, float]) -> dict:
+    """ReportItem: share of test years whose chosen penalty is an end of the grid (D-110)."""
+    m1, bnw = (f"{100 * at_edge[k]:.0f}%" for k in ("m1", "bnw"))
+    return {
+        "id": EXPERIMENT,
+        "title": _text("Mức phạt của mô hình ở đầu thang", "Model penalty at an end of the grid"),
+        "text": _text(
+            f"Mức phạt được chọn nằm ở một đầu thang của D-110 trong {m1} số năm kiểm tra với M1 và {bnw} với mô hình "
+            "không dùng thời tiết; mô hình này có thể yếu hơn mức nó đạt được với thang rộng hơn.",
+            f"The chosen penalty was at an end of the D-110 grid in {m1} of the test years for M1 and in {bnw} for the "
+            "no-weather model, which may therefore be weaker than a wider grid would allow.",
+        ),
+        "source_ids": [EXPERIMENT],
+    }
