@@ -18,4 +18,4 @@ ENV PORT=8000 FIELDSHIFT_ROOT=/app
 # The server runs without root rights. It only reads /app and site-packages, which stay root-owned and readable by all.
 RUN useradd --system --no-create-home app
 USER app
-CMD ["sh", "-c", "uvicorn fieldshift.api.app:app --host 0.0.0.0 --port ${PORT} --no-access-log"]
+CMD ["sh", "-c", "uvicorn fieldshift.api.app:app --host 0.0.0.0 --port ${PORT} --no-access-log --no-server-header"]

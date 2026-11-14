@@ -40,7 +40,8 @@ def installed(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     app = tmp_path_factory.mktemp("app")
     shutil.copytree(REPO / "rules", app / "rules")
     (app / "artifacts").mkdir()
-    shutil.copy(REPO / "tests" / "fixtures" / "artifacts" / "risk_table.json", app / "artifacts")
+    for artifact in (REPO / "artifacts").glob("*.json"):  # the service loads every artifact at start
+        shutil.copy(artifact, app / "artifacts")
     return site, app
 
 
@@ -59,10 +60,8 @@ def test_installed_package_reads_rules_and_artifacts_from_the_project_folder(ins
     out = json.loads(r.stdout)
     assert Path(out["module"]).is_relative_to(site)  # really the installed copy
     assert Path(out["calendar"]) == app / "rules" / "calendar.yaml"
-    assert out["health"] == {
-        "status": "ok",
-        "artifacts": {"risk_table.json": {"schema_version": "0.4", "generated_at": "2000-01-01T00:00:00+07:00"}},
-    }
+    assert out["health"]["status"] == "ok"
+    assert set(out["health"]["artifacts"]) == {f.name for f in (REPO / "artifacts").glob("*.json")}
 
 
 def test_installed_package_without_the_project_folder_fails_with_a_message(installed: tuple[Path, Path]) -> None:
