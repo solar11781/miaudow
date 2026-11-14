@@ -5,7 +5,6 @@ Written before arch_check.py. Run: pytest tests/test_architecture.py
 
 from pathlib import Path
 
-
 from arch_check import find_violations
 
 REPO = Path(__file__).resolve().parents[1]
