@@ -17,6 +17,7 @@ import socket
 from collections.abc import Iterator
 from pathlib import Path
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -92,54 +93,59 @@ def test_health_lists_each_artifact_with_version_and_time(client: TestClient) ->
 # ---- invalid input: HTTP 422
 
 
-@pytest.mark.parametrize(
-    "query",
-    [
-        {"province": "ha_tinh"},  # 04 §3: unknown province
-        {},  # §11: province is required
-    ],
-)
-def test_past_years_rejects_a_bad_province(client: TestClient, query: dict) -> None:
-    r = client.get("/api/past-years", params=query)
+def rejected(r: httpx.Response, secret: str | None = None) -> None:
+    """A 422 whose items hold type, loc and msg only: no route echoes the input back (review of PR #41)."""
     assert r.status_code == 422
-    assert "detail" in r.json()
+    items = r.json()["detail"]
+    assert items
+    assert all(set(item) == {"type", "loc", "msg"} for item in items), items
+    if secret is not None:
+        assert secret not in r.text
 
 
 @pytest.mark.parametrize(
-    "change",
+    ("query", "secret"),
     [
-        {"province": "ha_tinh"},  # 04 §3: unknown province
-        {"land": "irrigated"},  # §6b rule 4: irrigated never reaches the API; 04 §3: unknown land
-        {"priority": "profit"},  # 04 §3: unknown priority
-        {"years": [1994, 2000]},  # 04 §3: outside 1995-2024
-        {"years": [2000, 2025]},
-        {"years": [2007, 1995]},  # 04 §3: not strictly ascending
-        {"years": [2007, 2007]},  # duplicate (§6b: strictly ascending, so unique)
-        {"years": []},  # §6b rule 3: years is required, so never empty
-        {"years": [2001.5]},  # whole years only
-        {"years": [2001.0]},
-        {"years": ["2001"]},
-        {"years": [True]},
-        {"years": None},
-        {"extra": 1},  # §11 CompareRequest has exactly four fields
+        ({"province": "zz-secret-province"}, "zz-secret-province"),  # 04 §3: unknown province
+        ({}, None),  # §11: province is required
     ],
 )
-def test_compare_rejects_an_invalid_body(client: TestClient, change: dict) -> None:
-    r = client.post("/api/compare", json={**BODY, **change})
-    assert r.status_code == 422
-    assert "detail" in r.json()
+def test_past_years_rejects_a_bad_province(client: TestClient, query: dict, secret: str | None) -> None:
+    rejected(client.get("/api/past-years", params=query), secret)
+
+
+@pytest.mark.parametrize(
+    ("change", "secret"),
+    [
+        ({"province": "zz-secret-province"}, "zz-secret-province"),  # 04 §3: unknown province
+        ({"land": "irrigated"}, "irrigated"),  # §6b rule 4: irrigated never reaches the API; 04 §3: unknown land
+        ({"priority": "zz-secret-priority"}, "zz-secret-priority"),  # 04 §3: unknown priority
+        ({"years": [1994, 2000]}, "1994"),  # 04 §3: outside 1995-2024
+        ({"years": [2000, 2025]}, "2025"),
+        ({"years": [2007, 1996]}, "2007"),  # 04 §3: not strictly ascending
+        ({"years": [2008, 2008]}, "2008"),  # duplicate (§6b: strictly ascending, so unique)
+        ({"years": []}, None),  # §6b rule 3: years is required, so never empty
+        ({"years": [2001.5]}, "2001.5"),  # whole years only
+        ({"years": [2001.0]}, "2001"),
+        ({"years": ["2003"]}, "2003"),
+        ({"years": [True]}, "true"),
+        ({"years": None}, None),
+        ({"extra": "zz-secret-extra"}, "zz-secret-extra"),  # §11 CompareRequest has exactly four fields
+    ],
+)
+def test_compare_rejects_an_invalid_body(client: TestClient, change: dict, secret: str | None) -> None:
+    rejected(client.post("/api/compare", json={**BODY, **change}), secret)
 
 
 @pytest.mark.parametrize("field", ["province", "land", "years", "priority"])
 def test_compare_rejects_a_missing_field(client: TestClient, field: str) -> None:
-    r = client.post("/api/compare", json={k: v for k, v in BODY.items() if k != field})
-    assert r.status_code == 422
+    rejected(client.post("/api/compare", json={k: v for k, v in BODY.items() if k != field}))
 
 
-@pytest.mark.parametrize("content", [b"", b"{", b"[]", b"null", b"\xff\xfe"])
+@pytest.mark.parametrize("content", [b"", b"{zz-secret", b"[]", b"null", bytes([0xFF, 0xFE])])
 def test_compare_rejects_a_body_that_is_not_a_request_object(client: TestClient, content: bytes) -> None:
     r = client.post("/api/compare", content=content, headers={"content-type": "application/json"})
-    assert r.status_code == 422
+    rejected(r, "zz-secret")
 
 
 def test_body_limit_leaves_room_for_the_largest_valid_request() -> None:
@@ -166,8 +172,7 @@ def test_compare_rejects_a_body_over_the_limit(client: TestClient) -> None:
         content=content + b" " * (MAX_BODY_BYTES + 1 - len(content)),
         headers={"content-type": "application/json"},
     )
-    assert r.status_code == 422
-    assert "detail" in r.json()
+    rejected(r)
 
 
 def test_compare_rejects_a_streamed_body_over_the_limit(client: TestClient) -> None:
@@ -176,8 +181,7 @@ def test_compare_rejects_a_streamed_body_over_the_limit(client: TestClient) -> N
         yield json.dumps(BODY).encode()
         yield b" " * MAX_BODY_BYTES
 
-    r = client.post("/api/compare", content=chunks(), headers={"content-type": "application/json"})
-    assert r.status_code == 422
+    rejected(client.post("/api/compare", content=chunks(), headers={"content-type": "application/json"}))
 
 
 # ---- other errors
