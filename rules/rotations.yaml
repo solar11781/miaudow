@@ -120,14 +120,14 @@
   risks:
     - &p03_market
       text:
-        vi: "Một thử nghiệm khác của cùng nhóm tác giả tại cùng xã, vụ Hè Thu 2020: \"Tuy nhiên đầu ra tiêu thụ cho
-          cây đậu tương, cây vừng tại địa phương còn gặp nhiều khó khăn. Thị trường tiêu thụ nhỏ hẹp, khó mở rộng, nên hiệu quả kinh tế - xã hội chưa
-          cao. Trong khi đó, cây ngô tuy hiệu quả kinh tế thấp hơn, nhưng người dân dễ tiêu thụ sản phẩm, bên cạnh đó
-          còn dùng làm thức ăn cho gia súc, nên cây ngô được người dân lựa chọn.\""
+        vi: "Một thử nghiệm khác của cùng nhóm tác giả tại cùng xã, vụ Hè Thu 2020: \"Tuy nhiên đầu ra tiêu thụ cho cây
+          đậu tương, cây vừng tại địa phương còn gặp nhiều khó khăn. Thị trường tiêu thụ nhỏ hẹp, khó mở rộng, nên hiệu
+          quả kinh tế - xã hội chưa cao. Trong khi đó, cây ngô tuy hiệu quả kinh tế thấp hơn, nhưng người dân dễ tiêu
+          thụ sản phẩm, bên cạnh đó còn dùng làm thức ăn cho gia súc, nên cây ngô được người dân lựa chọn.\""
         en: "Another trial by the same team in the same commune, summer-autumn 2020 (our translation): \"However,
-          selling soybean and sesame locally is still very difficult. The market is small and hard to expand, so the economic and social benefit is
-          not yet high. Maize, although its economic benefit is lower, is easy for people to sell and is also used as
-          cattle feed, so people choose maize.\""
+          selling soybean and sesame locally is still very difficult. The market is small and hard to expand, so the
+          economic and social benefit is not yet high. Maize, although its economic benefit is lower, is easy for people
+          to sell and is also used as cattle feed, so people choose maize.\""
       source_ids: [R-P03]
     - &law_6_1
       text:
