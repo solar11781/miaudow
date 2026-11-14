@@ -99,6 +99,7 @@ CONTRACT_FIELDS = {
     "ReportItem": ["id", "title", "text", "source_ids"],
     "CoverageCell": ["row_key", "crop", "axis", "text", "source_ids"],
     "ExplainTerm": ["key", "title", "text", "source_ids"],
+    "NotUsedDataset": ["dataset", "reason", "source_ids"],  # D-165 (UI-UX-SPEC §11b item 4b)
     "MethodResponse": [
         "test_years",
         "freeze_commit",
@@ -109,6 +110,7 @@ CONTRACT_FIELDS = {
         "coverage",
         "explain_terms",
         "limitations",
+        "datasets_not_used",  # D-165
         "rain_check",
         "sources",
     ],
@@ -389,6 +391,7 @@ def method(coverage: list[tuple[str, str]], keys: list[str] = EXPLAIN_KEYS) -> d
         "reports": [],
         "coverage": [{"row_key": r, "crop": T, "axis": a, "text": T, "source_ids": []} for r, a in coverage],
         "explain_terms": [{"key": k, "title": T, "text": T, "source_ids": []} for k in keys],
+        "datasets_not_used": [],
         "limitations": [],
         "rain_check": None,
         "sources": {},
@@ -401,6 +404,12 @@ def test_method_coverage_cells_are_unique_and_explain_terms_ordered() -> None:
     for bad in (method([("rice", "money"), ("rice", "money")]), method([], EXPLAIN_KEYS[::-1])):
         with pytest.raises(ValidationError):
             s.MethodResponse.model_validate(bad)
+
+
+def test_a_dataset_not_used_needs_at_least_one_source() -> None:
+    # D-165: each dataset considered and not used gives its source; H5: nothing shown without a source
+    with pytest.raises(ValidationError):
+        s.NotUsedDataset.model_validate({"dataset": "[x]", "reason": T, "source_ids": []})
 
 
 def test_source_facts_shape_round_trips() -> None:

@@ -24,6 +24,7 @@ from fieldshift.engine.schemas import (
     MetricRow,
     ModelStatus,
     MonthDay,
+    NotUsedDataset,
     PlanId,
     ReportItem,
     RiskItem,
@@ -368,12 +369,13 @@ class PrivacyTexts(Entry):
 
 
 class MethodTexts(BaseModel):
-    """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2, 3, 5)."""
+    """The parts of rules/method.yaml the method page uses (05-DATA-CONTRACTS §7b; UI-UX-SPEC §11b items 2-5)."""
 
     model_config = ConfigDict(extra="ignore")
 
     coverage: list[CoverageCell]
     explain_terms: list[ExplainTerm]
+    datasets_not_used: list[NotUsedDataset] = Field(min_length=1)
     limitations: list[Text] = Field(min_length=1)
 
 
