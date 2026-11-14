@@ -21,6 +21,7 @@ HOT_DAY_C = 35.0  # QĐ 18/2021 Art. 5.21 "vượt quá 35°c": strictly above 3
 OFFICIAL_RAIN_MM = 50.0  # Art. 5.17: rain above 50 mm in 24 h
 RET_HAI_C = 13.0  # Art. 5.18 "dưới 13oc": daily mean strictly below 13 C
 RET_DAM_C = 15.0  # TT 25/2022/TT-BTNMT Art. 3.6: daily mean strictly below 15 C
+OFFICIAL_COUNT_COLS = ("hot_days_d", "official_heavy_rain_d", "ret_hai_d", "ret_dam_d")  # basic official counts (D-95)
 
 
 def province_daily_weather(cell_frames: dict, weights: dict) -> pd.DataFrame:
@@ -64,7 +65,7 @@ def season_features(daily: pd.DataFrame, start: date, end: date) -> dict:
 def official_counts(cell_frames: dict, weights: dict, start: date, end: date) -> dict:
     """§4a counts incl. hot days (D-72): counted in each POWER cell over [start, end], then averaged with the farmland weights."""
     days = pd.date_range(start, end, freq="D")
-    out = {"hot_days_d": 0.0, "official_heavy_rain_d": 0.0, "ret_hai_d": 0.0, "ret_dam_d": 0.0}
+    out = dict.fromkeys(OFFICIAL_COUNT_COLS, 0.0)
     for cell, w in weights.items():
         win = cell_frames[cell].reindex(days)
         if win[["PRECTOTCORR", "T2M_MAX", "T2M"]].isna().any().any():

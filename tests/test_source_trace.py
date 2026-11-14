@@ -65,8 +65,9 @@ def test_ids_must_exist_in_the_registers() -> None:
 
 def test_known_ids_are_read_from_the_registers() -> None:
     refs = "| ID | Citation |\n|---|---|\n| R-N01 | NASA POWER |\n| R-A01 | QD 18 |\ntext R-Z99 in prose\n"
+    refs += "| R-P02 (P-02) | a REFERENCES id cell that carries a note |\n"
     exps = "| ID | Question |\n|---|---|\n| E-000 | variance |\n| E-000a | detail |\n"
-    assert known_ids_from(refs, exps) == {"R-N01", "R-A01", "E-000", "E-000a"}
+    assert known_ids_from(refs, exps) == {"R-N01", "R-A01", "R-P02", "E-000", "E-000a"}
 
 
 def test_this_repositorys_fixtures_trace_every_number() -> None:

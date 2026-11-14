@@ -10,7 +10,7 @@ D-37) are returned in a skipped list with a reason, never silently dropped; miss
 import pandas as pd
 import pytest
 
-from fieldshift.features.feature_table import build_cell_month_rain, build_feature_table
+from fieldshift.features.feature_table import build_cell_month_rain, build_feature_table, build_risk_level_features
 
 CELL_A, CELL_B = (19.0, 105.0), (19.0, 105.625)
 
@@ -104,3 +104,65 @@ def test_cell_month_rain_holds_each_cells_monthly_total_over_the_window():
     b = p10[(p10.lat == 19.0) & (p10.lon == 105.625)].set_index("month")
     assert b.loc["2010-02", "rain_mm"] == pytest.approx(84.0)
     assert m[(m.province_nso == "M") & (m.season == "autumn")].empty  # Mekong summer-autumn has no window (D-37)
+
+
+def test_a_shifted_window_moves_its_start_and_end_by_whole_months():
+    # Source: E-008 (03-ML-SPEC section 7, team 2026-11-14): windows one month earlier, later, or wider on both ends;
+    # P spring (north_central) is 1 Feb - 30 Jun 2010; wider: 1 Jan - 31 Jul; later: 1 Mar - 31 Jul
+    wide, _ = build_feature_table(_labels(), _weights(), _cells(), REGIONS, shift=(-1, 1))
+    row = wide[(wide.province_nso == "P") & (wide.year == 2010)].iloc[0]
+    assert (row.window_start, row.window_end) == (pd.Timestamp("2010-01-01"), pd.Timestamp("2010-07-31"))
+    later = build_cell_month_rain(_labels(), _weights(), _cells(), REGIONS, shift=(1, 1))
+    months = sorted(later[(later.province_nso == "P") & (later.year == 2010)]["month"].unique())
+    assert months == ["2010-03", "2010-04", "2010-05", "2010-06", "2010-07"]
+
+
+def test_risk_level_features_give_one_row_per_label_with_the_three_shares():
+    # Source: 03-ML-SPEC section 7 sensitivity (c) (team 2026-11-14): the farmland shares meeting the heavy-rain, heat
+    # and cold rules over each row's season window; the toy weather meets none of them (30 C, 25 C, at most 3 mm)
+    risk = build_risk_level_features(_labels(), _weights(), _cells(), REGIONS)
+    assert len(risk) == 2  # the Mekong summer-autumn row has no window (D-37)
+    assert set(risk.columns) == {"province_nso", "season", "year", "risk_heavy_rain", "risk_heat", "risk_cold"}
+    assert (risk[["risk_heavy_rain", "risk_heat", "risk_cold"]] == 0.0).all(axis=None)
+
+
+def test_risk_level_features_weight_the_cells_meeting_each_rule_with_the_province_cold_wording():
+    # Source: 03-ML-SPEC section 5a rules; Art. 53 per region (team 2026-11-14): P is north_central (plains wording,
+    # 6 days at 8-13 C meet it), Q is northern_mountains (more than 10 days needed); each cell weighs 0.5
+    cells = _cells()
+    cells[CELL_A].loc["2010-03-01":"2010-03-03", "T2M_MAX"] = 36.0  # 3-day heat spell in one band (Art. 47.1 a)
+    cells[CELL_B].loc["2010-02-10":"2010-02-15", "T2M"] = 10.0  # 6 days at 10 C (Art. 53.1 a)
+    labels = _labels().assign(province_nso=["P", "Q", "M"], series_id=["P|r|s|0", "Q|r|s|0", "M|r|a|0"])
+    risk = build_risk_level_features(
+        labels, _weights(("P", "Q", "M")), cells, {"P": "north_central", "Q": "northern_mountains", "M": "mekong"}
+    ).set_index("province_nso")
+    assert risk.loc["P", "risk_heat"] == pytest.approx(0.5)
+    assert risk.loc["P", "risk_cold"] == pytest.approx(0.5)
+    assert risk.loc["Q", "risk_cold"] == 0.0  # the mountain wording needs more than 10 days at 8-13 C
+
+
+def test_centroid_weights_give_the_one_cell_values():
+    # Source: 05-DATA-CONTRACTS section 3 (centroid robustness run: one point at the unit centroid, weight 1), E-008
+    centroid = pd.DataFrame(
+        [("P", "19.0_105.625", *CELL_B, 1.0, "centroid")],
+        columns=["province_nso", "cell_id", "lat", "lon", "farmland_weight", "method"],
+    )
+    table, _ = build_feature_table(_labels()[:1], centroid, _cells(), REGIONS)
+    row = table.iloc[0]
+    assert row.n_points == 1
+    assert row.precip_sum_mm == pytest.approx(3.0 * 150)  # cell B rain 3 mm/day x 150 days (1 Feb - 30 Jun 2010)
+    rain = build_cell_month_rain(_labels()[:1], centroid, _cells(), REGIONS)
+    assert set(rain["farmland_weight"]) == {1.0}
+
+
+def test_a_window_beyond_the_daily_data_is_skipped_with_a_reason():
+    # Source: the spec of this builder (rows that cannot be built are returned in a skipped list with a reason, never
+    # silently dropped); the toy weather ends on 31 Dec 2020, so P spring 2020 moved 7 months later (Sep 2020 - Jan
+    # 2021) is not covered, while 2010 (Sep 2010 - Jan 2011) is
+    labels = _labels().assign(year=[2010, 2020, 2010])
+    table, skipped = build_feature_table(labels, _weights(), _cells(), REGIONS, shift=(7, 7))
+    assert list(table.loc[table.province_nso == "P", "year"]) == [2010]
+    assert list(skipped.loc[skipped.province_nso == "P", "year"]) == [2020]
+    assert "not cover" in skipped.loc[skipped.province_nso == "P", "reason"].iloc[0]
+    rain = build_cell_month_rain(labels, _weights(), _cells(), REGIONS, shift=(7, 7))
+    assert 2020 not in set(rain.loc[rain.province_nso == "P", "year"])

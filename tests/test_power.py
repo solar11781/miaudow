@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import date
 
@@ -7,6 +8,7 @@ import pytest
 from fieldshift.data.power import (
     PowerRequest,
     fetch_daily,
+    load_cells,
     parameter_units,
     parse_daily,
 )
@@ -99,3 +101,25 @@ def test_live_power_request(tmp_path):
     df, payload = fetch_daily(REQ, cache_dir=tmp_path)
     assert len(df) == 3
     assert parameter_units(payload)["PRECTOTCORR"] == "mm/day"
+
+
+def test_load_cells_reads_each_cache_file_and_joins_daily_mean_t2m(tmp_path):
+    # Source: 05-DATA-CONTRACTS section 4: province weather from the cached POWER cells; T2M (daily mean, D-72) comes
+    # from its own cache and joins by cell; a T2M file without a main cell is reported, not used
+    main, t2m = tmp_path / "power", tmp_path / "power_t2m"
+    main.mkdir()
+    t2m.mkdir()
+    cell = {**SAMPLE, "geometry": {"type": "Point", "coordinates": [105.625, 19.0, 0]}}
+    (main / "power_19.0000_105.6250_19950101_19950103_a.json").write_text(json.dumps(cell), encoding="utf-8")
+    mean = {
+        "geometry": {"type": "Point", "coordinates": [105.625, 19.0, 0]},
+        "properties": {"parameter": {"T2M": {"19950101": 20.0, "19950102": 21.0, "19950103": 22.0}}},
+        "messages": [],
+    }
+    (t2m / "power_19.0000_105.6250_19950101_19950103_b.json").write_text(json.dumps(mean), encoding="utf-8")
+    other = {**mean, "geometry": {"type": "Point", "coordinates": [106.25, 20.0, 0]}}
+    (t2m / "power_20.0000_106.2500_19950101_19950103_c.json").write_text(json.dumps(other), encoding="utf-8")
+    cells, unmatched = load_cells(main, t2m, "power_*_19950101_19950103_*.json")
+    assert list(cells) == [(19.0, 105.625)]
+    assert list(cells[(19.0, 105.625)]["T2M"]) == [20.0, 21.0, 22.0]
+    assert unmatched == [(20.0, 106.25)]

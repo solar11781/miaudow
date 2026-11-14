@@ -18,6 +18,7 @@ from fieldshift.ml import evaluation as ev
 
 FoldTransform = Callable[[pd.DataFrame, pd.Index], pd.DataFrame]
 ALPHA_GRID = np.logspace(-5, 0, 13)  # D-110: Meroni et al. 2021 grid (lasso scale; ev.fit_ridge converts, D-146)
+LEFT_OUT = "left_out"  # optional column: rows never trained on or scored (E-018 run a)
 
 
 def add_precip_anom(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
@@ -158,19 +159,27 @@ def run_rolling_origin(
     """Run the outer rolling origin. df: one row per series and year with `anom` (non-null), features, series_id.
 
     fold_transform(df, train_idx) -> df adds fold-time features (e.g. add_precip_anom) from training rows only.
+    An optional boolean column `left_out` marks rows that are never trained on or scored but stay in the frame, so B2
+    still reads them as the last year (E-018 run a, team 2026-11-14).
     Returns {"predictions": DataFrame (same rows only), "metrics": dict}.
     """
     m1_cols = list(context_cols) + list(weather_cols)
     data = _checked(df, alphas, m1_cols)
+    used = ~data[LEFT_OUT].astype(bool) if LEFT_OUT in data else pd.Series(True, index=data.index)
     parts = []
     for t in test_years:
-        train_idx, test_idx = data.index[data["year"] < t], data.index[data["year"] == t]
+        train_idx, test_idx = data.index[(data["year"] < t) & used], data.index[(data["year"] == t) & used]
         if len(test_idx) == 0:
             continue
         part = _fold(data, (train_idx, test_idx), (m1_cols, list(context_cols)), alphas, fold_transform, ev.predict_b0)
         if part is not None:
             parts.append(part)
     return _summary(parts, alphas)
+
+
+def _refuse_left_out(df: pd.DataFrame, run: str) -> None:
+    if LEFT_OUT in df:
+        raise ValueError(f"{run} does not honour the {LEFT_OUT} column; only run_rolling_origin leaves rows out")
 
 
 def run_spatial_holdout(
@@ -185,6 +194,7 @@ def run_spatial_holdout(
 
     df also needs a `region` column: the block of each row. B0 is each held-out series' own earlier mean (D-146).
     """
+    _refuse_left_out(df, "run_spatial_holdout")
     m1_cols = list(context_cols) + list(weather_cols)
     data = _checked(df, alphas, m1_cols)
     block = data["region"]
@@ -219,6 +229,7 @@ def run_secondary(
     model: (fit(x, y, params) with its seed bound, the grid). Returns series_id, year, y, pred and param (grid index).
     """
     fit, grid = model
+    _refuse_left_out(df, "run_secondary")
     m1_cols = list(context_cols) + list(weather_cols)
     data = _checked(df, grid, m1_cols)
     parts = []

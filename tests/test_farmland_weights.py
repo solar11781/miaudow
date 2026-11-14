@@ -18,6 +18,7 @@ from shapely.geometry import box
 from fieldshift.data.boundaries import province_geometries
 from fieldshift.features.farmland_weights import (
     build_cell_weights,
+    centroid_weights,
     farmland_fraction,
     fixed_farmland_mask,
     power_cell_centre,
@@ -217,3 +218,19 @@ def test_zero_weight_cells_are_listed():
         "cell": 0.05,
     }
     assert zero_weight_cells(prov, mask) == [(19.0, 105.625)]
+
+
+def test_centroid_weights_give_each_province_the_power_cell_of_its_centre():
+    # Source: E-008 (03-ML-SPEC section 7): "centroid vs farmland-weighted cells"; a 1 x 1 degree box centred on
+    # 19.0 N 105.0 E lies in the POWER cell centred there (0.5 x 0.625 degree grid)
+    table = centroid_weights({"P": box(104.5, 18.5, 105.5, 19.5)})
+    assert table.to_dict("records") == [
+        {
+            "province_nso": "P",
+            "cell_id": "19.0_105.0",
+            "lat": 19.0,
+            "lon": 105.0,
+            "farmland_weight": 1.0,
+            "method": "centroid",
+        }
+    ]
