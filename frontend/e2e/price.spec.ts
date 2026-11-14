@@ -109,3 +109,15 @@ test('T6 T7 T8 the open form: 44 px targets, 17 px text and no WCAG 2.2 AA viola
     .analyze();
   expect(result.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
 });
+
+// review of PR #66: the router applies a URL change in a React transition, so on a slow phone the second entry was
+// built from a URL that still lacked the first and dropped it; both entries must stay
+test('T31 two quick entries on a slow phone both stay in the fragment and the result', async ({ page }) => {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 6 });
+  await page.goto(PLANS_URL);
+  const card = await typeNumbers(page);
+  await expect(card.getByTestId('card-cc1-own')).toContainText('97.917 nghìn đồng/ha');
+  await expect(page).toHaveURL(new RegExp(`yp[.]cc1_spring_peanut=${PRICE}`));
+  await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
+});

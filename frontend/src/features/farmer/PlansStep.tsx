@@ -30,17 +30,19 @@ function Cards({ res }: { res: CompareResponse }) {
   const { state, update } = useFarmer();
   const [focused, setFocused] = useState(state.plan);
   const [explain] = useApi(explainOn, 'explain-on'); // asked once per screen; hidden unless the server says on
-  const cropKeys = res.plans.flatMap((p) => p.money.items.map((i) => i.crop_key));
-  const known = ownOf(state.own, cropKeys);
-  const own: OwnState = {
-    values: known,
-    set: (field, crop, digits) => update({ own: setOwn(known, field, crop, digits) }),
-  };
-
-  // UI-UX-SPEC section 6b rule 2: price and cost keys of crops this response does not have are dropped
+  // the numbers are held here and the fragment follows them: the router applies a URL change in a React transition, so
+  // a second quick entry built from the URL could still miss the first (review of PR #66). Section 6b rule 2: keys of
+  // crops this response does not have are dropped.
+  const [values, setValues] = useState(() =>
+    ownOf(
+      state.own,
+      res.plans.flatMap((p) => p.money.items.map((i) => i.crop_key)),
+    ),
+  );
+  const own: OwnState = { values, set: (field, crop, digits) => setValues((v) => setOwn(v, field, crop, digits)) };
   useEffect(() => {
-    if (JSON.stringify(known) !== JSON.stringify(state.own)) update({ own: known });
-  }, [known, state.own, update]);
+    if (JSON.stringify(values) !== JSON.stringify(state.own)) update({ own: values });
+  }, [values, state.own, update]);
 
   useEffect(() => {
     if (!state.plan) return;
