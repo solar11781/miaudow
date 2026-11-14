@@ -586,9 +586,6 @@ export const vi = {
       'Miaudow không chọn cách trồng thay bạn. Bằng chứng chỉ có một năm, một ô cho mỗi cây, nên không đủ để xếp hạng. Đây là điều mỗi cách trồng cho thấy:',
     evidenceFrom: 'Bằng chứng',
     matchScore: 'độ khớp',
-    llmStatus: 'Mô hình ngôn ngữ: chưa kết nối',
-    llmHelp:
-      'Khi nối một mô hình ngôn ngữ ở máy chủ (không đặt khóa API trong trình duyệt), nó chỉ được diễn đạt lại các đoạn bằng chứng này.',
     you: 'Bạn',
     bot: 'Trợ lý',
     clear: 'Xóa cuộc trò chuyện',
@@ -694,7 +691,7 @@ export const vi = {
     serverOn: 'Máy chủ trợ lý đang chạy',
     serverOff: 'Đang dùng chế độ ngoại tuyến',
     claudeOn:
-      'Claude đã kết nối ở máy chủ: nó điều phối công cụ và diễn đạt câu trả lời, nhưng không được thêm số mới.',
+      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời.',
     claudeOff:
       'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu cố định, không dùng mô hình ngôn ngữ.',
     browserHelp:
