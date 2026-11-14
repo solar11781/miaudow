@@ -44,6 +44,8 @@ MOUNTAIN_COLD_BANDS = (
 COLD_MOUNTAIN_REGIONS = {"northern_mountains"}
 COLD_PLAINS_REGIONS = {"red_river_delta", "north_central"}  # north_central = Thanh Hoa .. Thua Thien-Hue (D-38)
 COLD_PLAINS_CENTRAL_COAST = {"Da Nang", "Quang Nam", "Quang Ngai"}  # Phụ lục II "Khu vực Trung Trung Bộ"
+COLD_NONE_REGIONS = {"highlands_southeast", "mekong"}  # Tây Nguyên and Nam Bộ: Art. 53 names no rule
+COLD_NONE_CENTRAL_COAST = {"Binh Dinh", "Phu Yen", "Khanh Hoa", "Ninh Thuan", "Binh Thuan"}  # "Khu vực Nam Trung Bộ"
 
 
 def longest_run(mask: np.ndarray | pd.Series) -> int:
@@ -89,9 +91,12 @@ def cold_rule_of(province: str, calendar_region: str) -> Callable[[pd.Series], b
     """The Art. 53 cold wording of a province's region: plains, mountains, or None where Art. 53 names no rule."""
     if calendar_region in COLD_MOUNTAIN_REGIONS:
         return cold_mountains
-    if calendar_region in COLD_PLAINS_REGIONS or province in COLD_PLAINS_CENTRAL_COAST:
+    central = calendar_region == "central_coast"
+    if calendar_region in COLD_PLAINS_REGIONS or (central and province in COLD_PLAINS_CENTRAL_COAST):
         return cold
-    return None
+    if calendar_region in COLD_NONE_REGIONS or (central and province in COLD_NONE_CENTRAL_COAST):
+        return None
+    raise ValueError(f"no Art. 53 region known for province {province!r} in calendar region {calendar_region!r}")
 
 
 def monthly_climatology(rain: pd.Series) -> pd.Series:
