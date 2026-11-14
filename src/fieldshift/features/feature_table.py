@@ -21,6 +21,11 @@ RICE_SEASONS = ("spring", "autumn", "winter")
 WEIGHT_METHODS = ("farmland_weighted", "centroid")  # D-106 fixed mask; E-008 centroid cells (one table per run)
 
 
+def _covers(frame: pd.DataFrame, start: date, end: date) -> bool:
+    """True when the daily frame holds every day of [start, end] at its ends (a shifted window can pass the data)."""
+    return frame.index.min() <= pd.Timestamp(start) and frame.index.max() >= pd.Timestamp(end)
+
+
 def _window(season: str, region: str, year: int, shift: tuple[int, int]) -> tuple[date, date]:
     """The NSO season window, its start and end moved by whole months (E-008 robustness; (0, 0) = the window)."""
     start, end = season_window(season, region, year)
@@ -61,6 +66,10 @@ def build_feature_table(
                 {"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, "reason": str(err)}
             )
             continue
+        if not _covers(daily(rec.province_nso), start, end):
+            reason = f"the daily weather data do not cover the window {start}..{end}"
+            skipped.append({"province_nso": rec.province_nso, "season": rec.season, "year": rec.year, "reason": reason})
+            continue
         feats = season_features(daily(rec.province_nso), start, end)
         feats.update(official_counts(cell_frames, cell_weights(rec.province_nso), start, end))
         feats["n_points"] = len(cell_weights(rec.province_nso))  # 05 §4: cells aggregated
@@ -93,9 +102,12 @@ def build_cell_month_rain(
             start, end = _window(rec.season, regions[rec.province_nso], rec.year, shift)
         except ValueError:  # no window for this pair: the feature table lists it as skipped with its reason
             continue
-        for la, lo, wt in w.loc[w["province_nso"] == rec.province_nso, ["lat", "lon", "farmland_weight"]].itertuples(
-            index=False
+        cells = w.loc[w["province_nso"] == rec.province_nso, ["lat", "lon", "farmland_weight"]]
+        if not all(
+            _covers(cell_frames[(la, lo)], start, end) for la, lo in zip(cells["lat"], cells["lon"], strict=True)
         ):
+            continue  # listed as skipped with its reason by build_feature_table
+        for la, lo, wt in cells.itertuples(index=False):
             rain = cell_frames[(la, lo)]["PRECTOTCORR"].loc[pd.Timestamp(start) : pd.Timestamp(end)]
             for month, total in rain.groupby(rain.index.strftime("%Y-%m")).sum().items():
                 rows.append((rec.province_nso, rec.season, rec.year, la, lo, wt, month, float(total)))
