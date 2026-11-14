@@ -2,7 +2,44 @@ import type { Land } from '../../domain/farmerState';
 
 /** Small hand-made scenes for the land choice: pictures plus words, never pictures alone. */
 export function LandArt({ land }: { land: Land }) {
-  if (land === 'dry') {
+  if (land === 'high_field') {
+    return (
+      <svg viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+        <rect width="120" height="90" rx="14" fill="#f3ead2" />
+        <circle cx="98" cy="20" r="9" fill="#e9bc57" />
+        <path d="M0 76h120v14H0Z" fill="#7fb0c8" />
+        <path d="M0 74c18-2 30-14 46-20s34-8 50-20 24-10 24-10v50H0Z" fill="#c9a06a" />
+        <path d="M30 60h34l12-10h28" stroke="#9c7746" strokeWidth="1.6" fill="none" />
+        <path d="M18 70c4-6 6-10 6-14M52 56c3-5 4-9 4-12M86 42c3-5 4-8 4-11" stroke="#8a9a3a" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <path d="M8 84V64l6-4" stroke="#3e6b8a" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+        <path d="M14 60l8-6" stroke="#3e6b8a" strokeWidth="2.2" strokeDasharray="3 3" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (land === 'canal_end') {
+    return (
+      <svg viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+        <rect width="120" height="90" rx="14" fill="#eef0e2" />
+        <path d="M0 36h120v54H0Z" fill="#a9c97a" />
+        <path d="M0 52h30c14 0 26 1 40 2s28 2 50 2" stroke="#4f8db0" strokeWidth="12" fill="none" strokeLinecap="round" />
+        <path d="M0 52h30c14 0 26 1 40 2" stroke="#7fb0c8" strokeWidth="8" fill="none" />
+        <path d="M70 54c14 1 28 2 50 2" stroke="#c9a06a" strokeWidth="6" fill="none" strokeLinecap="round" />
+        <path d="M84 62l5 4-2 5M96 64l7-2 3 4M108 61l-3 6" stroke="#7d5a2c" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        {[10, 26, 42].map((x) => (
+          <g key={x} stroke="#2f5d22" strokeWidth="2" strokeLinecap="round" fill="none">
+            <path d={`M${x} 82c0-6 1-10 3-13`} /><path d={`M${x} 82c-1-5-3-8-6-9`} />
+          </g>
+        ))}
+        {[80, 98].map((x) => (
+          <g key={x} stroke="#9a8a3a" strokeWidth="2" strokeLinecap="round" fill="none">
+            <path d={`M${x} 84c0-4 1-7 2-9`} /><path d={`M${x} 84c-1-3-2-5-4-6`} />
+          </g>
+        ))}
+        <path d="M60 20l6 6-6 6" stroke="#3e6b8a" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (land === 'water_short') {
     return (
       <svg viewBox="0 0 120 90" aria-hidden="true" focusable="false">
         <rect width="120" height="90" rx="14" fill="#f6e6bf" />
@@ -15,7 +52,7 @@ export function LandArt({ land }: { land: Land }) {
       </svg>
     );
   }
-  if (land === 'wet') {
+  if (land === 'reliable') {
     return (
       <svg viewBox="0 0 120 90" aria-hidden="true" focusable="false">
         <rect width="120" height="90" rx="14" fill="#dceee4" />

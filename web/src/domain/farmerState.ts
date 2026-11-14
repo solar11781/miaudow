@@ -1,7 +1,8 @@
 import { YEARS } from '../data';
 import type { PlanId } from './plans';
 
-export type Land = 'dry' | 'wet' | 'ask';
+/** The farmer's water situation, the same ids the API's decision core uses; 'ask' = not sure. */
+export type Land = 'high_field' | 'canal_end' | 'water_short' | 'reliable' | 'ask';
 export type Priority = 'income' | 'stability' | 'water' | 'land';
 
 export interface FarmerState {
@@ -11,7 +12,9 @@ export interface FarmerState {
   plan: PlanId | null;
 }
 
-const LANDS: Land[] = ['dry', 'wet', 'ask'];
+export const LANDS: Land[] = ['high_field', 'canal_end', 'water_short', 'reliable', 'ask'];
+/** Links shared before the four water situations existed keep working. */
+const LEGACY_LAND: Record<string, Land> = { dry: 'water_short', wet: 'reliable' };
 const PRIORITIES: Priority[] = ['income', 'stability', 'water', 'land'];
 const PLAN_IDS: PlanId[] = ['cc5', 'p03', 'cc1', 'cc2', 'cc3', 'cc4'];
 const MAX_YEARS = 10;
@@ -28,7 +31,7 @@ export function parseFarmerState(params: URLSearchParams): FarmerState {
     ? DEFAULT_YEARS
     : [...new Set(rawYears.split(',').map(Number).filter((y) => YEARS.includes(y)))].sort((a, b) => a - b).slice(0, MAX_YEARS);
   return {
-    land: pick(LANDS, params.get('ruong')),
+    land: pick(LANDS, params.get('ruong')) ?? LEGACY_LAND[params.get('ruong') ?? ''] ?? null,
     years,
     priority: pick(PRIORITIES, params.get('uutien')),
     plan: pick(PLAN_IDS, params.get('the')),

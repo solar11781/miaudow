@@ -56,7 +56,7 @@ export function PlansStep() {
         </div>
         {state.priority && <p className={s.prioNow}><span className={s.prioSwatch} />{t.farmer.yourPriority}: <strong>{t.farmer.prios[state.priority].title}</strong></p>}
       </div>
-      {state.land === 'wet' && <p className={s.note}><Icon name="alert" size={20} />{t.farmer.wetNote}</p>}
+      {state.land === 'reliable' && <p className={s.note}><Icon name="alert" size={20} />{t.farmer.wetNote}</p>}
 
       <nav className={s.jump} aria-label={t.farmer.jumpTo}>
         {PLANS.map((p) => (

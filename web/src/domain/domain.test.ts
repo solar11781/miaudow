@@ -100,7 +100,7 @@ describe('farmer state in the URL', () => {
   it('round-trips and drops unknown values', () => {
     const p = new URLSearchParams('ruong=dry&nam=2020,2010,1800,2010&uutien=water&the=cc3');
     const s = parseFarmerState(p);
-    expect(s).toEqual({ land: 'dry', years: [2010, 2020], priority: 'water', plan: 'cc3' });
+    expect(s).toEqual({ land: 'water_short', years: [2010, 2020], priority: 'water', plan: 'cc3' });
     expect(parseFarmerState(serializeFarmerState(s))).toEqual(s);
     expect(parseFarmerState(new URLSearchParams('ruong=lake&uutien=gold&the=cc9')).land).toBeNull();
   });

@@ -2,11 +2,10 @@ import { StepShell, useFarmer } from './FarmerLayout';
 import { LandArt } from './LandArt';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import type { Land } from '../../domain/farmerState';
+import { LANDS } from '../../domain/farmerState';
 import { useT } from '../../app/settings';
 import s from './farmer.module.css';
 
-const LANDS: Land[] = ['dry', 'wet', 'ask'];
 
 export function LandStep() {
   const t = useT();
@@ -39,7 +38,8 @@ export function LandStep() {
           );
         })}
       </div>
-      {state.land === 'wet' && <p className={s.note} role="status"><Icon name="alert" size={20} />{t.farmer.wetNote}</p>}
+      {state.land === 'reliable' && <p className={s.note} role="status"><Icon name="alert" size={20} />{t.farmer.wetNote}</p>}
+      {(state.land === 'high_field' || state.land === 'canal_end' || state.land === 'water_short') && <p className={s.note} role="status"><Icon name="canal" size={20} />{t.farmer.dryNote}</p>}
       {state.land === 'ask' && <p className={s.note} role="status"><Icon name="user" size={20} />{t.farmer.askNote}</p>}
     </StepShell>
   );
