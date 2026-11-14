@@ -372,7 +372,7 @@ export const en: Messages = {
     yourNumbers: 'Work it out with your price and costs',
     yourNumbersLabel: "The trial's yield with your prices and costs, not your field's harvest.",
     own: {
-      help: 'Type your sale price and your costs for each crop, per hectare. Leave a box empty if you do not know it.',
+      help: 'Type your sale price per kg and your costs per hectare for each crop. Leave a box empty if you do not know it.',
       study: 'In the trial',
       yield: 'yield',
       price: 'sale price',

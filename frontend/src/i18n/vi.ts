@@ -365,7 +365,7 @@ export const vi = {
     yourNumbers: 'Tính với giá bán và chi phí của bạn',
     yourNumbersLabel: 'Năng suất của thử nghiệm với giá bán và chi phí của bạn, không phải sản lượng ruộng nhà bạn.',
     own: {
-      help: 'Nhập giá bán và chi phí của nhà bạn cho từng cây, tính trên 1 ha. Ô nào chưa biết thì để trống.',
+      help: 'Nhập giá bán (theo kg) và chi phí tính trên 1 ha của nhà bạn cho từng cây. Ô nào chưa biết thì để trống.',
       study: 'Trong thử nghiệm',
       yield: 'năng suất',
       price: 'giá bán',
