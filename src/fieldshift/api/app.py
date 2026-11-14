@@ -1,7 +1,7 @@
 """FastAPI backend skeleton (D-25, D-76, D-80; UI-UX-SPEC §11). Reads precomputed artifacts only (NFR-01).
 
-Before the event this serves only /api/health over placeholder artifacts; the product endpoints (past-years, compare,
-method) are written during the event. The same service serves the built frontend (frontend/dist) and returns
+It serves /api/health over the artifacts present; the product endpoints (past-years, compare, method) come with queue
+item 20. The same service serves the built frontend (frontend/dist) and returns
 index.html for every frontend route, so browser history routing and deep links work (D-102).
 Run: uvicorn fieldshift.api.app:app --no-access-log (D-92: no request log).
 """
