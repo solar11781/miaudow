@@ -22,6 +22,8 @@ export interface OwnNumbers {
 export const NO_OWN: OwnNumbers = { prices: {}, costs: {} };
 // fragment keys yp.<crop key> and yc.<crop key> (research/price-entry-notes.md section 5, D-163)
 const OWN_KEY = /^y([pc])\.([a-z0-9_]+)$/;
+/** A fragment key of the farmer's own price or cost. */
+export const isOwnKey = (key: string) => OWN_KEY.test(key);
 
 export const LANDS: Land[] = ['high_field', 'canal_end', 'water_short', 'reliable', 'ask'];
 /** Links shared before the four water situations existed keep working. */

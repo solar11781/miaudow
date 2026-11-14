@@ -252,6 +252,19 @@ describe('save these answers', () => {
     );
   });
 
+  // privacy review of PR #66: Google's script runs on the sign-in page and can read the address, and the save never
+  // includes the typed price and costs (D-163), so the way back leaves the yp. and yc. keys out
+  it('leaves the typed price and costs out of the way back', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
+    show(
+      '/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&yp.cc1_spring_peanut=31357&yc.cc1_spring_peanut=9',
+    );
+    const link = await screen.findByRole('link', { name: t.saveSignIn });
+    expect(link.getAttribute('href')).toBe(
+      `/dang-nhap?ve=${encodeURIComponent('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1')}`,
+    );
+  });
+
   it('saves at once on the way back from signing in, then drops the pending mark', async () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     const save = vi

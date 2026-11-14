@@ -5,6 +5,7 @@ import { Button, ButtonLink } from '../../design-system/Button';
 import { useT } from '../../app/settings';
 import { useLocalTo } from '../../app/paths';
 import { signInLink, useAccount, useSignInAvailable } from './AccountProvider';
+import { isOwnKey } from '../../domain/farmerState';
 import s from './account.module.css';
 
 type Status = 'idle' | 'saving' | 'saved' | 'full' | 'expired' | 'unavailable' | 'failed';
@@ -54,6 +55,8 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
 
   const again = new URLSearchParams(search);
   again.set(PENDING, '1');
+  // Google's script runs on the sign-in page and the save never includes the typed price and costs (D-163)
+  for (const key of [...again.keys()]) if (isOwnKey(key)) again.delete(key);
   const message = {
     idle: null,
     saving: t.account.saving,
