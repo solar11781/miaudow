@@ -35,8 +35,7 @@ table = risk_table(
         "climate": _sha("data/processed/training_table.csv"),
     },
 )
-Path("artifacts/risk_table.json").write_text(
-    json.dumps(table, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n"
-)
+# compact: the health endpoint parses every artifact on each request
+Path("artifacts/risk_table.json").write_text(json.dumps(table, ensure_ascii=False), encoding="utf-8", newline="\n")
 print("rows:", len(table["rows"]), "| seasons:", table["seasons"])
 print("rows with a prediction:", sum(r["anom_oos"] is not None for r in table["rows"]))
