@@ -73,6 +73,7 @@ def g1_rows(model_rows: pd.DataFrame) -> list[dict]:
 
 # ---------- artifact records (05-DATA-CONTRACTS section 5b; UI-UX-SPEC section 11) ----------
 EXPERIMENT = "E-012"
+SCHEMA_VERSION = "0.4"  # 05-DATA-CONTRACTS section 5 example (all artifacts)
 APP_SEASONS = {"spring": "spring", "autumn": "summer_autumn", "winter": "winter"}  # NSO name -> UI-UX SeasonCode
 MODELS = {"b0": "b0", "b2": "b2", "bnw": "bnw", "m1": "m1_ridge"}  # prediction column -> ModelId
 

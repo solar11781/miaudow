@@ -2,8 +2,8 @@
 
 Usage: PYTHONPATH=src python scripts/run_primary_test.py
 Reads data/processed/training_table.csv and cell_month_rain.csv; writes artifacts/metrics.json and artifacts/gates.json
-(05-DATA-CONTRACTS section 5b). Runs after the freeze commit only (D-83). Gate and report texts are drafts for the copy
-review (vi and en).
+(05-DATA-CONTRACTS section 5b) and data/processed/e012_predictions.csv for the risk table. Runs after the freeze
+commit only (D-83). Gate and report texts are drafts for the copy review (vi and en).
 """
 
 import json
@@ -18,6 +18,7 @@ from fieldshift.ml.fold_features import DROUGHT_COLS, FOLD_RAIN, make_fold_trans
 from fieldshift.ml.normal import CHOSEN_METHOD, add_anomaly, compare_normal_methods
 from fieldshift.ml.primary_test import (
     EXPERIMENT,
+    SCHEMA_VERSION,
     app_season,
     bilingual,
     find_row,
@@ -32,7 +33,6 @@ from fieldshift.ml.primary_test import (
 from fieldshift.ml.runner import ALPHA_GRID, run_rolling_origin, run_spatial_holdout
 
 FREEZE_COMMIT = "ea7a60c21d1867c4096fc3b3c4822b4127b53839"  # E-010: features and cleaning frozen before this run
-SCHEMA_VERSION = "0.4"  # 05-DATA-CONTRACTS section 5 example
 SEED = 0  # fixed seed of the year bootstrap (python rules: randomness only with a fixed seed)
 PILOT = ("Nghe An", "Ha Tinh", "Thanh Hoa")  # G3 subset and the per-province pilot report (D-48)
 STORED = [  # 03-ML-SPEC section 4 feature list, as stored in the training table (05-DATA-CONTRACTS section 4)
@@ -81,6 +81,8 @@ def _labelled(predictions: pd.DataFrame) -> pd.DataFrame:
 
 
 pred, spatial_pred = _labelled(run["predictions"]), _labelled(spatial["predictions"])
+# rolling-origin predictions for the risk table export (gitignored, rebuilt by this run)
+pred.to_csv("data/processed/e012_predictions.csv", index=False)
 
 metrics = metric_records(pred, spatial_pred, pilot=PILOT, seed=SEED)
 gates, claims = [], []

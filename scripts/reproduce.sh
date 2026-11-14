@@ -27,6 +27,7 @@ python scripts/download_power.py t2m
 python scripts/build_training_table.py
 python scripts/choose_normal.py   # E-010: the normal-yield method, before the freeze commit
 python scripts/run_primary_test.py   # E-012: references and M1, writes artifacts/metrics.json and gates.json
+python scripts/export_risk_table.py   # artifacts/risk_table.json for the app (05-DATA-CONTRACTS section 5)
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
 #     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.
