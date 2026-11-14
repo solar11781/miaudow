@@ -340,7 +340,7 @@ def test_no_google_token_is_401_without_echo_on_every_route(on: str, fetched: li
     [
         lambda keys: google_token(keys, aud="someone-else.apps.googleusercontent.com"),  # audience = our client id
         lambda keys: google_token(keys, iss="https://zz-secret.example.com"),  # issuer = Google
-        lambda keys: google_token(keys, exp=int(time.time()) - 60),  # expired
+        lambda keys: google_token(keys, exp=int(time.time()) - 400),  # expired past the 300 s clock skew allowance
         lambda keys: google_token(keys, kid="stranger"),  # not signed by Google's key
         lambda keys: google_token(keys, sub=""),  # no account id
     ],
@@ -353,6 +353,26 @@ def test_a_token_google_did_not_issue_to_us_is_401_on_every_route(
     for method, path in ROUTES:
         no_echo(getattr(c, method)(path, headers=bearer(token(keys))), 401)
     assert rows(on, "SELECT count(*) FROM account") == [(1,)]
+
+
+# D-165: 300 s, the clock skew default of Google's Node (CLOCK_SKEW_SECS_, oauth2client.ts) and Java
+# (DEFAULT_TIME_SKEW_SECONDS, IdTokenVerifier.java) ID-token verifiers; RFC 7519 4.1.4: "no more than a few minutes"
+@pytest.mark.parametrize(
+    ("iat_from_now", "exp_from_now", "status"),
+    [
+        (200, 3800, 204),  # issued 200 s in the future: within the allowance
+        (400, 4000, 401),  # issued 400 s in the future: past it
+        (-3800, -200, 204),  # expired 200 s ago: within the allowance
+        (-4000, -400, 401),  # expired 400 s ago: past it
+    ],
+)
+def test_a_token_is_accepted_within_300_s_of_clock_skew(
+    on: str, keys: dict, fetched: list, iat_from_now: int, exp_from_now: int, status: int
+) -> None:
+    now = int(time.time())
+    token = google_token(keys, iat=now + iat_from_now, exp=now + exp_from_now)
+    r = TestClient(create_app(root=REPO)).post("/api/account/sign-in", headers=bearer(token))
+    assert r.status_code == status, r.text
 
 
 def test_a_valid_token_without_a_sign_in_is_401(on: str, keys: dict, fetched: list) -> None:
