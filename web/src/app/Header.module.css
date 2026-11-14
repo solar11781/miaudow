@@ -22,7 +22,7 @@
 .switch[aria-checked='true'] { color: var(--fg); border-color: var(--c-gold-500); }
 .switch[aria-checked='true'] .track { background: var(--c-gold-500); }
 .switch[aria-checked='true'] .thumb { transform: translateX(16px); background: var(--on-accent); }
-.switch span:last-child { white-space: nowrap; }
+.switch > span:last-child { white-space: nowrap; }
 .tag { font-size: var(--t-micro); color: var(--fg-3); margin-top: 3px; white-space: nowrap; }
 .nav { display: none; gap: .25rem; }
 .link {
@@ -83,5 +83,11 @@
 .brand { flex-shrink: 0; }
 @media (max-width: 480px) {
   .switch { padding-inline: .55rem; }
-  .switch span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .switch > span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+/* very narrow phones: the icon alone carries the brand, the controls tighten */
+@media (max-width: 374px) {
+  .word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .settingsFarmer { gap: 4px; }
+  .chip { padding: 0 .5rem; }
 }

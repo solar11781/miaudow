@@ -121,7 +121,7 @@ geoBoundaries (gbOpen; ADM2 under CC BY 3.0 IGO, source OCHA ROAP), NASA GIBS im
 imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and
 Information System (ESDIS)"), NASA Eyes (opened, not copied), CesiumJS (Apache-2.0), Cục Thống kê (NSO Vietnam),
 Vietnamese legal texts (not subject to copyright, Luật SHTT Điều 15). Photographs: see `assets/photos/PHOTO_MANIFEST.json`
-and the footer of the app. Fonts: Alegreya, Be Vietnam Pro and Dancing Script (OFL-1.1). Logo: designed by member B
+and the footer of the app. Fonts: Alegreya, Be Vietnam Pro and Charm (OFL-1.1). Folk verse: ca dao xứ Nghệ (public domain). Logo: designed by member B
 (`assets/brand/`). Field-condition pictures: AI-generated illustrations made for MIAUDOW (`assets/field-conditions/`). Motion: GSAP 3.15.0 and @gsap/react
 2.1.2 (GSAP Standard no-charge licence, not OSI). Design references read, no code copied: cinematic-ui by
 akseolabs-seo (MIT, commit 37651d0), GSAP skills by GreenSock (MIT, commit aed9cfd), Impeccable by Paul Bakaus

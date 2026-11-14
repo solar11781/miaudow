@@ -17,7 +17,6 @@
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 0%, transparent), var(--bg) 35%);
 }
 .disabledLink { background: var(--bg-sunk) !important; color: var(--fg-3) !important; box-shadow: none !important; border: 1px solid var(--line-2) !important; cursor: not-allowed; }
-.disabledLink span[class] { background: var(--line-2) !important; color: var(--fg-3) !important; }
 .note { display: flex; gap: .7rem; align-items: flex-start; padding: var(--s-4); border-radius: var(--r-md); background: var(--hl-bg); color: var(--hl-fg); font-size: var(--t-small); line-height: 1.5; }
 .note svg { flex: none; margin-top: 2px; }
 .support { display: flex; gap: .7rem; align-items: flex-start; color: var(--fg-2); font-size: var(--t-small); padding: var(--s-4); border-radius: var(--r-md); background: var(--bg-tint); }
@@ -121,7 +120,7 @@
 .landCard {
   position: relative; display: flex; flex-direction: column; text-align: left; padding: 0; overflow: hidden;
   border-radius: var(--r-xl); border: 1px solid var(--line-2); background: var(--bg-raised); color: var(--fg);
-  transition: border-color var(--d-med) var(--ease-out), transform var(--d-med) var(--ease-out), box-shadow var(--d-med) var(--ease-out);
+  transition: border-color var(--d-med) var(--ease-out), box-shadow var(--d-med) var(--ease-out);
 }
 .landCard:hover { border-color: var(--fg-3); }
 .landCard:active { transform: scale(.985); }
@@ -137,7 +136,7 @@
 .landText { display: flex; flex-direction: column; gap: .35rem; padding: var(--s-4) var(--s-5) var(--s-5); }
 .landTitle { font: 750 1.5rem/1.2 var(--font-display); }
 .landBody { color: var(--fg-2); font-size: var(--t-small); line-height: 1.5; }
-.artNote { color: var(--fg-3); font-size: var(--t-small); }
+.artNote { color: var(--fg-3); font-size: var(--t-small); margin-top: var(--s-2); }
 @media (prefers-reduced-motion: reduce) { .landArt img, .landCard { transition: none; } }
 
 /* start: what this part does and does not do */
@@ -169,3 +168,17 @@
 /* the tick lands when a field is chosen */
 @keyframes tickIn { from { transform: scale(.3) rotate(-25deg); opacity: 0; } }
 .landCard.on .landTick svg { animation: tickIn 420ms var(--ease-out); }
+
+/* five choices, no gap left: three across then two wider ones on desktop; two across with the last one full on tablets */
+@media (min-width: 600px) and (max-width: 899.98px) {
+  .landGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .landCard:last-child { grid-column: 1 / -1; flex-direction: row; }
+  .landCard:last-child .landArt { flex: 0 0 48%; aspect-ratio: 4 / 3; }
+  .landCard:last-child .landText { justify-content: center; }
+}
+@media (min-width: 900px) {
+  .landGrid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .landCard { grid-column: span 2; }
+  .landCard:nth-child(n + 4) { grid-column: span 3; }
+  .landCard:nth-child(n + 4) .landArt { aspect-ratio: 16 / 9; }
+}

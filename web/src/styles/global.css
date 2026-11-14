@@ -1,5 +1,6 @@
 @import '@fontsource-variable/alegreya/wght.css';
-@import '@fontsource-variable/dancing-script/wght.css';
+@import '@fontsource/charm/vietnamese-700.css';
+@import '@fontsource/charm/latin-700.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-400.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-500.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-600.css';
@@ -39,8 +40,8 @@ a { color: inherit; text-underline-offset: .22em; text-decoration-thickness: 1px
 ::selection { background: var(--c-gold-300); color: var(--c-ink-900); }
 html { scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transparent; scrollbar-width: thin; }
 
-/* typography: Alegreya for what is read at a distance, Be Vietnam Pro for what is read up close, Dancing Script for
-   one hand-lettered accent */
+/* typography: Alegreya for what is read at a distance, Be Vietnam Pro for what is read up close, Charm brush lettering
+   for one accent phrase per heading (the words after the first comma, see design-system/Accent.tsx) */
 .display {
   font-family: var(--font-display);
   font-weight: var(--w-display);
@@ -50,10 +51,11 @@ html { scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transpare
 }
 .display em { font-family: var(--font-script); font-style: normal; font-weight: 700; color: var(--accent-ink); letter-spacing: 0; }
 .script { font-family: var(--font-script); font-weight: 700; letter-spacing: 0; }
+.h1 em, .h2 em { font-family: var(--font-script); font-style: normal; font-weight: 700; color: var(--accent-ink); letter-spacing: 0; font-size: 1.02em; }
 .h1 { font: var(--w-display) var(--t-h1) / var(--lh-head) var(--font-display); letter-spacing: -.012em; text-wrap: balance; }
 .h2 { font: var(--w-head) var(--t-h2) / 1.1 var(--font-display); letter-spacing: -.008em; text-wrap: balance; }
 .h3 { font: var(--w-head) var(--t-h3) / 1.2 var(--font-display); letter-spacing: 0; text-wrap: balance; }
-.lead { font-size: var(--t-lead); line-height: 1.5; color: var(--fg-2); max-width: var(--reading); text-wrap: pretty; }
+.lead { font-size: var(--t-lead); line-height: 1.5; font-weight: 500; color: var(--fg-2); max-width: var(--reading); text-wrap: pretty; }
 p { text-wrap: pretty; }
 /* A plain line of context; never a tracked kicker with a rule in front. */
 .eyebrow { display: block; font: 500 var(--t-small) / 1.4 var(--font-ui); color: var(--fg-3); }

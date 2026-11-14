@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { Brocade } from '../../design-system/Brocade';
+import { Accent } from '../../design-system/Accent';
 import { SatelliteScan } from '../cinema/SatelliteScan';
 import { usePageReveals } from '../../motion/cinema';
 import { Link, useLocation } from 'react-router-dom';
@@ -7,7 +9,7 @@ import { ART } from '../../data/art';
 import { RULES } from '../../domain/hazards';
 import { PLANS } from '../../domain/plans';
 import { ButtonLink } from '../../design-system/Button';
-import { Icon } from '../../design-system/Icon';
+import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
 import { EASE, gsap, riseLines, useCinema } from '../../motion/cinema';
 import { YearBars } from '../charts/YearBars';
@@ -37,8 +39,10 @@ function Hero() {
 
   useCinema(root, () => {
     const title = root.current?.querySelector('[data-rise]');
-    if (title) riseLines(title, 0.2);
-    gsap.from('[data-hero-stage]', { scale: 1.14, duration: 2.6, ease: EASE.heavy });
+    if (title) riseLines(title, 0.45);
+    gsap.from('[data-letterbox]', { scaleY: 1, duration: 1.7, ease: EASE.calm, delay: 0.15 });
+    gsap.from('[data-hero-stage]', { scale: 1.16, duration: 2.8, ease: EASE.heavy });
+    gsap.to('[data-hero-stage]', { yPercent: 14, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } });
     gsap.from('[data-hero-after]', { autoAlpha: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
   }, [t.home.titleA]);
 
@@ -52,6 +56,8 @@ function Hero() {
         ))}
       </div>
       <div className={s.heroScrim} aria-hidden="true" />
+      <span className={`${s.letterbox} ${s.letterTop}`} data-letterbox aria-hidden="true" />
+      <span className={`${s.letterbox} ${s.letterBottom}`} data-letterbox aria-hidden="true" />
       <div className={`container ${s.heroInner}`}>
         <h1 key={t.home.titleA} id="hero-title" className={`display ${s.heroTitle}`} data-rise>
           {t.home.titleA}<br /><em>{t.home.titleB}</em>
@@ -120,9 +126,41 @@ function Problem() {
   );
 }
 
+/** The folk verse of xứ Nghệ, in brush lettering between two brocade bands, over the winding road. */
+function Verse() {
+  const t = useT();
+  const root = useRef<HTMLElement>(null);
+  useCinema(root, () => {
+    const st = { trigger: root.current, start: 'top 72%', once: true };
+    root.current?.querySelectorAll('[data-verse-line]').forEach((line, i) => {
+      gsap.from(line, { clipPath: 'inset(0% 100% 0% 0%)', duration: 1.6, ease: EASE.calm, delay: 0.3 + i * 0.55, scrollTrigger: st, clearProps: 'clipPath' });
+    });
+    gsap.from('[data-brocade]', { scaleX: 0, duration: 1.4, ease: EASE.heavy, stagger: 0.2, scrollTrigger: st });
+    gsap.fromTo('[data-verse-photo]', { yPercent: -10 }, { yPercent: 10, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+  return (
+    <section ref={root} className={`${s.verse} surface-forest`} aria-labelledby="verse-title">
+      <div className={s.versePhoto} data-verse-photo><Media slug={ART.verse.slug} narrow={ART.verse.narrow} sizes="100vw" decorative /></div>
+      <div className={`container ${s.verseInner}`}>
+        <h2 id="verse-title" className="visually-hidden">{t.home.verseTitle}</h2>
+        <Brocade className={s.verseBand} data-brocade />
+        <blockquote className={s.verseText} lang="vi">
+          {t.home.verse.map((line) => <span key={line} className={s.verseLine} data-verse-line>{line}</span>)}
+        </blockquote>
+        <p className={s.verseBy}>{t.home.verseBy}</p>
+        <p className={s.verseNote}>{t.home.verseNote}</p>
+        <Brocade className={s.verseBand} data-brocade />
+      </div>
+    </section>
+  );
+}
+
 /** The four AI cores: the photograph holds while each core's text passes (sticky, so it works without motion too). */
+const CORE_ICONS: IconName[] = ['sun', 'book', 'sprout', 'mic'];
+
 function Cores() {
   const t = useT();
+  const { calm } = useSettings();
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
   const cores = t.home.cores;
@@ -149,9 +187,22 @@ function Cores() {
   return (
     <section ref={root} id="cores" className={`${s.cores} surface-forest`} aria-labelledby="cores-title">
       <div className={`container ${s.coresHead}`}>
-        <h2 id="cores-title" className="h1">{t.home.coresTitle}</h2>
-        <p className="lead">{t.home.coresLead}</p>
+        <div className={s.coresIntro}>
+          <h2 id="cores-title" className="h1"><Accent text={t.home.coresTitle} /></h2>
+          <p className="lead">{t.home.coresLead}</p>
+        </div>
+        <ol className={s.coreIndex}>
+          {cores.map((c, n) => (
+            <li key={c.name} className={n === active ? s.coreIndexOn : undefined}>
+              <a href={`#core-${n}`} onClick={(e) => { e.preventDefault(); document.getElementById(`core-${n}`)?.closest('article')?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' }); }}>
+                <span className={s.coreIcon}><Icon name={CORE_ICONS[n] ?? 'spark'} size={24} /></span>
+                <span className={s.coreIndexText}><strong>{c.name}</strong><span>{c.gives}</span></span>
+              </a>
+            </li>
+          ))}
+        </ol>
       </div>
+      <Brocade className={s.coresBand} />
       <div className={s.coresBody}>
         <div className={s.coresStage} aria-hidden="true">
           <div className={s.coresStageInner} data-core-stage>
@@ -217,7 +268,7 @@ function Steps() {
   return (
     <section className={`band surface-forest grain ${s.steps}`} aria-labelledby="steps-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
-        <h2 id="steps-title" className="h1">{t.home.stepsTitle}</h2>
+        <h2 id="steps-title" className="h1"><Accent text={t.home.stepsTitle} /></h2>
         <ol className={s.strip} data-stagger>
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
@@ -246,7 +297,7 @@ function Observatory() {
         <SatelliteScan labels={t.earth.scan} />
       </div>
       <div className={`container ${s.obsText}`}>
-        <h2 id="obs-title" className="h1">{t.home.obsTitle}</h2>
+        <h2 id="obs-title" className="h1"><Accent text={t.home.obsTitle} /></h2>
         <p className="lead">{t.home.obsLead}</p>
         <ButtonLink to="/dai-quan-sat" size="lg" icon="arrowRight">{t.home.obsCta}</ButtonLink>
       </div>
@@ -256,11 +307,15 @@ function Observatory() {
 
 function Invite() {
   const t = useT();
+  const root = useRef<HTMLElement>(null);
+  useCinema(root, () => {
+    gsap.fromTo('[data-invite-art]', { scale: 1.18 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom bottom', scrub: true } });
+  });
   return (
-    <section className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
-      <span className={s.inviteArt}><Media slug={ART.invite.slug} sizes="100vw" decorative /></span>
+    <section ref={root} className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
+      <span className={s.inviteArt} data-invite-art><Media slug={ART.invite.slug} sizes="100vw" decorative /></span>
       <div className={`container ${s.inviteInner}`}>
-        <h2 id="invite-title" className={`display ${s.inviteTitle}`}>{t.home.inviteTitle}</h2>
+        <h2 id="invite-title" className={`display ${s.inviteTitle}`}><Accent text={t.home.inviteTitle} /></h2>
         <p className="lead">{t.home.inviteLead}</p>
         <div className={s.ctas}>
           <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">{t.home.ctaFarmer}</ButtonLink>
@@ -286,6 +341,7 @@ export function HomePage() {
     <main ref={pageRef} id="main">
       <Hero />
       <Problem />
+      <Verse />
       <Cores />
       <Climate />
       <Steps />

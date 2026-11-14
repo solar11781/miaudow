@@ -1,4 +1,6 @@
 import { useFarmer } from './FarmerLayout';
+import { Accent } from '../../design-system/Accent';
+import { Brocade } from '../../design-system/Brocade';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
@@ -20,11 +22,12 @@ export function StartStep() {
           <Media slug={ART.farmerStart.slug} priority sizes="(min-width: 900px) 600px, 100vw" decorative />
         </div>
         <div className={s.startBody}>
-          <h1 className={`display ${s.startTitle}`}>{t.farmer.startTitle}</h1>
+          <h1 className={`display ${s.startTitle}`}><Accent text={t.farmer.startTitle} /></h1>
           <p className={s.startLead}>{t.farmer.startLead}</p>
           <ButtonLink to={{ pathname: '/nong-dan/ruong', search }} size="lg" block icon="arrowRight">{t.farmer.startCta}</ButtonLink>
         </div>
       </article>
+      <Brocade />
 
       <section className={s.explain} aria-labelledby="farmer-helps">
         <div className={s.explainCol}>
@@ -41,7 +44,7 @@ export function StartStep() {
         </div>
       </section>
 
-      <ol className={s.startSteps} data-stagger aria-label={t.farmer.stepsLabel}>
+      <ol className={s.startSteps} aria-label={t.farmer.stepsLabel}>
         {t.home.steps.map((st, i) => (
           <li key={st.title}>
             <img src={STEP_ART[i]} alt="" width={474} height={356} loading="lazy" decoding="async" />

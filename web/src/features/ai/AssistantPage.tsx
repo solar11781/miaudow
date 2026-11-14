@@ -11,6 +11,7 @@ import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { useSpeech } from './useSpeech';
 import { CoreTag } from '../../design-system/CoreTag';
+import { Brocade } from '../../design-system/Brocade';
 import { Media } from '../../design-system/Media';
 import { ART } from '../../data/art';
 import { BrandEmblem, BrandMark } from '../../app/Brand';
@@ -214,6 +215,7 @@ export function AssistantPage() {
             <p className={s.heroLead}>{t.copilot.brandLead}</p>
           </div>
         </div>
+        <Brocade />
       </header>
       <section className={`band ${s.page}`} aria-labelledby="ai-title">
         <div className={`container ${s.grid}`}>

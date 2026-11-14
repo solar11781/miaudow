@@ -32,7 +32,7 @@ export function LandStep() {
         </ButtonLink>
       }
     >
-      <div className={s.landGrid} data-stagger role="radiogroup" aria-label={t.farmer.landTitle}>
+      <div className={s.landGrid} role="radiogroup" aria-label={t.farmer.landTitle}>
         {LANDS.map((land) => {
           const on = state.land === land;
           return (

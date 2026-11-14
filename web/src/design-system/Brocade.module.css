@@ -1,0 +1,7 @@
+/* one 48 x 18 repeat: teeth along both edges, a lozenge with a lozenge inside, small crosses between */
+.band {
+  height: 18px; width: 100%;
+  background-repeat: repeat-x; background-position: center; background-size: 48px 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='18' viewBox='0 0 48 18'%3E%3Cpath d='M0 0h48v2H0zM0 16h48v2H0z' fill='%23e8b94e'/%3E%3Cpath d='M0 2l4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3v1H0zM0 16l4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3v-1H0z' fill='%23b8402a'/%3E%3Cpath d='M24 4l7 5-7 5-7-5z' fill='%23e8b94e'/%3E%3Cpath d='M24 6.5l3.5 2.5-3.5 2.5-3.5-2.5z' fill='%230b1a12'/%3E%3Cpath d='M24 8l1.4 1-1.4 1-1.4-1z' fill='%23f4f2ea'/%3E%3Cpath d='M3 9h4M5 7v4M41 9h4M43 7v4' stroke='%23f4f2ea' stroke-width='1.2' stroke-opacity='.75'/%3E%3C/svg%3E");
+  opacity: .9;
+}

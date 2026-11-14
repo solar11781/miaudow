@@ -4,8 +4,8 @@
   person takes; young-rice green for good news; photographs carry the rest of the colour. The light "rice water"
   theme stays one tap away (theme button) for bright sun.
   Type: Alegreya (headings: a calligraphic serif, flowing like brush lettering, full Vietnamese), Be Vietnam Pro (text
-  and numbers, drawn by Vietnamese designers for Vietnamese), Dancing Script (one or two hand-lettered accents per
-  page, never for reading). All OFL-1.1, served by the app (D-155). No text under 17 px (H6); text pairs >= 4.5:1 (H8).
+  and numbers, drawn by Vietnamese designers for Vietnamese), Charm (brush lettering like the calligraphy on Tết
+  scrolls, for one accent phrase per heading and the folk verse of xứ Nghệ, never for reading). All OFL-1.1, served by the app (D-155). No text under 17 px (H6); text pairs >= 4.5:1 (H8).
 */
 :root {
   /* palette */
@@ -48,15 +48,15 @@
   /* type */
   --font-display: 'Alegreya Variable', 'Alegreya', Georgia, 'Times New Roman', serif;
   --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif;
-  --font-script: 'Dancing Script Variable', 'Dancing Script', 'Segoe Script', cursive;
+  --font-script: 'Charm', 'Segoe Script', cursive;
   /* no monospace costume: what used the code face now uses the text face with tabular figures */
   --font-mono: var(--font-ui);
-  --t-hero: clamp(3rem, 1.4rem + 6vw, 7rem);
+  --t-hero: clamp(3rem, 1.4rem + 6vw, 8.25rem);
   --t-h1: clamp(2.4rem, 1.6rem + 3vw, 4.4rem);
   --t-h2: clamp(2rem, 1.45rem + 2vw, 3.2rem);
   --t-h3: clamp(1.4rem, 1.25rem + .5vw, 1.7rem);
-  --t-lead: clamp(1.2rem, 1.1rem + .4vw, 1.4rem);
-  --t-body: 1.125rem;
+  --t-lead: clamp(1.25rem, 1.12rem + .5vw, 1.55rem);
+  --t-body: 1.1875rem;
   /* H6: the two smallest steps are both 17 px; hierarchy below body comes from weight, colour and spacing. */
   --t-small: 1.0625rem;
   --t-micro: 1.0625rem;
@@ -99,9 +99,9 @@
   --bg-raised: #13281c;
   --bg-sunk: #08140d;
   --bg-tint: #183224;
-  --fg: #f4f2ea;
-  --fg-2: #d6ddd0;
-  --fg-3: #aebaa9;
+  --fg: #f6f4ec;
+  --fg-2: #dfe5d9;
+  --fg-3: #b7c2b2;
   --line: rgba(244, 242, 234, .12);
   --line-2: rgba(244, 242, 234, .26);
   --accent: var(--c-gold-500);
@@ -183,7 +183,7 @@
 /* Night bands keep a dark surface in every theme (hero, data rooms, footer), a shade deeper than the page. */
 .surface-forest {
   --bg: #0a170f; --bg-raised: #13281c; --bg-sunk: #07110b; --bg-tint: #183224;
-  --fg: #f4f2ea; --fg-2: #d6ddd0; --fg-3: #aebaa9;
+  --fg: #f6f4ec; --fg-2: #dfe5d9; --fg-3: #b7c2b2;
   --line: rgba(244, 242, 234, .12); --line-2: rgba(244, 242, 234, .26);
   --accent-ink: var(--c-gold-300); --brand: #f4f2ea; --brand-ink: var(--c-gold-300); --focus: var(--c-gold-500);
   --seal: #e0705a; --on-seal: #1d0c07;

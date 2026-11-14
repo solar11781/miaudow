@@ -3,6 +3,7 @@ import { useAreas } from './Header';
 import { PHOTO_CREDITS } from '../data/media';
 import { hazards } from '../data';
 import { BrandEmblem, BrandWordmark } from './Brand';
+import { Brocade } from '../design-system/Brocade';
 import { usePick, useSettings, useT } from './settings';
 import s from './Footer.module.css';
 
@@ -15,6 +16,7 @@ export function Footer() {
     .format(new Date(hazards.generated_at));
   return (
     <footer className={`${s.footer} surface-forest grain`}>
+      <Brocade />
       <div className={`container ${s.grid}`}>
         <div className={s.brandCol}>
           <span className={s.brand}><BrandEmblem width={150} /><BrandWordmark height={26} /></span>
