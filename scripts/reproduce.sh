@@ -31,6 +31,9 @@ python scripts/export_risk_table.py   # artifacts/risk_table.json for the app (0
 python scripts/export_crop_exposure.py   # E-019 hazard_labels.json and E-020 soil_wetness.json per P-02 crop and year
 python scripts/run_secondary_models.py   # E-013 M2 LightGBM, E-017 M3 random forest (secondary, method page)
 python scripts/run_sensitivity.py   # E-018 sensitivity runs a-c, E-008 windows and centroid cells
+DESINVENTAR=data/raw/desinventar/DI_export_vnm.zip   # R-A19, for the E-016 check only; never committed (D-54)
+[ -f "$DESINVENTAR" ] || python scripts/fetch_recorded.py "$DESINVENTAR"
+python scripts/run_method_reports.py   # method page reports: E-012/E-018 winter claim, setup choices, E-014, E-016
 python scripts/build_results_chart.py   # artifacts/figures/results_chart.svg for the slides and the method page
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
