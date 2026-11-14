@@ -315,3 +315,10 @@ def test_risk_level_shares_refuse_a_window_with_days_missing_from_the_data():
     short = _cell().loc[:"2010-03-31"]
     with pytest.raises(ValueError, match="missing"):
         hz.risk_level_shares({"A": short}, {"A": 1.0}, date(2010, 2, 1), date(2010, 6, 30), cold_rule=hz.cold)
+
+
+@pytest.mark.parametrize(("province", "region"), [("Ha Noi", "red_river"), ("Da Nang City", "central_coast")])
+def test_an_unknown_region_or_central_coast_province_fails_loudly(province, region):
+    # Python rules: unknown data symbols fail loudly; a renamed region must not silently drop the cold rule
+    with pytest.raises(ValueError, match=province):
+        hz.cold_rule_of(province, region)

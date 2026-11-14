@@ -269,3 +269,12 @@ def test_left_out_rows_are_never_trained_on_or_scored_but_stay_the_last_year_of_
     trained = df[(df.series_id == "s1") & (df.year < 2018) & ~df.left_out]
     assert row["b0"] == pytest.approx(trained["anom"].mean())  # B0 is fit without the flagged rows
     assert len(p) == 6 * 9 - 1  # every other series-year of 2016-2024 is scored
+
+
+def test_runs_without_left_out_support_refuse_a_left_out_column():
+    # The left_out column is honoured by the rolling origin only; the other runs must not train on such rows silently
+    df = _with_regions(_synthetic(n_series=6, years=range(2010, 2025))).assign(left_out=False)
+    with pytest.raises(ValueError, match="left_out"):
+        run_spatial_holdout(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)
+    with pytest.raises(ValueError, match="left_out"):
+        run_secondary(df, ["x"], ["ctx"], (partial(ev.fit_rf, seed=0), ev.M3_GRID[:1]))
