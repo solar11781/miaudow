@@ -149,9 +149,11 @@ export function AssistantPage() {
     const ctrl = new AbortController();
     api.health(ctrl.signal)
       .then((h) => {
-        setEngine('server');
         const c = h.copilot;
         setClaude(typeof c === 'object' && c !== null && (c.engine === 'claude' || c.configured === true));
+        // our backend has no copilot route (D-166): without a copilot entry in health the page answers in the browser
+        if (c === undefined) { setEngine('browser'); return; }
+        setEngine('server');
       })
       .catch(() => { if (!ctrl.signal.aborted) setEngine('browser'); });
     return () => { ctrl.abort(); inflight.current?.abort(); };
@@ -178,6 +180,7 @@ export function AssistantPage() {
     } catch {
       if (ctrl.signal.aborted && inflight.current !== ctrl) return;
       setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, kind: 'local', res: local() } : x)));
+      setEngine('browser');
     }
     requestAnimationFrame(() => log.current?.lastElementChild?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
   };
