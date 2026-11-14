@@ -28,7 +28,7 @@ python scripts/build_training_table.py
 python scripts/choose_normal.py   # E-010: the normal-yield method, before the freeze commit
 python scripts/run_primary_test.py   # E-012: references and M1, writes artifacts/metrics.json and gates.json
 python scripts/export_risk_table.py   # artifacts/risk_table.json for the app (05-DATA-CONTRACTS section 5)
-python scripts/export_hazard_labels.py   # E-019: artifacts/hazard_labels.json, risk-level labels per P-02 crop and year
+python scripts/export_crop_exposure.py   # E-019 hazard_labels.json and E-020 soil_wetness.json per P-02 crop and year
 python scripts/run_secondary_models.py   # E-013 M2 LightGBM, E-017 M3 random forest (secondary, method page)
 python scripts/run_sensitivity.py   # E-018 sensitivity runs a-c, E-008 windows and centroid cells
 

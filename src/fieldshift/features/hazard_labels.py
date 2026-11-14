@@ -53,6 +53,7 @@ def hazard_label_rows(
     crops: list[dict], cells: dict[tuple, pd.DataFrame], weights: dict[tuple, float], years: Iterable[int] = YEARS
 ) -> list[dict]:
     """One row per level x crop x year x rule; cells: daily PRECTOTCORR, T2M_MAX, T2M per weighted cell."""
+    years = list(years)  # read once per window
     clim = {}
     for c in weights:
         try:

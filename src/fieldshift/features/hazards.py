@@ -130,7 +130,7 @@ def drought_any2(flags: Iterable[bool]) -> bool:
     return sum(bool(x) for x in flags) >= DROUGHT_MONTHS
 
 
-def _field_days(year: int, field_dates: Iterable[tuple[str, str]]) -> pd.DatetimeIndex:
+def field_days(year: int, field_dates: Iterable[tuple[str, str]]) -> pd.DatetimeIndex:
     days = set()
     for start, end in field_dates:
         a = date(year, int(start[:2]), int(start[3:]))
@@ -152,7 +152,7 @@ def cell_rules(
     daily: pd.DataFrame, year: int, field_dates: Iterable[tuple[str, str]], months: Iterable[int], clim: pd.Series
 ) -> dict:
     """Rule results for one cell and year. daily: PRECTOTCORR, T2M_MAX, T2M by date. Raises if field data are missing."""
-    days = _field_days(year, field_dates)
+    days = field_days(year, field_dates)
     win = daily.reindex(days)[["PRECTOTCORR", "T2M_MAX", "T2M"]]
     if win.isna().any().any():
         raise ValueError(f"weather missing inside the field time of {year}")

@@ -176,3 +176,8 @@ def test_a_rain_gap_in_the_normal_years_names_its_cell() -> None:
     gap.loc["2000-07-01", "PRECTOTCORR"] = np.nan
     with pytest.raises(ValueError, match=r"cell \(19\.0, 105\.0\)"):
         hazard_label_rows(plan_crops([CC1]), {(19.0, 105.0): gap}, {(19.0, 105.0): 1.0}, [2000])
+
+
+def test_label_years_may_be_any_iterable() -> None:
+    rows = hazard_label_rows(plan_crops([CC1]), CELLS, WEIGHTS, (y for y in (2000, 2001)))
+    assert len(rows) == (2 + 1) * 2 * len(RULES)
