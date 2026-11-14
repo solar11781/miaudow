@@ -115,6 +115,30 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   );
 }
 
+/** The per-year tables of a row behind one button (D-170). The content stays in the page and is hidden by screen-only
+ * CSS, so print shows it (T35). */
+function YearsFold({ id, children }: { id: string; children: ReactNode }) {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={s.fold}>
+      <button
+        type="button"
+        className={s.foldButton}
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <Icon name="chevronDown" size={18} />
+        {t.farmer.eachYear}
+      </button>
+      <div id={id} className={open ? undefined : s.folded}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 /** Shares per crop and picked year for `codes`; the rule names are the response's own labels. */
 function ShareTable({ plan, codes, rules, refs }: { plan: Plan; codes: RuleCode[]; rules: Rule[]; refs: ApiRefs }) {
   const t = useT();
@@ -229,7 +253,11 @@ function WeatherRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }
       note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined}
       highlight={highlight}
     >
-      <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
+      {plan.exposure.length > 0 && (
+        <YearsFold id={`card-${plan.id}-weather-years`}>
+          <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
+        </YearsFold>
+      )}
       {rice.length > 0 && (
         <div className={s.sub}>
           <p className={s.subHead}>{t.farmer.rows.rice}</p>
@@ -253,7 +281,11 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   const pick = usePick();
   return (
     <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight}>
-      <ShareTable plan={plan} codes={DROUGHT_RULES} rules={res.rules} refs={refs} />
+      {plan.exposure.length > 0 && (
+        <YearsFold id={`card-${plan.id}-water-years`}>
+          <ShareTable plan={plan} codes={DROUGHT_RULES} rules={res.rules} refs={refs} />
+        </YearsFold>
+      )}
       <ul className={s.kv}>
         {plan.calendar.map((c) => {
           const facts = plan.water.filter((w) => w.crop_key === c.crop_key);

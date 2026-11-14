@@ -352,6 +352,7 @@ export const vi = {
     whyParts: { why: 'Vì sao', evidence: 'Bằng chứng', benefits: 'Lợi ích', gaps: 'Điều chưa biết' },
     needAnswers: 'Còn thiếu câu trả lời ở bước trước.',
     yearHeading: (year: number) => `Năm ${year}`,
+    eachYear: 'Xem từng năm',
     monthAxis: 'Tháng',
     definitionPlain: {
       p02: 'Nói cách khác: tiền bán trừ các khoản chi nghiên cứu đã tính (vật tư, công lao động, năng lượng, lãi vay).',

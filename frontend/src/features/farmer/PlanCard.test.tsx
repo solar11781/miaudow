@@ -173,3 +173,22 @@ describe('water notes', () => {
     expect(water.indexOf(note.vi)).toBeLessThan(water.indexOf('Trung bộ, cấy'));
   });
 });
+
+// D-170: the per-year share tables of the stability and water rows fold behind "Xem từng năm"; the rows stay open
+describe('per-year tables', () => {
+  afterEach(cleanup);
+  it('fold behind an accessible button and stay in the page for print', async () => {
+    const id = renderCard();
+    for (const row of ['weather', 'water']) {
+      const box = document.querySelector(`[data-testid="card-${id}-row-${row}"]`);
+      const button = [...(box?.querySelectorAll('button') ?? [])].find((b) => b.textContent === vi.farmer.eachYear);
+      expect(button?.getAttribute('aria-expanded'), row).toBe('false');
+      const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+      expect(panel?.querySelector('table'), row).not.toBeNull();
+      expect(panel?.hasAttribute('hidden'), row).toBe(false); // hidden by screen-only CSS, so print shows it (T35)
+      button?.click();
+      await Promise.resolve();
+      expect(button?.getAttribute('aria-expanded'), row).toBe('true');
+    }
+  });
+});

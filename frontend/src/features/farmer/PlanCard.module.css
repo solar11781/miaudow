@@ -386,3 +386,35 @@
   line-height: 1.45;
   padding-block: var(--s-2);
 }
+.fold {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.foldButton {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-2);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font-weight: 500;
+  font-size: var(--t-small);
+}
+.foldButton[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+@media screen {
+  .folded {
+    display: none;
+  }
+}
+@media print {
+  .foldButton {
+    display: none;
+  }
+}

@@ -354,6 +354,7 @@ export const en: Messages = {
     whyParts: { why: 'Why', evidence: 'Evidence', benefits: 'Benefits', gaps: 'Gaps' },
     needAnswers: 'An answer from an earlier step is missing.',
     yearHeading: (year: number) => `Year ${year}`,
+    eachYear: 'Show each year',
     monthAxis: 'Month',
     definitionPlain: {
       p02: 'In other words: sales money minus the costs the study counted (materials, labour, energy, interest).',

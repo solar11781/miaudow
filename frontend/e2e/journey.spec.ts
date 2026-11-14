@@ -335,3 +335,13 @@ test('the same-plans note sits above the field choices', async ({ page }) => {
   const first = await page.getByRole('radio').first().boundingBox();
   expect(note && first && note.y < first.y).toBe(true);
 });
+
+// UI-UX-SPEC T35 print, D-170: the folded per-year tables print
+test('T35 print: the folded per-year tables show in print', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  const table = page.locator('#card-cc1-weather-years table');
+  await expect(table).toBeHidden();
+  await page.emulateMedia({ media: 'print' });
+  await expect(table).toBeVisible();
+  await expect(page.locator('#card-cc1-water-years table')).toBeVisible();
+});
