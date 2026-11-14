@@ -5,15 +5,16 @@
 # and the "no-forecast" passage (its question gets the fixed `forecast` answer). The water passage is split by
 # source, so each passage has one source. The plan, rule and model passages are built by the server from
 # rules/rotations.yaml, rules/conditions.yaml and artifacts/gates.json. The answer sentences are member B's
-# deterministic answers without their numbers. All text is a draft for the copy review.
+# deterministic answers without their numbers. The cell size is the audited wording of frontend/src/i18n (en.ts
+# line 189). All text is a draft for the copy review.
 passages:
   - id: nasa-power
     source_id: R-N01
-    keys: "nasa power du lieu thoi tiet reanalysis merra ve tinh luoi 50 km"
+    keys: "nasa power du lieu thoi tiet reanalysis merra ve tinh luoi o"
     title: {vi: "Dữ liệu NASA POWER là gì?", en: "What is the NASA POWER data?"}
     text:
-      vi: "NASA POWER cho thời tiết theo ngày trên lưới ô khoảng 50 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn."
-      en: "NASA POWER gives daily weather on a grid of about 50 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field."
+      vi: "NASA POWER cho thời tiết theo ngày trên lưới ô, mỗi ô khoảng 55 × 66 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn."
+      en: "NASA POWER gives daily weather on a grid of cells about 55 × 66 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field."
   - id: modis
     source_id: R-N02
     keys: "modis trong so dat trong farmland weight"
