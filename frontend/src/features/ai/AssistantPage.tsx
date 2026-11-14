@@ -56,14 +56,13 @@ function YearCard({ year }: { year: number }) {
   );
 }
 
-function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituation | null }) {
+export function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituation | null }) {
   const t = useT();
   const pick = usePick();
   const { lang } = useSettings();
   const speech = useSpeech(lang, () => undefined);
   const plans = res.cards.filter((c) => c.kind === 'plan');
   const years = res.cards.filter((c) => c.kind === 'year');
-  const passages = res.cards.filter((c) => c.kind === 'passage');
   return (
     <div className={s.a}>
       <div className={s.aHead}>
@@ -110,7 +109,7 @@ function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituat
           ))}
         </div>
       )}
-      {passages.length > 0 && (
+      {res.citations.length > 0 && (
         <ul className={s.cites}>
           {res.citations.map((c) => (
             <li key={c.passage_id}>
