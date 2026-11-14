@@ -9,7 +9,6 @@ const Observatory3D = lazy(() => import('./Observatory3D').then((m) => ({ defaul
 import { YearBars } from '../charts/YearBars';
 import { RiceHistoryChart } from '../charts/RiceHistoryChart';
 import { SourceValue } from '../provenance/SourceValue';
-import { ClimateMlSection } from './ClimateMl';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { RainStrip } from '../charts/RainStrip';
@@ -216,7 +215,6 @@ export function SciencePage() {
     <main id="main">
       <GridSection year={year} setYear={setYear} />
       <ClimateSection year={year} setYear={setYear} />
-      <ClimateMlSection year={year} setYear={setYear} />
       <RiceSection />
       <MethodLink />
     </main>

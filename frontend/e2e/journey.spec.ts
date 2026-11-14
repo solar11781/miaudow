@@ -159,17 +159,6 @@ test('NASA Eyes opens in a dialog and "back to Earth" lands on Nghệ An', async
 
 const canonical = (name: string) => JSON.parse(readFileSync(new URL(`../data/canonical/${name}`, import.meta.url), 'utf-8'));
 
-test('the climate ML section shows the closest years from the canonical file and moves the year', async ({ page }) => {
-  const expected: number[] = canonical('climate_ml.json').analogs.by_year['2010'].map((a: { year: number }) => a.year);
-  await page.goto('/#/khoa-hoc?nam=2010');
-  const section = page.locator('section[aria-labelledby="ml-title"]');
-  for (const y of expected) await expect(section.getByRole('button', { name: `Xem năm ${y}` })).toBeVisible();
-  await expect(section.getByText(/16\/33/).first()).toBeVisible();
-  await section.getByRole('button', { name: `Xem năm ${expected[0]}` }).click();
-  await expect(page).toHaveURL(new RegExp(`nam=${expected[0]}`));
-  await expect(section.getByRole('heading', { level: 2 })).toContainText(String(expected[0]));
-});
-
 test('the evidence page shows the data-quality report as written, warnings included', async ({ page }) => {
   const q = canonical('quality.json');
   await page.goto('/#/bang-chung');
