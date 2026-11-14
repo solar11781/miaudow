@@ -20,6 +20,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 TEST_YEARS = range(2016, 2025)  # D-69
+ML_SEASONS = ("spring", "winter")  # D-66: the rice seasons the model is trained on; summer-autumn is history only
 INNER_SHARE = 0.3  # D-107: same 70/30 rule as the outer split
 MIN_RESAMPLED_YEARS = 2  # the t quantile below needs n - 1 >= 1 degrees of freedom
 BOOTSTRAP_DRAWS = 10_000  # 03-ML-SPEC section 7: 10,000 year resamples (D-68, D-109)
