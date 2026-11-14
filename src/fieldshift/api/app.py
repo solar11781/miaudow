@@ -48,7 +48,16 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.api.copilot import COPILOT_LIMIT, CopilotRequest, Corpus, copilot_client, copilot_on, load_corpus
+from fieldshift.api.caps import TOO_MANY, ModelCallCaps, client_of
+from fieldshift.api.copilot import (
+    COPILOT_LIMIT,
+    CopilotRequest,
+    Corpus,
+    copilot_client,
+    copilot_on,
+    load_corpus,
+    uses_model,
+)
 from fieldshift.api.copilot import answer as copilot_answer
 from fieldshift.api.explain import EXPLAIN_LIMIT, ExplainError, ExplainRequest, claude_client, explain, shown_text
 from fieldshift.engine.compare import CompareData, compare, load_compare_data
@@ -279,6 +288,11 @@ async def _bad_gateway(_: Request, exc: ExplainError) -> JSONResponse:
     return JSONResponse({"detail": "Bad Gateway"}, status_code=502)
 
 
+def _too_many() -> JSONResponse:
+    """The shared cap of model calls is full (caps.py): a fixed detail that echoes nothing."""
+    return JSONResponse({"detail": TOO_MANY}, status_code=429)
+
+
 async def _explain(
     request: Request,
     compare_data: CompareData,
@@ -296,6 +310,8 @@ async def _explain(
     except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     try:
+        if not request.app.state.model_calls.take(client_of(request)):
+            return _too_many()
         answer = await anyio.to_thread.run_sync(compare, body.answers, compare_data, limiter=threads)
         reply = await anyio.to_thread.run_sync(explain, shown_text(body, answer), body.lang, claude, limiter=threads)
     finally:
@@ -319,6 +335,8 @@ async def _copilot(
     except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     try:
+        if uses_model(body, claude) and not request.app.state.model_calls.take(client_of(request)):
+            return _too_many()
         reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, limiter=threads)
     finally:
         slots.release()
@@ -441,6 +459,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     _add_privacy_routes(app, privacy_body)
     app.state.accounts = accounts_from(os.environ)  # None while sign-in is off
     app.state.account_limiter = anyio.CapacityLimiter(ACCOUNT_THREADS)
+    app.state.model_calls = ModelCallCaps()  # one cap for both model routes: they share the key (caps.py)
     app.include_router(accounts_router)
 
     if (frontend / "index.html").exists():
