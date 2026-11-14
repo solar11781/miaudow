@@ -14,7 +14,14 @@ import pandas as pd
 import pytest
 
 from fieldshift.ml import evaluation as ev
-from fieldshift.ml.runner import ALPHA_GRID, _tune, add_precip_anom, run_rolling_origin, run_spatial_holdout
+from fieldshift.ml.runner import (
+    ALPHA_GRID,
+    _tune,
+    add_precip_anom,
+    run_rolling_origin,
+    run_secondary,
+    run_spatial_holdout,
+)
 
 
 def _synthetic(n_series=30, years=range(1998, 2025), seed=0):
@@ -222,3 +229,28 @@ def test_spatial_holdout_b0_is_each_series_own_earlier_mean():
     p = run_spatial_holdout(df, weather_cols=["x"], context_cols=["ctx"], alphas=ALPHAS)["predictions"]
     row = p[(p.series_id == "s1") & (p.year == 2016)].iloc[0]
     assert row["b0"] == pytest.approx(df[(df.series_id == "s1") & (df.year < 2016)]["anom"].mean())
+
+
+@pytest.mark.parametrize(("fit", "grid"), [(ev.fit_lgbm, ev.M2_GRID[:2]), (ev.fit_rf, ev.M3_GRID[:2])])
+def test_secondary_models_use_the_same_folds_and_never_the_test_years_outcomes(fit, grid):
+    # Source: 03-ML-SPEC sections 6-7 and queue item 31: M2 and M3 on the same rows and folds as M1, tuned on earlier
+    # years only (inner folds, D-107); outcomes of a test year never change its predictions
+    df = _synthetic(n_series=6, years=range(2004, 2025))
+    a = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=0)
+    assert sorted(a["year"].unique()) == list(range(2016, 2025))
+    assert set(a["param"]) <= set(range(len(grid)))
+    changed = df.copy()
+    changed.loc[changed.year == 2020, "anom"] += 5.0
+    b = run_secondary(changed, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=0)
+    pa = a[a.year == 2020].set_index("series_id")["pred"]
+    pb = b[b.year == 2020].set_index("series_id")["pred"]
+    assert np.allclose(pa, pb)
+
+
+def test_secondary_models_are_reproducible_with_a_fixed_seed():
+    # Source: python rules: randomness only with a fixed seed passed in
+    df = _synthetic(n_series=4, years=range(2008, 2025))
+    for fit, grid in ((ev.fit_lgbm, ev.M2_GRID[:1]), (ev.fit_rf, ev.M3_GRID[:1])):
+        one = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=7)
+        two = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], fit=fit, grid=grid, seed=7)
+        assert np.allclose(one["pred"], two["pred"])
