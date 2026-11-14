@@ -10,8 +10,25 @@ from __future__ import annotations
 import pandas as pd
 
 from fieldshift.ml import evaluation as ev
+from fieldshift.ml.normal import CHOSEN_METHOD, add_anomaly
 
 REFERENCES = ("b0", "b2", "bnw")
+STORED_FEATURES = [  # 03-ML-SPEC section 4 feature list, as stored in the training table (05-DATA-CONTRACTS section 4)
+    "precip_sum_mm",
+    "dry_spell_max_d",
+    "heavy_rain_d",
+    "rx5day_mm",
+    "tmax_mean_c",
+    "tmin_mean_c",
+    "txx_c",
+    "hot_days_d",
+    "official_heavy_rain_d",
+    "ret_hai_d",
+    "ret_dam_d",
+    "gwetroot_mean",
+    "gwetroot_min",
+    "srad_mean_mj_m2_d",
+]
 G1_MIN_YEARS = 20  # D-71
 G1_MIN_PROVINCES = {"spring": 40, "winter": 40, "autumn": 25}  # D-71; summer-autumn rice: 25 provinces
 G4_COVERAGE = (0.70, 0.90)  # G4: the 80% interval covers 70-90% of held-out outcomes (team choice, D-48)
@@ -199,3 +216,16 @@ def penalty_report(at_edge: dict[str, float]) -> dict:
         ),
         "source_ids": [EXPERIMENT],
     }
+
+
+def model_rows(table: pd.DataFrame, region_of: dict[str, str]) -> pd.DataFrame:
+    """Model rows of the primary and secondary runs: rice in the model seasons (D-66) with an anomaly against the
+    chosen normal (03-ML-SPEC section 3), each with its NSO region for the spatial blocks (section 7.2)."""
+    rice = add_anomaly(table[table["crop"] == "rice"].reset_index(drop=True), CHOSEN_METHOD)
+    rows = rice[rice["anom"].notna() & rice["season"].isin(ev.ML_SEASONS)].reset_index(drop=True)
+    rows["region"] = rows["province_nso"].map(region_of)
+    if rows["region"].isna().any():
+        raise ValueError(
+            f"provinces without an NSO region: {sorted(rows.loc[rows['region'].isna(), 'province_nso'].unique())}"
+        )
+    return rows

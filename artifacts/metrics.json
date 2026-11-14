@@ -2886,6 +2886,138 @@
    "source_ids": [
     "E-012"
    ]
+  },
+  {
+   "model_id": "m2_lgbm",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08561473622855907,
+   "mae": 0.047803175863819936,
+   "r2_oos": -0.15554275533617012,
+   "skill_vs_b0": {
+    "value": -0.0012694543302338435,
+    "ci90_low": -0.09362031303405309,
+    "ci90_high": 0.08285242049067265
+   },
+   "skill_vs_b2": {
+    "value": 0.34265641866538277,
+    "ci90_low": -0.03324413524263531,
+    "ci90_high": 0.647951509483845
+   },
+   "skill_vs_bnw": {
+    "value": -0.028086181128540444,
+    "ci90_low": -0.17694507046675495,
+    "ci90_high": 0.0627692835891726
+   },
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-013"
+   ]
+  },
+  {
+   "model_id": "m2_lgbm",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.11493817167434463,
+   "mae": 0.06935573627033749,
+   "r2_oos": -0.2047882537852559,
+   "skill_vs_b0": {
+    "value": -0.06513749923859868,
+    "ci90_low": -0.15320041829171768,
+    "ci90_high": 0.003715438585382369
+   },
+   "skill_vs_b2": {
+    "value": 0.11880259929875947,
+    "ci90_low": -0.3123467707948397,
+    "ci90_high": 0.38478477870299355
+   },
+   "skill_vs_bnw": {
+    "value": -0.1188676517694014,
+    "ci90_low": -0.2727230384060189,
+    "ci90_high": -0.0029601018579035188
+   },
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-013"
+   ]
+  },
+  {
+   "model_id": "m3_rf",
+   "season": "spring",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.08449023859516386,
+   "mae": 0.04489560138269387,
+   "r2_oos": -0.1253873942001924,
+   "skill_vs_b0": {
+    "value": 0.024859948368472495,
+    "ci90_low": -0.03739170767264372,
+    "ci90_high": 0.11298704726893295
+   },
+   "skill_vs_b2": {
+    "value": 0.35981063731633667,
+    "ci90_low": -0.04883572022693028,
+    "ci90_high": 0.6872221980697549
+   },
+   "skill_vs_bnw": {
+    "value": -0.0012569617615598716,
+    "ci90_low": -0.020520398433760197,
+    "ci90_high": 0.04205185642684939
+   },
+   "coverage_80": null,
+   "n_rows": 547,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-017"
+   ]
+  },
+  {
+   "model_id": "m3_rf",
+   "season": "winter",
+   "role": "secondary",
+   "scheme": "rolling_origin",
+   "sensitivity": null,
+   "detail": null,
+   "subset": "national",
+   "rmse": 0.10708638677567107,
+   "mae": 0.060915471739945444,
+   "r2_oos": -0.04580493297994237,
+   "skill_vs_b0": {
+    "value": 0.07541757026111029,
+    "ci90_low": 0.03887307064282558,
+    "ci90_high": 0.10471515484408722
+   },
+   "skill_vs_b2": {
+    "value": 0.23508501540659843,
+    "ci90_low": -0.13692458119197437,
+    "ci90_high": 0.47820607925991787
+   },
+   "skill_vs_bnw": {
+    "value": 0.028777624702266857,
+    "ci90_low": -0.04792103031297934,
+    "ci90_high": 0.08587003768550343
+   },
+   "coverage_80": null,
+   "n_rows": 462,
+   "n_test_years": 9,
+   "source_ids": [
+    "E-017"
+   ]
   }
  ],
  "weather_claims": [

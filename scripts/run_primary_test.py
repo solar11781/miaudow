@@ -19,6 +19,7 @@ from fieldshift.ml.normal import CHOSEN_METHOD, add_anomaly, compare_normal_meth
 from fieldshift.ml.primary_test import (
     EXPERIMENT,
     SCHEMA_VERSION,
+    STORED_FEATURES,
     app_season,
     bilingual,
     find_row,
@@ -26,6 +27,7 @@ from fieldshift.ml.primary_test import (
     g1_rows,
     gate_detail,
     metric_records,
+    model_rows,
     penalty_report,
     season_gates,
     weather_claim,
@@ -35,42 +37,21 @@ from fieldshift.ml.runner import ALPHA_GRID, run_rolling_origin, run_spatial_hol
 FREEZE_COMMIT = "ea7a60c21d1867c4096fc3b3c4822b4127b53839"  # E-010: features and cleaning frozen before this run
 SEED = 0  # fixed seed of the year bootstrap (python rules: randomness only with a fixed seed)
 PILOT = ("Nghe An", "Ha Tinh", "Thanh Hoa")  # G3 subset and the per-province pilot report (D-48)
-STORED = [  # 03-ML-SPEC section 4 feature list, as stored in the training table (05-DATA-CONTRACTS section 4)
-    "precip_sum_mm",
-    "dry_spell_max_d",
-    "heavy_rain_d",
-    "rx5day_mm",
-    "tmax_mean_c",
-    "tmin_mean_c",
-    "txx_c",
-    "hot_days_d",
-    "official_heavy_rain_d",
-    "ret_hai_d",
-    "ret_dam_d",
-    "gwetroot_mean",
-    "gwetroot_min",
-    "srad_mean_mj_m2_d",
-]
 OUT = Path("artifacts")
 NSO_EXPORT = "data/raw/nso/E06.14.csv"  # region rows of the NSO export: the six spatial blocks (03-ML-SPEC 7.2)
 
 
 table = pd.read_csv("data/processed/training_table.csv")
 rice = add_anomaly(table[table["crop"] == "rice"].reset_index(drop=True), CHOSEN_METHOD)
-rice = rice[rice["anom"].notna()]
-rows = rice[rice["season"].isin(ev.ML_SEASONS)].reset_index(drop=True)
+rice = rice[rice["anom"].notna()]  # all rice seasons, for G1
 region_of = nso_regions(NSO_EXPORT)
-rows["region"] = rows["province_nso"].map(region_of)
-if rows["region"].isna().any():
-    raise ValueError(
-        f"provinces without an NSO region: {sorted(rows.loc[rows['region'].isna(), 'province_nso'].unique())}"
-    )
+rows = model_rows(table, region_of)
 month_rain = pd.read_csv("data/processed/cell_month_rain.csv")
 zero = pd.read_csv("data/processed/cell_weights_zero.csv")  # zero-weight report (03-ML-SPEC section 4)
 ZERO_CELLS, ZERO_PAIRS = len(zero[["lat", "lon"]].drop_duplicates()), len(zero)
 
-weather, context = model_columns([*STORED, FOLD_RAIN, *DROUGHT_COLS], stored=STORED)
-transform = make_fold_transform(STORED, month_rain)
+weather, context = model_columns([*STORED_FEATURES, FOLD_RAIN, *DROUGHT_COLS], stored=STORED_FEATURES)
+transform = make_fold_transform(STORED_FEATURES, month_rain)
 run = run_rolling_origin(rows, weather, context, ALPHA_GRID, fold_transform=transform)
 spatial = run_spatial_holdout(rows, weather, context, ALPHA_GRID, fold_transform=transform)
 
