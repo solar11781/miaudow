@@ -122,3 +122,12 @@ def build_cell_weights(geoms: dict[str, BaseGeometry], mask: dict) -> tuple[pd.D
         rows += [(prov, f"{la}_{lo}", la, lo, wt, "farmland_weighted") for (la, lo), wt in sorted(w.items())]
     table = pd.DataFrame(rows, columns=["province_nso", "cell_id", "lat", "lon", "farmland_weight", "method"])
     return table, missing
+
+
+def centroid_weights(geoms: dict[str, BaseGeometry]) -> pd.DataFrame:
+    """One POWER cell per province: the cell of its centre point, weight 1 (E-008 robustness: centroid vs weighted)."""
+    rows = []
+    for prov, geom in sorted(geoms.items()):
+        la, lo = power_cell_centre(geom.centroid.y, geom.centroid.x)
+        rows.append((prov, f"{la}_{lo}", la, lo, 1.0, "centroid"))
+    return pd.DataFrame(rows, columns=["province_nso", "cell_id", "lat", "lon", "farmland_weight", "method"])
