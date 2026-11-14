@@ -9,6 +9,7 @@ when neither is available. Google's token check runs for real, on every account 
 test key; only the download of Google's public keys is replaced, so no test touches the network.
 """
 
+import http.client
 import json
 import logging
 import os
@@ -16,6 +17,7 @@ import shutil
 import socket
 import ssl
 import subprocess
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -447,6 +449,25 @@ def test_the_key_download_refuses_plain_http(monkeypatch: pytest.MonkeyPatch) ->
     assert calls == []
 
 
+def test_a_broken_http_answer_is_a_transport_error_with_the_retry_pause(
+    on: str, keys: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # second security review: IncompleteRead, BadStatusLine and LineTooLong are http.client errors, not OSError
+    calls: list[str] = []
+
+    def cut_short(request: urllib.request.Request, **_: object) -> None:
+        calls.append(request.full_url)
+        raise http.client.IncompleteRead(b"{")
+
+    monkeypatch.setattr(urllib.request, "urlopen", cut_short)
+    with pytest.raises(TransportError):
+        accounts.HttpsRequest()(GOOGLE_CERTS)
+    c = TestClient(create_app(root=REPO), raise_server_exceptions=False)
+    for _ in range(3):
+        assert c.post("/api/account/sign-in", headers=bearer(google_token(keys))).status_code == 503
+    assert calls == [GOOGLE_CERTS, GOOGLE_CERTS]  # one in the unit check, then one for the app before its pause
+
+
 def test_an_answer_over_the_size_cap_is_refused(on: str, keys: dict, monkeypatch: pytest.MonkeyPatch) -> None:
     fake_download(monkeypatch, Answer(b" " * (accounts.KEYS_MAX_BYTES + 1)))
     with pytest.raises(TransportError):
@@ -546,6 +567,59 @@ def test_a_save_racing_delete_everything_is_401_and_writes_nothing(
 
     monkeypatch.setattr(accounts.Accounts, "save", save_after_a_delete)
     no_echo(c.post("/api/account/saved", headers=me, json=ANSWERS), 401)
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
+
+
+def test_a_save_whose_account_goes_during_the_foreign_key_check_is_401(
+    on: str, keys: dict, fetched: list, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # second security review: a delete that commits after the insert read the account row fails the foreign key
+    c = TestClient(create_app(root=REPO), raise_server_exceptions=False)
+    me = sign_in(c, keys)
+    real_connect = psycopg.connect
+
+    class Gone:
+        def __init__(self, conn: psycopg.Connection) -> None:
+            self.conn = conn
+
+        def __enter__(self) -> "Gone":
+            self.conn.__enter__()
+            return self
+
+        def __exit__(self, *exc: object) -> None:
+            self.conn.__exit__(*exc)
+
+        def execute(self, sql: str, *args: object) -> object:
+            if sql.startswith("INSERT INTO saved_answers"):
+                raise psycopg.errors.ForeignKeyViolation("zz-secret")
+            return self.conn.execute(sql, *args)
+
+    monkeypatch.setattr(psycopg, "connect", lambda *a, **k: Gone(real_connect(*a, **k)))
+    no_echo(c.post("/api/account/saved", headers=me, json=ANSWERS), 401)
+
+
+def test_a_save_blocked_by_a_delete_that_then_commits_is_401(on: str, keys: dict, fetched: list) -> None:
+    # the same race on the real database: a second connection holds delete-everything open while the save waits on
+    # the foreign-key lock of the account row, then commits
+    c = TestClient(create_app(root=REPO), raise_server_exceptions=False)
+    me = sign_in(c, keys)
+    deleting = psycopg.connect(on)
+    deleting.execute("DELETE FROM account")  # not committed yet: the account row is locked, still visible to others
+    answer: list[object] = []
+    save = threading.Thread(target=lambda: answer.append(c.post("/api/account/saved", headers=me, json=ANSWERS)))
+    save.start()
+    try:
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline and rows(
+            on, "SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock'"
+        ) == [(0,)]:
+            time.sleep(0.05)
+        assert rows(on, "SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock'") == [(1,)]
+    finally:
+        deleting.commit()
+        deleting.close()
+        save.join(timeout=20)
+    no_echo(answer[0], 401)
     assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
 
 
