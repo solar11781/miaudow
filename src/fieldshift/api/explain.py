@@ -1,9 +1,11 @@
-"""The "explain simply" call to the Claude API (02-SRS FR-15; 01-PRD later idea 5; D-146, D-159).
+"""The "explain simply" call to the Claude API (02-SRS FR-15; 01-PRD later idea 5; D-146, D-159, D-165).
 
 It rewords text the app already shows in simpler words. It is the one stated exception to NFR-01 (no live external
 call). Off by default: it runs only when FIELDSHIFT_EXPLAIN is "1" and ANTHROPIC_API_KEY is set in the server
-environment. The request holds only the system prompt and the given text, with < > & escaped, inside <text> tags (H14:
-no personal data); neither the text nor the key is logged. The reply is plain text, marked AI-generated (R-H15). A reply
+environment. The browser sends only what identifies a shown text: the compare answers, a plan id and one of the card's
+four "why" parts; the server takes that part's text from its own compare answer (D-165), so no browser can choose the
+text the model reads. The request holds only the system prompt and that text, with < > & escaped, inside <text> tags
+(H14: no personal data); neither the text nor the key is logged. The reply is plain text, marked AI-generated (R-H15). A reply
 is refused when its numbers, read in order with their sign and the first unit word from UNITS within the next few
 words, differ from the text's; the check sees only numbers and units, so it cannot show that the words around them keep
 their meaning.
@@ -15,12 +17,11 @@ import html
 import logging
 import re
 from collections.abc import Mapping
-from typing import Annotated, Literal
+from typing import Literal
 
 import anthropic
-from pydantic import StringConstraints
 
-from fieldshift.engine.schemas import Contract
+from fieldshift.engine.schemas import CompareRequest, CompareResponse, Contract, PlanId
 
 # A proposal pending a team decision: the claude-api skill defaults to claude-opus-5-5, and a cheaper model is the
 # team's choice; this is the skill's current small, fast model (models cached 2026-11-03) for a short rewording.
@@ -32,11 +33,6 @@ TIMEOUT_SECONDS = 20.0  # routine choice: a farmer waits on the page; with no re
 MAX_RETRIES = 0  # review of PR #43: the SDK obeys retry-after without a cap; the farmer can press again
 EXPLAIN_LIMIT = 2  # own thread limit (review of PR #43): stalled calls must never starve the threadpool compare runs in
 BASE_URL = "https://api.anthropic.com"  # set here so no environment variable can send the text and key elsewhere
-# No spec sets a limit. All text and numbers of the longest plan, all 30 years, in one language, joined by spaces, are
-# 6,174 characters (cc1, en, computed 2026-11-14; tests/test_explain.py); a card shows part of that.
-MAX_TEXT_CHARS = 8000
-# json.dumps writes a non-ASCII character of the BMP as \uXXXX (6 bytes); 1024 bytes leave room for keys and indents
-MAX_EXPLAIN_BODY_BYTES = 6 * MAX_TEXT_CHARS + 1024
 LANGUAGES = {"vi": "Vietnamese", "en": "English"}
 MIN_MAX_TOKENS = 512  # routine choice: a 3-letter term may need a sentence or two to say simply
 # The words that give a number its meaning: the units of the Value fields the API serves and the words that follow
@@ -95,9 +91,16 @@ for _name in ("anthropic", "httpx2"):  # their debug log holds the request body;
     logging.getLogger(_name).setLevel(logging.WARNING)
 
 
+# FR-15 names no field; these are the card's long texts, the four labelled parts of its `why` row (UI-UX-SPEC §7).
+# The risks are left out: they are quoted lines with their own sources in the row `check` (D-136).
+WhyPart = Literal["why", "evidence", "benefits", "gaps"]
+
+
 class ExplainRequest(Contract):
+    answers: CompareRequest
+    plan: PlanId
+    field: WhyPart
     lang: Literal["vi", "en"]
-    text: Annotated[str, StringConstraints(min_length=1, max_length=MAX_TEXT_CHARS, pattern=r"\S")]
 
 
 class ExplainResponse(Contract):
@@ -124,6 +127,12 @@ def system_prompt(lang: str) -> str:
         "and units. Add no new facts, no new numbers, no advice and no recommendation, and do not say which plan to "
         "choose. Leave nothing out. Answer with the reworded text only, as plain text without tags."
     )
+
+
+def shown_text(request: ExplainRequest, answer: CompareResponse) -> str:
+    """The asked part of the plan's `why`, in the asked language, from the server's own answer to request.answers."""
+    plan = next(p for p in answer.plans if p.id == request.plan)  # every answer holds every plan (CompareResponse)
+    return getattr(plan.why, request.field)[request.lang]
 
 
 def claude_client(environ: Mapping[str, str]) -> anthropic.Anthropic | None:
@@ -159,22 +168,22 @@ def numbers(text: str) -> list[tuple[str, str, str]]:
 def max_tokens(text: str) -> int:
     """Twice the UTF-8 bytes of the text, at least MIN_MAX_TOKENS. The claude-api skill gives no characters-per-token
     figure and count_tokens is a network call, so this assumes each token holds at least one byte: the bytes bound the
-    text's tokens, and the reply gets twice that. The longest real plan text is 6,858 bytes (cc2, vi, 2026-11-14), so
-    at most 13,716."""
+    text's tokens, and the reply gets twice that. The longest part a request can name is 414 bytes (usual_p03 why, en,
+    2026-11-14), so at most 828."""
     return max(2 * len(text.encode("utf-8")), MIN_MAX_TOKENS)
 
 
-def explain(request: ExplainRequest, client: anthropic.Anthropic) -> ExplainResponse:
-    """The text reworded by Claude; raises ExplainError when the reply is not usable."""
+def explain(text: str, lang: str, client: anthropic.Anthropic) -> ExplainResponse:
+    """The text reworded by Claude in `lang`; raises ExplainError when the reply is not usable."""
     try:
         message = client.messages.create(
             model=MODEL,
-            max_tokens=max_tokens(request.text),
-            system=system_prompt(request.lang),
+            max_tokens=max_tokens(text),
+            system=system_prompt(lang),
             thinking=THINKING,
             output_config={"effort": EFFORT},
             # escaped, so no form of a tag in the text can close the app's tag (second review of PR #43)
-            messages=[{"role": "user", "content": f"<text>{html.escape(request.text, quote=False)}</text>"}],
+            messages=[{"role": "user", "content": f"<text>{html.escape(text, quote=False)}</text>"}],
         )
     except anthropic.APIStatusError as err:
         raise ExplainError(type(err).__name__, err.status_code, None, err.request_id) from err
@@ -187,9 +196,9 @@ def explain(request: ExplainRequest, client: anthropic.Anthropic) -> ExplainResp
     if message.stop_reason != "end_turn":  # refusal, or cut off at max_tokens
         raise ExplainError("NotWhole", 200, message.stop_reason, request_id)
     blocks = message.content or []
-    text = "".join(block.text for block in blocks if isinstance(block, anthropic.types.TextBlock)).strip()
-    if not text:
+    simple = "".join(block.text for block in blocks if isinstance(block, anthropic.types.TextBlock)).strip()
+    if not simple:
         raise ExplainError("Empty", 200, message.stop_reason, request_id)
-    if numbers(text) != numbers(request.text):
+    if numbers(simple) != numbers(text):
         raise ExplainError("NumbersDiffer", 200, message.stop_reason, request_id)
-    return ExplainResponse(text=text, ai_generated=True, model=MODEL)
+    return ExplainResponse(text=simple, ai_generated=True, model=MODEL)

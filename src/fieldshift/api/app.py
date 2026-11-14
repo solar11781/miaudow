@@ -45,14 +45,7 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
-from fieldshift.api.explain import (
-    EXPLAIN_LIMIT,
-    MAX_EXPLAIN_BODY_BYTES,
-    ExplainError,
-    ExplainRequest,
-    claude_client,
-    explain,
-)
+from fieldshift.api.explain import EXPLAIN_LIMIT, ExplainError, ExplainRequest, claude_client, explain, shown_text
 from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
@@ -74,7 +67,8 @@ FRONTEND_ROUTES = (
 )  # UI-UX-SPEC §6; later-feature routes are added with them
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
 # bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. A saved set of
-# answers is the same body without the province, so the same limit holds it.
+# answers is the same body without the province, so the same limit holds it; an explain request is that body with a
+# plan, a part and a language, 752 bytes at most indented by 4 spaces (tests/test_explain.py).
 MAX_BODY_BYTES = 1024
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 NO_STORE = {"cache-control": "no-store"}
@@ -107,16 +101,16 @@ def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
     return RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in errors])
 
 
-async def _body(request: Request, model: type[M], limit: int = MAX_BODY_BYTES) -> M:
-    """The body as a `model`; reading stops past `limit` bytes, whatever content-length says, after
+async def _body(request: Request, model: type[M]) -> M:
+    """The body as a `model`; reading stops past MAX_BODY_BYTES, whatever content-length says, after
     BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422, and nothing logs a traceback)."""
     body = b""
     try:
         async with asyncio.timeout(BODY_TIMEOUT_SECONDS):
             async for chunk in request.stream():
                 body += chunk
-                if len(body) > limit:
-                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {limit} bytes"}])
+                if len(body) > MAX_BODY_BYTES:
+                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {MAX_BODY_BYTES} bytes"}])
     except TimeoutError as err:
         raise _invalid([{"type": "timeout", "loc": (), "msg": f"body not sent in {BODY_TIMEOUT_SECONDS} s"}]) from err
     except ClientDisconnect as err:
@@ -264,19 +258,24 @@ async def _bad_gateway(_: Request, exc: ExplainError) -> JSONResponse:
 
 
 async def _explain(
-    request: Request, claude: Anthropic | None, slots: anyio.CapacityLimiter, threads: anyio.CapacityLimiter
+    request: Request,
+    compare_data: CompareData,
+    claude: Anthropic | None,
+    slots: anyio.CapacityLimiter,
+    threads: anyio.CapacityLimiter,
 ) -> Response:
-    """A slot is taken without waiting (run_sync yields before it takes its limiter, so a burst would queue); the call
-    runs on a second limiter of the same size, since the task holding a slot cannot borrow it again."""
+    """A slot is taken without waiting (run_sync yields before it takes its limiter, so a burst would queue); the
+    compare and the call run on a second limiter of the same size, since the task holding a slot cannot borrow it."""
     if claude is None:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
-    body = await _body(request, ExplainRequest, MAX_EXPLAIN_BODY_BYTES)
+    body = await _body(request, ExplainRequest)
     try:
         slots.acquire_nowait()
     except anyio.WouldBlock:
         return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
     try:
-        reply = await anyio.to_thread.run_sync(explain, body, claude, limiter=threads)
+        answer = await anyio.to_thread.run_sync(compare, body.answers, compare_data, limiter=threads)
+        reply = await anyio.to_thread.run_sync(explain, shown_text(body, answer), body.lang, claude, limiter=threads)
     finally:
         slots.release()
     return _respond(_json(reply))
@@ -325,7 +324,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     @app.post("/api/explain")
     async def explain_route(request: Request) -> Response:
-        return await _explain(request, claude, explain_slots, explain_threads)
+        return await _explain(request, compare_data, claude, explain_slots, explain_threads)
 
     @app.get("/api/method")
     def method_route() -> Response:
