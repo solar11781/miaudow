@@ -4,7 +4,8 @@ import re
 
 ID_LISTS = ("source_ids", "values_source_ids", "principle_source_ids")
 ID_SINGLES = ("threshold_source_id", "computed_by")
-REGISTER_ROW = re.compile(r"^\|\s*((?:R-[A-Z]+\d+[a-z]?)|(?:E-\d{3}[a-z]?))\s*\|", re.MULTILINE)
+# an id cell may carry a note after the id, e.g. "| R-P02 (P-02) |" in REFERENCES
+REGISTER_ROW = re.compile(r"^\|\s*((?:R-[A-Z]+\d+[a-z]?)|(?:E-\d{3}[a-z]?))(?:\s[^|]*)?\s*\|", re.MULTILINE)
 
 
 def _walk(node: object, path: str, used: list[tuple[str, str]], problems: list[str]) -> None:
