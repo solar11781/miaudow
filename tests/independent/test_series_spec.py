@@ -1,4 +1,4 @@
-"""Independent specification tests for fieldshift.data.series (consistent series, DECISION-LOG D-28).
+"""Independent specification tests for fieldshift.data.series (consistent series, D-28).
 
 Written without reading the implementation (D-30). Every expectation cites its source.
 D-28: (1) drop Ha Tay; (2) drop Ha Noi 1995-2007, keep 2008+ as a fresh series; (3) keep Vinh Phuc and Hoa Binh,

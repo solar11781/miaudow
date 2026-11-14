@@ -1,4 +1,4 @@
-"""Farmland weights of NASA POWER cells for a province (DECISION-LOG D-26, D-27, D-36).
+"""Farmland weights of NASA POWER cells for a province (D-26, D-27, D-36).
 
 Plain words: a province overlaps several NASA weather cells. We want the province's weather to describe where its
 farms are, so each cell gets a weight = (farmland inside the province AND that cell) / (all farmland in the province).

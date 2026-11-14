@@ -1,6 +1,6 @@
 # NSO rice season weather windows per calendar region (05-DATA-CONTRACTS §6b; D-37, D-38).
-# Source R-V05: NSO 'Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm' (2019), transcribed in
-# research/crop-calendar-notes.md. Window = first day of the first sowing month to the last day of the last harvest
+# Source R-V05: NSO 'Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm' (2019).
+# Window = first day of the first sowing month to the last day of the last harvest
 # month; year offset -1 = previous calendar year (statistical year = agricultural year).
 # `excluded` lists (season, region) pairs that have no window (D-37). 05-DATA-CONTRACTS §6b also names a `seasons` list
 # that is not in this file. [OPEN: question for the team, audit 2026-11-13: is `seasons` written during the event?]

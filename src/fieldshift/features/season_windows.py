@@ -1,7 +1,7 @@
-"""Weather windows per rice season and calendar region (DECISION-LOG D-37, D-38).
+"""Weather windows per rice season and calendar region (D-37, D-38).
 
 Plain words: a harvest number only depends on the weather while that crop was in the field. The statistics office's
-own calendar (NSO "Phụ lục 1", research/crop-calendar-notes.md) gives sowing and harvest months per season and region;
+own calendar (NSO "Phụ lục 1", source R-V05) gives sowing and harvest months per season and region;
 the window runs from the first day of the first sowing month to the last day of the last harvest month. The NSO
 statistical year is an agricultural year, so some windows start in the previous calendar year.
 """

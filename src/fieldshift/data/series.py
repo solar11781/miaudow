@@ -1,4 +1,4 @@
-"""Split crop statistics into consistent series before any trend is fitted (DECISION-LOG D-28).
+"""Split crop statistics into consistent series before any trend is fitted (D-28).
 
 Plain words: the ML target compares each year with the province's own "normal" yield, computed from earlier years.
 That only works if every year in a series describes the same piece of land. When a province's borders change (Hà Tây

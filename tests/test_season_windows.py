@@ -1,6 +1,6 @@
 """Tests for season weather windows (written before the code, D-29).
 
-Spec: D-37 (windows from the NSO calendar "Phụ lục 1", research/crop-calendar-notes.md, verified 2026-11-11; window =
+Spec: D-37 (windows from the NSO calendar "Phụ lục 1", source R-V05, verified 2026-11-11; window =
 first sowing month to last harvest month; statistical year = agricultural year; Mekong summer-autumn excluded),
 D-38 ("central coast" row = the 8 South Central coast provinces; North Central = 6 provinces).
 """
