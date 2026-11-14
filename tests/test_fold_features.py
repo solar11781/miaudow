@@ -101,3 +101,15 @@ def test_drought_months_have_no_value_without_a_training_years_normal():
     df = pd.DataFrame({"province_nso": ["P"], "season": ["spring"], "year": [2012]})
     out = add_drought_months(df, _month_rain([40.0] * 3, [40.0] * 3), before_year=2010)  # no year before 2010
     assert out[["drought_rain_months", "drought_rain_consecutive", "drought_rain_any2"]].isna().all(axis=None)
+
+
+def test_the_fold_transform_adds_the_drought_months_with_their_season_terms():
+    df = pd.DataFrame(
+        {"province_nso": ["P"] * 3, "season": ["spring"] * 3, "year": [2010, 2011, 2012], "precip_sum_mm": [1.0] * 3}
+    )
+    train_idx = df.index[df["year"] < 2012]
+    transform = make_fold_transform(["precip_sum_mm"], _month_rain([40.0, 40.0, 100.0], [40.0, 100.0, 40.0]))
+    out = transform(df, train_idx)
+    assert out.loc[2, "drought_rain_months"] == pytest.approx(2.0)
+    assert out.loc[2, "drought_rain_months_x_spring"] == pytest.approx(2.0)
+    assert transform(df, train_idx).equals(out)  # same cutoff, same answer (cached)
