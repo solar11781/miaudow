@@ -478,3 +478,31 @@ def test_no_prediction_unless_the_model_is_shown(status: str) -> None:
     with pytest.raises(ValidationError):
         s.Stability.model_validate(block)
     s.Stability.model_validate({**block, "model_status": "shown"})
+
+
+def request(years: list[int]) -> dict:
+    return {"province": "nghe_an", "land": "dry", "years": years, "priority": "income"}
+
+
+def test_compare_request_takes_at_most_the_30_years_of_1995_2024() -> None:
+    # UI-UX-SPEC §11 YearRow: years 1995..2024, so a pick holds at most 30 years; the body is a trust boundary
+    s.CompareRequest.model_validate(request(list(range(1995, 2025))))
+    with pytest.raises(ValidationError) as err:
+        s.CompareRequest.model_validate(request(list(range(1995, 2026))))
+    assert err.value.errors()[0]["type"] == "too_long"
+
+
+def test_a_huge_year_list_gives_a_short_error() -> None:
+    # security review: an unbounded list made a 16.9 MB error message
+    with pytest.raises(ValidationError) as err:
+        s.CompareRequest.model_validate(request([2000] * 100_000))
+    assert len(str(err.value)) < 2_000
+
+
+@pytest.mark.parametrize("years", [[2001, 2000], [1994, 2000]])
+def test_a_year_rule_error_names_the_rule_not_the_list(years: list[int]) -> None:
+    with pytest.raises(ValidationError) as err:
+        s.CompareRequest.model_validate(request(years))
+    message = err.value.errors()[0]["msg"]
+    assert "years must be strictly ascending within 1995-2024" in message
+    assert str(years) not in message
