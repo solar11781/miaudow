@@ -47,34 +47,17 @@ def edit_json(root: Path, name: str, change: Callable[[dict], object]) -> None:
     path.write_text(json.dumps(data), encoding="utf-8")
 
 
-def add_placeholder_why(plans: list[dict]) -> None:
-    for plan in plans:
-        assert "why" not in plan, "rotations.yaml has its why text now: drop this placeholder step"
-        plan["why"] = {part: {"vi": f"[{part}]", "en": f"[{part}]"} for part in WHY_PARTS}
-
-
-def add_placeholder_facts(entries: list[dict]) -> None:
-    for sid in ("E-020", "R-A15"):
-        assert sid not in {e["id"] for e in entries}, f"sources.yaml has {sid} now: drop this placeholder step"
-        entries.append({**next(e for e in entries if e["id"] == "E-019"), "id": sid})
-
-
 @pytest.fixture(scope="module")
-def real(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """The real rules and artifacts; the why parts and two source facts are placeholders until the team's pull request
-    feat/plan-why adds them (team, 2026-11-14: compare() must not invent them)."""
-    root = tmp_path_factory.mktemp("real")
-    for folder in ("rules", "artifacts"):
-        shutil.copytree(REPO / folder, root / folder)
-    edit_yaml(root, "rotations.yaml", add_placeholder_why)
-    edit_yaml(root, "sources.yaml", add_placeholder_facts)
-    return root
+def real() -> Path:
+    """The repository root: the real rules files and artifacts."""
+    return REPO
 
 
 @pytest.fixture
-def root(real: Path, tmp_path: Path) -> Path:
-    """A copy of `real` that one test may change."""
-    shutil.copytree(real, tmp_path / "root")
+def root(tmp_path: Path) -> Path:
+    """A copy of the real rules files and artifacts that one test may change."""
+    for folder in ("rules", "artifacts"):
+        shutil.copytree(REPO / folder, tmp_path / "root" / folder)
     return tmp_path / "root"
 
 
@@ -505,11 +488,17 @@ def test_land_care_of_p03_and_cc4(resp: dict) -> None:
 
 
 def test_why_parts_and_risks_come_from_rotations_yaml(resp: dict) -> None:
-    why = plan(resp, "cc1")["why"]
-    assert {part: why[part] for part in WHY_PARTS} == {p: {"vi": f"[{p}]", "en": f"[{p}]"} for p in WHY_PARTS}
-    # rules/rotations.yaml cc1 risks: the P-03 market fact, Decree 112/2024 Art. 6.1, 6.4 and 7.1
-    assert [r["source_ids"] for r in why["risks"]] == [["R-P03"], ["R-G06"], ["R-G06"], ["R-G27"]]
-    assert why["risks"][0]["text"]["en"].startswith("Another trial by the same team in the same commune")
+    why = plan(resp, "usual_p03")["why"]
+    # rules/rotations.yaml usual_p03 why (quoted from P-03 with page, team 2026-11-14)
+    assert (
+        why["evidence"]["en"] == "One year, June 2020 to June 2021; one unreplicated plot of 1000 m2 per crop (p. 2)."
+    )
+    assert why["benefits"]["en"] == "The paper states no benefit of this control structure."
+    assert all(why[part]["vi"] and why[part]["en"] for part in WHY_PARTS)
+    # cc1 risks: the P-02 cost line, the P-03 market fact, Decree 112/2024 Art. 6.1, 6.4 and 7.1
+    risks = plan(resp, "cc1")["why"]["risks"]
+    assert [r["source_ids"] for r in risks] == [["R-P02"], ["R-P03"], ["R-G06"], ["R-G06"], ["R-G27"]]
+    assert risks[1]["text"]["en"].startswith("Another trial by the same team in the same commune")
     assert plan(resp, "usual")["why"]["risks"] == []
 
 
