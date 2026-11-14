@@ -1,12 +1,13 @@
 // UI-UX-SPEC section 14a test hooks with member B's row names (D-169): card-<plan id> and card-<plan id>-row-<row>.
-import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render } from '@testing-library/react';
-import { SettingsProvider } from '../../app/settings';
+import { afterEach, describe, expect, it, onTestFinished, vi as mock } from 'vitest';
+import { cleanup, fireEvent, render, within } from '@testing-library/react';
+import { SettingsProvider, useSettings } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
 import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
 import { vi } from '../../i18n/vi';
+import { en } from '../../i18n/en';
 
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
@@ -229,5 +230,300 @@ describe('per-year tables', () => {
       await Promise.resolve();
       expect(button?.getAttribute('aria-expanded'), row).toBe('true');
     }
+  });
+});
+
+// D-172: under the plan name, the card's money total and where its water facts are, each reusing the card's values.
+// Values from /api/compare (2026-11-15): the usual plan's total and the P-03 text of usual_p03.
+describe('card summary', () => {
+  afterEach(cleanup);
+  const P03_TEXT = {
+    vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha". Vụ Thu Đông: bỏ hoang.',
+    en: 'Spring-season rice 2021 (control): economic return ("hiệu quả kinh tế") 5.36 million đ/ha. Summer-autumn rice 2020 (control): "almost no profit, the economic return only reaches 1.16 million/ha" (our translation). Autumn-winter: fallow.',
+  };
+  const head = (planIndex: number) => {
+    const res = validateCompare(compare(), body);
+    const usual = res.plans[0];
+    const p03 = res.plans[1];
+    if (!usual || !p03) throw new Error('no plan');
+    usual.money.total = {
+      value: '30,799',
+      unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' },
+      source_ids: ['R-P02', 'E-022'],
+    };
+    p03.money = { ...p03.money, items: [], total: null, text_only: P03_TEXT };
+    res.sources = { ...res.sources, 'E-022': { ...res.sources['R-P02'], id: 'E-022' } } as typeof res.sources;
+    const plan = res.plans[planIndex];
+    if (!plan) throw new Error('no plan');
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const box = document.querySelector(`[data-testid="card-${plan.id}-row-header"]`);
+    if (!box) throw new Error('no head');
+    return { box, id: plan.id };
+  };
+  it('shows the money total with its label, its source button and the trial wording', () => {
+    const { box } = head(0);
+    const text = box.textContent ?? '';
+    expect(text).toContain(vi.farmer.rows.money);
+    expect(text).toContain(vi.farmer.ourSum);
+    const button = box.querySelector('[data-value="30.799 nghìn đồng/ha"]');
+    expect(button?.tagName).toBe('BUTTON');
+  });
+  it('shows the P-03 money as its text only, with no total', () => {
+    const { box } = head(1);
+    const button = [...box.querySelectorAll('[data-value]')].find((e) => e.getAttribute('data-value') === P03_TEXT.vi);
+    expect(button?.tagName).toBe('BUTTON');
+    expect(box.textContent).not.toContain(vi.farmer.ourSum);
+    expect(box.textContent).not.toContain('30.799');
+  });
+  it('keeps a link to the water row', () => {
+    for (const i of [0, 1]) {
+      const { box, id } = head(i);
+      const link = box.querySelector(`a[href="#card-${id}-row-water"]`);
+      expect(link?.textContent, id).toBe(vi.farmer.summaryWater(vi.farmer.rows.water));
+      expect(document.getElementById(`card-${id}-row-water`), id).not.toBeNull();
+      cleanup();
+    }
+  });
+  // review of PR #54: a keyboard or screen-reader user lands on the water row, not only the screen
+  it('moves the focus to the water row it scrolls to', () => {
+    const scroll = mock.fn();
+    const before = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    onTestFinished(() => {
+      Element.prototype.scrollIntoView = before;
+    });
+    const { box, id } = head(0);
+    const link = box.querySelector(`a[href="#card-${id}-row-water"]`);
+    if (!(link instanceof HTMLElement)) throw new Error('no link');
+    fireEvent.click(link);
+    const row = document.getElementById(`card-${id}-row-water`);
+    expect(scroll).toHaveBeenCalledTimes(1);
+    expect(document.activeElement).toBe(row);
+    expect(row?.getAttribute('tabindex')).toBe('-1');
+  });
+});
+
+// FR-15 and D-172: each of the four why parts gets an "explain simply" button when the server has the feature on; the
+// reply shows under its part, marked as AI-generated (R-H15). Fetch is mocked: no test reaches the real API.
+describe('explain simply', () => {
+  afterEach(() => {
+    cleanup();
+    mock.unstubAllGlobals();
+  });
+  function ToEnglish() {
+    const { setLang } = useSettings();
+    return (
+      <button type="button" onClick={() => setLang('en')}>
+        to-en
+      </button>
+    );
+  }
+  const card = (explain: boolean) => {
+    const res = validateCompare(compare(), body);
+    const plan = res.plans[2];
+    if (!plan) throw new Error('no plan');
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <ToEnglish />
+          <PlanCard plan={plan} res={res} priority="income" explain={explain} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const row = document.querySelector(`[data-testid="card-${plan.id}-row-why"]`);
+    if (!row) throw new Error('no why row');
+    return { row: within(row as HTMLElement), res, plan };
+  };
+  const answer = (status: number, json: unknown) => {
+    const fetchMock = mock.fn(async () => new Response(JSON.stringify(json), { status }));
+    mock.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  };
+
+  it('has no button while the feature is off', () => {
+    const { row } = card(false);
+    expect(row.queryAllByRole('button', { name: new RegExp(vi.farmer.explain.button) })).toHaveLength(0);
+  });
+  it('gives each of the four parts its own named button', () => {
+    const { row } = card(true);
+    const buttons = row.getAllByRole('button', { name: new RegExp(vi.farmer.explain.button) });
+    expect(buttons.map((b) => b.textContent)).toEqual(
+      (['why', 'evidence', 'benefits', 'gaps'] as const).map(
+        (k) => `${vi.farmer.explain.button}: ${vi.farmer.whyParts[k]}`,
+      ),
+    );
+  });
+  it('asks for the part and shows the reply under it, marked as AI-generated', async () => {
+    const fetchMock = answer(200, { text: 'Lời dễ hiểu', ai_generated: true, model: 'claude-haiku-5-5' });
+    const { row, res, plan } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.evidence) }));
+    expect(row.getByText(vi.farmer.explain.loading)).not.toBeNull();
+    expect(await row.findByText('Lời dễ hiểu')).not.toBeNull();
+    expect(row.getByText(vi.farmer.explain.aiLabel)).not.toBeNull();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/explain',
+      expect.objectContaining({
+        body: JSON.stringify({ answers: res.request, plan: plan.id, field: 'evidence', lang: 'vi' }),
+      }),
+    );
+  });
+  // review of PR #54: a reply in Vietnamese never stays under the English text
+  it('drops the reply and shows the button again when the language changes', async () => {
+    answer(200, { text: 'Lời dễ hiểu', ai_generated: true, model: 'claude-haiku-5-5' });
+    const { row } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.evidence) }));
+    expect(await row.findByText('Lời dễ hiểu')).not.toBeNull();
+    fireEvent.click(within(document.body).getByRole('button', { name: 'to-en' }));
+    expect(row.queryByText('Lời dễ hiểu')).toBeNull();
+    expect(row.queryByText(en.farmer.explain.aiLabel)).toBeNull();
+    expect(
+      row.getByRole('button', { name: new RegExp(`${en.farmer.explain.button}: ${en.farmer.whyParts.evidence}`) }),
+    ).not.toBeNull();
+  });
+  // review of PR #54: a 502 also covers timeouts, rate limits and the spend limit, so the text names no cause
+  it('says only that the part could not be reworded on a 502', async () => {
+    answer(502, { detail: 'Bad Gateway' });
+    const { row } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.why) }));
+    expect(await row.findByText('Không viết lại được đoạn này. Hãy đọc đoạn gốc ở trên.')).not.toBeNull();
+    expect(en.farmer.explain.refused).toBe('Could not reword this part. Please read the text above.');
+  });
+  it.each([
+    [502, 'refused'],
+    [503, 'busy'],
+    [500, 'failed'],
+  ] as const)('says what happened on a %i and keeps the button', async (status, key) => {
+    answer(status, { detail: 'x' });
+    const { row } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.gaps) }));
+    expect(await row.findByText(vi.farmer.explain[key])).not.toBeNull();
+    expect(row.queryByText(vi.farmer.explain.aiLabel)).toBeNull();
+    expect(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.gaps) })).not.toBeNull();
+  });
+});
+
+// D-175: per crop, the lowest to the highest of its TCVN 8641 rows, labelled "by region", with the TCVN source; FAO
+// stays out. Rows from /api/compare (2026-11-15) for the usual plan (spring rice: Trung bộ x2 and Bắc bộ, then an FAO
+// row; black bean not listed; sweet potato one row) and cc1 (peanut one row and an FAO row; mung bean not listed).
+describe('card head water line', () => {
+  afterEach(cleanup);
+  const m3 = { vi: 'm3/ha', en: 'm3/ha' };
+  const mm = { vi: 'mm', en: 'mm' };
+  // the note every TCVN rice row carries (rules/crops.yaml)
+  const RICE_NOTE = {
+    vi: 'Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
+    en: 'Maintenance irrigation only, land preparation not included. The standard does not say whether Nghệ An belongs to Trung bộ or Bắc bộ.',
+  };
+  type Row = [string, 'to_apply' | 'crop_uses' | 'not_listed', string | null, typeof RICE_NOTE?];
+  const PLANS: Record<string, { crops: [string, string][]; water: Row[] }> = {
+    usual: {
+      crops: [
+        ['usual_spring_rice', 'Lúa'],
+        ['usual_summer_autumn_black_bean', 'Đậu đen xanh lòng'],
+        ['usual_autumn_winter_sweet_potato', 'Khoai lang'],
+      ],
+      water: [
+        ['usual_spring_rice', 'to_apply', '6,500-7,500', RICE_NOTE],
+        ['usual_spring_rice', 'to_apply', '6,500-7,500', RICE_NOTE],
+        ['usual_spring_rice', 'to_apply', '6,000-7,000', RICE_NOTE],
+        ['usual_spring_rice', 'crop_uses', '450-700'],
+        ['usual_summer_autumn_black_bean', 'not_listed', null],
+        ['usual_autumn_winter_sweet_potato', 'to_apply', '1,200-1,400'],
+      ],
+    },
+    cc1: {
+      crops: [
+        ['cc1_spring_peanut', 'Lạc'],
+        ['cc1_summer_autumn_mung_bean', 'Đậu xanh'],
+      ],
+      water: [
+        ['cc1_spring_peanut', 'to_apply', '2,000'],
+        ['cc1_spring_peanut', 'crop_uses', '500-700'],
+        ['cc1_summer_autumn_mung_bean', 'not_listed', null],
+      ],
+    },
+  };
+  const line = (id: 'usual' | 'cc1', languages = ['vi-VN', 'vi']) => {
+    Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === id);
+    const base = plan?.calendar[0];
+    if (!plan || !base) throw new Error('no plan');
+    const { crops, water } = PLANS[id] ?? { crops: [], water: [] };
+    plan.calendar = crops.map(([key, name]) => ({ ...base, crop_key: key, crop: { vi: name, en: name } }));
+    plan.water = water.map(([key, measure, v, note]) => ({
+      crop_key: key,
+      measure,
+      value:
+        v === null
+          ? null
+          : {
+              value: v,
+              unit: measure === 'crop_uses' ? mm : m3,
+              source_ids: [measure === 'crop_uses' ? 'R-M02' : 'R-W15'],
+            },
+      scope: null,
+      note: note ?? null,
+    }));
+    res.sources = {
+      ...res.sources,
+      'R-W15': { ...res.sources['R-P02'], id: 'R-W15', citation: { vi: 'TCVN 8641:2011', en: 'TCVN 8641:2011' } },
+      'R-M02': { ...res.sources['R-P02'], id: 'R-M02' },
+    } as typeof res.sources;
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const box = document.querySelector(`[data-testid="card-${id}-water-line"]`);
+    if (!box) throw new Error('no water line');
+    const values = [...box.querySelectorAll('button[data-value]')].map((e) => e.getAttribute('data-value'));
+    return { text: box.textContent ?? '', values };
+  };
+  it('spans the TCVN rows of each crop, says no figure without one and leaves FAO out (usual plan)', () => {
+    const { text, values } = line('usual');
+    expect(text.startsWith('Nước phải tưới (TCVN 8641, tùy vùng và cách gieo cấy)')).toBe(true);
+    expect(values).toEqual(['6.000-7.500 m³/ha', '1.200-1.400 m³/ha']);
+    expect(text.indexOf('Lúa')).toBeLessThan(text.indexOf('Đậu đen xanh lòng'));
+    expect(text.indexOf('Đậu đen xanh lòng')).toBeLessThan(text.indexOf('Khoai lang'));
+    expect(text).toContain('Đậu đen xanh lòng: nguồn không có số');
+    expect(text).not.toContain('450');
+  });
+  // second review of PR #54: without the rice note the head's range reads lower than the water a farmer needs
+  it("says the rice rows' shared TCVN note, short, right after the rice range", () => {
+    const { text } = line('usual');
+    const range = text.indexOf('6.000-7.500');
+    const note = text.indexOf('(Chỉ nước tưới dưỡng, không kể nước làm đất.)');
+    expect(note).toBeGreaterThan(range);
+    expect(note).toBeLessThan(text.indexOf('Đậu đen xanh lòng'));
+    expect(text).not.toContain('Tiêu chuẩn không nói');
+    expect(text.split('Chỉ nước tưới dưỡng')).toHaveLength(2);
+  });
+  it('shows the one TCVN value of peanut (cc1), in English as given', () => {
+    expect(line('cc1').values).toEqual(['2.000 m³/ha']);
+    cleanup();
+    const en = line('cc1', ['en-GB', 'en']);
+    expect(en.values).toEqual(['2,000 m³/ha']);
+    expect(en.text).toContain('Đậu xanh: no figure in the source');
+    expect(en.text.startsWith('Water to apply (TCVN 8641, by region and planting method)')).toBe(true);
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+  });
+  it('opens the TCVN source of the rows it spans', () => {
+    line('usual');
+    const button = [...document.querySelectorAll('button[data-value]')].find(
+      (e) => e.getAttribute('data-value') === '6.000-7.500 m³/ha',
+    );
+    if (!(button instanceof HTMLElement)) throw new Error('no button');
+    expect(document.body.textContent).not.toContain('TCVN 8641:2011');
+    fireEvent.click(button);
+    expect(document.body.textContent).toContain('TCVN 8641:2011');
   });
 });
