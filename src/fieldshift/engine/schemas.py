@@ -297,7 +297,7 @@ class CompareRequest(Contract):
     province: Province
     land: Land
     # the body is a trust boundary: whole numbers only, at most the 30 years of 1995-2024 (UI-UX-SPEC §11 YearRow)
-    years: list[StrictInt] = Field(max_length=LAST_YEAR - FIRST_YEAR + 1)
+    years: list[StrictInt] = Field(min_length=1, max_length=LAST_YEAR - FIRST_YEAR + 1)  # UI-UX-SPEC §6b rules 3, 5
     priority: Priority
 
     @model_validator(mode="after")
