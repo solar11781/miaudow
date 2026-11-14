@@ -49,7 +49,7 @@ function Hero() {
     gsap.from('[data-letterbox]', { scaleY: 1, duration: 1.7, ease: EASE.calm, delay: 0.15 });
     gsap.from('[data-hero-stage]', { scale: 1.16, duration: 2.8, ease: EASE.heavy });
     gsap.to('[data-hero-stage]', { yPercent: 14, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } });
-    gsap.from('[data-hero-after]', { autoAlpha: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
+    gsap.from('[data-hero-after]', { opacity: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
   }, [t.home.titleA]);
 
   return (

@@ -221,7 +221,7 @@ function buildTimeline(scope: HTMLElement, n: Fmt, rest: Record<Craft['key'], Re
   master.add(loop, 0);
   // autoRound: false, or GSAP rounds the dash offset (a px value) to 0 or 1 and the border pops in instead of tracing.
   master.from(q('[data-outline]'), { strokeDashoffset: 1, fillOpacity: 0, autoRound: false, duration: a.tOut - a.tIn + 0.6, ease: EASE.calm }, a.tIn - 0.3);
-  master.from(q('[data-place]'), { autoAlpha: 0, y: 10, duration: 1.2, ease: EASE.calm }, a.tOut);
+  master.from(q('[data-place]'), { opacity: 0, y: 10, duration: 1.2, ease: EASE.calm }, a.tOut);
 
   // When the motion is reverted (lite mode, reduced motion, unmount) the readout goes back to the still frame.
   gsap.context(() => () => {

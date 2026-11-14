@@ -72,7 +72,7 @@ export function revealSections(scope: Element) {
   });
   scope.querySelectorAll('[data-stagger]').forEach((group) => {
     gsap.from(group.children, {
-      autoAlpha: 0, y: 28, duration: 0.9, ease: EASE.heavy, stagger: 0.08,
+      opacity: 0, y: 28, duration: 0.9, ease: EASE.heavy, stagger: 0.08,
       scrollTrigger: { trigger: group, start: 'top 88%', once: true },
     });
   });
