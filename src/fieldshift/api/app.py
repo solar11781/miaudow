@@ -6,8 +6,10 @@ GET /api/figures/nghe_an_grid.svg (UI-UX-SPEC §11b item 4), the privacy notice 
 files and artifacts are read once when the app is created, so a broken or missing file stops the start instead of
 failing a farmer's request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API
 (FR-15), is the one stated exception to NFR-01: off by default, it answers 503 until it is turned on, and also while
-its own thread limit is full (explain.py). Invalid input gets HTTP 422 (04-TECH-DESIGN §3); an unexpected error gets a
-generic 500 without internals. The same service serves the built frontend (frontend/dist): every built file, and index.html
+its own thread limit is full (explain.py). POST /api/copilot, member B's copilot (copilot.py, D-172), follows the same
+rules: it answers 503 unless FIELDSHIFT_COPILOT is 1 and while its own thread limit is full, and it calls the Claude
+API only when ANTHROPIC_API_KEY is set; without the key it answers from our own data. Invalid input gets HTTP 422
+(04-TECH-DESIGN §3); an unexpected error gets a generic 500 without internals. The same service serves the built frontend (frontend/dist): every built file, and index.html
 for any other path outside /api (D-102, D-166).
 Run: uvicorn fieldshift.api.app:app --no-access-log --no-server-header (D-92: no request log).
 """
@@ -46,6 +48,8 @@ from fieldshift.api.accounts import (
     SignInConfig,
     accounts_from,
 )
+from fieldshift.api.copilot import COPILOT_LIMIT, CopilotRequest, Corpus, copilot_client, copilot_on, load_corpus
+from fieldshift.api.copilot import answer as copilot_answer
 from fieldshift.api.explain import EXPLAIN_LIMIT, ExplainError, ExplainRequest, claude_client, explain, shown_text
 from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
@@ -299,6 +303,36 @@ async def _explain(
     return _respond(_json(reply))
 
 
+async def _copilot(
+    request: Request,
+    corpus: Corpus | None,
+    claude: Anthropic | None,
+    slots: anyio.CapacityLimiter,
+    threads: anyio.CapacityLimiter,
+) -> Response:
+    """As _explain: 503 while off or while every slot is taken (without waiting), the work on its own limiter."""
+    if corpus is None:
+        return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+    body = await _body(request, CopilotRequest)
+    try:
+        slots.acquire_nowait()
+    except anyio.WouldBlock:
+        return JSONResponse({"detail": "Service Unavailable"}, status_code=503)
+    try:
+        reply = await anyio.to_thread.run_sync(copilot_answer, body, corpus, claude, limiter=threads)
+    finally:
+        slots.release()
+    return _respond(_json(reply))
+
+
+def _health_body(health: HealthResponse, corpus: Corpus | None, claude: Anthropic | None) -> bytes:
+    """The health answer; while the copilot is on it names its engine, which member B's page reads to call it."""
+    if corpus is None:
+        return _json(health)
+    engine = {"engine": "deterministic" if claude is None else "claude", "configured": claude is not None}
+    return json.dumps({**health.model_dump(mode="json"), "copilot": engine}).encode()
+
+
 def _read_every_year_row(compare_data: CompareData) -> None:
     """Compare once with every year, so a missing year row stops the start, not a farmer's request."""
     every_year = list(range(FIRST_YEAR, LAST_YEAR + 1))
@@ -356,7 +390,6 @@ class SecurityHeaders:
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
-    health_body = _json(_artifact_versions(base / "artifacts"))
     past_body = {province: _json(past_years(province, base)) for province in get_args(Province)}
     method_body = _json(method(base))
     privacy_body = _privacy_page(load_privacy_texts(base))
@@ -365,10 +398,14 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     _read_every_year_row(compare_data)
     claude = claude_client(os.environ)
     explain_slots, explain_threads = anyio.CapacityLimiter(EXPLAIN_LIMIT), anyio.CapacityLimiter(EXPLAIN_LIMIT)
+    corpus = load_corpus(base) if copilot_on(os.environ) else None
+    copilot_claude = copilot_client(os.environ)
+    copilot_slots, copilot_threads = anyio.CapacityLimiter(COPILOT_LIMIT), anyio.CapacityLimiter(COPILOT_LIMIT)
+    health_body = _health_body(_artifact_versions(base / "artifacts"), corpus, copilot_claude)
 
     app = FastAPI(title="Field Shift API", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(RequestValidationError, _unprocessable)
-    app.add_exception_handler(ExplainError, _bad_gateway)
+    app.add_exception_handler(ExplainError, _bad_gateway)  # also the copilot's CopilotError
     app.add_exception_handler(Exception, _internal_error)
     app.add_middleware(SecurityHeaders)
 
@@ -388,6 +425,10 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     @app.post("/api/explain")
     async def explain_route(request: Request) -> Response:
         return await _explain(request, compare_data, claude, explain_slots, explain_threads)
+
+    @app.post("/api/copilot")
+    async def copilot_route(request: Request) -> Response:
+        return await _copilot(request, corpus, copilot_claude, copilot_slots, copilot_threads)
 
     @app.get("/api/method")
     def method_route() -> Response:
