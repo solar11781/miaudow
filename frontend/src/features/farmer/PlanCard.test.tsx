@@ -66,3 +66,25 @@ describe('card warnings', () => {
     expect(card).toContain(vi.farmer.priceYearNotStated); // the fixture plan states no price year
   });
 });
+
+// review 2026-11-14: rule names on the cards are the API's rules[].label, never a second copy in the frontend
+describe('rule names', () => {
+  afterEach(cleanup);
+  it('come from the response', () => {
+    const res = validateCompare(compare(), body);
+    res.rules = res.rules.map((r) => ({ ...r, label: { vi: `nhãn ${r.code}`, en: `label ${r.code}` } }));
+    const plan = res.plans[2];
+    if (!plan) throw new Error('no plan');
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const heads = [...document.querySelectorAll('thead th')].map((e) => e.textContent);
+    for (const code of ['heavy_rain', 'heat', 'cold', 'drought_rain_consecutive', 'drought_rain_any2']) {
+      expect(heads).toContain(`nhãn ${code}`);
+    }
+  });
+});

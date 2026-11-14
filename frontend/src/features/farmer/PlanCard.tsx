@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import type { CompareResponse, Plan, Priority, RuleCode, Stability, Value } from '../../types';
-import { RULES } from '../../domain/hazards';
+import type { CompareResponse, Plan, Priority, Rule, RuleCode, Stability, Value } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
@@ -116,19 +115,24 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   );
 }
 
-function ShareTable({ plan, rules, refs }: { plan: Plan; rules: RuleCode[]; refs: ApiRefs }) {
+/** Shares per crop and picked year for `codes`; the rule names are the response's own labels. */
+function ShareTable({ plan, codes, rules, refs }: { plan: Plan; codes: RuleCode[]; rules: Rule[]; refs: ApiRefs }) {
   const t = useT();
   const pick = usePick();
   if (!plan.exposure.length) return null;
+  const label = (r: RuleCode) => {
+    const rule = rules.find((x) => x.code === r);
+    return rule ? pick(rule.label) : r;
+  };
   return (
     <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.farmer.rows.weather}>
       <table className={s.wTable}>
         <thead>
           <tr>
             <th scope="col">{t.farmer.crop}</th>
-            {rules.map((r) => (
+            {codes.map((r) => (
               <th key={r} scope="col">
-                {pick(RULES[r].short)}
+                {label(r)}
               </th>
             ))}
           </tr>
@@ -140,12 +144,12 @@ function ShareTable({ plan, rules, refs }: { plan: Plan; rules: RuleCode[]; refs
                 <th scope="row">
                   {pick(c.crop)} · {y.year}
                 </th>
-                {rules.map((r) => {
+                {codes.map((r) => {
                   const v = y.shares[r];
                   return (
                     <td key={r} data-rule={r}>
                       {v ? (
-                        <SourceValue {...refs.share(r, v, `${pick(RULES[r].name)} · ${pick(c.crop)} · ${y.year}`)} />
+                        <SourceValue {...refs.share(r, v, `${label(r)} · ${pick(c.crop)} · ${y.year}`)} />
                       ) : (
                         <span className="muted">{t.common.notAvailable}</span>
                       )}
@@ -212,7 +216,7 @@ function RiceBlock({ st, refs }: { st: Stability; refs: ApiRefs }) {
   );
 }
 
-function WeatherRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boolean }) {
+function WeatherRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) {
   const t = useT();
   const pick = usePick();
   const rice = plan.stability ?? [];
@@ -225,7 +229,7 @@ function WeatherRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: b
       note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined}
       highlight={highlight}
     >
-      <ShareTable plan={plan} rules={WEATHER_RULES} refs={refs} />
+      <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
       {rice.length > 0 && (
         <div className={s.sub}>
           <p className={s.subHead}>{t.farmer.rows.rice}</p>
@@ -244,12 +248,12 @@ function WeatherRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: b
   );
 }
 
-function WaterRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boolean }) {
+function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) {
   const t = useT();
   const pick = usePick();
   return (
     <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight}>
-      <ShareTable plan={plan} rules={DROUGHT_RULES} refs={refs} />
+      <ShareTable plan={plan} codes={DROUGHT_RULES} rules={res.rules} refs={refs} />
       <ul className={s.kv}>
         {plan.calendar.map((c) =>
           plan.water
@@ -456,8 +460,8 @@ export function PlanCard({
           )}
         </div>
         <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} />
-        <WeatherRow plan={plan} refs={refs} highlight={priority === 'stability'} />
-        <WaterRow plan={plan} refs={refs} highlight={priority === 'water'} />
+        <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} />
+        <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} />
         <LandRow plan={plan} refs={refs} highlight={priority === 'land'} />
         <WhyRows plan={plan} refs={refs} />
       </div>
