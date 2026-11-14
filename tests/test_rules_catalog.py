@@ -290,8 +290,7 @@ def test_crop_keys_ids_and_dates() -> None:
 
 # P-03 running text, pp. [4] and [5]: the authors' term, season name and units for the rice control
 P03_CONTROL_TEXT = (
-    "vụ đông xuân 2021",
-    "hiệu quả kinh tế 5,36 triệu đồng/ha",
+    "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha",  # season name of the copy glossary
     "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha",
 )
 
@@ -344,6 +343,15 @@ def test_p02_crops_dates_and_money_are_the_reported_values() -> None:
             assert span["sow_to"] == span["sow_from"]  # P-02 gives one sowing date per crop
     assert found == P02_CROPS
     assert [s["crop_id"] for s in plans()["usual_p03"]["seasons"]] == ["rice", "rice"]  # P-03 "Lúa - lúa - bỏ hoang"
+
+
+SHORT_SPRING = re.compile(r"(?<!Đông )\b[Vv]ụ Xuân")  # GLOSSARY.md: the spring season is "Vụ Đông Xuân"
+
+
+def test_spring_season_is_named_as_the_glossary_names_it() -> None:
+    for name in ("rotations.yaml", "method.yaml"):
+        text = (RULES / name).read_text(encoding="utf-8")
+        assert not SHORT_SPRING.search(text), name
 
 
 def test_plan_risks() -> None:
