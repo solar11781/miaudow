@@ -99,7 +99,7 @@
 - crop_id: black_bean
   name: {vi: "Đậu đen xanh lòng", en: "Black bean"}
   is_legume: true
-  legume_source_ids: [R-B01, R-B02]  # GRIN 467840 Vigna unguiculata Biflora Group; R-B02: the Vietnamese name
+  legume_source_ids: [R-B01, R-B02]  # GRIN 467840 Vigna unguiculata Biflora Group; R-B02: đậu đen = Vigna cylindrica Skeels, Fabaceae
   water_facts: []
 - crop_id: black_sesame
   name: {vi: "Vừng đen", en: "Black sesame"}
