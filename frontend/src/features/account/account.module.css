@@ -1,0 +1,87 @@
+/* Sign-in and saved answers (UI-UX-SPEC §12c): text at the body size (H6), every tap target at least 44 px (H7). */
+.page {
+  max-width: 44rem;
+  --gap: var(--s-5);
+  font-size: var(--t-body);
+}
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.notice ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  --gap: var(--s-2);
+}
+.note {
+  padding: var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--hl-bg);
+  color: var(--hl-fg);
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* Google draws its large button 40 px high; scaled by 1.1 its tap area is 44 px (H7) */
+.google {
+  min-height: 48px;
+  transform: scale(1.1);
+  transform-origin: left top;
+}
+.sets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.set {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.set p {
+  margin: 0;
+}
+.account {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-4);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 2px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.confirm p {
+  margin: 0;
+}
+.save {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin-block: var(--s-4);
+}
+.save p {
+  margin: 0;
+}
