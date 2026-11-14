@@ -355,7 +355,7 @@ export const vi = {
       button: 'Giải thích dễ hiểu',
       loading: 'Đang viết lại…',
       aiLabel: 'Do AI (Claude) viết lại cho dễ hiểu, có thể sai. Đoạn gốc ở trên mới là nguồn.',
-      refused: 'Không viết lại được đoạn này cho đúng. Hãy đọc đoạn gốc ở trên.',
+      refused: 'Không viết lại được đoạn này. Hãy đọc đoạn gốc ở trên.',
       busy: 'Chức năng này đang bận hoặc đang tắt. Hãy thử lại sau.',
       failed: 'Không giải thích được lúc này. Hãy thử lại.',
     },

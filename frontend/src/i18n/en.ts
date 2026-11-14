@@ -357,7 +357,7 @@ export const en: Messages = {
       button: 'Explain simply',
       loading: 'Rewording…',
       aiLabel: 'Reworded by AI (Claude) to be simpler; it can be wrong. The text above is the source.',
-      refused: 'This part could not be reworded correctly. Please read the text above.',
+      refused: 'Could not reword this part. Please read the text above.',
       busy: 'This is busy or turned off. Please try again later.',
       failed: 'Could not explain this now. Please try again.',
     },

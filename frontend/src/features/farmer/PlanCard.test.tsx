@@ -370,6 +370,14 @@ describe('explain simply', () => {
       row.getByRole('button', { name: new RegExp(`${en.farmer.explain.button}: ${en.farmer.whyParts.evidence}`) }),
     ).not.toBeNull();
   });
+  // review of PR #54: a 502 also covers timeouts, rate limits and the spend limit, so the text names no cause
+  it('says only that the part could not be reworded on a 502', async () => {
+    answer(502, { detail: 'Bad Gateway' });
+    const { row } = card(true);
+    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.why) }));
+    expect(await row.findByText('Không viết lại được đoạn này. Hãy đọc đoạn gốc ở trên.')).not.toBeNull();
+    expect(en.farmer.explain.refused).toBe('Could not reword this part. Please read the text above.');
+  });
   it.each([
     [502, 'refused'],
     [503, 'busy'],
