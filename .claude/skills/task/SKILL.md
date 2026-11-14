@@ -19,7 +19,9 @@ Structure based on Matt Pocock's `implement` skill (mattpocock/skills, MIT), cha
 - Pull the latest work of both members before choosing or starting an item (team, 2026-11-14): pull the planning
   repository's working branch and `git fetch origin` here, then read the item's `- in progress:`, `- done:` and
   `- moved to` lines in its queue draft and the open pull requests (`gh pr list`). If another member has marked the
-  item, do not start it; pick the next one or ask. Without the planning repository, ask the team who is on what.
+  item, do not start it: ask the team (under the autopilot: park it and return to the autopilot). A `- moved to
+  <member> (<who decided>, <date time>)` line, added by the team under the item, gives it to that member. Without the
+  planning repository, ask the team who is on what.
 - Find the specs (see "Specs" in `CLAUDE.md`).
 
 ## 1. Understand
