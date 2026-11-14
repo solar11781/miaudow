@@ -602,3 +602,9 @@
     display: none;
   }
 }
+.noteList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}

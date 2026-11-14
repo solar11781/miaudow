@@ -244,7 +244,6 @@ export const vi = {
     },
     wetNote:
       'Các cách trồng trong ứng dụng được thử trên ruộng thiếu nước. Chưa có cách nào được thử cho ruộng chủ động nước, nên ứng dụng không đưa ra so sánh cho loại ruộng này.',
-    moreToWeigh: (n: number) => `Điều cần cân nhắc${n ? ` (${n})` : ''}, lý do và câu hỏi cho cán bộ`,
     dryNote:
       'Thử nghiệm làm trên “đất lúa kém hiệu quả, thường xuyên khô hạn” ở Lưu Sơn, Đô Lương. Ruộng nhà bạn có thể giống loại đất này; hỏi cán bộ khuyến nông để chắc chắn.',
     askNote: 'Bạn vẫn xem tiếp được. Nhớ hỏi cán bộ khuyến nông xem ruộng nhà mình có giống ruộng thử nghiệm không.',

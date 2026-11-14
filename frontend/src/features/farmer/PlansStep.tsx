@@ -104,10 +104,6 @@ export function PlansStep() {
   return (
     <StepShell step={4} title={t.farmer.plansTitle} help={t.farmer.plansLead} wide>
       <div className={s.plansMeta}>
-        <p className={s.notForecast}>
-          <Icon name="alert" size={18} />
-          {t.common.notForecast}
-        </p>
         <div className={s.pickedYears}>
           {state.years.map((y) => (
             <span key={y} className={s.yearTag}>
@@ -125,20 +121,16 @@ export function PlansStep() {
           </p>
         )}
       </div>
-      <p className={s.support}>
-        <Icon name="user" size={20} />
-        {t.common.support}
-      </p>
-      {state.land === 'ask' && (
-        <p className={s.note}>
-          <Icon name="user" size={20} />
-          {t.farmer.askNote}
-        </p>
-      )}
-      <p className={s.note}>
+      {/* one notice box instead of four (walkthrough 2026-11-14); each card repeats its warnings (H17) */}
+      <div className={s.note}>
         <Icon name="alert" size={20} />
-        {t.farmer.trialNote}
-      </p>
+        <ul className={s.noteList}>
+          <li>{t.common.notForecast}</li>
+          <li>{t.farmer.trialNote}</li>
+          {state.land === 'ask' && <li>{t.farmer.askNote}</li>}
+          <li>{t.common.support}</li>
+        </ul>
+      </div>
 
       {state.land === 'reliable' && (
         <p className={s.note}>

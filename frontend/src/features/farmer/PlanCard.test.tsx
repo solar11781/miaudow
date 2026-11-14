@@ -88,3 +88,15 @@ describe('rule names', () => {
     }
   });
 });
+
+// UI-UX-SPEC section 9: the check row is "always open (no disclosure)"; the why row is a disclosure, collapsed
+describe('check and why rows', () => {
+  afterEach(cleanup);
+  it('keep the risks open and fold only the reasons', () => {
+    const id = renderCard();
+    expect(document.querySelector(`[data-testid="card-${id}-row-checks"]`)?.closest('details')).toBeNull();
+    const why = document.querySelector(`[data-testid="card-${id}-row-why"]`)?.closest('details');
+    expect(why).not.toBeNull();
+    expect(why?.open).toBe(false);
+  });
+});

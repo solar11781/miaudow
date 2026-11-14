@@ -382,18 +382,13 @@ function CardHead({ plan }: { plan: Plan }) {
   );
 }
 
-/** Risks and the four reasons of the API's Why (UI-UX-SPEC section 9 rows check and why). */
+/** The risks, always open, then the four reasons of the API's Why behind a disclosure (UI-UX-SPEC section 9). */
 function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
   const t = useT();
   const pick = usePick();
   const { why } = plan;
   return (
-    <details className={s.more}>
-      <summary>
-        <Icon name="alert" size={18} />
-        {t.farmer.moreToWeigh(why.risks.length)}
-        <Icon name="chevronDown" size={18} />
-      </summary>
+    <>
       <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
         {why.risks.length ? (
           <ul className={s.risks}>
@@ -411,15 +406,22 @@ function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
         )}
         <p className={s.why}>{t.farmer.localReview}</p>
       </Row>
-      <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
-        {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
-          <p key={k} className={s.why}>
-            <strong>{t.farmer.whyParts[k]}: </strong>
-            {pick(why[k])}
-          </p>
-        ))}
-      </Row>
-    </details>
+      <details className={s.more}>
+        <summary>
+          <Icon name="question" size={18} />
+          {t.farmer.rows.why}
+          <Icon name="chevronDown" size={18} />
+        </summary>
+        <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
+          {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
+            <p key={k} className={s.why}>
+              <strong>{t.farmer.whyParts[k]}: </strong>
+              {pick(why[k])}
+            </p>
+          ))}
+        </Row>
+      </details>
+    </>
   );
 }
 

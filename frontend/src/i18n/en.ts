@@ -248,7 +248,6 @@ export const en: Messages = {
     },
     wetNote:
       'The plans in this app were tested on water-short fields. None was tested for fields with reliable water, so the app offers no comparison for this kind of field.',
-    moreToWeigh: (n: number) => `What to weigh${n ? ` (${n})` : ''}, reasons and questions for the officer`,
     dryNote:
       'The trial used “low-yield rice land, often in drought” in Lưu Sơn, Đô Lương. Your field may be like that land; ask the extension officer to be sure.',
     askNote: 'You can carry on. Remember to ask the officer whether your field is like the trial field.',
