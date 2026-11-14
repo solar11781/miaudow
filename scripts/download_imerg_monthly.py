@@ -3,22 +3,22 @@
 Usage: PYTHONPATH=src python scripts/download_imerg_monthly.py
 Set FIELDSHIFT_SKIP_IMERG=1 to skip this stage while the rain check is not built (team, 2026-11-14).
 Raw OPeNDAP ASCII replies go unchanged to data/raw/imerg_monthly/ (gitignored); each new file gets a row in
-data/MANIFEST.csv. Needs the Earthdata token (network secret for urs.earthdata.nasa.gov). Failures are reported,
+data/MANIFEST.csv. Needs an Earthdata user token in EARTHDATA_TOKEN (sent only to NASA Earthdata hosts over https,
+fieldshift.data.earthdata). Failures are reported,
 never filled (D-135; 05-DATA-CONTRACTS §5c).
 """
 
 import csv
 import hashlib
-import http.cookiejar
 import os
 import sys
 import time
 import urllib.error
-import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 
 from fieldshift.data import imerg
+from fieldshift.data.earthdata import earthdata_opener
 from fieldshift.data.manifest import append_rows
 
 OUT = Path("data/raw/imerg_monthly")
@@ -32,7 +32,7 @@ if os.environ.get("FIELDSHIFT_SKIP_IMERG") == "1":
 with open("data/processed/cell_weights.csv", newline="") as f:
     cells = [(float(r["lat"]), float(r["lon"])) for r in csv.DictReader(f) if r["province_nso"] == "Nghe An"]
 box = imerg.box_for_cells(cells)
-opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+opener = earthdata_opener()
 
 
 def get(url: str, retries: int = 4) -> str:
