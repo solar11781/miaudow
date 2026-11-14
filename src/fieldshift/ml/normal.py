@@ -85,12 +85,16 @@ def compare_normal_methods(df: pd.DataFrame, before_year: int) -> dict:
         s: {m: float(e[df.loc[rows, "season"] == s].mean()) for m, e in err.items()}
         for s in sorted(df.loc[rows, "season"].unique())
     }
-    best = min(mse, key=mse.get)
-    tie = round(mse["mean3"], TIE_DECIMALS) == round(mse[best], TIE_DECIMALS)
     return {
         "years": years,
         "n_rows": int(rows.sum()),
         "mse": mse,
         "mse_by_season": by_season,
-        "choice": "mean3" if tie else best,
+        "choice": pick_normal_method(mse),
     }
+
+
+def pick_normal_method(mse: dict[str, float]) -> str:
+    """The method with the lower error; errors equal to 3 decimals keep the 3-year mean (team 2026-11-14)."""
+    best = min(mse, key=mse.get)
+    return "mean3" if round(mse["mean3"], TIE_DECIMALS) == round(mse[best], TIE_DECIMALS) else best
