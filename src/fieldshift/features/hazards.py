@@ -31,7 +31,7 @@ CLIM_YEARS = (1991, 2020)  # "trung bình nhiều năm": NCHMF rainfall TBNN per
 RULES = ("heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold")
 
 
-def _longest_run(mask: np.ndarray | pd.Series) -> int:
+def longest_run(mask: np.ndarray | pd.Series) -> int:
     best = run = 0
     for flag in np.asarray(mask, dtype=bool):
         run = run + 1 if flag else 0
@@ -48,7 +48,7 @@ def heat(tmax: pd.Series) -> bool:
     47.1: [35.0, 37.0], (37.0, 39.0], (39.0, 41.0] or above 41.0 C. A run that crosses bands is not one "đợt" of
     either band; a qualifying run inside one band counts, also inside a longer hot spell."""
     bands = [(tmax >= HEAT_C) & (tmax <= HEAT_TOP_A)] + [(tmax > lo) & (tmax <= hi) for lo, hi in HEAT_BANDS_BCD]
-    return any(_longest_run(b) >= HEAT_DAYS for b in bands)
+    return any(longest_run(b) >= HEAT_DAYS for b in bands)
 
 
 def cold(tmean: pd.Series) -> bool:
@@ -57,7 +57,7 @@ def cold(tmean: pd.Series) -> bool:
     that crosses bands is not one "đợt" of either band; a qualifying run inside one band counts, also inside a longer
     cold spell that touches the other band."""
     band_a = (tmean > SEVERE_COLD_C) & (tmean <= COLD_C)
-    return _longest_run(band_a) >= COLD_DAYS or _longest_run(tmean <= SEVERE_COLD_C) >= SEVERE_COLD_DAYS
+    return longest_run(band_a) >= COLD_DAYS or longest_run(tmean <= SEVERE_COLD_C) >= SEVERE_COLD_DAYS
 
 
 def monthly_climatology(rain: pd.Series) -> pd.Series:

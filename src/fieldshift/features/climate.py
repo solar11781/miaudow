@@ -12,7 +12,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from fieldshift.features.hazards import _longest_run, drought_any2, drought_consecutive, drought_months
+from fieldshift.features.hazards import drought_any2, drought_consecutive, drought_months, longest_run
 
 DRY_DAY_MM = 1.0  # ETCCDI CDD: dry day = precipitation < 1 mm
 RX5_DAYS = 5  # ETCCDI Rx5day: highest total over 5 consecutive days
@@ -49,7 +49,7 @@ def season_features(daily: pd.DataFrame, start: date, end: date) -> dict:
     rx5 = float(pd.Series(rain).rolling(RX5_DAYS).sum().max()) if len(rain) >= RX5_DAYS else float("nan")
     return {
         "precip_sum_mm": float(rain.sum()),
-        "dry_spell_max_d": _longest_run(rain < DRY_DAY_MM),
+        "dry_spell_max_d": longest_run(rain < DRY_DAY_MM),
         "heavy_rain_d": int((rain >= R20_MM).sum()),
         "rx5day_mm": rx5,
         "tmax_mean_c": float(win["T2M_MAX"].mean()),
