@@ -1,0 +1,47 @@
+# PLACEHOLDER FIXTURE for engine tests, not real source facts (05-DATA-CONTRACTS §8 layout). R-P02 is listed but
+# not used by the past-years fixture rows, so the test sees that only used ids reach a response.
+- id: R-A01
+  citation: {vi: "[citation]", en: "[citation]"}
+  study_type: {vi: "[study type]", en: "[study type]"}
+  place_years: {vi: "[place, years]", en: "[place, years]"}
+  read_status: "[status]"
+  full_text_read: false
+  limitations: [{vi: "[limitation]", en: "[limitation]"}]
+  url: null
+  nso_credit: false
+- id: R-N01
+  citation: {vi: "[citation]", en: "[citation]"}
+  study_type: {vi: "[study type]", en: "[study type]"}
+  place_years: {vi: "[place, years]", en: "[place, years]"}
+  read_status: "[status]"
+  full_text_read: false
+  limitations: []
+  url: null
+  nso_credit: false
+- id: R-N02
+  citation: {vi: "[citation]", en: "[citation]"}
+  study_type: {vi: "[study type]", en: "[study type]"}
+  place_years: {vi: "[place, years]", en: "[place, years]"}
+  read_status: "[status]"
+  full_text_read: false
+  limitations: []
+  url: null
+  nso_credit: false
+- id: E-019
+  citation: {vi: "[citation]", en: "[citation]"}
+  study_type: {vi: "[study type]", en: "[study type]"}
+  place_years: {vi: "[place, years]", en: "[place, years]"}
+  read_status: null
+  full_text_read: null
+  limitations: []
+  url: null
+  nso_credit: false
+- id: R-P02
+  citation: {vi: "[citation]", en: "[citation]"}
+  study_type: {vi: "[study type]", en: "[study type]"}
+  place_years: {vi: "[place, years]", en: "[place, years]"}
+  read_status: "[status]"
+  full_text_read: false
+  limitations: []
+  url: null
+  nso_credit: false
