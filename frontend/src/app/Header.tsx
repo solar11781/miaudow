@@ -78,7 +78,7 @@ function FarmerHeader() {
   return (
     <header className={`${s.header} ${s.paper}`}>
       <div className={`container ${s.bar}`}>
-        <Link to={local('/')} className={s.brand} viewTransition>
+        <Link to={local('/')} className={s.brand}>
           <BrandMark />
           <span className={s.word}>
             <span className={s.name}>Miaudow</span>
@@ -126,7 +126,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
       ].join(' ')}
     >
       <div className={`container ${s.bar}`}>
-        <Link to={local('/')} className={s.brand} viewTransition>
+        <Link to={local('/')} className={s.brand}>
           <BrandMark />
           <span className={s.word}>
             <span className={s.name}>Miaudow</span>
@@ -139,7 +139,6 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
               key={l.to}
               to={l.to}
               end={l.end}
-              viewTransition
               className={({ isActive }) => [s.link, isActive ? s.active : ''].join(' ')}
             >
               {l.label}
@@ -184,7 +183,6 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
                 key={l.to}
                 to={l.to}
                 end={l.end}
-                viewTransition
                 className={({ isActive }) => [s.menuLink, isActive ? s.active : ''].join(' ')}
               >
                 {l.label}

@@ -164,7 +164,7 @@ export function PlansStep() {
               {y}
             </span>
           ))}
-          <Link to={local({ pathname: '/nong-dan/nam', search })} className={s.editLink} viewTransition>
+          <Link to={local({ pathname: '/nong-dan/nam', search })} className={s.editLink}>
             {t.farmer.yearsTitle}
           </Link>
         </div>

@@ -242,13 +242,6 @@ a {
   transform: translateY(22px);
 }
 
-/* route transitions (View Transitions API) */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 320ms;
-  animation-timing-function: var(--ease-out);
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -261,11 +254,6 @@ a {
   .reveal[data-pre='true'] {
     opacity: 1;
     transform: none;
-  }
-  /* pseudo-elements of the view transition are not matched by the universal selector above (H1, D-155) */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
   }
 }
 :root[data-lite='true'] *,

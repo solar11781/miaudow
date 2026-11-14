@@ -70,7 +70,7 @@ export function StepShell({
   return (
     <div className={[s.shell, wide ? s.wide : ''].join(' ')}>
       <div className={s.top}>
-        <Link to={local({ pathname: prev, search })} className={s.back} viewTransition>
+        <Link to={local({ pathname: prev, search })} className={s.back}>
           <Icon name="arrowLeft" size={20} /> {t.common.back}
         </Link>
         <ol className={s.progress} aria-label={t.farmer.stepOf(step)}>
