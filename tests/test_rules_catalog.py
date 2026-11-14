@@ -251,6 +251,9 @@ def plans() -> dict[str, dict]:
     return by_id(read("rotations.yaml"), "id")
 
 
+INTERNAL_LABEL = re.compile(r"\b[DP]-\d")  # our decision and paper note ids never show on a farmer screen
+
+
 def test_plans_are_the_six_canonical_ids_in_order() -> None:
     entries = read("rotations.yaml")
     assert tuple(p["id"] for p in entries) == PLAN_IDS
@@ -261,7 +264,7 @@ def test_plans_are_the_six_canonical_ids_in_order() -> None:
             assert plan[field], (plan["id"], field)
         for line in plan["limitations"]:
             assert is_text(line), plan["id"]  # UI-UX-SPEC §11: displayed text is a Text in both languages
-            assert not re.search(r"\bD-\d", line["vi"] + line["en"]), line  # no internal decision labels on screen
+            assert not INTERNAL_LABEL.search(line["vi"] + line["en"]), line
         assert plan["study_type"]
 
 
@@ -286,7 +289,11 @@ def test_crop_keys_ids_and_dates() -> None:
 
 
 # P-03 running text, pp. [4] and [5]: the authors' term, season name and units for the rice control
-P03_CONTROL_TEXT = ("vụ đông xuân 2021", "5,36 triệu đồng/ha", "1,16 triệu/ha", "hiệu quả kinh tế")
+P03_CONTROL_TEXT = (
+    "vụ đông xuân 2021",
+    "hiệu quả kinh tế 5,36 triệu đồng/ha",
+    "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha",
+)
 
 
 def test_p02_money_per_crop() -> None:
@@ -299,7 +306,8 @@ def test_p02_money_per_crop() -> None:
             assert "Lợi nhuận = GR - Tổng chi phí vật chất" in money["definition"]["vi"]  # P-03 p.3
             assert is_text(money["text_only"])
             for fragment in P03_CONTROL_TEXT:
-                assert fragment in money["text_only"]["vi"], fragment
+                assert fragment in " ".join(money["text_only"]["vi"].split()), fragment
+            assert "profit 5.36" not in money["text_only"]["en"].lower()  # the article's term is economic return
             assert "profit_per_crop" not in money  # §7: no per-crop money list for P-03
             continue
         assert money["source_id"] == "R-P02"
@@ -343,6 +351,7 @@ def test_plan_risks() -> None:
         cited = set()
         for risk in plan["risks"]:
             assert is_text(risk["text"])
+            assert not INTERNAL_LABEL.search(risk["text"]["vi"] + risk["text"]["en"]), risk
             cited |= set(risk["source_ids"])
         assert ("R-G06" in cited) is (plan_id in NO_RICE_PLANS), plan_id
 
