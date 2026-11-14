@@ -6,37 +6,81 @@ how well our heavy-rain years match years with recorded rice flood damage; its d
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
+from xml.parsers import expat
+
+from fieldshift.data.manifest import MANIFEST, check_recorded
 
 RICE_DAMAGED_FIELD, RICE_DAMAGED_LABEL = "NN01", "Rice area damaged (ha)"  # R-A19 data dictionary (diccionario)
-# R-A19 event types (eventos nombre_en) that name a flood: Lũ, Lũ quét, Lụt; "Storm" and others are left out (E-016)
+# R-A19 event types (eventos nombre_en) that name a flood: Lũ, Lũ quét, Lụt. D-54 checks "recorded rice flood damage",
+# so storm records ("Storm", "Typhoon") and the others are not counted (E-016)
 FLOOD_EVENTS = ("Flood", "Flash flood", "Inundation")
+# memory bound for an untrusted download (a zip can inflate far beyond its size): the recorded export's XML is
+# 19,494,076 bytes (data/MANIFEST.csv version, 2026-11-14), so 64 MiB leaves room for a larger later export
+MAX_XML_BYTES = 64 * 1024 * 1024
+ROW_DEPTH, FIELD_DEPTH = 3, 4  # DESINVENTAR > section > TR > field
 
 
-def _rows(root: ET.Element, section: str) -> list[dict[str, str]]:
-    node = root.find(section)
-    if node is None:
-        raise ValueError(f"DesInventar export has no section {section!r}")
-    return [{c.tag: (c.text or "").strip() for c in r} for r in node]
+def _refuse(*_args: object) -> None:
+    raise ValueError("the export declares a DTD or entities; refused (untrusted download)")
 
 
-def _read_export(zip_path: Path | str) -> ET.Element:
-    """The root of the one XML file of the export zip."""
+def _sections(data: bytes) -> dict[str, list[dict[str, str]]]:
+    """{section: [row {field: text}]} of the export; the parser refuses any DOCTYPE or entity declaration."""
+    parser = expat.ParserCreate()
+    parser.StartDoctypeDeclHandler = _refuse
+    parser.EntityDeclHandler = _refuse
+    sections: dict[str, list[dict[str, str]]] = {}
+    path: list[str] = []
+    text: list[str] = []
+
+    def start(name: str, _attrs: dict) -> None:
+        path.append(name)
+        if len(path) == ROW_DEPTH:
+            sections.setdefault(path[1], []).append({})
+        elif len(path) == FIELD_DEPTH:
+            text.clear()
+
+    def end(name: str) -> None:
+        if len(path) == FIELD_DEPTH:
+            sections[path[1]][-1][name] = "".join(text).strip()
+        path.pop()
+
+    def chars(data: str) -> None:
+        if len(path) == FIELD_DEPTH:
+            text.append(data)
+
+    parser.StartElementHandler, parser.EndElementHandler, parser.CharacterDataHandler = start, end, chars
+    parser.Parse(data, True)
+    return sections
+
+
+def _read_export(zip_path: str, manifest: Path | str) -> dict[str, list[dict[str, str]]]:
+    """The sections of the one XML file of the export zip, after its sha256 matched the manifest."""
+    check_recorded(zip_path, manifest)
     with zipfile.ZipFile(zip_path) as z:
-        members = [n for n in z.namelist() if n.lower().endswith(".xml")]
+        members = [i for i in z.infolist() if i.filename.lower().endswith(".xml")]
         if len(members) != 1:
-            raise ValueError(f"{zip_path}: expected one XML export, found {members}")
-        data = z.read(members[0])
-    if b"<!DOCTYPE" in data or b"<!ENTITY" in data:
-        raise ValueError(f"{zip_path}: the export declares a DTD or entities; refused (untrusted download)")
-    return ET.fromstring(data)  # noqa: S314  no DTD or entity declarations (checked above), so no entity expansion
+            raise ValueError(f"{zip_path}: expected one XML export, found {[i.filename for i in members]}")
+        with z.open(members[0]) as f:
+            data = f.read(MAX_XML_BYTES + 1)  # the header size can be wrong: read at most one byte past the cap
+    if len(data) > MAX_XML_BYTES:
+        raise ValueError(f"{zip_path}: XML export larger than {MAX_XML_BYTES} bytes; refused (untrusted download)")
+    return _sections(data)
 
 
-def rice_flood_damage_years(zip_path: Path | str, province: str, years: range) -> set[int]:
-    """Years in `years` with a flood record (FLOOD_EVENTS) of `province` (lev0 name) whose rice area damaged is > 0."""
-    root = _read_export(zip_path)
+def _rows(sections: dict[str, list[dict[str, str]]], name: str) -> list[dict[str, str]]:
+    if name not in sections:
+        raise ValueError(f"DesInventar export has no section {name!r}")
+    return sections[name]
+
+
+def rice_flood_damage_years(zip_path: str, province: str, years: range, manifest: Path | str = MANIFEST) -> set[int]:
+    """Years in `years` with a flood record (FLOOD_EVENTS) of `province` (lev0 name) whose rice area damaged is > 0.
+
+    zip_path: the path recorded in the manifest; a file whose sha256 is not the recorded one is refused."""
+    root = _read_export(zip_path, manifest)
     labels = {r.get("nombre_campo", "").upper(): r.get("label_campo_en", "") for r in _rows(root, "diccionario")}
     if labels.get(RICE_DAMAGED_FIELD) != RICE_DAMAGED_LABEL:
         raise ValueError(

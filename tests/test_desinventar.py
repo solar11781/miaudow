@@ -5,11 +5,14 @@ eventos, diccionario, fichas, extension; the dictionary labels field NN01 "Rice 
 invented, not DesInventar data.
 """
 
+import csv
+import hashlib
 import zipfile
 from pathlib import Path
 
 import pytest
 
+from fieldshift.data import desinventar
 from fieldshift.data.desinventar import rice_flood_damage_years
 
 DICTIONARY = (
@@ -46,6 +49,24 @@ def _export(tmp_path: Path, records: list[tuple[str, str, str, str, str]], label
     return path
 
 
+def _zip(tmp_path: Path, name: str, xml: bytes) -> Path:
+    path = tmp_path / name
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr(name.replace(".zip", ".xml"), xml)
+    return path
+
+
+def _years(path: Path, province: str = "Nghệ An", record: bool = True) -> set[int]:
+    """rice_flood_damage_years with a toy manifest that records `path` (or records another version of it)."""
+    manifest = path.parent / "MANIFEST.csv"
+    sha = hashlib.sha256(path.read_bytes() if record else b"another version").hexdigest()
+    with open(manifest, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f, lineterminator="\n")
+        w.writerow(["path", "source_id", "table", "title", "url", "retrieved_on", "method", "sha256"])
+        w.writerow([path.as_posix(), "desinventar", "", "toy", "https://x/toy.zip", "2026-11-14", "test", sha])
+    return rice_flood_damage_years(path.as_posix(), province, range(1995, 2009), manifest=manifest)
+
+
 def test_years_with_rice_area_damaged_by_a_flood_flash_flood_or_inundation(tmp_path: Path):
     path = _export(
         tmp_path,
@@ -60,24 +81,37 @@ def test_years_with_rice_area_damaged_by_a_flood_flash_flood_or_inundation(tmp_p
             ("8", "403", "Lũ", "1990", "300"),  # outside the period
         ],
     )
-    assert rice_flood_damage_years(path, "Nghệ An", range(1995, 2009)) == {2000, 2001, 2002}
+    assert _years(path) == {2000, 2001, 2002}
 
 
 def test_unknown_event_province_or_field_label_fails_loudly(tmp_path: Path):
     with pytest.raises(ValueError, match="unknown event"):
-        rice_flood_damage_years(_export(tmp_path, [("1", "403", "Mưa", "2000", "1")]), "Nghệ An", range(1995, 2009))
+        _years(_export(tmp_path, [("1", "403", "Mưa", "2000", "1")]))
     with pytest.raises(ValueError, match="province"):
-        rice_flood_damage_years(_export(tmp_path, []), "Quảng Bình", range(1995, 2009))
+        _years(_export(tmp_path, []), "Quảng Bình")
     with pytest.raises(ValueError, match="NN01"):
-        rice_flood_damage_years(_export(tmp_path, [], label="Rice (ton(s))"), "Nghệ An", range(1995, 2009))
+        _years(_export(tmp_path, [], label="Rice (ton(s))"))
     with pytest.raises(ValueError, match="not a number"):
-        rice_flood_damage_years(_export(tmp_path, [("1", "403", "Lũ", "2000", "n/a")]), "Nghệ An", range(1995, 2009))
+        _years(_export(tmp_path, [("1", "403", "Lũ", "2000", "n/a")]))
 
 
-def test_an_export_with_entity_declarations_is_refused(tmp_path: Path):
-    # security: an untrusted download may declare entities that expand without bound; a real export declares none
-    path = tmp_path / "bad.zip"
-    with zipfile.ZipFile(path, "w") as z:
-        z.writestr("x.xml", '<?xml version="1.0"?><!DOCTYPE a [<!ENTITY e "x">]><a>&e;</a>')
+def test_an_export_with_a_doctype_or_entities_is_refused_inside_the_parser(tmp_path: Path):
+    # security: an untrusted download may declare entities that expand without bound; a real export declares none.
+    # The parser itself refuses, so a UTF-16 file (where a byte search for "<!DOCTYPE" finds nothing) is refused too.
+    entity = '<?xml version="1.0"?><!DOCTYPE a [<!ENTITY e "x">]><a>&e;</a>'
     with pytest.raises(ValueError, match="refused"):
-        rice_flood_damage_years(path, "Nghệ An", range(1995, 2009))
+        _years(_zip(tmp_path, "bad.zip", entity.encode("utf-8")))
+    utf16 = '<?xml version="1.0" encoding="UTF-16"?><!DOCTYPE a><a/>'.encode("utf-16")
+    with pytest.raises(ValueError, match="refused"):
+        _years(_zip(tmp_path, "bad16.zip", utf16))
+
+
+def test_an_oversized_xml_member_is_refused_before_it_is_read(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(desinventar, "MAX_XML_BYTES", 100)
+    with pytest.raises(ValueError, match="larger than"):
+        _years(_zip(tmp_path, "big.zip", b"<a>" + b" " * 200 + b"</a>"))
+
+
+def test_a_download_that_is_not_the_recorded_version_is_refused(tmp_path: Path):
+    with pytest.raises(ValueError, match="does not match"):
+        _years(_export(tmp_path, []), record=False)
