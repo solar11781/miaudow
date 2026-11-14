@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { YEARS } from '../../data';
 import { yearShare } from '../../domain/hazards';
 import { CROPS, PLANS, planHasLegume, planProfitMillion } from '../../domain/plans';
-import { livingDays } from '../../domain/calendar';
 import { SOURCES } from '../../domain/sources';
 import { EVIDENCE_ORDER, type EvidenceKind, type SourceId } from '../../domain/provenance';
 import { Icon } from '../../design-system/Icon';
@@ -72,7 +71,6 @@ function Matrix() {
                 <td>
                   {p.crops.length ? (
                     <span className={s.land}>
-                      <span>{t.farmer.livingDays}: {livingDays(p)}/365</span>
                       <span>{planHasLegume(p) ? t.farmer.legumeYes : t.farmer.legumeNo}</span>
                     </span>
                   ) : <span className={s.empty}>—</span>}
