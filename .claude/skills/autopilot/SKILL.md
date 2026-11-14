@@ -54,7 +54,7 @@ enforces. Anything the gate refuses waits for the team.
 
 - No destructive actions, no paid services, no rule-sensitive actions, no changes to decided specs.
 - Full test suite green before every commit. Merge only through the task skill's gate; never push to `main`.
-- After the feature freeze (23:30 ICT Sat 14 Nov 2026): only fixes, checks, documentation and results.
+- After the feature freeze (03:00 ICT Sun 15 Nov 2026): only fixes, checks, documentation and results.
 
 ## End
 

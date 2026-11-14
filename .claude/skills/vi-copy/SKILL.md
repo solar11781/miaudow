@@ -5,7 +5,7 @@ description: Write or review Vietnamese and English interface text so every scre
 
 # Vietnamese and English copy
 
-Final copy is written during the event only (from 09:30 ICT Sat 14 Nov). Before then, keep placeholder values.
+Final copy is written during the event only (from 09:00 ICT Sat 14 Nov). Before then, keep placeholder values.
 
 ## Before writing
 

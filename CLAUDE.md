@@ -48,10 +48,9 @@ Never let the code decide.
 
 ## Competition rules
 
-- The core product is built during the event. Before 00:00 ICT Sat 14 Nov only permitted preparation: specs,
+- The core product is built during the event. Before 09:00 ICT Sat 14 Nov only permitted preparation: specs,
   architecture, data caches, generic libraries, scaffolding with placeholder data. Never pre-build the decision
-  engine, final plan values, trained models or results, real product screens or final copy. Real screens and
-  final copy start at 09:00 ICT Sat 14 Nov (frontend skeleton with placeholder data only before then).
+  engine, final plan values, trained models or results, real product screens or final copy.
 - At least one NASA dataset. Declare every third-party resource and AI tool (including Claude Code and the skills
   in `.claude/skills/`) with version and licence. Third-party material must be public or OSI-licensed. Our code is
   Apache-2.0. Reproducible pipeline with data provenance. No personal data.
