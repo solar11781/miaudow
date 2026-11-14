@@ -3,9 +3,9 @@
 On only when both GOOGLE_CLIENT_ID and DATABASE_URL are set and the database answers at start. The page keeps Google's
 ID token in memory and sends it as `Authorization: Bearer` with every account request, so no cookie is set (H14) and
 any server instance can answer. Each request is checked on the server by google-auth (signature, audience = our client
-id, issuer = Google, expiry); only the token's `sub` (Google's account id) is kept. Downloading Google's public keys for
-that check is the one outbound call, the sign-in exception that NFR-01 allows; the keys are kept as long as Google's
-Cache-Control header says. The database holds two tables: account (Google's account id) and saved_answers (land,
+id, issuer = Google, expiry with CLOCK_SKEW_SECONDS of allowance); only the token's `sub` (Google's account id) is
+kept. Downloading Google's public keys for that check is the one outbound call, the sign-in exception that NFR-01
+allows; the keys are kept as long as Google's Cache-Control header says. The database holds two tables: account (Google's account id) and saved_answers (land,
 years, priority of one saved set), at most SAVED_SETS_MAX sets per account. SQL is parameterised; nothing personal
 is logged.
 """
@@ -42,6 +42,10 @@ SCHEMA = (
 BIGINT_MAX = 2**63 - 1  # largest PostgreSQL bigint, the type of every id (PostgreSQL 18 docs, numeric types)
 GOOGLE_TIMEOUT_SECONDS = 10  # D-164: an account request must not hang for minutes on Google's keys
 DB_CONNECT_TIMEOUT_SECONDS = 5  # D-164: a down database must not hold the start for psycopg's 130 s
+# D-165: the default of Google's own Node (CLOCK_SKEW_SECS_ = 300, google-auth-library-nodejs oauth2client.ts) and
+# Java (DEFAULT_TIME_SKEW_SECONDS = 300, google-oauth-java-client IdTokenVerifier.java) ID-token verifiers, within
+# RFC 7519 4.1.4's "no more than a few minutes"
+CLOCK_SKEW_SECONDS = 300
 SAVED_SETS_MAX = 20  # D-165: an account keeps at most 20 saved sets; a 21st save answers 409
 # D-164: Google's key answer was 2447 bytes (measured 2026-11-14); 64 KiB leaves room for many more keys
 KEYS_MAX_BYTES = 65536
@@ -197,9 +201,12 @@ class Accounts:
     # ---- the Google token
 
     def google_id(self, google_token: str) -> str:
-        """Google's account id from a token that Google issued to our client id and that has not expired."""
+        """Google's account id from a token that Google issued to our client id and that has not expired, give or take
+        CLOCK_SKEW_SECONDS."""
         try:
-            claims = id_token.verify_oauth2_token(google_token, self._google, audience=self.client_id)
+            claims = id_token.verify_oauth2_token(
+                google_token, self._google, audience=self.client_id, clock_skew_in_seconds=CLOCK_SKEW_SECONDS
+            )
         except exceptions.TransportError as err:
             raise GoogleUnreachableError from err
         except (ValueError, exceptions.GoogleAuthError) as err:
