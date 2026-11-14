@@ -90,7 +90,7 @@ for _name in ("anthropic", "httpx2"):  # their debug log holds the request body;
     logging.getLogger(_name).setLevel(logging.WARNING)
 
 
-# FR-15 names no field; these are the card's long texts, the four labelled parts of its `why` row (UI-UX-SPEC §7).
+# FR-15 names no field; these are the card's long texts, the four labelled parts of its `why` row (UI-UX-SPEC §9).
 # The risks are left out: they are quoted lines with their own sources in the row `check` (D-136).
 WhyPart = Literal["why", "evidence", "benefits", "gaps"]
 

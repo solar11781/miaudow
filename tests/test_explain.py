@@ -37,7 +37,7 @@ SIMPLE_VI = "Tiền lãi là 16.200 nghìn đồng mỗi ha. Năm 2007 có 1,5 t
 ANSWERS = {"province": "nghe_an", "land": "dry", "years": [1995, 2007], "priority": "income"}  # a valid CompareRequest
 # D-165: what identifies a shown text; "evidence" holds numbers (a year, a page, a plot size), so the number check runs
 BODY = {"answers": ANSWERS, "plan": "cc1", "field": "evidence", "lang": "vi"}
-WHY_PARTS = ("why", "evidence", "benefits", "gaps")  # UI-UX-SPEC §7 row `why`: the four labelled long text parts
+WHY_PARTS = ("why", "evidence", "benefits", "gaps")  # UI-UX-SPEC §9 row `why`: the four labelled long text parts
 
 
 @functools.cache
@@ -481,7 +481,7 @@ def rejected(r: httpx.Response, api: FakeApi, secret: str | None = None) -> None
         ({**BODY, "lang": "zz-secret-lang"}, "zz-secret-lang"),  # Lang is vi or en (UI-UX-SPEC §11 Text)
         ({**BODY, "plan": "zz-secret-plan"}, "zz-secret-plan"),  # PlanId (UI-UX-SPEC §11)
         ({**BODY, "field": "zz-secret-field"}, "zz-secret-field"),  # D-165: a field from a closed list
-        ({**BODY, "field": "risks"}, None),  # not a why part (UI-UX-SPEC §7: the risks are in the row `check`)
+        ({**BODY, "field": "risks"}, None),  # not a why part (UI-UX-SPEC §9: the risks are in the row `check`)
         ({**BODY, "field": "name"}, None),
         ({**BODY, "answers": {**ANSWERS, "years": []}}, None),  # the CompareRequest rules hold (UI-UX-SPEC §6b)
         ({**BODY, "answers": {**ANSWERS, "years": [1990]}}, None),
@@ -525,7 +525,7 @@ def test_explain_rejects_a_body_over_the_byte_limit(
 
 
 def test_the_byte_limit_holds_the_largest_request_in_its_widest_json_form() -> None:
-    # the longest value of each closed list (UI-UX-SPEC §11 Land, Priority, PlanId; §7 why parts), all 30 years
+    # the longest value of each closed list (UI-UX-SPEC §11 Land, Priority, PlanId; §9 why parts), all 30 years
     answers = {"province": "nghe_an", "land": "unsure", "years": list(range(1995, 2025)), "priority": "stability"}
     largest = {"answers": answers, "plan": "usual_p03", "field": "evidence", "lang": "vi"}
     assert len(json.dumps(largest, indent=4).encode()) <= MAX_BODY_BYTES
