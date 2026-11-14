@@ -14,3 +14,4 @@ build/
 data/interim/
 data/processed/*
 !data/processed/cell_weights.csv
+!data/processed/cell_weights_zero.csv

@@ -39,9 +39,7 @@ def installed(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     shutil.copytree(REPO / "src" / "fieldshift", site / "fieldshift", ignore=shutil.ignore_patterns("__pycache__"))
     app = tmp_path_factory.mktemp("app")
     shutil.copytree(REPO / "rules", app / "rules")
-    (app / "artifacts").mkdir()
-    for artifact in (REPO / "artifacts").glob("*.json"):  # the service loads every artifact at start
-        shutil.copy(artifact, app / "artifacts")
+    shutil.copytree(REPO / "artifacts", app / "artifacts")  # the Dockerfile copies the whole folder
     return site, app
 
 
