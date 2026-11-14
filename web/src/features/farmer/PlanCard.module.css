@@ -58,3 +58,18 @@
 .share { min-height: 48px; padding: 0 1.1rem; border-radius: var(--r-pill); border: 1px solid var(--line-2); background: var(--bg-raised); color: var(--fg); display: inline-flex; align-items: center; gap: .5rem; font-weight: 500; font-size: var(--t-small); }
 .share:hover { border-color: var(--fg-3); }
 .shareMsg { color: var(--ok); font-weight: 500; }
+
+.risks { list-style: none; display: flex; flex-direction: column; gap: var(--s-3); }
+.risks li { display: flex; flex-direction: column; gap: .2rem; padding-left: var(--s-3); border-left: 2px solid var(--c-terracotta-500); }
+.where { color: var(--fg-3); }
+
+.more { border-radius: var(--r-md); background: var(--bg-sunk); }
+.more > summary {
+  min-height: 52px; display: flex; align-items: center; gap: .6rem; padding: 0 var(--s-4); cursor: pointer; list-style: none;
+  font-weight: 600; color: var(--fg);
+}
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary svg:last-child { margin-left: auto; transition: transform var(--d-med) var(--ease-out); }
+.more[open] > summary svg:last-child { transform: rotate(180deg); }
+.more > :not(summary) { padding: 0 var(--s-4) var(--s-3); }
+@media (prefers-reduced-motion: reduce) { .more > summary svg:last-child { transition: none; } }

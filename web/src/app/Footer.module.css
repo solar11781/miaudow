@@ -10,3 +10,11 @@
 .links a { min-height: 44px; display: inline-flex; align-items: center; color: var(--fg); text-decoration: none; font-weight: 500; }
 .links a:hover { color: var(--c-gold-300); }
 .meta { display: flex; flex-direction: column; gap: var(--s-3); color: var(--fg-3); font-size: var(--t-small); }
+
+.credits summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--fg); font-weight: 500; }
+.credits > p { margin-bottom: var(--s-3); }
+.credits ul { list-style: none; display: flex; flex-direction: column; gap: var(--s-3); max-height: 28rem; overflow: auto; padding-right: var(--s-2); }
+.credits li { display: flex; flex-direction: column; gap: .15rem; padding-left: var(--s-3); border-left: 1px solid var(--line-2); }
+.credits li > span:first-child { color: var(--fg-2); }
+.creditLinks { display: flex; flex-wrap: wrap; gap: 0 var(--s-3); }
+.creditLinks a { color: var(--c-gold-300); min-height: 44px; display: inline-flex; align-items: center; }

@@ -14,3 +14,7 @@ if (typeof HTMLDialogElement !== 'undefined') {
   HTMLDialogElement.prototype.showModal ??= function showModal(this: HTMLDialogElement) { this.setAttribute('open', ''); };
   HTMLDialogElement.prototype.close ??= function close(this: HTMLDialogElement) { this.removeAttribute('open'); this.dispatchEvent(new Event('close')); };
 }
+
+// The app starts in the browser's language (UI-UX-SPEC H16); tests read the Vietnamese copy, so the test browser is
+// Vietnamese.
+Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });

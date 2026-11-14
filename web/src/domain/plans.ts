@@ -59,7 +59,6 @@ export interface Plan {
   crops: PlanCrop[];
   /** P-03 has no dates: the plan is described by text only. */
   textOnly?: { sequence: Bilingual; profitNote: Bilingual };
-  checks: Bilingual[];
 }
 
 export const PLANS: Plan[] = [
@@ -70,10 +69,6 @@ export const PLANS: Plan[] = [
       { key: 'cc5_blackbean', crop: 'blackbean', variety: 'VT1', season: 'summer', sow: '06-06', harvest: '08-25', days: '80–85', profit: 16200, cost: 25000, price: 40000 },
       { key: 'cc5_sweetpotato', crop: 'sweetpotato', variety: 'Chiêm Dâu', season: 'autumn', sow: '08-15', harvest: '12-10', days: '115', profit: 9450, cost: 40800, price: 5000 },
     ],
-    checks: [
-      { vi: 'Lúa xuân chỉ lãi khoảng 5 triệu đồng/ha trong thử nghiệm.', en: 'Spring rice made about 5 million VND/ha in the trial.' },
-      { vi: 'Khoai lang được gieo trước khi đậu đen thu hoạch (ngày báo cáo chồng nhau).', en: 'Sweet potato was sown before the black bean harvest (reported dates overlap).' },
-    ],
   },
   {
     id: 'p03', current: true, source: 'p03', crops: [],
@@ -81,10 +76,6 @@ export const PLANS: Plan[] = [
       sequence: { vi: 'Lúa xuân – lúa hè thu – bỏ hoang', en: 'Spring rice – summer rice – fallow' },
       profitNote: { vi: 'Lúa hè thu lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận” (tính lãi theo cách khác P-02)', en: 'Summer rice made 1.16 million VND/ha, “almost no profit” (profit defined differently from P-02)' },
     },
-    checks: [
-      { vi: 'Ruộng bỏ trống sau vụ hè thu.', en: 'The field lies bare after the summer crop.' },
-      { vi: 'Bài không ghi ngày gieo, nên không có lịch và không tính được thời tiết theo cây.', en: 'No sowing dates are given, so there is no calendar and no weather per crop.' },
-    ],
   },
   {
     id: 'cc1', current: false, source: 'p02',
@@ -92,10 +83,6 @@ export const PLANS: Plan[] = [
       { key: 'cc1_peanut', crop: 'peanut', variety: 'L20', season: 'spring', sow: '01-18', harvest: '05-12', days: '115', profit: 25980, cost: 83500, price: 28000 },
       { key: 'cc1_mung', crop: 'mung', variety: 'D22', season: 'summer', sow: '06-10', harvest: '08-30', harvestNote: '30/8 – 3/9', days: '80–83', profit: 16200, cost: 25000, price: 40000 },
       { key: 'cc1_maize', crop: 'maize', variety: 'VN5885', season: 'autumn', sow: '09-01', harvest: '12-22', days: '112', profit: 11200, cost: 29900, price: 6000 },
-    ],
-    checks: [
-      { vi: 'Lạc cần vốn lớn: chi phí khoảng 83,5 triệu đồng/ha, gấp hơn 2 lần lúa.', en: 'Peanut needs capital: about 83.5 million VND/ha, more than twice the rice cost.' },
-      { vi: 'Ngô được gieo 1/9, trước khi đậu xanh thu hoạch xong (30/8 – 3/9).', en: 'Maize was sown on 1 Sep, before the mung bean harvest ended (30 Aug – 3 Sep).' },
     ],
   },
   {
@@ -105,10 +92,6 @@ export const PLANS: Plan[] = [
       { key: 'cc2_soy', crop: 'soy', variety: 'ĐT51', season: 'summer', sow: '06-10', harvest: '09-09', harvestNote: '9 – 12/9', days: '90–93', profit: 16700, cost: 26500, price: 40000 },
       { key: 'cc2_biomaize', crop: 'biomaize', variety: 'NK7328', season: 'autumn', sow: '09-10', harvest: '11-26', days: '76', profit: 15865, cost: 27400, price: 850 },
     ],
-    checks: [
-      { vi: 'Ớt có chi phí cao nhất: khoảng 113 triệu đồng/ha.', en: 'Chili has the highest cost: about 113 million VND/ha.' },
-      { vi: 'Ngô sinh khối cần người mua làm thức ăn gia súc; nên có hợp đồng trước.', en: 'Biomass maize needs a cattle-feed buyer; a contract first is advisable.' },
-    ],
   },
   {
     id: 'cc3', current: false, source: 'p02',
@@ -117,10 +100,6 @@ export const PLANS: Plan[] = [
       { key: 'cc3_sesame', crop: 'sesame', variety: 'Vừng đen', season: 'summer', sow: '06-10', harvest: '09-04', days: '84', profit: 12500, cost: 23500, price: 50000 },
       { key: 'cc3_pumpkin', crop: 'pumpkin', variety: 'F1 Flato 757', season: 'autumn', sow: '09-05', harvest: '11-21', days: '70–77', profit: 30440, cost: 48200, price: 8000 },
     ],
-    checks: [
-      { vi: 'Nghiên cứu P-03 ghi vừng khó bán ở Lưu Sơn.', en: 'The P-03 study reports sesame was hard to sell in Lưu Sơn.' },
-      { vi: 'Phần lớn tiền lãi đến từ bí đỏ; hỏi trước nơi thu mua.', en: 'Most of the profit comes from pumpkin; find a buyer first.' },
-    ],
   },
   {
     id: 'cc4', current: false, source: 'p02',
@@ -128,10 +107,6 @@ export const PLANS: Plan[] = [
       { key: 'cc4_biomaize1', crop: 'biomaize', variety: 'NK7328', season: 'spring', sow: '01-17', harvest: '04-05', days: '77', profit: 18925, cost: 27400, price: 850 },
       { key: 'cc4_biomaize2', crop: 'biomaize', variety: 'NK7328', season: 'summer', sow: '06-10', harvest: '08-20', days: '70', profit: 19450, cost: 27300, price: 850 },
       { key: 'cc4_sweetpotato', crop: 'sweetpotato', variety: 'KL20-209', season: 'autumn', sow: '09-05', harvest: '12-02', days: '115', profit: 20390, cost: 63200, price: 6500 },
-    ],
-    checks: [
-      { vi: 'Hai vụ ngô liền nhau: theo dõi sâu bệnh.', en: 'Two maize crops in a row: watch for pests.' },
-      { vi: 'Tỉnh yêu cầu hợp đồng thu mua cho ngô sinh khối.', en: 'The province requires purchase contracts for biomass maize.' },
     ],
   },
 ];

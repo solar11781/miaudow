@@ -15,6 +15,7 @@ can call it as a tool. Invalid input raises ValueError (the API answers 422).
 
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 
 from . import canonical
@@ -204,7 +205,12 @@ def _count_records(p: dict, crops: dict) -> list[MetricRecord]:
     seasons = p["seasons"]
     legumes = sum(1 for s in seasons if crops[s["crop_id"]]["is_legume"])
     days = living_days(seasons)
-    no_dates = [Text(vi="P-03 không ghi ngày gieo và ngày thu hoạch.", en="P-03 gives no sowing or harvest dates.")]
+    no_dates = [
+        Text(
+            vi="Bài báo thứ hai không ghi ngày gieo và ngày thu hoạch.",
+            en="The second paper gives no sowing or harvest dates.",
+        )
+    ]
     return [
         _record(
             "crops_in_year",
@@ -328,7 +334,7 @@ def applicability(p: dict, water: str | None) -> Text:
         "R-P02": "Trịnh Đức Toàn et al. (2023, Vietnam J. Agric. Sci. Technol.)",
         "R-P03": "Trịnh Đức Toàn et al. (2023, Nghệ An S&T special issue)",
     }.get(land["source_id"], land["source_id"])
-    where = str(land["location"]).replace("Tên bài báo", "tên bài báo")
+    where = re.sub(r"\s*\((tr\.|p\.) (\d+)\)", r", \1 \2", str(land["location"]).replace("Tên bài báo", "tên bài báo"))
     study = f'Nghiên cứu của {who} thử trên "{land["quote"]}" ở {p["site"]} ({where}).'
     study_en = f'The study by {who_en} was run on "{land["quote"]}" (its own words) in {p["site"]} ({where}).'
     if water is None:
@@ -362,17 +368,17 @@ def questions_for_officer(p: dict) -> list[Text]:
             out.append(
                 Text(
                     vi=f"Năm nay ở xã mình, trồng {names_vi} tốn bao nhiêu tiền mỗi sào, và tôi có vay được vốn "
-                    "không? (Bài báo P-02 ghi chi phí trồng lạc và ớt có thể gấp 2-3 lần trồng lúa, tr. 48.)",
+                    "không? (Bài báo của Trịnh Đức Toàn và cs. (2023) ghi chi phí trồng lạc và ớt có thể gấp 2-3 lần trồng lúa, tr. 48.)",
                     en=f"This year in my commune, what does growing {names_en} cost, and can I borrow the money? "
-                    "(P-02 says peanut and chili can cost 2-3 times as much as rice, p. 48.)",
+                    "(Trịnh Đức Toàn et al. 2023 say peanut and chili can cost 2-3 times as much as rice, p. 48.)",
                 )
             )
         elif sid == "R-P03":
             out.append(
                 Text(
-                    vi=f"Ở xã mình ai mua {names_vi}, mua giá bao nhiêu? (Nghiên cứu P-03 ghi đậu tương, vừng khó "
+                    vi=f"Ở xã mình ai mua {names_vi}, mua giá bao nhiêu? (Bài báo thứ hai của cùng nhóm tác giả (2023) ghi đậu tương, vừng khó "
                     "bán ở địa phương.)",
-                    en=f"Who buys {names_en} in my commune, and at what price? (P-03 says soybean and sesame are "
+                    en=f"Who buys {names_en} in my commune, and at what price? (the second paper by the same team says soybean and sesame are "
                     "hard to sell locally.)",
                 )
             )
@@ -421,8 +427,8 @@ def questions_for_officer(p: dict) -> list[Text]:
     if "chi phí vật chất" in texts:
         out.append(
             Text(
-                vi="Công lao động ở xã mình mỗi vụ là bao nhiêu? (Lợi nhuận của P-03 chưa trừ công lao động.)",
-                en="What does labour cost per season in my commune? (The P-03 profit may leave out labour.)",
+                vi="Công lao động ở xã mình mỗi vụ là bao nhiêu? (Lợi nhuận trong bài báo thứ hai chưa trừ công lao động.)",
+                en="What does labour cost per season in my commune? (The second paper's profit may leave out labour.)",
             )
         )
     return list({t.vi: t for t in out}.values())
@@ -452,9 +458,9 @@ def priority_notes(priority: str | None) -> list[Text]:
     )
     notes = {
         "income": Text(
-            vi="Về tiền: xem lãi thuần và tổng chi từng vụ (Bảng 13; Bảng 4, 8, 12 của P-02). Đó là kết quả "
+            vi="Về tiền: xem lãi thuần và tổng chi từng vụ (Bảng 13; Bảng 4, 8, 12 trong bài báo của Trịnh Đức Toàn và cs., 2023). Đó là kết quả "
             "năm 2020-21 của một ô thử, không phải thu nhập dự kiến; giá năm nay có thể khác.",
-            en="On money: see each season's net profit and total cost (P-02 Table 13; Tables 4, 8, 12). They are "
+            en="On money: see each season's net profit and total cost (Trịnh Đức Toàn et al. 2023, Table 13; Tables 4, 8, 12). They are "
             "2020-21 results of one plot, not expected income; this year's prices may differ.",
         ),
         "stability": Text(
@@ -524,8 +530,8 @@ def compare(req: CompareRequest) -> DecisionResult:
         if text_only:
             notes.append(
                 Text(
-                    vi=f"{p['name']['vi']} (P-03, {text_only['location']}): {text_only['vi']}",
-                    en=f"{p['name']['en']} (P-03, p. 3): {text_only['en']}",
+                    vi=f"{p['name']['vi']} (bài báo thứ hai, {text_only['location']}): {text_only['vi']}",
+                    en=f"{p['name']['en']} (second paper, p. 3): {text_only['en']}",
                 )
             )
     if not years:

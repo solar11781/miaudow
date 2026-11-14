@@ -69,7 +69,7 @@ export function PlansStep() {
 
       <div className={s.cards}>
         {PLANS.map((p) => (
-          <PlanCard key={p.id} plan={p} years={state.years} priority={state.priority} focused={focused === p.id} onShare={share} />
+          <PlanCard key={p.id} plan={p} years={state.years} priority={state.priority} land={state.land} focused={focused === p.id} onShare={share} />
         ))}
       </div>
 

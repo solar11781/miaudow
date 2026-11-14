@@ -83,7 +83,7 @@ function rankingAnswer(lang: Lang, f: Fmt, intro: string): Answer {
     const total = planProfitMillion(p);
     const label = p.textOnly ? p.textOnly.sequence[lang] : p.crops.map((c) => CROPS[c.crop].name[lang]).join(' → ');
     lines.push({
-      text: `${label} — ${p.checks[0]?.[lang] ?? ''}`,
+      text: label,
       ref: total !== null
         ? { sourceId: 'p02', kind: 'derived', value: `${f.n(total, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`, label: vi ? 'Lãi cả năm' : 'Yearly profit', chain: ['p02'] }
         : { sourceId: 'p03', kind: 'study', value: p.textOnly?.profitNote[lang] ?? '', label: vi ? 'Lãi' : 'Profit' },

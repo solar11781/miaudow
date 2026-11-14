@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useAreas } from './Header';
+import { PHOTO_CREDITS } from '../data/media';
 import { hazards } from '../data';
 import { BrandMark } from './Brand';
-import { useSettings, useT } from './settings';
+import { usePick, useSettings, useT } from './settings';
 import s from './Footer.module.css';
 
 export function Footer() {
   const t = useT();
+  const pick = usePick();
   const { lang } = useSettings();
   const areas = useAreas().slice(1);
   const built = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Ho_Chi_Minh' })
@@ -25,7 +27,22 @@ export function Footer() {
         <div className={s.meta}>
           <p>{t.common.dataLine}</p>
           <p className="mono">{t.footer.built}: {built}</p>
-          <p>{t.footer.photos}</p>
+          <details className={s.credits}>
+            <summary>{t.footer.photos}</summary>
+            <p>{t.footer.photosLead}</p>
+            <ul>
+              {PHOTO_CREDITS.map(([slug, m]) => (
+                <li key={slug}>
+                  <span>{pick(m.caption)}</span>
+                  <span>{m.credit ? pick(m.credit) : ''}</span>
+                  <span className={s.creditLinks}>
+                    {m.license_url && <a href={m.license_url} target="_blank" rel="noreferrer license">{t.footer.licence}: {m.license}</a>}
+                    {m.source_url && <a href={m.source_url} target="_blank" rel="noreferrer">{t.footer.source}</a>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </details>
           <p>{t.footer.team}</p>
         </div>
       </div>

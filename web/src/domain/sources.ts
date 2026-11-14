@@ -5,7 +5,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   p02: {
     id: 'p02',
     kind: 'study',
-    short: 'P-02 · VAAS 2023',
+    short: 'Trịnh Đức Toàn và cs. 2023 · VAAS',
     title: {
       vi: 'Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An',
       en: 'Testing of some crops on ineffective, frequently drought-affected rice land in Nghệ An province',
@@ -30,7 +30,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
   p03: {
     id: 'p03',
     kind: 'study',
-    short: 'P-03 · KH&CN Nghệ An 2023',
+    short: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An',
     title: {
       vi: 'Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An',
       en: 'Testing some rotation formulas on inefficient, water-short rice land in Nghệ An province',

@@ -44,7 +44,7 @@ if str(ROOT / "api") not in sys.path:
     sys.path.insert(0, str(ROOT / "api"))
 
 from miaudow_api import knowledge  # noqa: E402
-from miaudow_api.contracts import Dataset, MethodDef, SourceFact, Text  # noqa: E402
+from miaudow_api.contracts import CompareRequest, Dataset, MethodDef, SourceFact, Text  # noqa: E402
 from miaudow_api.science.hazards import (  # noqa: E402
     CLIM_YEARS,
     DROUGHT_DEFICIT,
@@ -1356,6 +1356,29 @@ def write(name: str, payload: dict, stamp: str) -> None:
     (OUT / name).write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
 
 
+def build_decision_view() -> dict:
+    """The decision core's own text for the web app (one implementation): per plan, how the study land relates to
+    each water answer, and the questions for the extension officer. Read back from the canonical files just written."""
+    from miaudow_api import canonical as canon  # noqa: PLC0415 - after the canonical files exist
+    from miaudow_api import decision  # noqa: PLC0415
+
+    canon.clear()
+    waters = [None, "canal_end", "high_field", "water_short", "reliable"]
+    plans: dict[str, dict] = {}
+    for water in waters:
+        res = decision.compare(CompareRequest(water=water))
+        for p in res.plans:
+            entry = plans.setdefault(p.plan_id, {"applicability": {}, "questions_for_officer": []})
+            entry["applicability"][water or "unknown"] = p.applicability.model_dump()
+            entry["questions_for_officer"] = [q.model_dump() for q in p.questions_for_officer]
+    first = decision.compare(CompareRequest())
+    return {
+        "plan_order": list(decision.STUDY_ORDER),
+        "plans": plans,
+        "missing_information": [m.model_dump() for m in first.missing_information],
+    }
+
+
 def main() -> None:
     check_team_dates()
     cells = load_cells()
@@ -1389,6 +1412,7 @@ def main() -> None:
     write("catalog.json", catalog, stamp)
     write("rotations.generated.json", rotations, stamp)
     write("passages.json", {"passages": [p.model_dump(mode="json") for p in passages]}, stamp)
+    write("decision.json", build_decision_view(), stamp)
     sys.stdout.write(f"written {sorted(p.name for p in OUT.iterdir())}\n")
 
 

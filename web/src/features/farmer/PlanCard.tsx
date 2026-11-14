@@ -1,3 +1,5 @@
+import { decisionPlan, rulebookPlan } from '../../data/rulebook';
+import type { Land } from '../../domain/farmerState';
 import { useState, type ReactNode } from 'react';
 import { livingDays } from '../../domain/calendar';
 import { cropShare, cropShareRange, soilReading } from '../../domain/hazards';
@@ -203,11 +205,58 @@ function CardHead({ plan }: { plan: Plan }) {
   );
 }
 
-export function PlanCard({ plan, years, priority, focused, onShare }: {
-  plan: Plan; years: number[]; priority: Priority | null; focused?: boolean; onShare: (plan: Plan) => Promise<boolean>;
-}) {
+/** Risk lines, reasons, fit with the farmer's field and questions for the officer: all from the governed rulebook and
+ * the API's decision core (src/data/rulebook.ts), never written in the web app. */
+function GovernedRows({ plan, land }: { plan: Plan; land: Land | null }) {
   const t = useT();
   const pick = usePick();
+  const rb = rulebookPlan(plan.id);
+  const dp = decisionPlan(plan.id);
+  const fit = dp?.applicability[land && land !== 'ask' ? land : 'unknown'];
+  const n = (rb?.risk_lines.length ?? 0) + (dp?.questions_for_officer.length ? 1 : 0);
+  return (
+    <>
+      {fit && (
+        <Row icon="canal" title={t.farmer.rows.fit}>
+          <p className={s.why}>{pick(fit)}</p>
+        </Row>
+      )}
+      <details className={s.more}>
+        <summary><Icon name="alert" size={18} />{t.farmer.moreToWeigh(rb?.risk_lines.length ?? 0)}<Icon name="chevronDown" size={18} /></summary>
+      {n > 0 && rb && rb.risk_lines.length > 0 && (
+        <Row icon="alert" title={t.farmer.rows.checks}>
+          <ul className={s.risks}>
+            {rb.risk_lines.map((r) => (
+              <li key={r.quote}><span>{pick(r.text)}</span><span className={s.where}>{t.farmer.riskWhere(sourceName(r.source_id), r.location)}</span></li>
+            ))}
+          </ul>
+        </Row>
+      )}
+      {rb?.why && (
+        <Row icon="question" title={t.farmer.rows.why}>
+          <p className={s.why}>{pick(rb.why.why)}</p>
+          {rb.why.gaps && <p className={s.why}>{pick(rb.why.gaps)}</p>}
+        </Row>
+      )}
+      {dp && dp.questions_for_officer.length > 0 && (
+        <Row icon="user" title={t.farmer.rows.askOfficer}>
+          <ul className={s.bullets}>{dp.questions_for_officer.slice(0, 4).map((q) => <li key={q.vi}>{pick(q)}</li>)}</ul>
+        </Row>
+      )}
+      </details>
+    </>
+  );
+}
+
+/** Study names by first author and year (D-160); other sources by their short name. */
+function sourceName(id: string): string {
+  return ({ 'R-P02': 'Trịnh Đức Toàn và cs. 2023', 'R-P03': 'Trịnh Đức Toàn và cs. 2023 (bài 2)', 'R-G06': 'Nghị định 112/2024/NĐ-CP', 'R-G27': 'Nghị định 112/2024/NĐ-CP', 'R-C13': 'VietNamNet 31/08/2020' } as Record<string, string>)[id] ?? id;
+}
+
+export function PlanCard({ plan, years, priority, land, focused, onShare }: {
+  plan: Plan; years: number[]; priority: Priority | null; land: Land | null; focused?: boolean; onShare: (plan: Plan) => Promise<boolean>;
+}) {
+  const t = useT();
   const [shareMsg, setShareMsg] = useState('');
   const hasCrops = plan.crops.length > 0;
   return (
@@ -219,12 +268,7 @@ export function PlanCard({ plan, years, priority, focused, onShare }: {
         <WeatherRow plan={plan} years={years} highlight={priority === 'stability'} />
         {hasCrops && <WaterRow plan={plan} years={years} highlight={priority === 'water'} />}
         {hasCrops && <LandRow plan={plan} highlight={priority === 'land'} />}
-        <Row icon="alert" title={t.farmer.rows.checks}>
-          <ul className={s.bullets}>{plan.checks.map((c) => <li key={c.vi}>{pick(c)}</li>)}</ul>
-        </Row>
-        <Row icon="question" title={t.farmer.rows.why}>
-          <p className={s.why}>{plan.current ? t.farmer.whyCurrent : t.farmer.whyTrial}</p>
-        </Row>
+        <GovernedRows plan={plan} land={land} />
       </div>
       <footer className={s.foot}>
         <p>{t.farmer.cardFoot}</p>
