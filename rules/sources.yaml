@@ -505,6 +505,17 @@
        en: "We read only the start date and title of each dataset."}
   url: "https://cmr.earthdata.nasa.gov/search/collections.json"
   nso_credit: false
+- id: R-N08
+  citation: {vi: "Weier, J., Herring, D. (2000). Measuring Vegetation (NDVI & EVI). NASA Earth Observatory",
+             en: "Weier, J., Herring, D. (2000). Measuring Vegetation (NDVI & EVI). NASA Earth Observatory"}
+  study_type: {vi: "Bài giải thích của NASA", en: "NASA explainer article"}
+  place_years: {vi: "Toàn cầu; đăng ngày 30/8/2000, cập nhật ngày 14/11/2025", en: "Global; published 30 August 2000, updated 14 November 2025"}
+  read_status: "READ"
+  full_text_read: true
+  limitations:
+    - {vi: "Định nghĩa của chỉ số, không phải kết quả nghiên cứu.", en: "A definition of the index, not study results."}
+  url: "https://science.nasa.gov/earth/earth-observatory/measuring-vegetation-ndvi-evi"
+  nso_credit: false
 - id: R-P02
   citation:
     vi: "Trịnh Đức Toàn, Phạm Duy Trình, Đào Thị Minh Hiền, Cao Đỗ Mười, Lê Thị Thơm (2023). Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An. Tạp chí Khoa học và Công nghệ Nông nghiệp Việt Nam 04(146): 43-51"

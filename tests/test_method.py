@@ -136,6 +136,14 @@ def test_a_dataset_not_used_without_a_source_fails_naming_the_file(root: Path) -
         method(root)
 
 
+def test_the_ndvi_term_cites_nasas_ndvi_page(resp: dict) -> None:
+    ndvi = next(t for t in resp["explain_terms"] if t["key"] == "ndvi")
+    assert ndvi["source_ids"] == ["R-N08"]  # D-165: NASA Earth Observatory, Measuring Vegetation (NDVI & EVI)
+    # earthobservatory.nasa.gov/features/MeasuringVegetation redirects (301) to this address (read 2026-11-14)
+    url = "https://science.nasa.gov/earth/earth-observatory/measuring-vegetation-ndvi-evi"
+    assert resp["sources"]["R-N08"]["url"] == url
+
+
 def test_rain_check_is_not_run(resp: dict) -> None:
     assert resp["rain_check"] is None  # D-135: null = not run (queue item 45 not built)
 
