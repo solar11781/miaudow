@@ -17,7 +17,9 @@ from fieldshift.features.season_windows import season_window
 RICE_SEASONS = ("spring", "autumn", "winter")
 
 
-def build_feature_table(labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict):
+def build_feature_table(
+    labels: pd.DataFrame, weights: pd.DataFrame, cell_frames: dict, regions: dict
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     # D-106: one fixed farmland mask for all years (cell_weights.csv, 05-DATA-CONTRACTS §3)
     # iter(): a GroupBy has a non-callable .keys attribute, so dict() alone would treat it as a mapping
     w_index = dict(iter(weights[weights["method"] == "farmland_weighted"].groupby("province_nso")))

@@ -9,6 +9,7 @@ where a rule was met. This is a mechanical reading of the tables, not an officia
 from __future__ import annotations
 
 import itertools
+from collections.abc import Callable, Iterable
 from datetime import date
 
 import numpy as np
@@ -30,7 +31,7 @@ CLIM_YEARS = (1991, 2020)  # "trung bình nhiều năm": NCHMF rainfall TBNN per
 RULES = ("heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold")
 
 
-def _longest_run(mask) -> int:
+def _longest_run(mask: np.ndarray | pd.Series) -> int:
     best = run = 0
     for flag in np.asarray(mask, dtype=bool):
         run = run + 1 if flag else 0
@@ -77,7 +78,7 @@ def drought_months(month_rain: pd.Series, clim: pd.Series) -> pd.Series:
     return (month_rain < (1 - DROUGHT_DEFICIT) * normal).astype(bool)
 
 
-def drought_consecutive(flags) -> bool:
+def drought_consecutive(flags: dict[int, bool] | Iterable[bool]) -> bool:
     """Two drought months in a row. A dict {month: flag} uses calendar adjacency (5 and 8 are not in a row); a list
     is taken as consecutive months in order."""
     if isinstance(flags, dict):
@@ -86,11 +87,11 @@ def drought_consecutive(flags) -> bool:
     return any(a and b for a, b in itertools.pairwise(f))
 
 
-def drought_any2(flags) -> bool:
+def drought_any2(flags: Iterable[bool]) -> bool:
     return sum(bool(x) for x in flags) >= DROUGHT_MONTHS
 
 
-def _field_days(year: int, field_dates) -> pd.DatetimeIndex:
+def _field_days(year: int, field_dates: Iterable[tuple[str, str]]) -> pd.DatetimeIndex:
     days = set()
     for start, end in field_dates:
         a = date(year, int(start[:2]), int(start[3:]))
@@ -101,14 +102,16 @@ def _field_days(year: int, field_dates) -> pd.DatetimeIndex:
     return pd.DatetimeIndex(sorted(days))
 
 
-def _runs_rule(series: pd.Series, days: pd.DatetimeIndex, rule) -> bool:
+def _runs_rule(series: pd.Series, days: pd.DatetimeIndex, rule: Callable[[pd.Series], bool]) -> bool:
     """Apply a spell rule within each block of consecutive field days (a spell never jumps a gap between crops)."""
     s = series.reindex(days)
     block = (days.to_series().diff() != pd.Timedelta(days=1)).cumsum()
     return any(rule(g) for _, g in s.groupby(block.to_numpy()))
 
 
-def cell_rules(daily: pd.DataFrame, year: int, field_dates, months, clim: pd.Series) -> dict:
+def cell_rules(
+    daily: pd.DataFrame, year: int, field_dates: Iterable[tuple[str, str]], months: Iterable[int], clim: pd.Series
+) -> dict:
     """Rule results for one cell and year. daily: PRECTOTCORR, T2M_MAX, T2M by date. Raises if field data are missing."""
     days = _field_days(year, field_dates)
     win = daily.reindex(days)[["PRECTOTCORR", "T2M_MAX", "T2M"]]
