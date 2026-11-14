@@ -8,9 +8,14 @@ system, so a download on Windows records the same text as one on Linux.
 from __future__ import annotations
 
 import csv
+import hashlib
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 PATH_COL, SHA_COL = 0, 7  # column order: path, source_id, table, title, url, retrieved_on, method, sha256
+MANIFEST = Path("data/MANIFEST.csv")
+FETCH_TIMEOUT_S = 120
 
 
 def append_rows(manifest: Path | str, rows: list[list[str]]) -> int:
@@ -28,3 +33,25 @@ def append_rows(manifest: Path | str, rows: list[list[str]]) -> int:
     with open(manifest, "a", newline="", encoding="utf-8") as f:
         csv.writer(f, lineterminator="\n").writerows(new)
     return len(new)
+
+
+def fetch_recorded(
+    path: str, manifest: Path | str = MANIFEST, opener: urllib.request.OpenerDirector | None = None
+) -> Path:
+    """Download a file recorded in the manifest from its recorded https URL; keep it only if its sha256 matches."""
+    with open(manifest, newline="", encoding="utf-8") as f:
+        rows = [r for r in csv.DictReader(f) if r["path"] == path]
+    if len({(r["url"], r["sha256"]) for r in rows}) != 1:
+        raise ValueError(f"{path}: no manifest row, or several versions, in {manifest}")
+    url, sha = rows[0]["url"], rows[0]["sha256"]
+    if urllib.parse.urlparse(url).scheme != "https":
+        raise ValueError(f"{path}: recorded URL is not https: {url}")
+    with (opener or urllib.request.build_opener()).open(url, timeout=FETCH_TIMEOUT_S) as resp:
+        body = resp.read()
+    got = hashlib.sha256(body).hexdigest()
+    if got != sha:
+        raise ValueError(f"{path}: sha256 {got[:12]} does not match the manifest ({sha[:12]}); file not kept")
+    dest = Path(path)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(body)
+    return dest
