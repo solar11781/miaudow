@@ -1,6 +1,6 @@
 """Tests for the displayed official risk-level rules (03-ML-SPEC §5a; written before the code, D-29).
 
-Expectations come from QĐ 18/2021/QĐ-TTg (R-A01, quoted in research/evidence-audit-findings.md):
+Expectations come from QĐ 18/2021/QĐ-TTg (R-A01):
 - heavy rain, Art. 44.1: "lượng mưa từ 100 mm ... trong 24 giờ" -> a day with >= 100 mm (100 included);
 - heat, Art. 47.1 a-d: "đợt nắng nóng với nhiệt độ cao nhất trong ngày từ 35°c đến 37°c, kéo dài từ 3 ngày trở lên",
   "từ trên 37oc đến 39°c", "từ trên 39°c đến 41 °C", "trên 41°C", each "kéo dài từ 3 ngày" -> word for word (team,

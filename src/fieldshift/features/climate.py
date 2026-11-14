@@ -1,4 +1,4 @@
-"""Province-season weather features from NASA POWER (DECISION-LOG D-26, D-37, D-38, D-39).
+"""Province-season weather features from NASA POWER (D-26, D-37, D-38, D-39).
 
 Plain words: for each province we first build one daily weather series as the farmland-weighted average of its NASA
 POWER cells (D-26). For each rice season and year we then summarise that series over the season window into a few
