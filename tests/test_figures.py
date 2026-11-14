@@ -10,6 +10,8 @@ the `year` rows of artifacts/hazard_labels.json (section 4b), one panel per rule
 
 import copy
 import json
+import re
+import struct
 import xml.etree.ElementTree as ET
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
@@ -241,3 +243,30 @@ def test_two_rows_for_one_year_fail_loudly() -> None:
 @pytest.mark.parametrize(("name", "build"), [("rice_anomaly_history.svg", _rice), ("farmland_rule_shares.svg", _rules)])
 def test_committed_svg_equals_the_builder_output(name: str, build) -> None:
     assert (FIGURES / name).read_text(encoding="utf-8") == build()
+
+
+def _png_size(path: Path) -> tuple[int, int]:
+    data = path.read_bytes()
+    assert data[:8] == b"\x89PNG\r\n\x1a\n"
+    return struct.unpack(">II", data[16:24])
+
+
+@pytest.mark.parametrize(
+    ("png", "svg"),
+    [
+        ("rice_anomaly_history.png", FIGURES / "rice_anomaly_history.svg"),
+        ("farmland_rule_shares.png", FIGURES / "farmland_rule_shares.svg"),
+        ("results_chart.png", REPO / "artifacts" / "figures" / "results_chart.svg"),
+    ],
+)
+def test_each_png_is_a_double_scale_render_of_its_svg(png: str, svg: Path) -> None:
+    root = _parse(svg.read_text(encoding="utf-8"))
+    assert _png_size(FIGURES / png) == (2 * int(root.get("width")), 2 * int(root.get("height")))
+
+
+def test_the_readme_names_every_figure_file() -> None:
+    readme = (FIGURES / "README.md").read_text(encoding="utf-8")
+    for f in FIGURES.iterdir():
+        if f.name != "README.md":
+            assert f"`{f.name}`" in readme, f.name
+    assert re.search(r"artifacts/figures/results_chart\.svg", readme)
