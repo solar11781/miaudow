@@ -423,8 +423,8 @@ function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: bool
 
 /** The card's money total, or the P-03 text, then per crop the TCVN 8641 water to apply from the lowest to the highest
  * of its rows (D-172, D-175): the money is the money row's own value with its source; the water range carries the
- * rows' TCVN sources, is labelled "by region" because the standard does not place Nghệ An (D-68), and leaves FAO out
- * (D-64). */
+ * rows' TCVN sources, is labelled by region and planting method because the rows differ in both and the standard does
+ * not place Nghệ An (D-68), and leaves FAO out (D-64). */
 function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   const t = useT();
   const pick = usePick();

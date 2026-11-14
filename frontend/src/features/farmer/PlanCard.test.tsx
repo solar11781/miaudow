@@ -415,7 +415,12 @@ describe('card head water line', () => {
   afterEach(cleanup);
   const m3 = { vi: 'm3/ha', en: 'm3/ha' };
   const mm = { vi: 'mm', en: 'mm' };
-  type Row = [string, 'to_apply' | 'crop_uses' | 'not_listed', string | null];
+  // the note every TCVN rice row carries (rules/crops.yaml)
+  const RICE_NOTE = {
+    vi: 'Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
+    en: 'Maintenance irrigation only, land preparation not included. The standard does not say whether Nghệ An belongs to Trung bộ or Bắc bộ.',
+  };
+  type Row = [string, 'to_apply' | 'crop_uses' | 'not_listed', string | null, typeof RICE_NOTE?];
   const PLANS: Record<string, { crops: [string, string][]; water: Row[] }> = {
     usual: {
       crops: [
@@ -424,9 +429,9 @@ describe('card head water line', () => {
         ['usual_autumn_winter_sweet_potato', 'Khoai lang'],
       ],
       water: [
-        ['usual_spring_rice', 'to_apply', '6,500-7,500'],
-        ['usual_spring_rice', 'to_apply', '6,500-7,500'],
-        ['usual_spring_rice', 'to_apply', '6,000-7,000'],
+        ['usual_spring_rice', 'to_apply', '6,500-7,500', RICE_NOTE],
+        ['usual_spring_rice', 'to_apply', '6,500-7,500', RICE_NOTE],
+        ['usual_spring_rice', 'to_apply', '6,000-7,000', RICE_NOTE],
         ['usual_spring_rice', 'crop_uses', '450-700'],
         ['usual_summer_autumn_black_bean', 'not_listed', null],
         ['usual_autumn_winter_sweet_potato', 'to_apply', '1,200-1,400'],
@@ -452,7 +457,7 @@ describe('card head water line', () => {
     if (!plan || !base) throw new Error('no plan');
     const { crops, water } = PLANS[id] ?? { crops: [], water: [] };
     plan.calendar = crops.map(([key, name]) => ({ ...base, crop_key: key, crop: { vi: name, en: name } }));
-    plan.water = water.map(([key, measure, v]) => ({
+    plan.water = water.map(([key, measure, v, note]) => ({
       crop_key: key,
       measure,
       value:
@@ -464,7 +469,7 @@ describe('card head water line', () => {
               source_ids: [measure === 'crop_uses' ? 'R-M02' : 'R-W15'],
             },
       scope: null,
-      note: null,
+      note: note ?? null,
     }));
     res.sources = {
       ...res.sources,
@@ -485,11 +490,11 @@ describe('card head water line', () => {
   };
   it('spans the TCVN rows of each crop, says no figure without one and leaves FAO out (usual plan)', () => {
     const { text, values } = line('usual');
-    expect(text.startsWith(vi.farmer.summaryWaterLabel)).toBe(true);
+    expect(text.startsWith('Nước phải tưới (TCVN 8641, tùy vùng và cách gieo cấy)')).toBe(true);
     expect(values).toEqual(['6.000-7.500 m³/ha', '1.200-1.400 m³/ha']);
     expect(text.indexOf('Lúa')).toBeLessThan(text.indexOf('Đậu đen xanh lòng'));
     expect(text.indexOf('Đậu đen xanh lòng')).toBeLessThan(text.indexOf('Khoai lang'));
-    expect(text).toContain(`Đậu đen xanh lòng: ${vi.farmer.noFigure}`);
+    expect(text).toContain('Đậu đen xanh lòng: nguồn không có số');
     expect(text).not.toContain('450');
   });
   it('shows the one TCVN value of peanut (cc1), in English as given', () => {
@@ -497,7 +502,8 @@ describe('card head water line', () => {
     cleanup();
     const en = line('cc1', ['en-GB', 'en']);
     expect(en.values).toEqual(['2,000 m³/ha']);
-    expect(en.text).toContain('no figure');
+    expect(en.text).toContain('Đậu xanh: no figure in the source');
+    expect(en.text.startsWith('Water to apply (TCVN 8641, by region and planting method)')).toBe(true);
     Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
   });
   it('opens the TCVN source of the rows it spans', () => {
