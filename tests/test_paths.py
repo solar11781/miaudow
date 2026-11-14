@@ -2,7 +2,7 @@
 
 Spec: 04-TECH-DESIGN §1 and the Dockerfile: the container copies rules/ and artifacts/ to /app and installs the
 package with `pip install --no-deps .`, so the package code lives in site-packages, not under /app. The service must
-still read /app/rules and /app/artifacts (audit 2026-11-13, part B row 17). An installed package that cannot find
+still read /app/rules and /app/artifacts (04-TECH-DESIGN §9). An installed package that cannot find
 the project folder must fail at start with a message, never serve an empty health answer.
 """
 
