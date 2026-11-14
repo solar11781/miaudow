@@ -79,6 +79,11 @@
   limitations:
     - {vi: "Chỉ để kiểm tra; không bao giờ thay thế kết quả chính.",
        en: "Checks only; they never replace the main result."}
+    - {vi: "Lần chạy (a): các dòng FAO đánh dấu không bao giờ được dùng để huấn luyện hay để chấm điểm, nhưng vẫn được giữ trong năng suất bình thường và trong cách dự báo bằng năm trước (B2).",
+       en: "Run (a): FAO-flagged rows are never trained on or scored, but stay in the normal yields and in the last-year reference (B2)."}
+    - {vi: "Lần chạy (c): quy tắc rét hại theo vùng của từng tỉnh trong Điều 53. Việc coi \"vùng núi, trung du Bắc Bộ\" là vùng Trung du và miền núi phía Bắc của Cục Thống kê là cách hiểu của chúng tôi, vì Quyết định không liệt kê tỉnh nào. Nam Trung Bộ, Tây Nguyên và Nam Bộ không có quy tắc rét hại trong Điều 53, nên tỉ lệ của các vùng này là 0.",
+       en: "Run (c): the cold rule follows each province's Art. 53 region. Reading \"vùng núi, trung du Bắc Bộ\" as the NSO Northern midlands and mountain areas is our reading, since the decision lists no provinces. Nam Trung Bộ, Tây Nguyên and Nam Bộ have no cold rule in Art. 53, so their share is 0."}
+    - {vi: "Các lần chạy được chạy lại sau khi rà soát.", en: "The runs were redone after a review."}
   url: null
   nso_credit: false
 - id: E-019
