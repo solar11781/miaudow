@@ -413,6 +413,7 @@ export const vi = {
     howFound: 'Trợ lý đã tìm câu trả lời thế nào',
     numbersChecked: (n: number, bad: number) => (bad ? `${n} con số đã kiểm tra; ${bad} số không khớp dữ liệu nên câu trả lời của mô hình đã bị bỏ.` : `${n} con số trong câu trả lời đã được đối chiếu với kết quả công cụ.`),
     speak: 'Nói', listening: 'Đang nghe… bấm để dừng',
+    micNote: 'Khi bạn nói, trình duyệt có thể gửi tiếng nói tới công ty cung cấp dịch vụ nhận giọng nói của nó. Nếu không muốn, hãy gõ câu hỏi.', micStart: 'Bắt đầu nghe',
     checkTranscript: 'Hãy đọc lại câu vừa nghe được và sửa nếu sai, rồi bấm Hỏi.',
     micError: 'Không nghe được. Kiểm tra quyền dùng micrô, hoặc gõ câu hỏi.',
     noMic: 'Trình duyệt này chưa hỗ trợ nói; bạn vẫn gõ câu hỏi được.',

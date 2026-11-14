@@ -415,6 +415,7 @@ export const en: Messages = {
     howFound: 'How the copilot found this',
     numbersChecked: (n: number, bad: number) => (bad ? `${n} numbers checked; ${bad} did not match the data, so the model's answer was discarded.` : `${n} numbers in the answer were checked against the tool results.`),
     speak: 'Speak', listening: 'Listening… press to stop',
+    micNote: 'When you speak, your browser may send the audio to its speech provider. If you do not want that, type the question.', micStart: 'Start listening',
     checkTranscript: 'Read what was heard, correct it if needed, then press Ask.',
     micError: 'Could not hear you. Check the microphone permission, or type your question.',
     noMic: 'This browser has no speech input; you can still type.',

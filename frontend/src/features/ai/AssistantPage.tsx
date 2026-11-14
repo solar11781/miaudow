@@ -9,6 +9,7 @@ import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { useSpeech } from './useSpeech';
+import { VoiceButton } from './VoiceButton';
 import s from './assistant.module.css';
 
 type Engine = 'checking' | 'server' | 'browser';
@@ -150,10 +151,10 @@ export function AssistantPage() {
     api.health(ctrl.signal)
       .then((h) => {
         const c = h.copilot;
-        setClaude(typeof c === 'object' && c !== null && (c.engine === 'claude' || c.configured === true));
         // our backend has no copilot route (D-166): without a copilot entry in health the page answers in the browser
         if (c === undefined) { setEngine('browser'); return; }
         setEngine('server');
+        setClaude(typeof c === 'object' && c !== null && (c.engine === 'claude' || c.configured === true));
       })
       .catch(() => { if (!ctrl.signal.aborted) setEngine('browser'); });
     return () => { ctrl.abort(); inflight.current?.abort(); };
@@ -179,8 +180,8 @@ export function AssistantPage() {
       setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, kind: 'server', res } : x)));
     } catch {
       if (ctrl.signal.aborted && inflight.current !== ctrl) return;
-      setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, kind: 'local', res: local() } : x)));
       setEngine('browser');
+      setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, kind: 'local', res: local() } : x)));
     }
     requestAnimationFrame(() => log.current?.lastElementChild?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
   };
@@ -255,12 +256,7 @@ export function AssistantPage() {
                 onChange={(e) => { setQ(e.target.value); setHeard(false); }}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void ask(q); } }} />
               <div className={s.formRow}>
-                {speech.canListen && (
-                  <button type="button" className={s.mic} aria-pressed={speech.listening}
-                    onClick={() => (speech.listening ? speech.stopListening() : speech.listen())}>
-                    <Icon name={speech.listening ? 'stop' : 'mic'} size={20} />{speech.listening ? t.copilot.listening : t.copilot.speak}
-                  </button>
-                )}
+                {speech.canListen && <VoiceButton listening={speech.listening} listen={speech.listen} stop={speech.stopListening} />}
                 <Button type="submit" icon="send" disabled={!q.trim()}>{t.assistant.ask}</Button>
               </div>
               {heard && <p className={s.heard} role="status">{t.copilot.checkTranscript}</p>}
