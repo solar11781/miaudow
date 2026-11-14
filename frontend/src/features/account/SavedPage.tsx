@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { api, ApiError, type SavedSet } from '../../api';
 import { Button, ButtonLink } from '../../design-system/Button';
+import { Confirm } from './Confirm';
 import { serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { useT } from '../../app/settings';
 import { LoadState } from '../provenance/LoadState';
-import { signInLink, useAccount } from './AccountProvider';
+import { signInLink, useAccount, useSignInConfig } from './AccountProvider';
 import s from './account.module.css';
 
 const plansLink = (set: SavedSet) => ({
@@ -31,14 +32,7 @@ function errorText(t: ReturnType<typeof useT>, err: unknown) {
 function DeleteAccount({ token, onDone }: { token: string; onDone: (message: string) => void }) {
   const t = useT();
   const { signOut, check } = useAccount();
-  const [asking, setAsking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const ask = useRef<HTMLParagraphElement>(null);
-  const opener = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (asking) ask.current?.focus();
-  }, [asking]);
 
   const remove = async () => {
     try {
@@ -51,38 +45,16 @@ function DeleteAccount({ token, onDone }: { token: string; onDone: (message: str
   };
 
   return (
-    <div className="stack">
-      <Button
-        ref={opener}
-        variant="secondary"
-        leadingIcon="alert"
-        aria-expanded={asking}
-        aria-controls="delete-all"
-        onClick={() => setAsking(true)}
-      >
-        {t.account.deleteAll}
-      </Button>
-      {asking && (
-        <div id="delete-all" className={s.confirm} role="group" aria-labelledby="delete-all-ask">
-          <p id="delete-all-ask" ref={ask} tabIndex={-1}>
-            <strong>{t.account.deleteAllAsk}</strong>
-          </p>
-          <div className="cluster">
-            <Button onClick={remove}>{t.account.deleteAllYes}</Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setAsking(false);
-                opener.current?.focus();
-              }}
-            >
-              {t.account.deleteAllNo}
-            </Button>
-          </div>
-          {error && <p role="alert">{error}</p>}
-        </div>
-      )}
-    </div>
+    <Confirm
+      id="delete-all"
+      label={t.account.deleteAll}
+      leadingIcon="alert"
+      question={t.account.deleteAllAsk}
+      yes={t.account.deleteAllYes}
+      no={t.account.deleteAllNo}
+      onYes={remove}
+      error={error}
+    />
   );
 }
 
@@ -117,9 +89,15 @@ function SavedList({ token, onDone }: { token: string; onDone: (message: string)
                 <ButtonLink to={plansLink(set)} icon="arrowRight" aria-label={t.account.openLabel(name(set))}>
                   {t.account.open}
                 </ButtonLink>
-                <Button variant="secondary" aria-label={t.account.removeLabel(name(set))} onClick={() => remove(set)}>
-                  {t.account.remove}
-                </Button>
+                <Confirm
+                  id={`remove-${set.id}`}
+                  label={t.account.remove}
+                  ariaLabel={t.account.removeLabel(name(set))}
+                  question={t.account.removeAsk}
+                  yes={t.account.removeYes}
+                  no={t.account.removeNo}
+                  onYes={() => remove(set)}
+                />
               </div>
             </li>
           ))}
@@ -142,6 +120,27 @@ function SavedList({ token, onDone }: { token: string; onDone: (message: string)
   );
 }
 
+/** Signed out: the sign-in prompt while sign-in is on, otherwise only the line that it is not available. */
+function SignedOut({ done, expired }: { done: string | null; expired: boolean }) {
+  const t = useT();
+  const [config, retry] = useSignInConfig();
+  if (config.status !== 'ok') return <LoadState state={config} retry={retry} />;
+  if (!config.data.available)
+    return (
+      <p className={s.note} role="status">
+        {t.account.notAvailable}
+      </p>
+    );
+  return (
+    <>
+      <p role="status">{done ?? (expired ? t.account.expired : t.account.needSignIn)}</p>
+      <ButtonLink to={signInLink('/da-luu')} icon="arrowRight">
+        {expired ? t.account.signInAgain : t.account.signInCta}
+      </ButtonLink>
+    </>
+  );
+}
+
 /** /da-luu: the saved sets of answers of the signed-in farmer (UI-UX-SPEC §12c). */
 export function SavedPage() {
   const t = useT();
@@ -154,16 +153,7 @@ export function SavedPage() {
         {t.account.savedTitle}
       </h1>
       <p className="lead">{t.account.savedLead}</p>
-      {token ? (
-        <SavedList token={token} onDone={setDone} />
-      ) : (
-        <>
-          <p role="status">{done ?? (expired ? t.account.expired : t.account.needSignIn)}</p>
-          <ButtonLink to={signInLink('/da-luu')} icon="arrowRight">
-            {expired ? t.account.signInAgain : t.account.signInCta}
-          </ButtonLink>
-        </>
-      )}
+      {token ? <SavedList token={token} onDone={setDone} /> : <SignedOut done={done} expired={expired} />}
     </main>
   );
 }
