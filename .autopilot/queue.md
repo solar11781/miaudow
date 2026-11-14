@@ -436,7 +436,7 @@ The core is items 0-39 (without 11, 12), 44a, 44b, 49, 51, 52 and 53. Bonus item
 
 - Hanoi judging slot: not received yet (D-146).
 - SI declaration text for the README and the form (items 35, 39; D-140).
-- Item 52 time: D-159 says a person types /unslop on the morning of Sun 15 Nov; 06 §4 puts it before the 03:00 freeze, after which only fixes are allowed. Which holds?
-- Item 41: Google OAuth client, Railway database, GOOGLE_CLIENT_ID and DATABASE_URL (the user, before 16:45 Sat).
-- Item 28: the land-type label answer (2026-11-14 14:45) has no decision-log number yet.
+- Item 52 time: answered by the user (2026-11-14): a person types /unslop on the morning of Sun 15 Nov (D-159); the audit only fixes findings, which fits the after-freeze rule of fixes only.
+- Item 41: done (2026-11-14 before 16:45): Google OAuth client published (openid only), GOOGLE_CLIENT_ID and DATABASE_URL set, Railway PostgreSQL added.
+- Item 28: the land-type label answer (2026-11-14 14:45: the papers' own phrases with a plain English translation) is D-160.
 - Item 29: project email for the About page (member A creates it with the domain, D-143).
