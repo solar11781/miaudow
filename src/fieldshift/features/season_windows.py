@@ -25,7 +25,7 @@ CALENDAR_FILE = project_root() / "rules" / "calendar.yaml"
 class Calendar:
     """Windows read from rules/calendar.yaml (05-DATA-CONTRACTS §6b): (season, region) -> ((month, offset), (month, offset))."""
 
-    def __init__(self, raw: dict):
+    def __init__(self, raw: dict) -> None:
         self.raw = raw
         self.windows = {
             (w["nso_season"], w["calendar_region"]): (tuple(w["start"]), tuple(w["end"]))

@@ -17,6 +17,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import shapely
+from shapely.geometry.base import BaseGeometry
 
 POWER_DLAT = 0.5  # verified 2026-11-11: cells centred on multiples of 0.5 deg latitude
 POWER_DLON = 0.625  # and 0.625 deg longitude
@@ -55,7 +56,7 @@ def fixed_farmland_mask(grids: dict[int, dict]) -> dict:
     return {"farmland": farmland, "lat_max": first["lat_max"], "lon_min": first["lon_min"], "cell": first["cell"]}
 
 
-def _pixels(geom, grid: dict):
+def _pixels(geom: BaseGeometry, grid: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Pixel centres inside the geometry's bounding box: (lat grid, lon grid, inside mask, farmland fraction)."""
     farm_all = grid["farmland"] if "farmland" in grid else farmland_fraction(grid["percent"])
     lat_max, lon_min, cell = grid["lat_max"], grid["lon_min"], grid["cell"]
@@ -71,13 +72,13 @@ def _pixels(geom, grid: dict):
     return lat_g, lon_g, inside, farm_all[r0:r1, c0:c1]
 
 
-def _cell_keys(lat_g, lon_g):
+def _cell_keys(lat_g: np.ndarray, lon_g: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     clat = np.floor(lat_g / POWER_DLAT + 0.5) * POWER_DLAT
     clon = np.floor(lon_g / POWER_DLON + 0.5) * POWER_DLON
     return clat, clon
 
 
-def province_cell_weights(geom, grid: dict) -> dict[tuple[float, float], float]:
+def province_cell_weights(geom: BaseGeometry, grid: dict) -> dict[tuple[float, float], float]:
     """Farmland weight per POWER cell centre for one province geometry.
 
     grid: a fixed mask dict(farmland=(rows, cols) fraction 0..1, lat_max, lon_min, cell), or a single-year
@@ -97,7 +98,7 @@ def province_cell_weights(geom, grid: dict) -> dict[tuple[float, float], float]:
     return {k: v / total for k, v in weights.items()}
 
 
-def zero_weight_cells(geom, grid: dict) -> list[tuple[float, float]]:
+def zero_weight_cells(geom: BaseGeometry, grid: dict) -> list[tuple[float, float]]:
     """POWER cells that contain pixel centres of the province but no farmland (reported, 03-ML-SPEC §4)."""
     lat_g, lon_g, inside, farm = _pixels(geom, grid)
     clat, clon = _cell_keys(lat_g, lon_g)
@@ -108,7 +109,7 @@ def zero_weight_cells(geom, grid: dict) -> list[tuple[float, float]]:
     return sorted(k for k, v in totals.items() if v <= 0)
 
 
-def build_cell_weights(geoms: dict, mask: dict):
+def build_cell_weights(geoms: dict[str, BaseGeometry], mask: dict) -> tuple[pd.DataFrame, list[str]]:
     """Cell weights for every province from the fixed mask (05-DATA-CONTRACTS §3). Returns (table, missing provinces)."""
 
     rows, missing = [], []
