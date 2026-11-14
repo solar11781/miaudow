@@ -15,6 +15,7 @@ import type {
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
 import { moneyStudy } from '../../domain/moneyStudy';
+import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
@@ -420,9 +421,10 @@ function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: bool
   );
 }
 
-/** The card's money total, or the P-03 text, and a pointer to the water row (D-172); no new value: the money is the
- * money row's own value with its source, and the water line names no number, since one TCVN row would hide the other
- * region (D-68) and TCVN and FAO are never combined (D-64). */
+/** The card's money total, or the P-03 text, then per crop the TCVN 8641 water to apply from the lowest to the highest
+ * of its rows (D-172, D-175): the money is the money row's own value with its source; the water range carries the
+ * rows' TCVN sources, is labelled "by region" because the standard does not place Nghệ An (D-68), and leaves FAO out
+ * (D-64). */
 function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   const t = useT();
   const pick = usePick();
@@ -444,6 +446,23 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
           </p>
         )
       )}
+      <p data-testid={`card-${plan.id}-water-line`}>
+        {t.farmer.summaryWaterLabel}:{' '}
+        {plan.calendar.map((c, i) => {
+          const range = tcvnRange(plan.water.filter((w) => w.crop_key === c.crop_key));
+          return (
+            <span key={c.crop_key}>
+              {i > 0 && ' · '}
+              {pick(c.crop)}:{' '}
+              {range ? (
+                <SourceValue {...refs.value(range, `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`)} />
+              ) : (
+                t.farmer.noFigure
+              )}
+            </span>
+          );
+        })}
+      </p>
       <a
         href={`#${water}`}
         className={s.summaryLink}

@@ -281,12 +281,11 @@ describe('card summary', () => {
     expect(box.textContent).not.toContain(vi.farmer.ourSum);
     expect(box.textContent).not.toContain('30.799');
   });
-  it('points to the water row without a number of its own', () => {
+  it('keeps a link to the water row', () => {
     for (const i of [0, 1]) {
       const { box, id } = head(i);
       const link = box.querySelector(`a[href="#card-${id}-row-water"]`);
       expect(link?.textContent, id).toBe(vi.farmer.summaryWater(vi.farmer.rows.water));
-      expect(link?.textContent ?? '', id).not.toMatch(/\d/);
       expect(document.getElementById(`card-${id}-row-water`), id).not.toBeNull();
       cleanup();
     }
@@ -406,5 +405,109 @@ describe('explain simply', () => {
     expect(await row.findByText(vi.farmer.explain[key])).not.toBeNull();
     expect(row.queryByText(vi.farmer.explain.aiLabel)).toBeNull();
     expect(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.gaps) })).not.toBeNull();
+  });
+});
+
+// D-175: per crop, the lowest to the highest of its TCVN 8641 rows, labelled "by region", with the TCVN source; FAO
+// stays out. Rows from /api/compare (2026-11-15) for the usual plan (spring rice: Trung bộ x2 and Bắc bộ, then an FAO
+// row; black bean not listed; sweet potato one row) and cc1 (peanut one row and an FAO row; mung bean not listed).
+describe('card head water line', () => {
+  afterEach(cleanup);
+  const m3 = { vi: 'm3/ha', en: 'm3/ha' };
+  const mm = { vi: 'mm', en: 'mm' };
+  type Row = [string, 'to_apply' | 'crop_uses' | 'not_listed', string | null];
+  const PLANS: Record<string, { crops: [string, string][]; water: Row[] }> = {
+    usual: {
+      crops: [
+        ['usual_spring_rice', 'Lúa'],
+        ['usual_summer_autumn_black_bean', 'Đậu đen xanh lòng'],
+        ['usual_autumn_winter_sweet_potato', 'Khoai lang'],
+      ],
+      water: [
+        ['usual_spring_rice', 'to_apply', '6,500-7,500'],
+        ['usual_spring_rice', 'to_apply', '6,500-7,500'],
+        ['usual_spring_rice', 'to_apply', '6,000-7,000'],
+        ['usual_spring_rice', 'crop_uses', '450-700'],
+        ['usual_summer_autumn_black_bean', 'not_listed', null],
+        ['usual_autumn_winter_sweet_potato', 'to_apply', '1,200-1,400'],
+      ],
+    },
+    cc1: {
+      crops: [
+        ['cc1_spring_peanut', 'Lạc'],
+        ['cc1_summer_autumn_mung_bean', 'Đậu xanh'],
+      ],
+      water: [
+        ['cc1_spring_peanut', 'to_apply', '2,000'],
+        ['cc1_spring_peanut', 'crop_uses', '500-700'],
+        ['cc1_summer_autumn_mung_bean', 'not_listed', null],
+      ],
+    },
+  };
+  const line = (id: 'usual' | 'cc1', languages = ['vi-VN', 'vi']) => {
+    Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === id);
+    const base = plan?.calendar[0];
+    if (!plan || !base) throw new Error('no plan');
+    const { crops, water } = PLANS[id] ?? { crops: [], water: [] };
+    plan.calendar = crops.map(([key, name]) => ({ ...base, crop_key: key, crop: { vi: name, en: name } }));
+    plan.water = water.map(([key, measure, v]) => ({
+      crop_key: key,
+      measure,
+      value:
+        v === null
+          ? null
+          : {
+              value: v,
+              unit: measure === 'crop_uses' ? mm : m3,
+              source_ids: [measure === 'crop_uses' ? 'R-M02' : 'R-W15'],
+            },
+      scope: null,
+      note: null,
+    }));
+    res.sources = {
+      ...res.sources,
+      'R-W15': { ...res.sources['R-P02'], id: 'R-W15', citation: { vi: 'TCVN 8641:2011', en: 'TCVN 8641:2011' } },
+      'R-M02': { ...res.sources['R-P02'], id: 'R-M02' },
+    } as typeof res.sources;
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const box = document.querySelector(`[data-testid="card-${id}-water-line"]`);
+    if (!box) throw new Error('no water line');
+    const values = [...box.querySelectorAll('button[data-value]')].map((e) => e.getAttribute('data-value'));
+    return { text: box.textContent ?? '', values };
+  };
+  it('spans the TCVN rows of each crop, says no figure without one and leaves FAO out (usual plan)', () => {
+    const { text, values } = line('usual');
+    expect(text.startsWith(vi.farmer.summaryWaterLabel)).toBe(true);
+    expect(values).toEqual(['6.000-7.500 m³/ha', '1.200-1.400 m³/ha']);
+    expect(text.indexOf('Lúa')).toBeLessThan(text.indexOf('Đậu đen xanh lòng'));
+    expect(text.indexOf('Đậu đen xanh lòng')).toBeLessThan(text.indexOf('Khoai lang'));
+    expect(text).toContain(`Đậu đen xanh lòng: ${vi.farmer.noFigure}`);
+    expect(text).not.toContain('450');
+  });
+  it('shows the one TCVN value of peanut (cc1), in English as given', () => {
+    expect(line('cc1').values).toEqual(['2.000 m³/ha']);
+    cleanup();
+    const en = line('cc1', ['en-GB', 'en']);
+    expect(en.values).toEqual(['2,000 m³/ha']);
+    expect(en.text).toContain('no figure');
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+  });
+  it('opens the TCVN source of the rows it spans', () => {
+    line('usual');
+    const button = [...document.querySelectorAll('button[data-value]')].find(
+      (e) => e.getAttribute('data-value') === '6.000-7.500 m³/ha',
+    );
+    if (!(button instanceof HTMLElement)) throw new Error('no button');
+    expect(document.body.textContent).not.toContain('TCVN 8641:2011');
+    fireEvent.click(button);
+    expect(document.body.textContent).toContain('TCVN 8641:2011');
   });
 });
