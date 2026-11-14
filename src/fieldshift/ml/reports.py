@@ -49,8 +49,8 @@ def winter_claim_report(metrics: list[dict]) -> dict:
         ),
         "text": bilingual(
             f"Lúa vụ Mùa: trong lần kiểm tra chính, M1 hơn mô hình không dùng thời tiết {v} (khoảng tin cậy 90%: {lv} "
-            f"đến {hv}); đầu dưới gần 0, nên kết quả còn hẹp. Trong {below} trong {len(lows)} lần chạy kiểm tra, đầu "
-            f"dưới thấp hơn 0, và trong {zero} lần nữa bằng {zero_vi} khi làm tròn, nên kết quả chưa vững.",
+            f"đến {hv}); đầu dưới gần 0, nên kết quả còn hẹp. Ở {below} trong {len(lows)} lần chạy kiểm tra, đầu "
+            f"dưới thấp hơn 0, và ở {zero} lần nữa bằng {zero_vi} khi làm tròn, nên kết quả chưa vững.",
             f"Winter rice: in the main test, M1's skill against the no-weather model was {e} (90% CI {le} to {he}); "
             f"the lower end is close to 0, so the result is narrow. In {below} of the {len(lows)} checking runs the "
             f"lower end is below 0, and in {zero} more it is {zero_en} after rounding, so the result is fragile.",
