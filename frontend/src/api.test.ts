@@ -165,7 +165,7 @@ describe('requests', () => {
 // UI-UX-SPEC §12c: the optional Google sign-in (server: src/fieldshift/api/accounts.py, tests/test_accounts.py)
 describe('account requests', () => {
   afterEach(() => vi.unstubAllGlobals());
-  const answers: SavedAnswers = { land: 'dry', years: [2010, 2020], priority: 'income' };
+  const answers: SavedAnswers = { land: 'canal_end', years: [2010, 2020], priority: 'income' };
   const reply = (status: number, json?: unknown) =>
     vi.fn<(path: string, init: RequestInit) => Promise<Response>>(async () =>
       json === undefined ? new Response(null, { status }) : new Response(JSON.stringify(json), { status }),
@@ -205,7 +205,7 @@ describe('account requests', () => {
   it('lists the saved sets and rejects a set of another shape', async () => {
     vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers }] }));
     await expect(api.account.saved('tok')).resolves.toEqual([{ id: 1, ...answers }]);
-    vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers, land: 'wet' }] }));
+    vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers, land: 'dry' }] }));
     await expect(api.account.saved('tok')).rejects.toThrow(ContractError);
   });
   it('deletes one set and the whole account', async () => {

@@ -1011,7 +1011,6 @@ export const vi = {
     needSignIn: 'Đăng nhập để xem các câu trả lời đã lưu.',
     signInCta: 'Đăng nhập',
     empty: 'Chưa lưu bộ câu trả lời nào. Ở trang so sánh cách trồng, chạm “Lưu các câu trả lời này”.',
-    lands: { dry: 'Ruộng thiếu nước', unsure: 'Chưa chắc loại ruộng' },
     yearsLabel: (years: string) => `Các năm: ${years}`,
     open: 'Mở',
     openLabel: (name: string) => `Mở: ${name}`,

@@ -18,8 +18,8 @@ vi.mock('./google', () => ({ loadGoogle: vi.fn() }));
 const ON = { available: true, client_id: 'test.apps.googleusercontent.com' } as const;
 const OFF = { available: false, client_id: null } as const;
 const SETS: SavedSet[] = [
-  { id: 1, land: 'dry', years: [2010, 2020], priority: 'income' },
-  { id: 2, land: 'unsure', years: [1998], priority: 'water' },
+  { id: 1, land: 'high_field', years: [2010, 2020], priority: 'income' },
+  { id: 2, land: 'ask', years: [1998], priority: 'water' },
 ];
 const t = text.account;
 
@@ -49,7 +49,7 @@ function show(path: string, token: string | null = null) {
       { path: '/da-luu', element: page(<SavedPage />) },
       {
         path: '/nong-dan/phuong-an',
-        element: page(<SaveAnswers answers={{ land: 'dry', years: [2010], priority: 'income' }} />),
+        element: page(<SaveAnswers answers={{ land: 'canal_end', years: [2010], priority: 'income' }} />),
       },
     ],
     { initialEntries: [path] },
@@ -152,13 +152,13 @@ describe('saved answers page', () => {
   it('names each set from its answers and opens it on the plan cards', async () => {
     vi.spyOn(api.account, 'saved').mockResolvedValue(SETS);
     show('/da-luu', 'tok');
-    const name = `${t.lands.dry} · ${t.yearsLabel('2010, 2020')} · ${text.farmer.prios.income.title}`;
+    const name = `${text.farmer.lands.high_field.title} · ${t.yearsLabel('2010, 2020')} · ${text.farmer.prios.income.title}`;
     expect(await screen.findByText(name)).toBeTruthy();
     expect(screen.getByRole('link', { name: t.openLabel(name) }).getAttribute('href')).toBe(
-      '/nong-dan/phuong-an?ruong=water_short&nam=2010%2C2020&uutien=income',
+      '/nong-dan/phuong-an?ruong=high_field&nam=2010%2C2020&uutien=income',
     );
     expect(
-      screen.getByText(`${t.lands.unsure} · ${t.yearsLabel('1998')} · ${text.farmer.prios.water.title}`),
+      screen.getByText(`${text.farmer.lands.ask.title} · ${t.yearsLabel('1998')} · ${text.farmer.prios.water.title}`),
     ).toBeTruthy();
   });
 
@@ -166,7 +166,7 @@ describe('saved answers page', () => {
     const saved = vi.spyOn(api.account, 'saved').mockResolvedValueOnce(SETS).mockResolvedValueOnce(SETS.slice(1));
     const remove = vi.spyOn(api.account, 'remove').mockResolvedValue();
     show('/da-luu', 'tok');
-    const name = `${t.lands.dry} · ${t.yearsLabel('2010, 2020')} · ${text.farmer.prios.income.title}`;
+    const name = `${text.farmer.lands.high_field.title} · ${t.yearsLabel('2010, 2020')} · ${text.farmer.prios.income.title}`;
     await userEvent.click(await screen.findByRole('button', { name: t.removeLabel(name) }));
     expect(remove).toHaveBeenCalledWith('tok', 1);
     expect(await screen.findByText(t.removed)).toBeTruthy();
@@ -230,10 +230,10 @@ describe('save these answers', () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
     const save = vi
       .spyOn(api.account, 'save')
-      .mockResolvedValue({ id: 3, land: 'dry', years: [2010], priority: 'income' });
+      .mockResolvedValue({ id: 3, land: 'canal_end', years: [2010], priority: 'income' });
     show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income', 'tok');
     await userEvent.click(await screen.findByRole('button', { name: t.save }));
-    expect(save).toHaveBeenCalledWith('tok', { land: 'dry', years: [2010], priority: 'income' });
+    expect(save).toHaveBeenCalledWith('tok', { land: 'canal_end', years: [2010], priority: 'income' });
     expect(await screen.findByText(t.saved)).toBeTruthy();
   });
 

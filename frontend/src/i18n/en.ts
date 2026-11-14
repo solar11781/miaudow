@@ -1007,7 +1007,6 @@ export const en: Messages = {
     needSignIn: 'Sign in to see your saved answers.',
     signInCta: 'Sign in',
     empty: 'No answers saved yet. On the page that compares the ways of planting, tap “Save these answers”.',
-    lands: { dry: 'Field often short of water', unsure: 'Not sure about the field' },
     yearsLabel: (years: string) => `Years: ${years}`,
     open: 'Open',
     openLabel: (name: string) => `Open: ${name}`,

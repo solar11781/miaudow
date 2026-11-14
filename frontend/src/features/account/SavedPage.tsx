@@ -1,29 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { api, ApiError, type SavedSet } from '../../api';
 import { Button, ButtonLink } from '../../design-system/Button';
-import { serializeFarmerState, type Land } from '../../domain/farmerState';
+import { serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { useT } from '../../app/settings';
 import { LoadState } from '../provenance/LoadState';
 import { signInLink, useAccount } from './AccountProvider';
 import s from './account.module.css';
 
-// the server keeps the compare request's land: the three water-short answers are one land type and give the same
-// plans (UI-UX-SPEC §7), so a saved "dry" opens as "often short of water"
-const FARMER_LAND: Record<SavedSet['land'], Land> = { dry: 'water_short', unsure: 'ask' };
-
 const plansLink = (set: SavedSet) => ({
   pathname: '/nong-dan/phuong-an',
-  search: `?${serializeFarmerState({ land: FARMER_LAND[set.land], years: set.years, priority: set.priority, plan: null }).toString()}`,
+  search: `?${serializeFarmerState({ land: set.land, years: set.years, priority: set.priority, plan: null }).toString()}`,
 });
 
 /** The name of a saved set, from its answers; the server stores no name. */
 function useSetName() {
   const t = useT();
   return (set: SavedSet) =>
-    [t.account.lands[set.land], t.account.yearsLabel(set.years.join(', ')), t.farmer.prios[set.priority].title].join(
-      ' · ',
-    );
+    [
+      t.farmer.lands[set.land].title,
+      t.account.yearsLabel(set.years.join(', ')),
+      t.farmer.prios[set.priority].title,
+    ].join(' · ');
 }
 
 function errorText(t: ReturnType<typeof useT>, err: unknown) {

@@ -4,9 +4,9 @@ import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { api, SnapshotMissError, type SnapshotEntry } from '../../api';
+import { api, SnapshotMissError, type SavedAnswers, type SnapshotEntry } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
-import { compareRequest, serializeFarmerState } from '../../domain/farmerState';
+import { compareRequest, serializeFarmerState, type Land } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
@@ -120,6 +120,10 @@ function Compare({ body }: { body: CompareRequest }) {
   return <LoadState state={res} retry={retry} />;
 }
 
+/** The answers a farmer can save: only with plans to see, so never an irrigated field. */
+const savable = (land: Land | null, body: CompareRequest | null): SavedAnswers | null =>
+  body && land && land !== 'reliable' ? { land, years: body.years, priority: body.priority } : null;
+
 export function PlansStep() {
   const t = useT();
   const { state, search } = useFarmer();
@@ -128,6 +132,7 @@ export function PlansStep() {
   const offered = years.status === 'ok' ? years.data.years.map((y) => y.year) : [];
   const body =
     years.status === 'ok' ? compareRequest({ ...state, years: state.years.filter((y) => offered.includes(y)) }) : null;
+  const saved = savable(state.land, body);
   return (
     <StepShell step={4} title={t.farmer.plansTitle} help={t.farmer.plansLead} wide>
       <div className={s.plansMeta}>
@@ -176,7 +181,7 @@ export function PlansStep() {
       )}
       {state.land !== 'reliable' && years.status !== 'ok' && <LoadState state={years} retry={retryYears} />}
       {body && <Compare body={body} />}
-      {body && <SaveAnswers answers={{ land: body.land, years: body.years, priority: body.priority }} />}
+      {saved && <SaveAnswers answers={saved} />}
 
       <section className={s.officerBox} aria-labelledby="ask-officer">
         <h2 id="ask-officer" className="h3">

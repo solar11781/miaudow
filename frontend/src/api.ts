@@ -2,6 +2,7 @@
 // the farmer's answers go to our own server only, in the POST body (D-92). Every response is checked before a screen
 // uses it ("Validation in src/api.ts"); a response that fails the check is an error, never shown.
 import type { Bilingual } from './domain/provenance';
+import type { Land } from './domain/farmerState';
 import {
   COVERAGE_AXES,
   EXPLAIN_KEYS,
@@ -360,15 +361,17 @@ export function validateMethod(raw: unknown): MethodResponse {
 
 /** Whether sign-in is on, and the public Google client id the sign-in page starts Google's button with. */
 export type SignInConfig = { available: true; client_id: string } | { available: false; client_id: null };
-/** One saved set: the answers of steps 1-3 as the compare request carries them (accounts.py SavedAnswers). */
-export type SavedAnswers = Pick<CompareRequest, 'land' | 'years' | 'priority'>;
+/** One saved set: the answers of steps 1-3 (accounts.py SavedAnswers), the field as the farmer answered it; an
+ * irrigated field gets no plans, so it is never saved. */
+export type SavedAnswers = Pick<CompareRequest, 'years' | 'priority'> & { land: SavedLand };
+export type SavedLand = Exclude<Land, 'reliable'>;
 export interface SavedSet extends SavedAnswers {
   id: number;
 }
 
 const savedSet = obj({
   id: num,
-  land: oneOf(['dry', 'unsure']),
+  land: oneOf(['high_field', 'canal_end', 'water_short', 'ask']),
   years: arr(num),
   priority: oneOf(['income', 'stability', 'water', 'land']),
 });
