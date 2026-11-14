@@ -9,6 +9,7 @@ the `year` rows of artifacts/hazard_labels.json (section 4b), one panel per rule
 """
 
 import copy
+import hashlib
 import json
 import re
 import struct
@@ -260,6 +261,15 @@ def _png_size(path: Path) -> tuple[int, int]:
 def test_each_png_is_a_double_scale_render_of_its_svg(png: str, svg: Path) -> None:
     root = _parse(svg.read_text(encoding="utf-8"))
     assert _png_size(FIGURES / png) == (2 * int(root.get("width")), 2 * int(root.get("height")))
+
+
+def test_each_png_records_the_sha256_of_the_svg_it_was_rendered_from() -> None:
+    recorded = json.loads((FIGURES / "png_sources.json").read_text(encoding="utf-8"))
+    pngs = {f.name for f in FIGURES.glob("*.png")}
+    assert set(recorded) == pngs
+    for png, source in recorded.items():
+        digest = hashlib.sha256((REPO / source["svg"]).read_bytes()).hexdigest()
+        assert source["sha256"] == digest, f"{png} is stale: render {source['svg']} again"
 
 
 def test_the_readme_names_every_figure_file() -> None:
