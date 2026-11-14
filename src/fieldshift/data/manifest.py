@@ -35,15 +35,29 @@ def append_rows(manifest: Path | str, rows: list[list[str]]) -> int:
     return len(new)
 
 
-def fetch_recorded(
-    path: str, manifest: Path | str = MANIFEST, opener: urllib.request.OpenerDirector | None = None
-) -> Path:
-    """Download a file recorded in the manifest from its recorded https URL; keep it only if its sha256 matches."""
+def _recorded(path: str, manifest: Path | str) -> tuple[str, str]:
+    """(url, sha256) of the one recorded version of `path`."""
     with open(manifest, newline="", encoding="utf-8") as f:
         rows = [r for r in csv.DictReader(f) if r["path"] == path]
     if len({(r["url"], r["sha256"]) for r in rows}) != 1:
         raise ValueError(f"{path}: no manifest row, or several versions, in {manifest}")
-    url, sha = rows[0]["url"], rows[0]["sha256"]
+    return rows[0]["url"], rows[0]["sha256"]
+
+
+def check_recorded(path: str, manifest: Path | str = MANIFEST) -> Path:
+    """The file at `path`, used only if its sha256 is the recorded one (a changed or replaced download is refused)."""
+    _url, sha = _recorded(path, manifest)
+    got = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    if got != sha:
+        raise ValueError(f"{path}: sha256 {got[:12]} does not match the manifest ({sha[:12]})")
+    return Path(path)
+
+
+def fetch_recorded(
+    path: str, manifest: Path | str = MANIFEST, opener: urllib.request.OpenerDirector | None = None
+) -> Path:
+    """Download a file recorded in the manifest from its recorded https URL; keep it only if its sha256 matches."""
+    url, sha = _recorded(path, manifest)
     if urllib.parse.urlparse(url).scheme != "https":
         raise ValueError(f"{path}: recorded URL is not https: {url}")
     with (opener or urllib.request.build_opener()).open(url, timeout=FETCH_TIMEOUT_S) as resp:
