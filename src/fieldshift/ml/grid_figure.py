@@ -34,7 +34,7 @@ LEGEND_BOUNDARY = "Nghệ An boundary"
 CAPTION = (
     f"Sources: NASA POWER cells of {POWER_DLAT} x {POWER_DLON} degrees (R-N01). Farmland weights from NASA MODIS land"
     " cover MCD12C1 with the fixed farmland mask (R-N02; D-106, D-146), data/processed/cell_weights.csv. Boundary:"
-    " geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020), CC BY 4.0 (R-D04). Drawn as plain longitude and latitude,"
+    " geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020; R-D04). Drawn as plain longitude and latitude,"
     " longitude scaled by cos(latitude)"
     " at the middle latitude; no base map. Weights rounded to 2 decimals, so the printed values may not sum to"
     " exactly 1."

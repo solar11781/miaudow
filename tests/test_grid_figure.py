@@ -114,7 +114,7 @@ def test_the_printed_weights_sum_to_1_within_rounding(committed: ET.Element) -> 
 
 
 def test_no_number_other_than_the_table_and_the_cell_size(committed: ET.Element) -> None:
-    allowed = {f"{w:.2f}" for w in NGHE_AN["farmland_weight"]} | {"0.5", "0.625"} | {"4.0"}  # 4.0: CC BY 4.0
+    allowed = {f"{w:.2f}" for w in NGHE_AN["farmland_weight"]} | {"0.5", "0.625"}
     allowed |= {str(float(part)) for cell_id in set(NGHE_AN["cell_id"]) | ZERO_CELLS for part in cell_id.split("_")}
     printed = DECIMAL.findall(" ".join(committed.itertext()))
     assert printed
@@ -144,7 +144,7 @@ def test_the_caption_names_the_sources_and_the_drawing_method(committed: ET.Elem
         "R-N02",
         "D-106",
         "D-146",
-        "Boundary: geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020), CC BY 4.0 (R-D04)",  # REFERENCES R-D04, R-E28
+        "Boundary: geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020; R-D04)",  # REFERENCES R-D04; DATA-SOURCES credit
         "cos",
         "rounded to 2 decimals",
     ):
