@@ -15,11 +15,15 @@ from collections.abc import Callable
 import numpy as np
 import pandas as pd
 
+from fieldshift.features.climate import drought_rain_counts
 from fieldshift.ml.runner import add_precip_anom
 
 SPRING = "spring"
 UNIT_SEASON = ["province_nso", "season"]  # unit key until the unit_id crosswalk exists (05-DATA-CONTRACTS section 2)
 FOLD_RAIN = "precip_anom_pct"  # season rain vs the training-years mean (D-66), built by runner.add_precip_anom
+DROUGHT_COLS = ["drought_rain_months", "drought_rain_consecutive", "drought_rain_any2"]  # 05-DATA-CONTRACTS 4a
+ROW_KEY = ["province_nso", "season", "year"]
+CELL = ["lat", "lon"]
 
 
 def add_context_means(df: pd.DataFrame, before_year: int, cols: list[str]) -> pd.DataFrame:
@@ -29,6 +33,35 @@ def add_context_means(df: pd.DataFrame, before_year: int, cols: list[str]) -> pd
     key = pd.MultiIndex.from_frame(df[UNIT_SEASON])
     for c in cols:
         out[f"ctx_{c}"] = means[c].reindex(key).to_numpy()
+    return out
+
+
+def add_drought_months(df: pd.DataFrame, month_rain: pd.DataFrame, before_year: int) -> pd.DataFrame:
+    """Drought rain months of each row against every cell's same-month mean over the years before `before_year`.
+
+    month_rain: the cell monthly rain of features.feature_table.build_cell_month_rain. A row without that table's
+    months, or with a month that has no earlier year, gets no value (not scored).
+    """
+    mr = month_rain.assign(moy=month_rain["month"].str[5:])
+    key = [*UNIT_SEASON, *CELL, "moy"]
+    normal = mr[mr["year"] < before_year].groupby(key)["rain_mm"].mean()
+    mr = mr.assign(normal=normal.reindex(pd.MultiIndex.from_frame(mr[key])).to_numpy())
+    values = {}
+    for row_key, g in mr.groupby(ROW_KEY, sort=False):
+        if g["normal"].isna().any():
+            continue
+        cells = {c: part.sort_values("month") for c, part in g.groupby(CELL)}
+        values[row_key] = drought_rain_counts(
+            {c: part["rain_mm"].reset_index(drop=True) for c, part in cells.items()},
+            {c: part["normal"].reset_index(drop=True) for c, part in cells.items()},
+            {c: float(part["farmland_weight"].iloc[0]) for c, part in cells.items()},
+        )
+    found = pd.DataFrame.from_dict(values, orient="index", columns=DROUGHT_COLS)
+    found.index = pd.MultiIndex.from_tuples(found.index, names=ROW_KEY) if len(found) else found.index
+    keys = pd.MultiIndex.from_frame(df[ROW_KEY])
+    out = df.copy()
+    for c in DROUGHT_COLS:
+        out[c] = found[c].reindex(keys).to_numpy() if len(found) else np.nan
     return out
 
 
