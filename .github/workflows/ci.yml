@@ -15,7 +15,6 @@ env:
   PYTHON_VERSION: "3.13"
   NODE_VERSION: "22"
   RUFF_VERSION: "0.17.4"
-  PYTEST_VERSION: "8.3.5"
   PIP_AUDIT_VERSION: "2.10.1"
   GITLEAKS_VERSION: "8.30.1"
 
@@ -62,10 +61,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: .github/workflows/ci.yml
-      # the python job is skipped until pyproject.toml exists; these checks must run on every pull request
+      # these architecture and trace checks run on every pull request, whichever files changed
       - name: tooling python tests (architecture, source trace, attribution)
         run: |
-          pip install "pytest==${PYTEST_VERSION}"
+          pip install "pytest==$(awk -F== '$1 == "pytest" {print $2}' requirements-dev.lock)"
           pytest -q tests/test_architecture.py tests/test_source_trace.py tests/test_attribution.py
 
   secrets:
@@ -144,6 +143,13 @@ jobs:
         run: npx vitest run
       - name: build
         run: npm run build
+      - name: third-party licence file in the build
+        run: |
+          grep -q '^cesium [0-9]' dist/THIRD-PARTY-LICENSES.txt
+          grep -q '^three [0-9]' dist/THIRD-PARTY-LICENSES.txt
+          grep -q '^react [0-9]' dist/THIRD-PARTY-LICENSES.txt
+          grep -q '^react-router-dom [0-9]' dist/THIRD-PARTY-LICENSES.txt
+          grep -q 'SIL OPEN FONT LICENSE' dist/THIRD-PARTY-LICENSES.txt
       # the saved snapshot ships only in the offline demo build (04-TECH-DESIGN section 9), never in the deployed one
       - name: snapshot not in the deployed build
         run: test ! -e dist/snapshot

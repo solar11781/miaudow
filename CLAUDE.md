@@ -110,7 +110,7 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
 ## Tools set up in this repo
 
 - Layout: Python at the repository root (`pyproject.toml`, `requirements*.lock`, `src/`, `tests/`), frontend in
-  `frontend/`. Deployed app: https://miaudow-production.up.railway.app (Railway project `miaudow`, one service).
+  `frontend/`. Deployed app: https://miaudow-production.up.railway.app, custom domain https://miaudow.solareclipse.observer (D-171) (Railway project `miaudow`, one service).
   Railway deploys the branch `production`, not `main` (team, 2026-11-14). `production` moves to a gated, green
   `main` commit only at the planned deploy points (skeleton, real data, about 17:15 Saturday, the final check before
   10:00 Sunday) with `git fetch origin && git push origin origin/main:production`, and it is frozen from 11:00 Sunday.
@@ -121,8 +121,7 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   Chrome DevTools (slow-network emulation such as Slow 3G, Lighthouse and performance checks), Context7 (current docs
   for the exact pinned library versions; use it before writing code against a library API, for example Tailwind 3,
   not 4), Railway (deploy, environment, logs; each person signs in once).
-- Playwright MCP: headless browser at 360 x 740 for phone-size checks.
-  Save screenshots without a file name (they go to `.playwright-mcp/`, ignored by git), or delete them before a
+- Playwright screenshots: save them without a file name (they go to `.playwright-mcp/`, ignored by git), or delete them before a
   commit.
 - Safety hook (`.claude/settings.json`, `.claude/hooks/guard.mjs`): blocks pushing to `main`, local merges into
   `main`, `gh pr merge` unless the gate passes, force pushes, branch deletion, `git reset --hard`, `git clean -f`,
