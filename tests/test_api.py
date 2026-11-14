@@ -524,6 +524,10 @@ def test_the_csp_names_each_google_sign_in_address_in_its_own_directive(tmp_path
     for name, address in GSI_CSP.items():
         assert address in directives[name], name
     assert directives["default-src"] == ["'self'"]
+    # the security audit of 2026-11-15: base-uri and form-action never fall back to default-src (w3.org/TR/CSP3)
+    assert directives["base-uri"] == ["'none'"]
+    assert directives["form-action"] == ["'self'"]
+    assert directives["object-src"] == ["'none'"]
     # Knockout, bundled in Cesium, runs (0,eval)('this') when the observatory chunk loads (security review 2026-11-14)
     assert "script-src 'self' 'unsafe-eval' https://accounts.google.com/gsi/client;" in csp
 

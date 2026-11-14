@@ -107,6 +107,10 @@ CSP = "; ".join(
         f"style-src 'self' 'unsafe-inline' {GSI}style",
         "font-src 'self'",
         "frame-ancestors 'none'",
+        # base-uri and form-action never fall back to default-src (https://www.w3.org/TR/CSP3/); no page uses a plugin
+        "base-uri 'none'",
+        "form-action 'self'",
+        "object-src 'none'",
     )
 )
 SECURITY_HEADERS = [
