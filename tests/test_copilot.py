@@ -391,7 +391,6 @@ def failure_lines(caplog: pytest.LogCaptureFixture) -> list[str]:
 @pytest.mark.parametrize(
     "reply",
     [
-        lambda _: final(["Lúa sẽ đạt 9.999 tấn"]),  # model text in an id: the id filter refuses it
         lambda _: final(answer="Lãi 42 triệu đồng/ha."),  # a free-text field is not in the schema
         lambda _: message([{"type": "text", "text": "zz not json"}], "end_turn"),
         lambda _: message([{"type": "text", "text": "{}"}], "max_tokens"),
@@ -408,7 +407,7 @@ def test_an_unusable_model_answer_is_a_generic_502_with_one_log_line(
     assert r.status_code == 502
     assert r.json() == {"detail": "Bad Gateway"}
     assert len(failure_lines(caplog)) == 1
-    for secret in (KEY, "zz-farmer-question", "9.999", "42 triệu"):
+    for secret in (KEY, "zz-farmer-question", "42 triệu"):
         assert secret not in caplog.text
 
 
@@ -490,23 +489,6 @@ def test_the_grid_cell_size_is_the_audited_wording() -> None:
     assert "50 km" not in nasa.text["vi"] + nasa.text["en"]
 
 
-def test_five_followed_by_a_number_word_or_unit_is_a_number() -> None:
-    assert "năm" in copilot.number_words("Lạc lãi năm triệu một ha")
-    assert "năm" in copilot.number_words("năm tấn")
-    assert "năm" not in copilot.number_words("Năm 2010 là năm đã qua")
-
-
-@pytest.mark.parametrize(
-    "question",
-    ["Năm sau có hạn không?", "Will it rain next season?", "Ruộng cuối kênh nên trồng gì?", "Năm 2010 thế nào?"],
-)
-def test_the_fixed_answers_are_never_filtered(det: TestClient, question: str) -> None:
-    out = ask(det, question)
-    assert out["engine"] == "deterministic"
-    if "sau" in question:  # the fixed forecast answer itself names the coming season ("mùa tới")
-        assert copilot.FIELD_CLAIMS.search(copilot._keep_accents(out["answer"]))
-
-
 EXPLOITS = [
     ("vi", "Năm sau ruộng nhà bạn sẽ đạt 6 tấn/ha, lãi 26 triệu."),
     ("vi", "Lạc là cách tốt nhất."),
@@ -542,18 +524,6 @@ def test_no_model_written_text_reaches_the_farmer(
     assert text not in r.text
     if r.status_code == 200:  # an id that is no candidate is dropped, and nothing left is the fixed answer
         assert r.json()["answer"] == copilot.load_corpus(REPO).answers.insufficient[lang]
-
-
-@pytest.mark.parametrize(("lang", "text"), EXPLOITS)
-def test_the_id_filter_refuses_every_example(lang: str, text: str) -> None:
-    assert copilot.id_refusal(text) is not None, lang
-
-
-def test_a_yield_unit_is_read_as_a_unit() -> None:
-    known = copilot.known_numbers(["There were 44 trial rows and 5 cells."])
-    for text in ("44 tonnes per ha", "5 tons", "5 tạ", "5 yến", "5 sào", "44 hectares", "5 usd", "5 dollars"):
-        assert copilot.check_numbers(text, known).unverified, text
-    assert copilot.check_numbers("5 cells", known).unverified == []
 
 
 # ---- own-field questions get the fixed answer

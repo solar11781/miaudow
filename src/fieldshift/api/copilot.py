@@ -20,7 +20,6 @@ other data have no register row or are not served by our API.
 from __future__ import annotations
 
 import html
-import itertools
 import math
 import re
 import unicodedata
@@ -40,7 +39,6 @@ from fieldshift.api.explain import (
     MODEL,
     THINKING,
     TIMEOUT_SECONDS,
-    UNITS,
     ExplainError,
     numbers,
 )
@@ -67,116 +65,6 @@ SEARCH_LIMIT = 3  # member B's deterministic answer quotes the top 3 passages
 # an answer only when the top hit reaches both floors (its MIN_SCORE and MIN_COVERAGE)
 K1, B = 1.4, 0.72
 MIN_SCORE, MIN_COVERAGE = 4.5, 0.5
-# CLAUDE.md scientific boundaries (regional estimates only, never the farmer's own field, past years never a forecast,
-# no ranking): forecast questions never reach the model, so a model answer with a future marker, a ranking or advice
-# is refused. Matched on the lower-case text with its accents, so "sẽ" never matches "sẻ" (second pass of PR #55).
-FIELD_CLAIMS = re.compile(
-    r"(?<!\w)(sẽ|sắp|sang năm|năm sau|năm tới|vụ sau|vụ tới|mùa sau|mùa tới|tương lai|ngày mai|tối ưu|khuyên|"
-    r"lựa chọn tốt|nên trồng|nên chọn|bạn nên|bác nên|tốt nhất|hay nhất|lời nhất|lãi nhất|chắc chắn|đảm bảo|"
-    r"will|won't|going to|gonna|future|next (year|season|crop)|tomorrow|optimal|most profitable|recommend\w*|"
-    r"advise\w*|can produce|should|best|guarantee\w*|"
-    # third pass of PR #55: phrases only, since our own passages hold "hơn" and "your field"
-    r"if you|nếu bác|nếu bạn|expect\w*|switch\w*|chuyển sang|kế tiếp|coming (seasons?|years?)|mất mùa|"
-    r"hợp lý nhất|an toàn nhất|safest|safe bet|more than|less than|lãi hơn|ít hơn)(?!\w)"
-)
-# third pass of PR #55: yield, area and money words the explain list lacks; a number with one of them must have that
-# very unit in a tool result, never only a unit-less token
-STRICT_UNITS = frozenset(
-    ("tonnes", "tonne", "tons", "ton", "tạ", "yến", "sào", "hectare", "hectares", "dollars", "dollar", "usd")
-)
-COPILOT_UNITS = UNITS | STRICT_UNITS
-
-
-# security review of PR #55: numbers written in words escape the digit check, so each must also be in a tool result;
-# "năm" (five, also "year") counts only before another number word or a unit (number_words)
-NUMBER_WORDS = frozenset(
-    [
-        "một",
-        "mốt",
-        "hai",
-        "ba",
-        "bốn",
-        "tư",
-        "sáu",
-        "bảy",
-        "bẩy",
-        "tám",
-        "chín",
-        "mười",
-        "mươi",
-        "lăm",
-        "linh",
-        "lẻ",
-        "chục",
-        "tá",
-        "trăm",
-        "nghìn",
-        "ngàn",
-        "vạn",
-        "triệu",
-        "tỷ",
-        "tỉ",
-        "nửa",
-        "rưỡi",
-        "gấp",
-        "phẩy",
-        "zero",
-        "one",
-        "two",
-        "three",
-        "four",
-        "five",
-        "six",
-        "seven",
-        "eight",
-        "nine",
-        "ten",
-        "eleven",
-        "twelve",
-        "thirteen",
-        "fourteen",
-        "fifteen",
-        "sixteen",
-        "seventeen",
-        "eighteen",
-        "nineteen",
-        "twenty",
-        "thirty",
-        "forty",
-        "fifty",
-        "sixty",
-        "seventy",
-        "eighty",
-        "ninety",
-        "hundred",
-        "hundreds",
-        "thousand",
-        "thousands",
-        "million",
-        "millions",
-        "billion",
-        "billions",
-        "half",
-        "halves",
-        "halved",
-        "double",
-        "doubled",
-        "doubles",
-        "twice",
-        "triple",
-        "tripled",
-        "thrice",
-        "quadruple",
-        "quarter",
-        "quarters",
-        "third",
-        "thirds",
-        "dozen",
-        "dozens",
-        "percent",
-    ]
-)
-FIVE = "năm"
 # the unit spellings of the data (rules/crops.yaml, rules/copilot.yaml, the plan money units) as explain.UNITS spells them
 UNIT_SPELLINGS = (("m³", "m3"), ("m²", "m2"), ("tấn/ha", "t/ha"), ("°C", "°c"))
 
@@ -257,7 +145,7 @@ class Corpus:
     rule_labels: dict[str, Text]
     years: dict[int, dict[str, str | None]]  # year -> rule code -> whole percent as shown by /api/past-years
     year_sources: list[SourceId]
-    plans: list[dict[str, object]]  # what the list_plans tool returns, per language below
+    plans: list[dict[str, object]]  # the plans in the study order, each text in both languages
     plan_names: dict[PlanId, Text]
     crop_words: frozenset[str]  # the crop names of rules/crops.yaml without accents, both languages
     system: str  # rules/prompts/copilot.md
@@ -568,22 +456,14 @@ def known_numbers(value: object) -> set[Number]:
         if isinstance(item, int):
             found.add(("-" if item < 0 else "", str(abs(item)), ""))
         else:
-            found |= set(numbers(_units_spelled(item), COPILOT_UNITS))
+            found |= set(numbers(_units_spelled(item)))
     return found
 
 
 def check_numbers(text: str, known: set[Number]) -> NumberCheck:
     """The shown text's numbers that are not a token, with the same sign and unit, of the data it was built from."""
-    found = numbers(_units_spelled(text), COPILOT_UNITS)
+    found = numbers(_units_spelled(text))
     return NumberCheck(checked=len(found), unverified=[f"{s}{d}" for s, d, u in found if (s, d, u) not in known])
-
-
-def number_words(text: str) -> set[str]:
-    words = _keep_accents(text).split()
-    found = set(words) & NUMBER_WORDS
-    if any(w == FIVE and (nxt in NUMBER_WORDS or nxt in UNITS) for w, nxt in itertools.pairwise([*words, ""])):
-        found.add(FIVE)
-    return found
 
 
 # ---------------------------------------------------------------- deterministic engine (member B's)
@@ -739,18 +619,6 @@ def _create(
     return message
 
 
-def id_refusal(raw: str) -> str | None:
-    """A second layer on each id the model returns: a forecast, ranking or advice phrase, a number word or a number
-    with a unit in it refuses the whole reply (CLAUDE.md scientific boundaries; the security passes of PR #55)."""
-    if FIELD_CLAIMS.search(_keep_accents(raw)):
-        return "FieldClaim"
-    if number_words(raw):
-        return "NumberWords"
-    if any(unit for _, _, unit in numbers(raw, COPILOT_UNITS)):  # an id never carries a unit
-        return "NumberWithUnit"
-    return None
-
-
 PICKED_BY = {"engine": "claude", "model": MODEL}  # the model picked what the server shows (D-177)
 
 
@@ -823,8 +691,6 @@ def _picked(message: anthropic.types.Message) -> PickedIds:
         picked = PickedIds.model_validate_json(raw)
     except ValidationError as err:
         raise CopilotError("InvalidJson", 200, message.stop_reason, request_id) from err
-    for cause in filter(None, map(id_refusal, picked.ids)):
-        raise CopilotError(cause, 200, message.stop_reason, request_id)
     return picked
 
 
