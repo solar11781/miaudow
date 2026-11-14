@@ -13,8 +13,8 @@ model: haiku
 3. CI: `gh run list --limit 10`; note any failed run on an open pull request or on `main`.
 4. If everything is healthy: add one line `health ok <HH:MM> ICT` to `.autopilot/status.md` and reply in one line.
 5. If something failed: add a line to `.autopilot/status.md`, a question to `.autopilot/parked.md` with the evidence,
-   and a proposed `fix/...` item in a pull request that adds it to `.autopilot/queue.md` under `proposed by health
-   (needs team approval)`. It runs only after a person merges that and moves it into the approved list, or if the
-   approved queue holds a standing item allowing health fixes.
+   and a proposed `fix/...` item appended to `docs/AUTOPILOT-QUEUE.md` in the planning repository (see "Specs" in
+   `CLAUDE.md`) under `proposed by health (needs team approval)`. It runs only after a person moves it into the approved
+   list, or if the approved queue holds a standing item allowing health fixes.
 
 Reply in at most five lines.

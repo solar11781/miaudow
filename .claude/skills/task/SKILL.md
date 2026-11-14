@@ -109,9 +109,9 @@ example `chore: switch the gate to normal merges (queue item 0)`.
 5. Merge: `gh pr merge <number> --merge` (or `-m`; the merge rule in `CLAUDE.md`), run alone. If the hook refuses,
    read its reason, fix that, and retry; never change the command to get around it.
 6. A task from the queue: add the line `- done: <date time ICT>, pull request #<n>` under the item in the planning
-   repository's queue draft (not `.autopilot/queue.md`, which a person merges) and push it there at once, so a member
-   who joins later sees it. If this session does not have the planning repository, give that line to the team in the
-   report instead. Never name, link or give a path to the planning repository in this repository.
+   repository's queue draft (and in its approved autopilot queue when the item is there) and push it at once, so a
+   member who joins later sees it. If this session does not have the planning repository, give that line to the team in
+   the report instead. Never name, link or give a path to the planning repository in this repository.
 
 ## 9. Report
 

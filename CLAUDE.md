@@ -129,8 +129,8 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   discarding all changes, and recursive deletes outside scratch folders. When it blocks a command, do not work
   around it; fix the reason or ask the team. Tests: `node --test .claude/hooks/guard.test.mjs`. A second layer, CC
   Safety Net, is installed per laptop (destructive commands, secret files).
-- Workflow skills: `/plan-queue` (proposes the shared queue `.autopilot/queue.md` in a pull request; a person
-  approves and merges it; items carry an owner and each person's autopilot runs only their own items), `/task` (one task
+- Workflow skills: `/plan-queue` (drafts the shared queue in the planning repository, never in this one; a person
+  approves it; items carry an owner and each person's autopilot runs only their own items), `/task` (one task
   end to end, merges through the gate), `/autopilot` (works through the approved queue, parks questions),
   `/progress` (phone-readable status), `/health` (deployed app and CI; `/loop 30m /health`), `/final-audit`
   (whole-project audit when features are done, proposes fixes), `/submission-check` (pre-submission audit).

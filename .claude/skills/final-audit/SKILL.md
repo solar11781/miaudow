@@ -49,9 +49,8 @@ not user testing).
 Run the `submission-check` skill.
 
 ## Output
-
-In `.autopilot/audit.md`: the table of sections 1 to 7 with PASS / FAIL / UNKNOWN and evidence, then every FAIL as a
+ In `.autopilot/audit.md`: the table of sections 1 to 7 with PASS / FAIL / UNKNOWN and evidence, then every FAIL as a
 proposed queue item (format of the `plan-queue` skill) under the heading `proposed by final-audit (needs team
-approval)`. Propose the same items in a pull request that appends them to `.autopilot/queue.md` under that heading
-(branch `docs/queue-audit-<YYYYMMDD-HHMM>`); a person reviews and merges it, and the items run only after the team
-moves them into the approved list. Reply in at most fifteen lines: counts per section, the worst five findings, and where the report is.
+approval)`. Append the same items to `docs/AUTOPILOT-QUEUE.md` in the planning repository (see "Specs" in `CLAUDE.md`)
+under that heading and push them there; the items run only after the team moves them into the approved list. Reply in at
+most fifteen lines: counts per section, the worst five findings, and where the report is.

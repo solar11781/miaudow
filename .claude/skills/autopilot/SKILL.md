@@ -13,9 +13,10 @@ enforces. Anything the gate refuses waits for the team.
 
 ## Files
 
-- `.autopilot/queue.md`, shared, on `main`: the approved queue (drafted by `plan-queue`, approved and merged by a
-  person). Always read the latest: `git fetch origin && git show origin/main:.autopilot/queue.md`. Never edit it
-  on `main`; changes go through a pull request that a person merges.
+- The approved queue: `docs/AUTOPILOT-QUEUE.md` in the planning repository (see "Specs" in `CLAUDE.md`), never in this
+  repository (team, 2026-11-14). Drafted by `plan-queue`, approved by a person who changes its first line to
+  `status: APPROVED`. Always pull the planning repository and read the latest. Never write `APPROVED` and never change an item;
+  add only the `- in progress:` and `- done:` lines of the `task` skill.
 - `.autopilot/status.md` (local to this laptop, ignored by git): you keep it. One line per item: `<n>. <running | merged | waiting-merge | parked | skipped>
   <short note> <PR link>`, newest change first line `updated <HH:MM> ICT`.
 - `.autopilot/parked.md` (local, ignored by git): questions for the team, each with the item number, the question, the options seen, and
@@ -23,7 +24,7 @@ enforces. Anything the gate refuses waits for the team.
 
 ## Start
 
-1. If the queue on `origin/main` does not exist, is empty, or its first line is not `status: APPROVED`: stop and ask
+1. If that queue does not exist, is empty, or its first line is not `status: APPROVED`: stop and ask
    the team to approve one (the `plan-queue` skill drafts it). Never invent or approve the queue yourself.
 2. Read `CLAUDE.md` and the queue. Items under a heading that says "needs team approval" do not run until the team
    moves them into the approved list.
