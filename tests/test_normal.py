@@ -62,7 +62,7 @@ def test_duplicate_series_year_or_index_fails_loudly():
     dup_year = pd.DataFrame(
         {"series_id": "A|0", "year": [2000, 2001, 2002, 2003, 2003], "yield_t_ha": [4.0, 5.0, 6.0, 7.0, 9.0]}
     )
-    with pytest.raises(ValueError, match="A\|0.*2003"):
+    with pytest.raises(ValueError, match=r"A\|0.*2003"):
         past_normal(dup_year, "mean3")
     dup_index = pd.concat([_s([4.0, 5.0, 6.0, 7.0], sid="A|0"), _s([1.0, 1.0, 1.0, 1.0], sid="B|0")])
     with pytest.raises(ValueError, match="index"):
