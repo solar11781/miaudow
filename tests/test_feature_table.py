@@ -10,7 +10,7 @@ D-37) are returned in a skipped list with a reason, never silently dropped; miss
 import pandas as pd
 import pytest
 
-from fieldshift.features.feature_table import build_feature_table
+from fieldshift.features.feature_table import build_cell_month_rain, build_feature_table
 
 CELL_A, CELL_B = (19.0, 105.0), (19.0, 105.625)
 
@@ -87,3 +87,20 @@ def test_mekong_autumn_is_skipped_with_reason():
 def test_missing_weights_for_a_province_raises():
     with pytest.raises(KeyError):
         build_feature_table(_labels(), _weights(provinces=("M",)), _cells(), REGIONS)
+
+
+def test_cell_month_rain_holds_each_cells_monthly_total_over_the_window():
+    # Source: 05-DATA-CONTRACTS section 4a drought_rain_months: months with rain more than 50% below the same month's
+    # mean over the training years, per cell then weighted (D-72), computed per fold, so each row needs its cells'
+    # monthly totals. P spring (north_central, 2010): window 1 Feb - 30 Jun 2010 (calendar R-V05) = 5 months;
+    # cell A rains 1 mm a day: February 28 mm, March 31 mm; cell B 3 mm a day: February 84 mm.
+    m = build_cell_month_rain(_labels(), _weights(), _cells(), REGIONS)
+    p10 = m[(m.province_nso == "P") & (m.season == "spring") & (m.year == 2010)]
+    assert sorted(p10["month"].unique()) == ["2010-02", "2010-03", "2010-04", "2010-05", "2010-06"]
+    a = p10[(p10.lat == 19.0) & (p10.lon == 105.0)].set_index("month")
+    assert a.loc["2010-02", "rain_mm"] == pytest.approx(28.0)
+    assert a.loc["2010-03", "rain_mm"] == pytest.approx(31.0)
+    assert a.loc["2010-02", "farmland_weight"] == pytest.approx(0.5)
+    b = p10[(p10.lat == 19.0) & (p10.lon == 105.625)].set_index("month")
+    assert b.loc["2010-02", "rain_mm"] == pytest.approx(84.0)
+    assert m[(m.province_nso == "M") & (m.season == "autumn")].empty  # Mekong summer-autumn has no window (D-37)
