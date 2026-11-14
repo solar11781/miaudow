@@ -11,3 +11,6 @@ data/raw/
 *.pyc
 build/
 *.egg-info/
+data/interim/
+data/processed/*
+!data/processed/cell_weights.csv
