@@ -475,6 +475,22 @@ def load_copilot_texts(root: Path) -> CopilotTexts:
     return texts
 
 
+def load_prompt(root: Path, name: str, placeholders: tuple[str, ...] = ()) -> str:
+    """The system prompt rules/prompts/<name>.md as sent to the model (team, 2026-11-15): the text without its final
+    line end. A missing or empty file, or a missing `{placeholder}`, stops the start."""
+    path = root / "rules" / "prompts" / f"{name}.md"
+    try:
+        text = path.read_text(encoding="utf-8").replace("\r\n", "\n").removesuffix("\n")
+    except FileNotFoundError as err:
+        raise ValueError(f"rules/prompts/{name}.md: missing") from err
+    if not text.strip():
+        raise ValueError(f"rules/prompts/{name}.md: empty")
+    missing = [p for p in placeholders if "{" + p + "}" not in text]
+    if missing:
+        raise ValueError(f"rules/prompts/{name}.md: no placeholder {missing}")
+    return text
+
+
 def load_calendar(root: Path) -> CalendarFile:
     return _checked("calendar.yaml", CalendarFile, _read_mapping(root, "calendar.yaml"))
 

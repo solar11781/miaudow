@@ -433,7 +433,7 @@ def tool_uses(*calls: tuple[str, dict]) -> httpx2.Response:
 
 
 def test_the_system_prompt_keeps_the_scientific_boundaries() -> None:
-    system = copilot.SYSTEM.lower()
+    system = (REPO / "rules" / "prompts" / "copilot.md").read_text(encoding="utf-8").lower()
     # CLAUDE.md scientific boundaries: regional estimates only, never the farmer's own field, no forecast, no ranking
     for phrase in (
         "never rank",

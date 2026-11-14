@@ -27,9 +27,11 @@ from fastapi.testclient import TestClient
 
 from fieldshift.api import explain
 from fieldshift.api.app import MAX_BODY_BYTES, create_app
-from fieldshift.api.explain import MODEL, ExplainError
+from fieldshift.api.explain import MODEL, PLACEHOLDER, PROMPT, ExplainError
+from fieldshift.engine.rules import load_prompt
 
 REPO = Path(__file__).resolve().parents[1]
+TEMPLATE = load_prompt(REPO, PROMPT, (PLACEHOLDER,))  # rules/prompts/explain.md, as the app reads it
 KEY = "zz-test-key-not-real"
 # card-like text with the number forms the app shows (P-02 Table 4 profit, thousand đ/ha; a year; a decimal)
 TEXT_VI = "Lợi nhuận 16.200 nghìn đ/ha. Năm 2007 có 1,5 tháng khô hạn."
@@ -212,7 +214,7 @@ def test_the_request_holds_only_the_shown_field_and_the_system_prompt(
     body = sent_body(api)
     assert set(body) == {"model", "max_tokens", "system", "messages", "output_config", "thinking"}
     assert body["messages"] == [{"role": "user", "content": f"<text>{text}</text>"}]  # review of PR #43: data in tags
-    assert body["system"] == explain.system_prompt(lang)
+    assert body["system"] == explain.system_prompt(TEMPLATE, lang)
     assert language in body["system"]
     assert body["model"] == MODEL
     assert body["thinking"] == {
@@ -233,7 +235,7 @@ def test_the_system_prompt_forbids_new_facts_and_keeps_numbers() -> None:
     # FR-15 brief (item 53): reword in simple words for a farmer, same language, no new facts, numbers, advice or
     # recommendations, every number unchanged
     for lang in ("vi", "en"):
-        prompt = explain.system_prompt(lang).lower()
+        prompt = explain.system_prompt(TEMPLATE, lang).lower()
         for phrase in ("simple words", "farmer", "same language", "new facts", "advice", "recommendation", "number"):
             assert phrase in prompt, (lang, phrase)
         # review of PR #43 (prompt injection): the text arrives inside <text> tags as data, never as instructions
@@ -265,7 +267,7 @@ def test_max_tokens_is_twice_the_bytes_with_a_floor() -> None:
 )
 def test_tag_like_text_is_escaped_inside_the_tags(fake_api: Callable[..., FakeApi], text: str) -> None:
     api = direct_client(fake_api, lambda _: reply("a b"))
-    explain.explain(text, "vi", api.client)
+    explain.explain(text, "vi", api.client, TEMPLATE)
     content = sent_body(api)["messages"][0]["content"]
     escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     assert content == f"<text>{escaped}</text>"
@@ -314,7 +316,7 @@ def test_a_reply_with_numbers_in_another_order_sign_or_unit_is_refused(
 ) -> None:
     api = direct_client(fake_api, lambda _: reply(answer))
     with pytest.raises(ExplainError, match="NumbersDiffer"):
-        explain.explain(text, "vi", api.client)
+        explain.explain(text, "vi", api.client, TEMPLATE)
 
 
 def test_numbers_are_read_in_order_with_sign_and_unit() -> None:
@@ -345,7 +347,7 @@ def test_a_reply_that_keeps_numbers_units_and_order_passes(
     fake_api: Callable[..., FakeApi], text: str, answer: str
 ) -> None:
     api = direct_client(fake_api, lambda _: reply(answer))
-    assert explain.explain(text, "vi", api.client).text == answer
+    assert explain.explain(text, "vi", api.client, TEMPLATE).text == answer
 
 
 # ---- errors of the Claude API: a generic answer, no internals

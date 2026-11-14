@@ -59,11 +59,20 @@ from fieldshift.api.copilot import (
     uses_model,
 )
 from fieldshift.api.copilot import answer as copilot_answer
-from fieldshift.api.explain import EXPLAIN_LIMIT, ExplainError, ExplainRequest, claude_client, explain, shown_text
+from fieldshift.api.explain import (
+    EXPLAIN_LIMIT,
+    PLACEHOLDER,
+    PROMPT,
+    ExplainError,
+    ExplainRequest,
+    claude_client,
+    explain,
+    shown_text,
+)
 from fieldshift.engine.compare import CompareData, compare, load_compare_data
 from fieldshift.engine.method import method
 from fieldshift.engine.past_years import past_years
-from fieldshift.engine.rules import PrivacyTexts, load_privacy_texts
+from fieldshift.engine.rules import PrivacyTexts, load_privacy_texts, load_prompt
 from fieldshift.engine.schemas import FIRST_YEAR, LAST_YEAR, CompareRequest, HealthResponse, Land, Priority, Province
 from fieldshift.paths import project_root
 
@@ -297,6 +306,7 @@ async def _explain(
     request: Request,
     compare_data: CompareData,
     claude: Anthropic | None,
+    template: str,
     slots: anyio.CapacityLimiter,
     threads: anyio.CapacityLimiter,
 ) -> Response:
@@ -313,7 +323,9 @@ async def _explain(
         if not request.app.state.model_calls.take(client_of(request)):
             return _too_many()
         answer = await anyio.to_thread.run_sync(compare, body.answers, compare_data, limiter=threads)
-        reply = await anyio.to_thread.run_sync(explain, shown_text(body, answer), body.lang, claude, limiter=threads)
+        reply = await anyio.to_thread.run_sync(
+            explain, shown_text(body, answer), body.lang, claude, template, limiter=threads
+        )
     finally:
         slots.release()
     return _respond(_json(reply))
@@ -415,6 +427,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     compare_data = load_compare_data(base)
     _read_every_year_row(compare_data)
     claude = claude_client(os.environ)
+    explain_prompt = load_prompt(base, PROMPT, (PLACEHOLDER,))
     explain_slots, explain_threads = anyio.CapacityLimiter(EXPLAIN_LIMIT), anyio.CapacityLimiter(EXPLAIN_LIMIT)
     corpus = load_corpus(base) if copilot_on(os.environ) else None
     copilot_claude = copilot_client(os.environ)
@@ -442,7 +455,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
 
     @app.post("/api/explain")
     async def explain_route(request: Request) -> Response:
-        return await _explain(request, compare_data, claude, explain_slots, explain_threads)
+        return await _explain(request, compare_data, claude, explain_prompt, explain_slots, explain_threads)
 
     @app.post("/api/copilot")
     async def copilot_route(request: Request) -> Response:
