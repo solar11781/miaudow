@@ -3,6 +3,7 @@
 # Stages written during the event (hazard labels, models, artifacts) are added here then.
 set -euo pipefail
 export PYTHONPATH=src
+export PYTHONUTF8=1  # Windows consoles default to cp1252; the reports print Vietnamese names
 
 pip install -r requirements-dev.lock
 
