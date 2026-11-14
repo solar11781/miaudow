@@ -109,7 +109,7 @@ export const vi = {
     yes: 'Có',
     no: 'Không',
     ruleText: 'Lời văn của quy định',
-    registerId: 'Mã trong danh mục nguồn',
+    registerId: 'Mã trong sổ nguồn',
   },
   home: {
     eyebrow: 'Nghệ An · đất lúa thiếu nước · thời tiết NASA từ 1990',
@@ -389,7 +389,7 @@ export const vi = {
     deskPick: 'Chọn cách trồng',
     ladder: [
       'Kết luận',
-      'Điều đó có nghĩa',
+      'Điều đó có nghĩa gì',
       'Con số (chạm để xem nguồn)',
       'Nằm ở đâu trong tài liệu',
       'Cách làm và giới hạn',
@@ -607,7 +607,7 @@ export const vi = {
       UNAVAILABLE: 'Chưa có dữ liệu',
     },
     showing: (n: number, total: number) => `Đang hiện ${n} trên ${total} kết luận`,
-    meaning: 'Điều đó có nghĩa',
+    meaning: 'Điều đó có nghĩa gì',
     value: 'Con số (chạm để xem nguồn)',
     source: 'Nằm ở',
     methodAndLimits: 'Cách làm và giới hạn',
@@ -789,14 +789,14 @@ export const vi = {
         body: 'Ảnh Sentinel-2 cho thấy độ xanh của ruộng trong một mùa. Màu xanh đậm là cây nhiều lá, màu nâu là đất trống hoặc nước.',
       },
       analysis: {
-        title: 'Mưa theo từng ô dữ liệu',
+        title: 'Mưa theo từng ô lưới',
         short: 'Phân tích',
-        body: 'Mỗi cột là một ô dữ liệu NASA POWER, khoảng 55 × 66 km. Cột càng cao thì năm đó mưa càng nhiều; màu cho biết khô hơn hay ướt hơn mức thường.',
+        body: 'Mỗi cột là một ô lưới NASA POWER, khoảng 55 × 66 km. Cột càng cao thì năm đó mưa càng nhiều; màu cho biết khô hơn hay ướt hơn mức bình thường.',
       },
       insight: {
         title: 'Điều này nghĩa là gì cho ruộng',
         short: 'Kết luận',
-        body: 'Nói gọn bằng lời thường: năm bạn chọn khô hơn, ướt hơn hay giống mức thường, ở ô bạn chọn.',
+        body: 'Nói gọn bằng lời thường: năm bạn chọn khô hơn, ướt hơn hay gần mức bình thường, ở ô bạn chọn.',
       },
     },
     status: { ingested: 'Đã dùng dữ liệu', visual: 'Chỉ để xem', blocked: 'Chưa tải được' },
@@ -807,7 +807,7 @@ export const vi = {
     openEyes: 'Xem trong NASA Eyes',
     missionPage: 'Trang chính thức của vệ tinh',
     globeLabel:
-      'Quả địa cầu 3D: Trái Đất, Việt Nam, Nghệ An và các ô dữ liệu mưa. Mọi số liệu cũng có trong bảng bên cạnh.',
+      'Quả địa cầu 3D: Trái Đất, Việt Nam, Nghệ An và các ô lưới có số liệu mưa. Mọi số liệu cũng có trong bảng bên cạnh.',
     calmNote:
       'Bạn đang bật chế độ giảm chuyển động, nên quả địa cầu 3D được tắt. Mọi số liệu vẫn có ở bảng bên cạnh và ở trang Khoa học.',
     noWebgl: 'Máy này chưa vẽ được hình 3D. Mọi số liệu vẫn có ở bảng bên cạnh và ở trang Khoa học.',
@@ -870,24 +870,24 @@ export const vi = {
     backToEarth: 'Trở về Trái Đất — Khám phá đồng lúa Nghệ An',
     eyesNote:
       'Nếu khung trống, hãy bấm “Mở ở thẻ mới”. NASA Eyes do NASA/JPL làm; MIAUDOW chỉ mở trang công khai của họ.',
-    cellLabel: 'Chọn ô dữ liệu',
+    cellLabel: 'Chọn ô lưới',
     annualRain: 'Mưa cả năm',
-    vsNormal: 'So với mức thường',
+    vsNormal: 'So với mức bình thường',
     rainDetail: 'Tổng 12 tháng mưa của ô này (NASA POWER). Năm nào thiếu tháng thì không tính.',
     anomalyDetail: 'Mưa năm đó chia cho mưa trung bình 1991–2020 của chính ô này, trừ 1.',
-    drier: 'Khô hơn thường',
-    normal: 'Gần mức thường',
-    wetter: 'Ướt hơn thường',
+    drier: 'Khô hơn bình thường',
+    normal: 'Gần mức bình thường',
+    wetter: 'Ướt hơn bình thường',
     cellNote:
       'Một ô NASA POWER rộng khoảng 55 × 66 km, gồm cả đồi và sông, không phải số đo tại ruộng. Chiều cao cột chỉ để so sánh.',
     plainDry: (year: number, pct: string) =>
-      `Năm ${year}, ô này mưa ít hơn mức thường khoảng ${pct}. Ruộng xa kênh dễ thiếu nước hơn.`,
+      `Năm ${year}, ô này mưa ít hơn mức bình thường khoảng ${pct}. Ruộng xa kênh dễ thiếu nước hơn.`,
     plainWet: (year: number, pct: string) =>
-      `Năm ${year}, ô này mưa nhiều hơn mức thường khoảng ${pct}. Ruộng trũng dễ bị ngập hơn.`,
-    plainNormal: (year: number) => `Năm ${year}, ô này mưa gần với mức thường.`,
+      `Năm ${year}, ô này mưa nhiều hơn mức bình thường khoảng ${pct}. Ruộng trũng dễ bị ngập hơn.`,
+    plainNormal: (year: number) => `Năm ${year}, ô này mưa gần mức bình thường.`,
     insightLimits: 'Mưa cả năm chưa cho biết mưa rơi vào tháng nào; xem từng tháng ở trang Khoa học.',
     ask: 'Hỏi trợ lý về năm này',
-    askQ: (year: number) => `Năm ${year} mưa thế nào so với mức thường?`,
+    askQ: (year: number) => `Năm ${year} mưa thế nào so với mức bình thường?`,
   },
   method: {
     title: 'Phương pháp, số liệu và giới hạn',

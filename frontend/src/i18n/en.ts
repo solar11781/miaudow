@@ -111,13 +111,13 @@ export const en: Messages = {
     yes: 'Yes',
     no: 'No',
     ruleText: 'Text of the rule',
-    registerId: 'Register id',
+    registerId: 'Source registry id',
   },
   home: {
     eyebrow: 'Nghệ An · water-short rice land · NASA weather since 1990',
     titleA: 'Our village fields,',
     titleB: 'read with data from space.',
-    lead: 'Miaudow puts more than 30 years of NASA weather next to six ways of farming that were tested on water-short rice land in Đô Lương, so each family can compare before the next season. Every number opens its source.',
+    lead: 'Miaudow puts more than 30 years of NASA weather next to six plans that were tested on water-short rice land in Đô Lương, so each family can compare before the next season. Every number opens its source.',
     ctaFarmer: 'Understand my field',
     ctaScience: 'Explore Nghệ An data',
     ctaCopilot: 'Ask the copilot',
@@ -178,9 +178,9 @@ export const en: Messages = {
     stepsEyebrow: '05 · Four steps, no typing',
     stepsTitle: 'Tap, look, compare, then talk with the officer',
     steps: [
-      { title: 'What is my field like?', body: 'High field, canal end, or reliable water. One tap.' },
-      { title: 'How were past years?', body: 'Pick the dry or cold years you remember and look back with NASA data.' },
-      { title: 'What matters most to us?', body: 'Income, stability, water or soil. Only highlighted, never ranked.' },
+      { title: 'What is your field like?', body: 'High field, canal end, or reliable water. One tap.' },
+      { title: 'What happened in past years?', body: 'Pick the dry or cold years you remember and look back with NASA data.' },
+      { title: 'What matters most to your family?', body: 'Income, stability, water or soil. Only highlighted, never ranked.' },
       { title: 'See and compare the plans', body: 'A 12-month calendar, profit, water, soil and what to ask next.' },
     ],
     obsEyebrow: '06 · Observatory',
@@ -237,7 +237,7 @@ export const en: Messages = {
       'R-N01': 'NASA POWER',
       'R-N02': 'NASA MODIS',
       'R-N05': 'NASA GPM IMERG',
-      'R-D01': 'NSO Vietnam',
+      'R-D01': 'National Statistics Office',
       'R-P02': 'Trịnh Đức Toàn et al. (2023)',
       'R-P03': 'Trịnh Đức Toàn et al. (2023)',
     } as Record<string, string>,
@@ -270,7 +270,7 @@ export const en: Messages = {
       'The plans in this app were tested on water-short fields. None was tested for fields with reliable water, so the app offers no comparison for this kind of field.',
     dryNote:
       'The trial used “low-yield rice land, often in drought” in Lưu Sơn, Đô Lương. Your field may be like that land; ask the extension officer to be sure.',
-    askNote: 'You can carry on. Remember to ask the officer whether your field is like the trial field.',
+    askNote: 'You can carry on. Remember to ask the extension officer whether your field is like the trial field.',
     yearsTitle: 'What happened in past years?',
     yearsHelp: 'Pick the years you remember: a drought year, a cold year, a poor harvest. Up to 10 years.',
     yearsPicked: (n: number) => `${n} years picked`,
@@ -294,7 +294,7 @@ export const en: Messages = {
       land: { title: 'Care for the land', body: 'Keep the soil good' },
     },
     seePlans: 'See the plans',
-    plansTitle: 'Compare 6 ways of farming',
+    plansTitle: 'Compare 6 plans',
     plansLead:
       'Cards are in a fixed order, not ranked. The first two are current practice, as two different studies describe it.',
     yourPriority: 'Your priority',
@@ -414,7 +414,7 @@ export const en: Messages = {
       { label: 'Trial site', value: 'Lưu Sơn commune, Đô Lương, Nghệ An' },
       { label: 'Period', value: 'June 2020 – June 2021, one year' },
       { label: 'Design', value: 'One 1,000 m² plot per crop, not replicated' },
-      { label: 'Land type', value: 'Inefficient, frequently drought-affected rice land' },
+      { label: 'Land type', value: 'Low-yield rice land, often in drought' },
     ],
     matrixTitle: 'Evidence matrix',
     matrixLead:
@@ -786,14 +786,14 @@ export const en: Messages = {
         body: 'Sentinel-2 shows how green the fields were in one season. Deep green is leafy crops; brown is bare soil or water.',
       },
       analysis: {
-        title: 'Rain by data cell',
+        title: 'Rain by grid cell',
         short: 'Analysis',
-        body: 'Each column is one NASA POWER cell, about 55 × 66 km. The taller the column, the more rain that year; the colour says drier or wetter than usual.',
+        body: 'Each column is one NASA POWER cell, about 55 × 66 km. The taller the column, the more rain that year; the colour says drier or wetter than normal.',
       },
       insight: {
         title: 'What this means for the field',
         short: 'Insight',
-        body: 'In plain words: was the year you chose drier, wetter or close to usual, in the cell you chose.',
+        body: 'In plain words: was the year you chose drier, wetter or close to normal, in the cell you chose.',
       },
     },
     status: { ingested: 'Data used', visual: 'For viewing only', blocked: 'Not downloaded yet' },
@@ -804,7 +804,7 @@ export const en: Messages = {
     openEyes: 'View in NASA Eyes',
     missionPage: 'Official mission page',
     globeLabel:
-      '3D globe: Earth, Viet Nam, Nghệ An and the rain data cells. Every number is also in the panel beside it.',
+      '3D globe: Earth, Viet Nam, Nghệ An and the grid cells with rain data. Every number is also in the panel beside it.',
     calmNote:
       'Reduced motion is on, so the 3D globe is off. Every number is still in the panel beside it and on the Science page.',
     noWebgl: 'This device cannot draw 3D yet. Every number is still in the panel beside it and on the Science page.',
@@ -867,24 +867,24 @@ export const en: Messages = {
     backToEarth: 'Back to Earth — explore the rice fields of Nghệ An',
     eyesNote:
       'If the frame stays empty, use “Open in a new tab”. NASA Eyes is made by NASA/JPL; MIAUDOW only opens their public page.',
-    cellLabel: 'Choose a data cell',
+    cellLabel: 'Choose a grid cell',
     annualRain: 'Rain over the year',
-    vsNormal: 'Against usual',
+    vsNormal: 'Against normal',
     rainDetail: 'Sum of 12 months of rain in this cell (NASA POWER). Years with a missing month are not counted.',
     anomalyDetail: 'That year’s rain divided by this cell’s own 1991–2020 average, minus 1.',
-    drier: 'Drier than usual',
-    normal: 'Close to usual',
-    wetter: 'Wetter than usual',
+    drier: 'Drier than normal',
+    normal: 'Close to normal',
+    wetter: 'Wetter than normal',
     cellNote:
       'A NASA POWER cell is about 55 × 66 km and includes hills and rivers; it is not a field measurement. Column height is for comparison only.',
     plainDry: (year: number, pct: string) =>
-      `In ${year} this cell had about ${pct} less rain than usual. Fields far from the canal run short of water more easily.`,
+      `In ${year} this cell had about ${pct} less rain than normal. Fields far from the canal run short of water more easily.`,
     plainWet: (year: number, pct: string) =>
-      `In ${year} this cell had about ${pct} more rain than usual. Low-lying fields flood more easily.`,
-    plainNormal: (year: number) => `In ${year} this cell had close to its usual rain.`,
+      `In ${year} this cell had about ${pct} more rain than normal. Low-lying fields flood more easily.`,
+    plainNormal: (year: number) => `In ${year} this cell had close to its normal rain.`,
     insightLimits: 'Rain over the year does not tell you which months it fell in; see each month on the Science page.',
-    ask: 'Ask the assistant about this year',
-    askQ: (year: number) => `How did rain in ${year} compare with usual?`,
+    ask: 'Ask the copilot about this year',
+    askQ: (year: number) => `How did rain in ${year} compare with normal?`,
   },
   method: {
     title: 'Method, data and limitations',
@@ -923,7 +923,7 @@ export const en: Messages = {
     role: { primary: 'Primary', secondary: 'Secondary', reference: 'Reference' },
     subset: (raw: string) =>
       raw === 'national'
-        ? 'Whole country'
+        ? 'Nationwide'
         : raw === 'na_ht_th'
           ? 'Nghệ An, Hà Tĩnh, Thanh Hóa'
           : raw.replace(/^(unit|region):/, ''),
@@ -1015,10 +1015,10 @@ export const en: Messages = {
     signedIn: 'You are signed in.',
     continue: 'Continue',
     savedTitle: 'Saved answers',
-    savedLead: 'Open a set of answers to see the ways of planting again.',
+    savedLead: 'Open a set of answers to see the plans again.',
     needSignIn: 'Sign in to see your saved answers.',
     signInCta: 'Sign in',
-    empty: 'No answers saved yet. On the page that compares the ways of planting, tap “Save these answers”.',
+    empty: 'No answers saved yet. On the page that compares the plans, tap “Save these answers”.',
     yearsLabel: (years: string) => `Years: ${years}`,
     open: 'Open',
     openLabel: (name: string) => `Open: ${name}`,
