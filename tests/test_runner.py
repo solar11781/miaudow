@@ -234,7 +234,7 @@ def test_spatial_holdout_b0_is_each_series_own_earlier_mean():
 
 @pytest.mark.parametrize(("fit", "grid"), [(ev.fit_lgbm, ev.M2_GRID[:2]), (ev.fit_rf, ev.M3_GRID[:2])])
 def test_secondary_models_use_the_same_folds_and_never_the_test_years_outcomes(fit, grid):
-    # Source: 03-ML-SPEC sections 6-7 and queue item 31: M2 and M3 on the same rows and folds as M1, tuned on earlier
+    # Source: 03-ML-SPEC sections 6-7 and D-145: M2 and M3 on the same rows and folds as M1, tuned on earlier
     # years only (inner folds, D-107); outcomes of a test year never change its predictions
     df = _synthetic(n_series=6, years=range(2004, 2025))
     a = run_secondary(df, weather_cols=["x"], context_cols=["ctx"], model=(partial(fit, seed=0), grid))
