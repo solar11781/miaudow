@@ -11,7 +11,13 @@ province held out in the spatial test still gets its means (as B0 does, D-146).
 import pandas as pd
 import pytest
 
-from fieldshift.ml.fold_features import add_context_means, add_season_terms, make_fold_transform, model_columns
+from fieldshift.ml.fold_features import (
+    add_context_means,
+    add_drought_months,
+    add_season_terms,
+    make_fold_transform,
+    model_columns,
+)
 
 
 def _rows() -> pd.DataFrame:
@@ -64,3 +70,34 @@ def test_a_held_out_province_gets_means_from_its_own_earlier_years():
     out = make_fold_transform(["tmax_mean_c", "precip_sum_mm"])(df, train_idx)
     assert out.loc[5, "ctx_tmax_mean_c"] == pytest.approx(28.0)
     assert out.loc[5, "precip_anom_pct"] == pytest.approx(-50.0)
+
+
+def _month_rain(test_year_a: list[float], test_year_b: list[float]) -> pd.DataFrame:
+    rows = []
+    for year in (2010, 2011, 2012):
+        for (lat, lon), test in (((19.0, 105.0), test_year_a), ((19.0, 105.625), test_year_b)):
+            for month, value in zip(("02", "03", "04"), test, strict=True):
+                rain = value if year == 2012 else 100.0  # normal of every cell and month: 100 mm
+                rows.append(("P", "spring", year, lat, lon, 0.5, f"{year}-{month}", rain))
+    cols = ["province_nso", "season", "year", "lat", "lon", "farmland_weight", "month", "rain_mm"]
+    return pd.DataFrame(rows, columns=cols)
+
+
+def test_drought_months_compare_each_cell_with_its_training_years_normal():
+    # Source: 05-DATA-CONTRACTS section 4a: a drought month has rain more than 50% below the same month's mean over the
+    # training years (D-66), per cell then farmland-weighted (D-72); readings: 2 consecutive months, any 2 (D-58).
+    # 2012: cell A 40, 40, 100 mm (2 dry months, consecutive); cell B 40, 100, 40 (2 dry months, not consecutive);
+    # weights 0.5 each: months 2.0, consecutive share 0.5, any-2 share 1.0. 50 mm (exactly 50% below) is not "trên 50%".
+    df = pd.DataFrame({"province_nso": ["P"], "season": ["spring"], "year": [2012]})
+    out = add_drought_months(df, _month_rain([40.0, 40.0, 100.0], [40.0, 100.0, 40.0]), before_year=2012)
+    assert out.loc[0, "drought_rain_months"] == pytest.approx(2.0)
+    assert out.loc[0, "drought_rain_consecutive"] == pytest.approx(0.5)
+    assert out.loc[0, "drought_rain_any2"] == pytest.approx(1.0)
+    edge = add_drought_months(df, _month_rain([50.0, 50.0, 50.0], [100.0] * 3), before_year=2012)
+    assert edge.loc[0, "drought_rain_months"] == pytest.approx(0.0)
+
+
+def test_drought_months_have_no_value_without_a_training_years_normal():
+    df = pd.DataFrame({"province_nso": ["P"], "season": ["spring"], "year": [2012]})
+    out = add_drought_months(df, _month_rain([40.0] * 3, [40.0] * 3), before_year=2010)  # no year before 2010
+    assert out[["drought_rain_months", "drought_rain_consecutive", "drought_rain_any2"]].isna().all(axis=None)
