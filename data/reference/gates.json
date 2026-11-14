@@ -1,0 +1,124 @@
+{
+ "schema_version": "0.4",
+ "generated_at": "2026-11-14T05:36:31+00:00",
+ "freeze_commit": "ea7a60c21d1867c4096fc3b3c4822b4127b53839",
+ "gates": [
+  {
+   "gate": "G2",
+   "season": "spring",
+   "model_id": "m1_ridge",
+   "passed": false,
+   "detail": {
+    "vi": "Mức hơn dự báo trung bình nhiều năm 0,051 (khoảng tin cậy 90%: 0,013 đến 0,123); hơn mô hình không dùng thời tiết 0,025 (khoảng tin cậy 90%: -0,027 đến 0,082).",
+    "en": "skill 0.051 (90% CI 0.013 to 0.123) against the climatology reference; skill 0.025 (90% CI -0.027 to 0.082) against the no-weather model."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G3",
+   "season": "spring",
+   "model_id": "m1_ridge",
+   "passed": true,
+   "detail": {
+    "vi": "Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước 0,537 (khoảng tin cậy 90%: -0,153 đến 0,947).",
+    "en": "Nghe An, Ha Tinh, Thanh Hoa: skill 0.537 (90% CI -0.153 to 0.947) against persistence."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G4",
+   "season": "spring",
+   "model_id": "m1_ridge",
+   "passed": true,
+   "detail": {
+    "vi": "Khoảng dự báo 80% chứa 86% kết quả của các năm kiểm tra (cần 70% đến 90%).",
+    "en": "The 80% range covered 86% of the held-out outcomes (needs 70% to 90%)."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G2",
+   "season": "winter",
+   "model_id": "m1_ridge",
+   "passed": true,
+   "detail": {
+    "vi": "Mức hơn dự báo trung bình nhiều năm 0,112 (khoảng tin cậy 90%: 0,081 đến 0,147); hơn mô hình không dùng thời tiết 0,068 (khoảng tin cậy 90%: 0,003 đến 0,134).",
+    "en": "skill 0.112 (90% CI 0.081 to 0.147) against the climatology reference; skill 0.068 (90% CI 0.003 to 0.134) against the no-weather model."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G3",
+   "season": "winter",
+   "model_id": "m1_ridge",
+   "passed": true,
+   "detail": {
+    "vi": "Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước 0,461 (khoảng tin cậy 90%: -0,584 đến 0,760).",
+    "en": "Nghe An, Ha Tinh, Thanh Hoa: skill 0.461 (90% CI -0.584 to 0.760) against persistence."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G4",
+   "season": "winter",
+   "model_id": "m1_ridge",
+   "passed": true,
+   "detail": {
+    "vi": "Khoảng dự báo 80% chứa 77% kết quả của các năm kiểm tra (cần 70% đến 90%).",
+    "en": "The 80% range covered 77% of the held-out outcomes (needs 70% to 90%)."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G1",
+   "season": "summer_autumn",
+   "model_id": null,
+   "passed": false,
+   "detail": {
+    "vi": "27 năm và 18 tỉnh có số liệu dùng được (cần ít nhất 20 năm và 25 tỉnh).",
+    "en": "27 usable years and 18 provinces (needs at least 20 years and 25 provinces)."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G1",
+   "season": "spring",
+   "model_id": null,
+   "passed": true,
+   "detail": {
+    "vi": "27 năm và 63 tỉnh có số liệu dùng được (cần ít nhất 20 năm và 40 tỉnh).",
+    "en": "27 usable years and 63 provinces (needs at least 20 years and 40 provinces)."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  },
+  {
+   "gate": "G1",
+   "season": "winter",
+   "model_id": null,
+   "passed": true,
+   "detail": {
+    "vi": "27 năm và 58 tỉnh có số liệu dùng được (cần ít nhất 20 năm và 40 tỉnh).",
+    "en": "27 usable years and 58 provinces (needs at least 20 years and 40 provinces)."
+   },
+   "source_ids": [
+    "E-012"
+   ]
+  }
+ ]
+}
