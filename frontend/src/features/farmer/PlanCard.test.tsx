@@ -1,5 +1,5 @@
 // UI-UX-SPEC section 14a test hooks with member B's row names (D-169): card-<plan id> and card-<plan id>-row-<row>.
-import { afterEach, describe, expect, it, vi as mock } from 'vitest';
+import { afterEach, describe, expect, it, onTestFinished, vi as mock } from 'vitest';
 import { cleanup, fireEvent, render, within } from '@testing-library/react';
 import { SettingsProvider, useSettings } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
@@ -290,6 +290,23 @@ describe('card summary', () => {
       expect(document.getElementById(`card-${id}-row-water`), id).not.toBeNull();
       cleanup();
     }
+  });
+  // review of PR #54: a keyboard or screen-reader user lands on the water row, not only the screen
+  it('moves the focus to the water row it scrolls to', () => {
+    const scroll = mock.fn();
+    const before = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    onTestFinished(() => {
+      Element.prototype.scrollIntoView = before;
+    });
+    const { box, id } = head(0);
+    const link = box.querySelector(`a[href="#card-${id}-row-water"]`);
+    if (!(link instanceof HTMLElement)) throw new Error('no link');
+    fireEvent.click(link);
+    const row = document.getElementById(`card-${id}-row-water`);
+    expect(scroll).toHaveBeenCalledTimes(1);
+    expect(document.activeElement).toBe(row);
+    expect(row?.getAttribute('tabindex')).toBe('-1');
   });
 });
 

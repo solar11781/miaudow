@@ -40,6 +40,7 @@ function Row({
   title,
   note,
   highlight,
+  target,
   children,
 }: {
   hook: string;
@@ -47,12 +48,15 @@ function Row({
   title: string;
   note?: string;
   highlight?: boolean;
+  /** A link elsewhere on the card moves the focus here. */
+  target?: boolean;
   children: ReactNode;
 }) {
   const t = useT();
   return (
     <section
       id={hook}
+      tabIndex={target ? -1 : undefined}
       className={[s.row, highlight ? s.hl : ''].join(' ')}
       data-testid={hook}
       data-highlighted={highlight ? 'true' : undefined}
@@ -303,7 +307,7 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   const t = useT();
   const pick = usePick();
   return (
-    <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight}>
+    <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight} target>
       {plan.exposure.length > 0 && (
         <YearsFold id={`card-${plan.id}-water-years`}>
           <ShareTable plan={plan} codes={DROUGHT_RULES} rules={res.rules} refs={refs} />
@@ -445,7 +449,9 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
         className={s.summaryLink}
         onClick={(e) => {
           e.preventDefault();
-          document.getElementById(water)?.scrollIntoView({ block: 'start' });
+          const row = document.getElementById(water);
+          row?.scrollIntoView({ block: 'start' });
+          row?.focus({ preventScroll: true });
         }}
       >
         {t.farmer.summaryWater(t.farmer.rows.water)}
