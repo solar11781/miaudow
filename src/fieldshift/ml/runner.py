@@ -32,14 +32,19 @@ def add_precip_anom(df: pd.DataFrame, train_idx: pd.Index) -> pd.DataFrame:
     return out
 
 
+def _ridge(x: np.ndarray, y: np.ndarray, alpha: float) -> object:
+    return ev.fit_ridge(x, y, alpha=alpha)
+
+
 def _tune(
     df: pd.DataFrame,
     train_idx: pd.Index,
     cols: list[str],
-    alphas: Sequence[float] | np.ndarray,
+    alphas: Sequence,
     fold_transform: FoldTransform | None = None,
-) -> tuple[float, np.ndarray]:
-    """Penalty with the lowest inner-fold MSE (first in grid order on ties), and that penalty's inner residuals.
+    fit: Callable[[np.ndarray, np.ndarray, object], object] = _ridge,
+) -> tuple[object, np.ndarray]:
+    """Grid value (ridge penalty by default) with the lowest inner-fold MSE (first on ties), and its inner residuals.
 
     Fold-time features are refit on each inner split's training rows (03-ML-SPEC §4), so an inner test year never
     enters its own rain normal.
@@ -56,7 +61,7 @@ def _tune(
     for a in alphas:
         res = []
         for tr, te, d in folds:
-            model = ev.fit_ridge(d.loc[tr, cols].to_numpy(), d.loc[tr, "anom"].to_numpy(), alpha=a)
+            model = fit(d.loc[tr, cols].to_numpy(), d.loc[tr, "anom"].to_numpy(), a)
             res.append(d.loc[te, "anom"].to_numpy() - model.predict(d.loc[te, cols].to_numpy()))
         res = np.concatenate(res)
         mse = float(np.mean(res**2))
@@ -203,3 +208,44 @@ def run_spatial_holdout(
             if part is not None:
                 parts.append(part.assign(region=r))
     return _summary(parts, alphas)
+
+
+def run_secondary(
+    df: pd.DataFrame,
+    weather_cols: Sequence[str],
+    context_cols: Sequence[str],
+    model: tuple[Callable[[np.ndarray, np.ndarray, dict], object], list[dict]],
+    test_years: Iterable[int] = ev.TEST_YEARS,
+    fold_transform: FoldTransform | None = None,
+) -> pd.DataFrame:
+    """A secondary model (M2, M3) on M1's columns, folds and inner tuning (03-ML-SPEC sections 6-7).
+
+    model: (fit(x, y, params) with its seed bound, the grid). Returns series_id, year, y, pred and param (grid index).
+    """
+    fit, grid = model
+    m1_cols = list(context_cols) + list(weather_cols)
+    data = _checked(df, grid, m1_cols)
+    parts = []
+    for t in test_years:
+        train_idx, test_idx = data.index[data["year"] < t], data.index[data["year"] == t]
+        if len(test_idx) == 0:
+            continue
+        d = fold_transform(data, train_idx) if fold_transform else data
+        test_idx = test_idx[d.loc[test_idx, m1_cols].notna().all(axis=1).to_numpy()]
+        if len(test_idx) == 0:
+            continue
+        best, _ = _tune(data, train_idx, m1_cols, grid, fold_transform, fit)
+        fitted = fit(d.loc[train_idx, m1_cols].to_numpy(), d.loc[train_idx, "anom"].to_numpy(), best)
+        parts.append(
+            pd.DataFrame(
+                {
+                    "series_id": d.loc[test_idx, "series_id"],
+                    "year": d.loc[test_idx, "year"],
+                    "y": d.loc[test_idx, "anom"],
+                    "pred": fitted.predict(d.loc[test_idx, m1_cols].to_numpy()),
+                    "param": grid.index(best),
+                },
+                index=test_idx,
+            )
+        )
+    return pd.concat(parts)
