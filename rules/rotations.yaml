@@ -42,14 +42,18 @@
           paper does not explain this."
   risks: []
   study_type: &p02_study field_trial_each_crop_in_its_season_unreplicated  # never "tested whole-year sequence" (D-57)
-  limitations: &p02_limitations
-    - single site
-    - one year
-    - single unreplicated 1000 m2 plots
-    - "plot layout unknown: whether one field carried the whole structure (D-62)"
-    - reported date overlaps (D-57)
-    - P-02 methods text (p.44) lists CC2-CC4 differently from the results tables (D-66)
-    - Table 4 rows for CC1 mung bean and CC5 black bean are identical (D-66)
+  limitations: &p02_limitations  # D-57, D-62, D-66
+    - &one_site {vi: "Một địa điểm", en: "One site"}
+    - &one_year {vi: "Một năm", en: "One year"}
+    - &one_plot {vi: "Mỗi cây một ô 1000 m2, không lặp lại", en: "One unreplicated 1000 m2 plot per crop"}
+    - {vi: "Không rõ cả cơ cấu có được trồng trên cùng một ruộng hay không",
+       en: "Plot layout unknown: whether one field carried the whole structure"}
+    - {vi: "Có ngày gieo của vụ sau sớm hơn ngày thu hoạch của vụ trước",
+       en: "Some sowing dates come before the harvest of the season before"}
+    - {vi: "Phần phương pháp của bài báo (tr. 44) ghi các cơ cấu CC2-CC4 khác với các bảng kết quả",
+       en: "The paper's methods text (p. 44) lists CC2-CC4 differently from the results tables"}
+    - {vi: "Trong Bảng 4, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau",
+       en: "In Table 4, the CC1 mung bean row and the CC5 black bean row are identical"}
   source_ids: [R-P02]
 - id: usual_p03
   name: {vi: "Lúa - lúa - bỏ hoang", en: "Rice - rice - fallow"}
@@ -69,20 +73,23 @@
       vi: "Lợi nhuận = GR - Tổng chi phí vật chất"
       en: "Profit = GR - total material costs (labour may not be counted)"
     text_only:
-      vi: "Lúa vụ Xuân 2021 (đối chứng): lợi nhuận 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng): lợi nhuận 1,16
-        triệu đồng/ha, \"gần như không có lợi nhuận\". Vụ Thu Đông: bỏ hoang."
-      en: "Spring rice 2021 (control): profit 5.36 million đ/ha. Summer-autumn rice 2020 (control): profit 1.16 million
-        đ/ha, \"almost no profit\" (our translation). Autumn-winter: fallow."
+      vi: "Lúa vụ đông xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng):
+        \"gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha\". Vụ Thu Đông: bỏ hoang."
+      en: "Winter-spring rice 2021 (control): economic return (\"hiệu quả kinh tế\") 5.36 million đ/ha. Summer-autumn rice
+        2020 (control): \"almost no profit, the economic return only reaches 1.16 million/ha\" (our translation).
+        Autumn-winter: fallow."
     price_year: "2020-21"  # D-103: P-03 p.3 prices at harvest; trial June 2020 - June 2021
   risks: []
   study_type: field_trial_each_crop_in_its_season_unreplicated
-  limitations:
-    - single site
-    - one year
-    - single unreplicated 1000 m2 plots
-    - no sowing or harvest dates reported (durations only)
-    - profit counts material costs only (P-03 p.3)
-    - P-02 and P-03 describe the local structure at the same site differently (D-52)
+  limitations:  # D-52
+    - *one_site
+    - *one_year
+    - *one_plot
+    - {vi: "Bài báo không ghi ngày gieo và ngày thu hoạch, chỉ ghi thời gian sinh trưởng",
+       en: "No sowing or harvest dates reported, only durations"}
+    - {vi: "Lợi nhuận chỉ trừ chi phí vật chất (tr. 3)", en: "Profit subtracts material costs only (p. 3)"}
+    - {vi: "Hai bài báo P-02 và P-03 mô tả cơ cấu của người dân tại cùng địa điểm khác nhau",
+       en: "P-02 and P-03 describe the farmers' usual structure at the same site differently"}
   source_ids: [R-P03]
 - id: cc1
   name: {vi: "Lạc L20 - Đậu xanh D22 - Ngô thương phẩm VN5885", en: "Peanut L20 - mung bean D22 - grain maize VN5885"}
@@ -178,10 +185,11 @@
     - *p03_market
     - &fodder_contracts
       text:
-        vi: "Ngô sinh khối được trồng làm thức ăn xanh cho gia súc; tỉnh yêu cầu có hợp đồng thu mua (Phó Chủ tịch UBND
-          tỉnh Nghệ An, theo VietNamNet)."
-        en: "Biomass maize is grown as green fodder for cattle, and the province requires purchase contracts for it (the
-          vice chair of the Nghệ An People's Committee, as quoted by VietNamNet)."
+        vi: "Ông Hoàng Nghĩa Hiếu, Phó Chủ tịch UBND tỉnh Nghệ An (VietNamNet, 31/08/2020): \"Chúng tôi chủ trương những
+          vùng trồng ngô sinh khối làm thức ăn xanh cho bò phải có hợp đồng thu mua với các đơn vị bao tiêu sản phẩm.\""
+        en: "Hoàng Nghĩa Hiếu, vice chair of the Nghệ An People's Committee (VietNamNet, 31/08/2020; our translation): \"Our
+          policy is that areas growing biomass maize as green fodder for cattle must have purchase contracts with the
+          companies that guarantee to buy the product.\""
       source_ids: [R-C13]
     - *law_6_1
     - *law_6_4
