@@ -156,7 +156,7 @@ export const en: Messages = {
       'Two studies in Lưu Sơn commune, Đô Lương recorded what many families already know: when the water does not arrive in time, little is left of a season’s work.',
     studyLand: 'đất lúa kém hiệu quả, thường xuyên khô hạn',
     studyLandBy:
-      'How the paper by Trịnh Đức Toàn et al. (2023) names the trial land: “low-yield rice land, often in drought”',
+      'How the paper by Trịnh Đức Toàn et al. (2023) names the trial land: “low-return (inefficient) rice land, often in drought”',
     quote: 'almost no profit',
     quoteBy: 'Trịnh Đức Toàn et al. (2023), on summer-autumn rice in 2020 in Lưu Sơn (our translation)',
     riceSpring: 'profit of spring rice 2021 on the trial plot',
@@ -275,7 +275,7 @@ export const en: Messages = {
     wetNote:
       'The plans in this app were tested on water-short fields. None was tested for fields with reliable water, so the app offers no comparison for this kind of field.',
     dryNote:
-      'The trial used “low-yield rice land, often in drought” in Lưu Sơn, Đô Lương. Your field may be like that land; ask the extension officer to be sure.',
+      'The trial used “low-return (inefficient) rice land, often in drought” in Lưu Sơn, Đô Lương. Your field may be like that land; ask the extension officer to be sure.',
     askNote: 'You can carry on. Remember to ask the extension officer whether your field is like the trial field.',
     yearsTitle: 'What happened in past years?',
     yearsHelp: 'Pick the years you remember: a drought year, a cold year, a poor harvest. Up to 10 years.',
@@ -421,7 +421,7 @@ export const en: Messages = {
       { label: 'Trial site', value: 'Lưu Sơn commune, Đô Lương, Nghệ An' },
       { label: 'Period', value: 'June 2020 – June 2021, one year' },
       { label: 'Design', value: 'One 1,000 m² plot per crop, not replicated' },
-      { label: 'Land type', value: 'Low-yield rice land, often in drought' },
+      { label: 'Land type', value: 'Low-return (inefficient) rice land, often in drought' },
     ],
     matrixTitle: 'Evidence matrix',
     matrixLead:

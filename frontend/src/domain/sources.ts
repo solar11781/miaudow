@@ -38,7 +38,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     short: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An',
     title: {
       vi: 'Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An',
-      en: 'Testing some rotation formulas on inefficient, water-short rice land in Nghệ An province',
+      en: 'Testing some rotation formulas on low-return (inefficient), water-short rice land in Nghệ An province',
     },
     publisher: {
       vi: 'Trịnh Đức Toàn và cộng sự (2023), Đặc san KH&CN Nghệ An, số 2/2023',

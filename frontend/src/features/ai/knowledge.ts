@@ -58,7 +58,7 @@ const STATIC: Passage[] = [
     title: { vi: 'Thử nghiệm ở Lưu Sơn được làm thế nào?', en: 'How was the Lưu Sơn trial done?' },
     text: {
       vi: 'Thử nghiệm ở xã Lưu Sơn, Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không.',
-      en: 'The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on low-yield rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
+      en: 'The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on low-return (inefficient) rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
     },
   },
   {
