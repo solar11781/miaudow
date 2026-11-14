@@ -9,8 +9,8 @@ Expectations come from QĐ 18/2021/QĐ-TTg (R-A01):
   "đợt" of either band;
 - cold, Art. 53.1 a/d (plains wording for every Nghệ An cell, D-96): "từ trên 8°c đến 13°c, kéo dài từ trên 5 ngày" and
   "từ 8°c trở xuống, kéo dài từ 3 ngày" -> word for word (team, D-120): >= 6 consecutive days with daily mean above 8.0
-  and at or below 13.0, or >= 3 consecutive days at or below 8.0; a spell whose days fall in both bands is not
-  classified by the decree and is not counted;
+  and at or below 13.0, or >= 3 consecutive days at or below 8.0; a run that crosses bands is not one "đợt" of either
+  band, while a qualifying run inside one band counts also inside a longer cold spell (D-146);
 - drought rain part, Art. 48.1: "thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2
   tháng" -> monthly rain < 50% of the 1991-2020 same-month mean, both readings (D-58);
 - field time (D-97): daily rules over the days from sowing to the first reported harvest date; drought over the
@@ -115,6 +115,23 @@ def test_daily_rules_join_the_days_of_several_crops():
         c, year=2010, field_dates=[("01-17", "05-17"), ("08-15", "12-10")], months=list(range(1, 13)), clim=clim
     )
     assert r["heat"] is True
+
+
+def test_cold_examples_of_the_spec_and_the_8_c_edge():
+    # Source: 03-ML-SPEC section 5a (D-146): "6 days at 10 C followed by 3 days at 7 C: each part meets its own band's
+    # rule, so the label is met"; Art. 53.1 d "từ 8°c trở xuống": 8.0 C belongs to band d, not to band a
+    assert hz.cold(_series([10] * 6 + [7] * 3)) is True
+    assert hz.cold(_series([8.0] + [9] * 5)) is False  # band a has only 5 days, band d only 1
+
+
+def test_spell_never_joins_across_the_gap_between_field_blocks():
+    # Source: 03-ML-SPEC section 5a: "a spell is counted only inside one block of consecutive field days"; 15-18 May are
+    # hot, but 17 May is not a field day, so the blocks hold 2 days (15-16) and 1 day (18)
+    c = _cell()
+    c.loc["2010-05-15":"2010-05-18", "T2M_MAX"] = 36.0
+    clim = hz.monthly_climatology(c["PRECTOTCORR"])
+    r = hz.cell_rules(c, year=2010, field_dates=[("05-01", "05-16"), ("05-18", "06-30")], months=[5, 6], clim=clim)
+    assert r["heat"] is False
 
 
 def test_drought_uses_the_months_and_both_readings():
