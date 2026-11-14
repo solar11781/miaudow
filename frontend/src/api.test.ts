@@ -1,6 +1,15 @@
 // Response checks of UI-UX-SPEC section 11 ("Validation in src/api.ts"); placeholder values as the spec's fixtures use.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { api, ApiError, ContractError, sourceIdsIn, validateCompare, validateMethod, validatePastYears } from './api';
+import {
+  api,
+  ApiError,
+  ContractError,
+  SNAPSHOT_MODE,
+  sourceIdsIn,
+  validateCompare,
+  validateMethod,
+  validatePastYears,
+} from './api';
 import { PLAN_IDS } from './types';
 import { body, compare, facts, method, pastYears, rule, shares, text, value } from './tests/fixtures';
 
@@ -149,5 +158,72 @@ describe('requests', () => {
       vi.fn(async () => new Response(JSON.stringify({ province: 'nghe_an' }), { status: 200 })),
     );
     await expect((await freshApi()).pastYears()).rejects.toThrow(/rules: missing/);
+  });
+});
+
+// 04-TECH-DESIGN section 9 runbook: the demo-day fallback reads the saved real answers of scripts/build_snapshot.py
+describe('snapshot mode (npm run build:snapshot only)', () => {
+  const saved = [{ land: 'dry', priority: 'income', years: [2010, 2020], file: 'compare/dry-income-2010_2020.json' }];
+  const index = { commit: 'abc', made_at: '2026-11-14T16:58:56+00:00', compare: saved };
+  const serve = (files: Record<string, unknown>) => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const hit = Object.entries(files).find(([name]) => url.endsWith(`snapshot/${name}`));
+      return hit ? new Response(JSON.stringify(hit[1]), { status: 200 }) : new Response('{}', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  };
+  const snapshotApi = async () => {
+    vi.stubEnv('MODE', 'snapshot');
+    vi.resetModules();
+    return import('./api');
+  };
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it('is off in the normal build, which calls /api', () => {
+    expect(SNAPSHOT_MODE).toBe(false);
+  });
+  it('answers saved choices from the saved compare file and never calls /api', async () => {
+    const fetchMock = serve({ 'index.json': index, 'compare/dry-income-2010_2020.json': compare() });
+    const snap = await snapshotApi();
+    expect(snap.SNAPSHOT_MODE).toBe(true);
+    await expect(snap.api.compare(body)).resolves.toMatchObject({ request: body });
+    expect(fetchMock.mock.calls.map(([url]) => url).filter((url) => url.includes('/api'))).toEqual([]);
+  });
+  it('answers other choices with the list of saved ones', async () => {
+    serve({ 'index.json': index });
+    const snap = await snapshotApi();
+    const miss = snap.api.compare({ ...body, priority: 'water' });
+    await expect(miss).rejects.toBeInstanceOf(snap.SnapshotMissError);
+    await expect(miss).rejects.toMatchObject({ saved });
+  });
+  it('reads past years, the method and the made-at time from the snapshot, with the same checks', async () => {
+    serve({ 'index.json': index, 'past-years.json': pastYears(), 'method.json': { test_years: 1 } });
+    const snap = await snapshotApi();
+    await expect(snap.api.pastYears()).resolves.toMatchObject({ province: 'nghe_an' });
+    await expect(snap.api.snapshot()).resolves.toMatchObject({ made_at: index.made_at });
+    await expect(snap.api.method()).rejects.toThrow(snap.ContractError);
+    expect(snap.GRID_FIGURE_URL).toMatch(/snapshot\/figures\/nghe_an_grid\.svg$/);
+  });
+  it('rejects an index whose file is outside the compare folder', async () => {
+    serve({ 'index.json': { ...index, compare: [{ ...saved[0], file: '../secret.json' }] } });
+    const snap = await snapshotApi();
+    await expect(snap.api.compare(body)).rejects.toThrow(/file/);
+  });
+  it('rejects an index whose made_at is not a date, so the notice cannot break the page', async () => {
+    serve({ 'index.json': { ...index, made_at: 'yesterday' } });
+    const snap = await snapshotApi();
+    await expect(snap.api.snapshot()).rejects.toThrow(/made_at/);
+  });
+  // no live answer may appear under the offline notice
+  it('rejects the copilot and health calls at once, calling nothing', async () => {
+    const fetchMock = serve({});
+    const snap = await snapshotApi();
+    await expect(snap.api.copilot({ question: 'x', mode: 'simple', lang: 'vi' })).rejects.toThrow(/offline/);
+    await expect(snap.api.health()).rejects.toThrow(/offline/);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

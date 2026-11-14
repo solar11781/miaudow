@@ -37,6 +37,8 @@ jobs:
           echo "$files"
           all=false; echo "$files" | grep -q '^\.github/' && all=true
           py=false; echo "$files" | grep -v '^frontend/' | grep -qE '\.(py|toml|lock|cfg|ini|yaml|yml|json|csv)$' && py=true
+          # the stale-snapshot test (tests/test_build_snapshot.py) must run when only the saved answers change
+          echo "$files" | grep -q '^frontend/snapshot/' && py=true
           fe=false; echo "$files" | grep -q '^frontend/' && fe=true
           [ -f pyproject.toml ] || py=false
           [ -f frontend/package.json ] || fe=false
@@ -142,6 +144,9 @@ jobs:
         run: npx vitest run
       - name: build
         run: npm run build
+      # the saved snapshot ships only in the offline demo build (04-TECH-DESIGN section 9), never in the deployed one
+      - name: snapshot not in the deployed build
+        run: test ! -e dist/snapshot
       - name: dependency audit (shipped packages)
         run: npm audit --omit=dev --audit-level=high
       - id: pw
@@ -161,3 +166,6 @@ jobs:
         run: pip install -r requirements.lock && pip install --no-deps .
       - name: browser tests (360 x 740)
         run: npx playwright install --with-deps chromium && npx playwright test
+      # builds dist-snapshot and serves it statically, with no backend, as on demo day
+      - name: browser tests of the offline demo build (360 x 740)
+        run: npx playwright test -c playwright.snapshot.config.ts && test -f dist-snapshot/snapshot/index.json
