@@ -199,7 +199,7 @@ export const vi = {
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
     honestySpring: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
     honestyWinter:
-      'Mô hình có thời tiết NASA đoán tốt hơn, với mức hơn nhỏ. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
+      'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
     // the title of the method page's E-018 report (src/fieldshift/ml/reports.py), word for word (D-165)
     honestyWinterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     vsBnw: 'so với BNW',
@@ -298,7 +298,7 @@ export const vi = {
     current: 'Cách làm hiện nay',
     bare: 'Ruộng trống',
     datesAsReported: 'ngày theo thử nghiệm',
-    overlapNote: 'Hai cây nằm chồng hàng: ngày báo cáo chồng nhau.',
+    overlapNote: 'Hai cây nằm trên hai hàng riêng vì ngày ghi trong bài báo trùng nhau.',
     rows: {
       money: 'Tiền lãi trong thử nghiệm, không phải của ruộng nhà bạn',
       weather: 'Thời tiết xấu khi cây đang trên ruộng',
@@ -308,7 +308,7 @@ export const vi = {
       waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha). 1 m³/ha bằng 0,1 mm.',
       soil: 'Độ ẩm đất NASA',
       soilNote:
-        'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa, trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
+        'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
       land: 'Chăm sóc đất',
       checks: 'Cần cân nhắc (trích nguồn)',
       why: 'Vì sao có cách trồng này',
@@ -546,7 +546,7 @@ export const vi = {
       'Cảnh báo chính thức còn xét độ ẩm, gió và thời gian; đây là cách đọc máy móc các bảng.',
       'Năng suất là trung bình tỉnh, phần lớn lúa có tưới; không phải ruộng thiếu nước.',
     ],
-    freeze: (c: string) => `Kết quả đóng băng ở commit ${c}`,
+    freeze: (c: string) => `Kết quả được cố định ở commit ${c}`,
   },
   assistant: {
     eyebrow: 'Trợ lý bằng chứng',
@@ -577,7 +577,7 @@ export const vi = {
       'Khi nối một mô hình ngôn ngữ ở máy chủ (không đặt khóa API trong trình duyệt), nó chỉ được diễn đạt lại các đoạn bằng chứng này.',
     you: 'Bạn',
     bot: 'Trợ lý',
-    clear: 'Xóa cuộc hỏi',
+    clear: 'Xóa cuộc trò chuyện',
     exampleTag: 'Ví dụ',
   },
   evidence: {
@@ -660,7 +660,7 @@ export const vi = {
     wetter: 'Ướt hơn bình thường',
     normal: (base: string) => `Gần mức bình thường ${base}`,
     annual: 'Tổng mưa cả năm',
-    dryMonths: 'Số tháng thiếu mưa quá nửa',
+    dryMonths: 'Số tháng mưa chưa được nửa mức bình thường',
     drySpell: 'Đợt khô dài nhất',
     hotDays: 'Ngày từ 35 °C',
     gridNote: 'Số theo ô lưới NASA POWER (mô hình), không đo tại ruộng.',
@@ -867,7 +867,7 @@ export const vi = {
     play: 'Tự chạy',
     eyesBy: 'NASA Eyes · ứng dụng 3D chính thức của NASA, mở trong khung',
     newTab: 'Mở ở thẻ mới',
-    backToEarth: 'Trở về Trái Đất — Khám phá đồng lúa Nghệ An',
+    backToEarth: 'Trở về Trái Đất — khám phá đồng lúa Nghệ An',
     eyesNote:
       'Nếu khung trống, hãy bấm “Mở ở thẻ mới”. NASA Eyes do NASA/JPL làm; MIAUDOW chỉ mở trang công khai của họ.',
     cellLabel: 'Chọn ô lưới',
@@ -979,7 +979,7 @@ export const vi = {
       'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
     ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
     ndviDetail:
-      'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi ngày 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
+      'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
     cropProfitLabel: (crop: string) => `Lãi ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
       `Bảng 13: ${profit} nghìn đ/ha, đã trừ công. Chi phí ${cost} nghìn đ/ha; giá bán ${price} đ/kg lúc thu hoạch.`,
