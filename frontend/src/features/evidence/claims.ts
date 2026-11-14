@@ -136,11 +136,12 @@ export function useClaims(): Claim[] {
     claims.push(
       {
         id: 'gap-sentinel', topic: 'gaps', status: 'UNAVAILABLE',
-        conclusion: { vi: 'Miaudow chưa có ảnh vệ tinh độ phân giải cao cho từng thửa ruộng.', en: 'Miaudow has no high-resolution satellite images of individual fields yet.' },
-        meaning: { vi: 'Mọi số thời tiết đang ở mức ô lưới lớn, không phải ở mức thửa ruộng.', en: 'All weather numbers are at the scale of large grid cells, not of fields.' },
+        conclusion: { vi: 'Miaudow chưa có ảnh vệ tinh tách được từng thửa ruộng.', en: 'Miaudow has no satellite images that separate individual fields yet.' },
+        meaning: { vi: 'Mọi số thời tiết đang ở mức ô lưới lớn, không phải ở mức thửa ruộng. Ảnh Sentinel-2 20 m của Đô Lương chỉ cho độ xanh theo mùa; mỗi điểm ảnh trộn nhiều thửa ruộng, bờ, đường và nhà.', en: 'All weather numbers are at the scale of large grid cells, not of fields. The 20 m Sentinel-2 images of Đô Lương show seasonal greenness only; each pixel mixes fields, bunds, roads and houses.' },
         refs: [],
-        location: { vi: 'Sentinel-2 L2A và NASA HLS: mới có hợp đồng dữ liệu, chưa nạp', en: 'Sentinel-2 L2A and NASA HLS: data contract only, not ingested' },
-        method: { vi: 'Cần ranh giới khu vực nghiên cứu chính xác và xử lý mây trước khi dùng.', en: 'Needs an exact study-area boundary and cloud masking before use.' },
+        // catalog.json: sentinel2_l2a_do_luong_vi INGESTED (vegetation.json composites, media/sat); nasa_hlss30 and nasa_hlsl30 BLOCKED
+        location: { vi: 'Sentinel-2 L2A: đã nạp, ảnh NDVI theo mùa 20 m của Đô Lương (2020–21 và 2024), hiện ở Đài quan sát. NASA HLS: bị chặn, cần tài khoản Earthdata.', en: 'Sentinel-2 L2A: loaded, seasonal 20 m NDVI composites of Đô Lương (2020–21 and 2024), shown on the Earth observatory. NASA HLS: blocked, needs an Earthdata Login.' },
+        method: { vi: 'Cần ranh giới chính xác của khu vực nghiên cứu; geoBoundaries không có lớp ranh giới xã nên Lưu Sơn chỉ là một điểm.', en: 'Needs an exact study-area boundary; geoBoundaries has no commune layer, so Lưu Sơn is only a marker point.' },
         appliesTo: { vi: 'Cả ứng dụng.', en: 'The whole app.' },
         notProve: { vi: 'Chỉ số xanh của ảnh vệ tinh cũng không chẩn đoán được sâu bệnh hay độ ẩm đất.', en: 'Even then, a greenness index cannot diagnose pests or soil moisture.' },
       },
