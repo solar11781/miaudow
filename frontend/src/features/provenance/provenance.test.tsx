@@ -38,3 +38,33 @@ describe('source seal', () => {
     expect(document.querySelector('dialog[open]')?.textContent).toContain(registerId);
   });
 });
+
+// D-170: the source sheet writes m² and m³ in the API's own text
+describe('api source sheet', () => {
+  afterEach(cleanup);
+  it('writes square metres with the superscript', async () => {
+    const text = { vi: 'một ô 1000 m2 cho mỗi cây', en: 'one 1000 m2 plot per crop' };
+    const facts = {
+      id: 'R-P02',
+      citation: text,
+      study_type: text,
+      place_years: text,
+      read_status: null,
+      full_text_read: null,
+      limitations: [text],
+      url: null,
+      nso_credit: false,
+    };
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <SourceValue facts={[facts]} value="5" label="ô thử" />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: /ô thử/ }));
+    const sheet = document.querySelector('[data-testid="source-sheet"]')?.textContent ?? '';
+    expect(sheet).toContain('1000 m²');
+    expect(sheet).not.toContain('m2');
+  });
+});

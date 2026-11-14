@@ -5,6 +5,7 @@ import type { SourceFacts } from '../../types';
 import { Icon } from '../../design-system/Icon';
 import { KindBadge } from './KindBadge';
 import { readStatusText } from './readStatus';
+import { displayUnit } from '../../domain/format';
 import { usePick, useT } from '../../app/settings';
 import s from './ProvenanceSheet.module.css';
 
@@ -109,7 +110,9 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
 /** One block per source of an API value, rows in the order of UI-UX-SPEC section 10, facts from the response only. */
 function FactsBlock({ facts }: { facts: SourceFacts }) {
   const t = useT();
-  const pick = usePick();
+  const pickText = usePick();
+  // the API's text as written on screen: m² and m³ (D-170)
+  const pick = (text: SourceFacts['citation']) => displayUnit(pickText(text));
   return (
     <section className={s.block}>
       <dl className={s.facts}>

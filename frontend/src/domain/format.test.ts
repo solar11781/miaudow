@@ -20,4 +20,10 @@ describe('value display', () => {
     expect(displayUnit('nghìn đồng/ha')).toBe('nghìn đồng/ha');
     expect(displayUnit('mm')).toBe('mm');
   });
+  // D-170: m³ and m² also inside API text, e.g. a source's limitation about a 1000 m2 plot
+  it('writes square metres as m² in units and in text', () => {
+    expect(displayUnit('m2')).toBe('m²');
+    expect(displayUnit('one 1000 m2 plot per crop; 6,500 m3/ha')).toBe('one 1000 m² plot per crop; 6,500 m³/ha');
+    expect(displayUnit('R-M2 and mm2x stay')).toBe('R-M2 and mm2x stay');
+  });
 });

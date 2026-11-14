@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { CompareResponse, Plan, Priority, Rule, RuleCode, Stability, Value } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
+import { displayUnit } from '../../domain/format';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
@@ -420,7 +421,7 @@ function WhyRows({ plan, refs }: Omit<Ctx, 'res'>) {
           {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
             <p key={k} className={s.why}>
               <strong>{t.farmer.whyParts[k]}: </strong>
-              {pick(why[k])}
+              {displayUnit(pick(why[k]))}
             </p>
           ))}
         </Row>
