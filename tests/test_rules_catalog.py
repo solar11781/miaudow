@@ -204,6 +204,23 @@ def test_water_facts_are_the_cited_values_only() -> None:
     assert "Bắc bộ" in scopes
 
 
+# the season of each TCVN 8641 rice row, read from the standard's own row label (D-161; glossary: vụ mùa = winter)
+SEASON_OF_LABEL = {"vụ xuân": "spring", "vụ hè thu": "summer_autumn", "vụ mùa": "winter"}
+
+
+def test_each_tcvn_rice_row_carries_the_season_of_its_label() -> None:
+    rice = by_id(read("crops.yaml"), "crop_id")["rice"]
+    tcvn = [f for f in rice["water_facts"] if f["source_id"] == "R-W15"]
+    assert tcvn
+    for fact in tcvn:
+        label = next(k for k in SEASON_OF_LABEL if fact["scope"]["vi"].endswith(k))
+        assert fact["season"] == SEASON_OF_LABEL[label], fact["scope"]["vi"]
+    for crop in read("crops.yaml"):
+        for fact in crop["water_facts"]:
+            if crop["crop_id"] != "rice" or fact["source_id"] != "R-W15":
+                assert "season" not in fact, (crop["crop_id"], fact["scope"]["vi"])  # whole-season figures
+
+
 def test_fao_facts_are_marked_rough_estimates() -> None:
     for crop in read("crops.yaml"):
         for fact in crop["water_facts"]:
