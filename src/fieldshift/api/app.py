@@ -10,6 +10,7 @@ Run: uvicorn fieldshift.api.app:app --no-access-log (D-92: no request log).
 
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 from typing import get_args
@@ -20,6 +21,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
+from starlette.requests import ClientDisconnect
 
 from fieldshift.engine.compare import compare, load_compare_data
 from fieldshift.engine.method import method
@@ -42,6 +44,7 @@ FRONTEND_ROUTES = (
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
 # bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that.
 MAX_BODY_BYTES = 1024
+BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 
 
 def _artifact_versions(artifacts_dir: Path) -> HealthResponse:
@@ -68,12 +71,19 @@ def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
 
 
 async def _compare_request(request: Request) -> CompareRequest:
-    """The body as a CompareRequest; reading stops past MAX_BODY_BYTES, whatever content-length says."""
+    """The body as a CompareRequest; reading stops past MAX_BODY_BYTES, whatever content-length says, after
+    BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422, and nothing logs a traceback)."""
     body = b""
-    async for chunk in request.stream():
-        body += chunk
-        if len(body) > MAX_BODY_BYTES:
-            raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {MAX_BODY_BYTES} bytes"}])
+    try:
+        async with asyncio.timeout(BODY_TIMEOUT_SECONDS):
+            async for chunk in request.stream():
+                body += chunk
+                if len(body) > MAX_BODY_BYTES:
+                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {MAX_BODY_BYTES} bytes"}])
+    except TimeoutError as err:
+        raise _invalid([{"type": "timeout", "loc": (), "msg": f"body not sent in {BODY_TIMEOUT_SECONDS} s"}]) from err
+    except ClientDisconnect as err:
+        raise _invalid([{"type": "incomplete", "loc": (), "msg": "client left before the body ended"}]) from err
     try:
         return CompareRequest.model_validate_json(body)
     except ValidationError as err:
