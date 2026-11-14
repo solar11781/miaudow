@@ -1379,6 +1379,39 @@ def build_decision_view() -> dict:
     }
 
 
+def build_ndvi_modis() -> dict | None:
+    """MODIS MOD13Q1 NDVI at the study site, per 16-day date: median and quartiles of the valid 250 m pixels in the
+    9 x 9 block around Lưu Sơn. Dates without a valid pixel stay null (never interpolated)."""
+    folder = DATA / "raw" / "modis_mod13q1"
+    summary = folder / "ndvi_study_site_summary.csv"
+    if not summary.exists():
+        return None
+    manifest = read_manifest(folder) or {}
+    rows = list(csv.DictReader(summary.open(encoding="utf-8")))
+
+    def num(v: str) -> float | None:
+        return None if v in ("", None) else round(float(v), 4)
+
+    return {
+        "dataset_id": "modis_mod13q1_ndvi",
+        "source_url": manifest.get("source_url"),
+        "license": manifest.get("license"),
+        "retrieved_at": manifest.get("retrieved_at"),
+        "spatial_resolution": "250 m, 9 x 9 pixels around the study point",
+        "is_field_measurement": False,
+        "dates": [r["date"] for r in rows],
+        "median": [num(r["ndvi_median"]) for r in rows],
+        "p25": [num(r["ndvi_p25"]) for r in rows],
+        "p75": [num(r["ndvi_p75"]) for r in rows],
+        "n_valid": [int(r["n_valid"]) for r in rows],
+        "n_total": [int(r["n_total"]) for r in rows],
+        "limitations": {
+            "vi": "NDVI là độ xanh của mặt đất nhìn từ vệ tinh, không chẩn đoán sâu bệnh, năng suất hay độ ẩm đất. Một điểm ảnh 250 m gồm nhiều thửa ruộng.",
+            "en": "NDVI is the greenness of the land surface seen from space; it does not diagnose pests, yield or soil moisture. A 250 m pixel mixes several fields.",
+        },
+    }
+
+
 def main() -> None:
     check_team_dates()
     cells = load_cells()
@@ -1413,6 +1446,9 @@ def main() -> None:
     write("rotations.generated.json", rotations, stamp)
     write("passages.json", {"passages": [p.model_dump(mode="json") for p in passages]}, stamp)
     write("decision.json", build_decision_view(), stamp)
+    ndvi = build_ndvi_modis()
+    if ndvi:
+        write("ndvi_modis.json", ndvi, stamp)
     sys.stdout.write(f"written {sorted(p.name for p in OUT.iterdir())}\n")
 
 
