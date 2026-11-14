@@ -506,3 +506,11 @@ def test_a_year_rule_error_names_the_rule_not_the_list(years: list[int]) -> None
     message = err.value.errors()[0]["msg"]
     assert "years must be strictly ascending within 1995-2024" in message
     assert str(years) not in message
+
+
+def test_compare_request_needs_at_least_one_year() -> None:
+    # UI-UX-SPEC §6b rule 3: /phuong-an needs land, years and priority; rule 5 sends missing or dropped years back to
+    # /nam, so no compare request is made without years; python.md: invalid API input returns HTTP 422
+    with pytest.raises(ValidationError) as err:
+        s.CompareRequest.model_validate(request([]))
+    assert err.value.errors()[0]["type"] == "too_short"
