@@ -9,7 +9,6 @@ Run: uvicorn fieldshift.api.app:app --no-access-log (D-92: no request log).
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -61,4 +60,4 @@ def create_app(artifacts_dir: Path | str | None = None, frontend_dir: Path | str
     return app
 
 
-app = create_app(os.environ.get("FIELDSHIFT_ARTIFACTS"), os.environ.get("FIELDSHIFT_FRONTEND"))
+app = create_app()
