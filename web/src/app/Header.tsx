@@ -57,13 +57,13 @@ function FarmerHeader() {
   );
 }
 
-export function Header({ tone }: { tone: 'forest' | 'paper' }) {
+export function Header({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
   const { pathname } = useLocation();
   if (pathname.startsWith('/nong-dan')) return <FarmerHeader />;
   return <SiteHeader tone={tone} />;
 }
 
-function SiteHeader({ tone }: { tone: 'forest' | 'paper' }) {
+function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
   const t = useT();
   const { pathname } = useLocation();
   const menu = useRef<HTMLDialogElement>(null);
@@ -80,7 +80,7 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' }) {
   const links = useAreas();
 
   return (
-    <header className={[s.header, tone === 'forest' ? 'surface-forest' : s.paper, scrolled ? s.scrolled : ''].join(' ')}>
+    <header className={[s.header, tone === 'paper' ? s.paper : 'surface-forest', tone === 'overlay' ? s.overlay : '', scrolled ? s.scrolled : ''].join(' ')}>
       <div className={`container ${s.bar}`}>
         <Link to="/" className={s.brand} viewTransition>
           <BrandMark />

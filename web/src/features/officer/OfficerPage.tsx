@@ -6,7 +6,7 @@ import { livingDays } from '../../domain/calendar';
 import { SOURCES } from '../../domain/sources';
 import { EVIDENCE_ORDER, type EvidenceKind, type SourceId } from '../../domain/provenance';
 import { Icon } from '../../design-system/Icon';
-import { Photo } from '../../design-system/Photo';
+import { Media } from '../../design-system/Media';
 import { Reveal } from '../../design-system/Reveal';
 import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
@@ -137,7 +137,7 @@ export function OfficerPage() {
               {t.officer.scope.map((x) => <div key={x.label}><dt>{x.label}</dt><dd>{x.value}</dd></div>)}
             </dl>
           </div>
-          <div className={s.heroPhoto}><Photo slug="phoi-tuong" sizes="(min-width: 900px) 420px, 92vw" priority /></div>
+          <div className={s.heroPhoto}><Media slug="do-luong-lam-son-communal-house" sizes="(min-width: 900px) 420px, 92vw" priority /></div>
         </div>
       </section>
 

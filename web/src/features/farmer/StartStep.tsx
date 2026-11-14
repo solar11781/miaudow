@@ -1,9 +1,9 @@
 import { useFarmer } from './FarmerLayout';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { Photo } from '../../design-system/Photo';
+import { Media } from '../../design-system/Media';
 import { usePick, useT } from '../../app/settings';
-import { PHOTOS } from '../../data/photos';
+import { media } from '../../data/media';
 import s from './farmer.module.css';
 
 export function StartStep() {
@@ -14,8 +14,8 @@ export function StartStep() {
     <div className={s.shell}>
       <article className={`${s.startCard} surface-forest`}>
         <div className={s.startPhoto}>
-          <Photo slug="canh-dong-tren-cao" priority sizes="(min-width: 640px) 560px, 100vw" />
-          <span className={s.photoCaption}>{pick(PHOTOS['canh-dong-tren-cao'].caption)}</span>
+          <Media slug="do-luong-nam-son-road-rice" priority sizes="(min-width: 640px) 560px, 100vw" />
+          <span className={s.photoCaption}>{pick(media('do-luong-nam-son-road-rice').caption)}</span>
         </div>
         <div className={s.startBody}>
           <p className="eyebrow">{t.farmer.startEyebrow}</p>

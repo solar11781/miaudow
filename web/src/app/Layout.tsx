@@ -19,8 +19,8 @@ function OfflineNotice() {
   return <p className={s.offline} role="status">{t.errors.offline}</p>;
 }
 
-/** Areas whose first band is dark get a dark header, so the page opens as one surface. */
-const darkTop = (path: string) => path === '/' || path.startsWith('/khoa-hoc');
+/** The home hero runs under a see-through header; other dark-topped areas get a dark header. */
+const tone = (path: string) => (path === '/' ? 'overlay' : path.startsWith('/khoa-hoc') ? 'forest' : 'paper');
 
 export function Layout() {
   const t = useT();
@@ -28,7 +28,7 @@ export function Layout() {
   return (
     <>
       <a className="skip" href="#main">{t.nav.skip}</a>
-      <Header tone={darkTop(pathname) ? 'forest' : 'paper'} />
+      <Header tone={tone(pathname)} />
       <OfflineNotice />
       <Suspense fallback={<div className={s.loading} role="status">{t.common.loading}</div>}>
         <Outlet />

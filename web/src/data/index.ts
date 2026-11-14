@@ -3,7 +3,6 @@
 import geoJson from '@data/geo.json';
 import hazardsJson from '@data/hazards.json';
 import modelJson from '@data/model.json';
-import photosJson from './generated/photos.json';
 import soilJson from '@data/soil.json';
 
 export type RuleCode = 'heavy_rain' | 'heat' | 'drought_rain_consecutive' | 'drought_rain_any2' | 'cold';
@@ -87,19 +86,11 @@ export interface ModelData {
   reports: { id: string; title: { vi: string; en: string }; text: { vi: string; en: string } }[];
 }
 
-export interface PhotoAsset {
-  width: number;
-  height: number;
-  sources: { w: number; src: string }[];
-  placeholder: string;
-  dominant: string;
-}
 
 export const hazards = hazardsJson as unknown as HazardData;
 export const soil = soilJson as unknown as SoilData;
 export const geo = geoJson as unknown as GeoData;
 export const model = modelJson as unknown as ModelData;
-export const photoAssets = photosJson as unknown as Record<string, PhotoAsset>;
 
 export const YEARS = hazards.years;
 export const yearIndex = (year: number) => YEARS.indexOf(year);

@@ -3,7 +3,6 @@ import { answer, type Answer } from './answer';
 import { notConnected } from './languageModel';
 import { Button } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { Photo } from '../../design-system/Photo';
 import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, useSettings, useT } from '../../app/settings';
@@ -51,7 +50,6 @@ export function AssistantPage() {
               <div><strong>{t.assistant.llmStatus}</strong><p>{t.assistant.llmHelp}</p></div>
             </div>
             <p className={s.honest}><Icon name="shield" size={18} />{t.assistant.honest}</p>
-            <div className={s.photo}><Photo slug="dam-sen" sizes="(min-width: 960px) 420px, 92vw" /></div>
           </div>
 
           <div className={s.chat}>

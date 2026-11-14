@@ -3,6 +3,8 @@
   transition: box-shadow var(--d-med) var(--ease-out), background-color var(--d-med) var(--ease-out);
 }
 .paper { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.2) blur(12px); -webkit-backdrop-filter: saturate(1.2) blur(12px); }
+.overlay:not(.scrolled) { background-color: transparent; }
+.overlay:not(.scrolled) .nav { background: rgba(8, 20, 11, .35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .scrolled { box-shadow: 0 1px 0 var(--line), 0 12px 30px -24px rgba(8, 20, 11, .45); }
 .bar { display: flex; align-items: center; gap: var(--s-4); min-height: 72px; }
 .brand { display: inline-flex; align-items: center; gap: .7rem; text-decoration: none; color: var(--fg); margin-right: auto; min-height: 48px; }
@@ -26,7 +28,12 @@
 }
 .chip:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .chip[aria-pressed='true'] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-.cta { display: none !important; }
+.cta { display: none !important; white-space: nowrap; }
+.chip span { white-space: nowrap; }
+/* between 1260 and 1500 px the six links need the room: the setting chips keep their names for screen readers only */
+@media (min-width: 1260px) and (max-width: 1500px) {
+  .settings .chip span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
 .menuBtn { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--fg); display: grid; place-items: center; }
 @media (min-width: 760px) { .settings { display: flex; } .cta { display: inline-flex !important; } }
 @media (min-width: 1260px) { .nav { display: flex; } .menuBtn { display: none; } }
