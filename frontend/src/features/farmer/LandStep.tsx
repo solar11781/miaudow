@@ -30,6 +30,8 @@ export function LandStep() {
         </ButtonLink>
       }
     >
+      {/* read before choosing (walkthrough 2026-11-14): high_field, canal_end and water_short all map to land "dry" */}
+      <p className="muted">{t.farmer.landSameDry}</p>
       <div className={s.choices} role="radiogroup" aria-label={t.farmer.landTitle}>
         {LANDS.map((land) => {
           const on = state.land === land;
@@ -56,8 +58,6 @@ export function LandStep() {
           );
         })}
       </div>
-      {/* high_field, canal_end and water_short all map to land "dry" (domain/farmerState.ts) */}
-      <p className="muted">{t.farmer.landSameDry}</p>
       {state.land === 'reliable' && (
         <p className={s.note} role="status">
           <Icon name="alert" size={20} />

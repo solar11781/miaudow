@@ -327,3 +327,11 @@ test('T28 a picked year scrolls its detail into view above the sticky bar', asyn
   const top = await card.boundingBox();
   expect(top && bar && top.y + 40 < bar.y).toBe(true);
 });
+
+// walkthrough 2026-11-14: the note that three choices lead to the same plans is read before choosing
+test('the same-plans note sits above the field choices', async ({ page }) => {
+  await page.goto('/#/nong-dan/ruong');
+  const note = await page.getByText('Ba ô đầu đều là ruộng thiếu nước', { exact: false }).boundingBox();
+  const first = await page.getByRole('radio').first().boundingBox();
+  expect(note && first && note.y < first.y).toBe(true);
+});
