@@ -24,7 +24,23 @@ function recognitionCtor(): RecognitionCtor | null {
 export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => void) {
   const Ctor = recognitionCtor();
   const canListen = Ctor !== null;
-  const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const hasSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>(() =>
+    hasSynthesis ? window.speechSynthesis.getVoices() : [],
+  );
+  // Chrome and Edge load voices late and announce it with voiceschanged.
+  useEffect(() => {
+    if (!hasSynthesis) return;
+    const synth = window.speechSynthesis;
+    const update = () => setVoices(synth.getVoices());
+    update();
+    synth.addEventListener('voiceschanged', update);
+    return () => synth.removeEventListener('voiceschanged', update);
+  }, [hasSynthesis]);
+  // Never fall back to a voice of another language: it would misread the text.
+  const voice = voices.find((v) => new RegExp('^' + lang + '([-_]|$)', 'i').test(v.lang)) ?? null;
+  const canSpeak = voice !== null;
+  const noVoice = hasSynthesis && !canSpeak;
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,34 +75,31 @@ export function useSpeech(lang: 'vi' | 'en', onTranscript: (text: string) => voi
 
   const speak = useCallback(
     (text: string) => {
-      if (!canSpeak) return;
+      if (!voice) return;
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text.replace(/[•*]/g, ''));
       u.lang = lang === 'vi' ? 'vi-VN' : 'en-US';
-      const voice = window.speechSynthesis
-        .getVoices()
-        .find((v) => v.lang.toLowerCase().startsWith(lang === 'vi' ? 'vi' : 'en'));
-      if (voice) u.voice = voice;
+      u.voice = voice;
       u.onend = () => setSpeaking(false);
       u.onerror = () => setSpeaking(false);
       setSpeaking(true);
       window.speechSynthesis.speak(u);
     },
-    [canSpeak, lang],
+    [voice, lang],
   );
 
   const stopSpeaking = useCallback(() => {
-    if (canSpeak) window.speechSynthesis.cancel();
+    if (hasSynthesis) window.speechSynthesis.cancel();
     setSpeaking(false);
-  }, [canSpeak]);
+  }, [hasSynthesis]);
 
   useEffect(
     () => () => {
       rec.current?.abort();
-      if (canSpeak) window.speechSynthesis.cancel();
+      if (hasSynthesis) window.speechSynthesis.cancel();
     },
-    [canSpeak],
+    [hasSynthesis],
   );
 
-  return { canListen, canSpeak, listening, speaking, error, listen, stopListening, speak, stopSpeaking };
+  return { canListen, canSpeak, noVoice, listening, speaking, error, listen, stopListening, speak, stopSpeaking };
 }

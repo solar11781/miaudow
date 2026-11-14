@@ -719,6 +719,8 @@ export const en: Messages = {
     missing: 'What the app does not know about your field:',
     readAloud: 'Read aloud',
     stopReading: 'Stop reading',
+    noVoice:
+      'This device has no English reading voice. On Android: Settings → Text-to-speech → install English. On Windows: Settings → Time & language → Speech.',
     howFound: 'How the copilot found this',
     numbersChecked: (n: number, bad: number) =>
       bad
