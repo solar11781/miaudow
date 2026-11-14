@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { api, type CopilotResponse, type WaterSituation } from '../../api/client';
+import { api, type CopilotResponse, type WaterSituation } from '../../api';
 import { answer as localAnswer, type Answer } from './answer';
 import { climateYear } from '../../data/climate';
 import { Button } from '../../design-system/Button';

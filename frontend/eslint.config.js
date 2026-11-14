@@ -22,7 +22,7 @@ export default defineConfig(
       'no-restricted-globals': ['error', { name: 'fetch', message: 'Use src/api.ts for every request.' }],
     },
   },
-  { files: ['src/api.ts', 'src/api/client.ts'], rules: { 'no-restricted-globals': 'off' } },
+  { files: ['src/api.ts'], rules: { 'no-restricted-globals': 'off' } },
   { files: ['scripts/**/*.mjs', '*.config.{js,ts}', 'e2e/**/*.ts'], languageOptions: { globals: { ...globals.node } } },
   { files: ['scripts/**/*.mjs', 'e2e/**/*.ts'], rules: { 'no-console': 'off' } },
 );
