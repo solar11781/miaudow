@@ -13,6 +13,7 @@ import {
   type MethodResponse,
   type PastYearsResponse,
   type Plan,
+  type PlanId,
   type Stability,
 } from './types';
 
@@ -407,6 +408,49 @@ export const api = {
       timeoutMs: 90000,
     }) as Promise<CopilotResponse>,
 };
+
+// ---------------------------------------------------------------- explain simply (FR-15, D-165, D-172)
+
+export type WhyPart = 'why' | 'evidence' | 'benefits' | 'gaps';
+/** The body of POST /api/explain (src/fieldshift/api/explain.py): the server takes the text from its own answer. */
+export interface ExplainRequest {
+  answers: CompareRequest;
+  plan: PlanId;
+  field: WhyPart;
+  lang: 'vi' | 'en';
+}
+export interface ExplainResponse {
+  text: string;
+  ai_generated: true;
+  model: string;
+}
+
+const explainShape = obj({
+  text: str,
+  ai_generated: (v, at) => {
+    if (v !== true) fail(at, 'not true');
+  },
+  model: str,
+});
+
+/** Whether the feature is on: the server answers 503 while off before it reads the body, so an empty body gets 503
+ * (off) or 422 (on) and never reaches the model. Any other outcome counts as off. */
+export async function explainOn(signal?: AbortSignal): Promise<boolean> {
+  try {
+    await call('/explain', { method: 'POST', body: '{}', signal });
+    return false;
+  } catch (e) {
+    return e instanceof ApiError && e.status === 422;
+  }
+}
+
+export async function explainSimply(body: ExplainRequest, signal?: AbortSignal): Promise<ExplainResponse> {
+  const raw = await call('/explain', { method: 'POST', body: JSON.stringify(body), signal });
+  explainShape(raw, 'explain');
+  const res = raw as ExplainResponse;
+  if (!res.text.trim()) fail('explain.text', 'empty');
+  return res;
+}
 
 // ---------------------------------------------------------------- member B's copilot contract (its own backend)
 

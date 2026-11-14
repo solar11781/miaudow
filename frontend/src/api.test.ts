@@ -1,6 +1,16 @@
 // Response checks of UI-UX-SPEC section 11 ("Validation in src/api.ts"); placeholder values as the spec's fixtures use.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { api, ApiError, ContractError, sourceIdsIn, validateCompare, validateMethod, validatePastYears } from './api';
+import {
+  api,
+  ApiError,
+  ContractError,
+  explainOn,
+  explainSimply,
+  sourceIdsIn,
+  validateCompare,
+  validateMethod,
+  validatePastYears,
+} from './api';
 import { PLAN_IDS } from './types';
 import { body, compare, facts, method, pastYears, rule, shares, text, value } from './tests/fixtures';
 
@@ -149,5 +159,59 @@ describe('requests', () => {
       vi.fn(async () => new Response(JSON.stringify({ province: 'nghe_an' }), { status: 200 })),
     );
     await expect((await freshApi()).pastYears()).rejects.toThrow(/rules: missing/);
+  });
+});
+
+// FR-15 and PR #43 (src/fieldshift/api/explain.py, tests/test_explain.py): POST /api/explain answers 503 while off
+// before it reads the body, 422 for a body it rejects, 502 when no usable reply came, else {text, ai_generated, model}
+describe('explain simply', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  const reply = (status: number, json: unknown) => vi.fn(async () => new Response(JSON.stringify(json), { status }));
+  const request = { answers: body, plan: 'cc1', field: 'evidence', lang: 'vi' } as const;
+
+  it('reads the feature as off from a 503 and as on from a 422 to an empty body', async () => {
+    const off = reply(503, { detail: 'Service Unavailable' });
+    vi.stubGlobal('fetch', off);
+    await expect(explainOn()).resolves.toBe(false);
+    expect(off).toHaveBeenCalledWith('/api/explain', expect.objectContaining({ method: 'POST', body: '{}' }));
+    vi.stubGlobal('fetch', reply(422, { detail: [] }));
+    await expect(explainOn()).resolves.toBe(true);
+  });
+  it('reads the feature as off when the check cannot reach the server', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('offline');
+      }),
+    );
+    await expect(explainOn()).resolves.toBe(false);
+  });
+  it('posts the answers, plan, part and language and returns the checked reply', async () => {
+    const ok = reply(200, { text: 'Lời dễ hiểu', ai_generated: true, model: 'claude-haiku-5-5' });
+    vi.stubGlobal('fetch', ok);
+    await expect(explainSimply(request)).resolves.toEqual({
+      text: 'Lời dễ hiểu',
+      ai_generated: true,
+      model: 'claude-haiku-5-5',
+    });
+    expect(ok).toHaveBeenCalledWith(
+      '/api/explain',
+      expect.objectContaining({ method: 'POST', body: JSON.stringify(request) }),
+    );
+  });
+  it.each([
+    [{ text: 'x', ai_generated: false, model: 'm' }, /ai_generated/],
+    [{ text: 'x', model: 'm' }, /ai_generated: missing/],
+    [{ text: 3, ai_generated: true, model: 'm' }, /text: not a string/],
+    [{ text: '  ', ai_generated: true, model: 'm' }, /text: empty/],
+  ])('rejects a reply of another shape (%j)', async (json, error) => {
+    vi.stubGlobal('fetch', reply(200, json));
+    await expect(explainSimply(request)).rejects.toThrow(error);
+  });
+  it('turns 502 and 503 into an ApiError with the status', async () => {
+    vi.stubGlobal('fetch', reply(502, { detail: 'Bad Gateway' }));
+    await expect(explainSimply(request)).rejects.toEqual(new ApiError(502, 'Bad Gateway'));
+    vi.stubGlobal('fetch', reply(503, { detail: 'Service Unavailable' }));
+    await expect(explainSimply(request)).rejects.toEqual(new ApiError(503, 'Service Unavailable'));
   });
 });
