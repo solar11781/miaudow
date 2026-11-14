@@ -37,8 +37,9 @@ RICE_STEP, RICE_PX = 10, 2.0  # ticks every 10 percentage points, 2 px per perce
 SHARE_STEP, SHARE_PX = 50, 0.6  # ticks at 0, 50 and 100%, 0.6 px per percentage point
 
 
+# mirrors engine/values.py whole_percent (D-95); a copy because the layer rules forbid ml from importing engine
 def _percent(fraction: float) -> str:
-    """Whole percent, half up (D-95), as the engine's whole_percent (ml may not import engine); minus zero is "0"."""
+    """Whole percent, half up; minus zero is "0"."""
     shown = (Decimal(str(fraction)) * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP)
     return str(abs(shown) if shown == 0 else shown)
 

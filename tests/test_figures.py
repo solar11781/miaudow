@@ -19,6 +19,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+from fieldshift.engine.values import whole_percent
+from fieldshift.ml import figures
 from fieldshift.ml.figures import rice_history_svg, rule_shares_svg
 
 REPO = Path(__file__).resolve().parents[1]
@@ -270,3 +272,9 @@ def test_the_readme_names_every_figure_file() -> None:
         if f.name != "README.md":
             assert f"`{f.name}`" in readme, f.name
     assert re.search(r"artifacts/figures/results_chart\.svg", readme)
+
+
+@pytest.mark.parametrize("fraction", [0.0, -0.0, -0.004, 0.005, -0.005, 0.015, -0.015, 0.125, -0.125, 0.995, 1.0, 0.07])
+def test_percent_text_equals_the_engine_whole_percent(fraction: float) -> None:
+    # halves and minus zero: the figures repeat the engine's D-95 rule (ml may not import engine)
+    assert figures._percent(fraction) == whole_percent(fraction)
