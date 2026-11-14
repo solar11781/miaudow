@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { parseFarmerState, serializeFarmerState, type FarmerState } from '../../domain/farmerState';
 import { Icon } from '../../design-system/Icon';
 import { useT } from '../../app/settings';
+import { pathFor, useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
 export const STEP_PATHS = ['/nong-dan/ruong', '/nong-dan/nam', '/nong-dan/uu-tien', '/nong-dan/phuong-an'] as const;
@@ -64,16 +65,21 @@ export function StepShell({
   const t = useT();
   const { search } = useFarmer();
   const { pathname } = useLocation();
+  const local = useLocalTo();
   const prev = step === 1 ? '/nong-dan' : STEP_PATHS[step - 2];
   return (
     <div className={[s.shell, wide ? s.wide : ''].join(' ')}>
       <div className={s.top}>
-        <Link to={{ pathname: prev, search }} className={s.back} viewTransition>
+        <Link to={local({ pathname: prev, search })} className={s.back} viewTransition>
           <Icon name="arrowLeft" size={20} /> {t.common.back}
         </Link>
         <ol className={s.progress} aria-label={t.farmer.stepOf(step)}>
           {STEP_PATHS.map((p, i) => (
-            <li key={p} aria-current={pathname === p ? 'step' : undefined} className={i < step ? s.done : ''}>
+            <li
+              key={p}
+              aria-current={pathFor(pathname, 'vi') === p ? 'step' : undefined}
+              className={i < step ? s.done : ''}
+            >
               <span className="visually-hidden">{t.farmer.stepOf(i + 1)}</span>
             </li>
           ))}

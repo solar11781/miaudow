@@ -14,6 +14,7 @@ import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { RainStrip } from '../charts/RainStrip';
 import { TwoSources } from '../charts/TwoSources';
 import { NdviChart } from '../charts/NdviChart';
+import { useLocalTo } from '../../app/paths';
 import s from './science.module.css';
 
 const SCIENCE_RULES: RuleCode[] = ['drought_rain_any2', 'drought_rain_consecutive', 'heat', 'heavy_rain', 'cold'];
@@ -304,13 +305,14 @@ function RiceSection() {
 /** The model results live on the method page, read from our API (D-166), so this page shows no second copy. */
 function MethodLink() {
   const t = useT();
+  const local = useLocalTo();
   return (
     <section className="band surface-paper" aria-labelledby="skill-title">
       <div className={`container ${s.colHead}`}>
         <h2 id="skill-title" className="h1">
           {t.science.skillTitle}
         </h2>
-        <Link to="/phuong-phap" className={s.askLink}>
+        <Link to={local('/phuong-phap')} className={s.askLink}>
           <Icon name="arrowRight" size={18} />
           {t.science.toMethod}
         </Link>

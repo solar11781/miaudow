@@ -54,7 +54,7 @@ export function useSignInAvailable() {
 }
 
 // the pages a finished sign-in may return to; anything else goes to the saved answers page
-const BACK = /^\/(nong-dan\/phuong-an|da-luu)(\?|$)/;
+const BACK = /^\/(nong-dan\/phuong-an|da-luu|farmer\/plans|saved)(\?|$)/; // both path languages (D-174)
 export const safeBack = (raw: string | null) => (raw && BACK.test(raw) ? raw : '/da-luu');
 
 /** The sign-in route that comes back to `back` (a path with its answers) afterwards. */

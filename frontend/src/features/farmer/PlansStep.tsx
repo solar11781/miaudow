@@ -12,6 +12,7 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SaveAnswers } from '../account/SaveAnswers';
 import { usePick, useT } from '../../app/settings';
+import { useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
 /** Builds the absolute link that opens exactly this card with the current answers (the answers stay in the fragment). */
@@ -129,6 +130,7 @@ const savable = (land: Land | null, body: CompareRequest | null): SavedAnswers |
 export function PlansStep() {
   const t = useT();
   const { state, search } = useFarmer();
+  const local = useLocalTo();
   const [years, retryYears] = useApi(api.pastYears, 'past-years');
   // picked years are checked against the past-years response before any compare request (UI-UX-SPEC section 6b)
   const offered = years.status === 'ok' ? years.data.years.map((y) => y.year) : [];
@@ -144,7 +146,7 @@ export function PlansStep() {
               {y}
             </span>
           ))}
-          <Link to={{ pathname: '/nong-dan/nam', search }} className={s.editLink} viewTransition>
+          <Link to={local({ pathname: '/nong-dan/nam', search })} className={s.editLink} viewTransition>
             {t.farmer.yearsTitle}
           </Link>
         </div>
@@ -178,7 +180,7 @@ export function PlansStep() {
         <p className={s.note}>
           <Icon name="alert" size={20} />
           {t.farmer.needAnswers}{' '}
-          <Link to={{ pathname: '/nong-dan/ruong', search }} className={s.editLink}>
+          <Link to={local({ pathname: '/nong-dan/ruong', search })} className={s.editLink}>
             {t.farmer.restart}
           </Link>
         </p>
