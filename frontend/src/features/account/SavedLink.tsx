@@ -10,7 +10,7 @@ export function SavedLink({ className, children }: { className?: string; childre
   const local = useLocalTo();
   if (!useSignInAvailable()) return null;
   return (
-    <Link to={local('/da-luu')} className={className} viewTransition>
+    <Link to={local('/da-luu')} className={className}>
       {t.account.savedTitle}
       {children}
     </Link>

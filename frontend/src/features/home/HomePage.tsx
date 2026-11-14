@@ -245,7 +245,7 @@ function Steps() {
         <ol className={s.steps}>
           {t.home.steps.map((step, i) => (
             <Reveal as="li" key={step.title} delay={i * 70}>
-              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step} viewTransition>
+              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step}>
                 <span className={s.stepArt}>
                   <Media slug={STEP_ART[i] ?? 'a3-rice'} decorative sizes="(min-width: 1000px) 300px, 90vw" />
                   <span className={s.stepNum}>{String(i + 1).padStart(2, '0')}</span>

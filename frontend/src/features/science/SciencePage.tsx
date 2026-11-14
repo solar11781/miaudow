@@ -229,7 +229,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
             {t.climate.sectionTitle} · <span className="num">{year}</span>
           </h2>
           <p className="lead">{t.climate.sectionLead}</p>
-          <Link className={s.askLink} to={local(`/tro-ly?${q}`)} viewTransition>
+          <Link className={s.askLink} to={local(`/tro-ly?${q}`)}>
             <Icon name="spark" size={18} />
             {t.climate.askYear(year)}
           </Link>
