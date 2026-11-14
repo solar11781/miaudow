@@ -1,0 +1,387 @@
+"""Tests for the engine schemas (written before the code). They mirror the API contract of UI-UX-SPEC §11 one to one
+(04-TECH-DESIGN §3; .claude/rules/python.md); the invariants are the §11 validation rules, so the engine can never
+return what the frontend rejects. Field lists below are copied from UI-UX-SPEC §11. Placeholder values only.
+"""
+
+import pytest
+from pydantic import ValidationError
+
+from fieldshift.engine import schemas as s
+
+# UI-UX-SPEC §11, field names in contract order
+CONTRACT_FIELDS = {
+    "SourceFacts": [
+        "id",
+        "citation",
+        "study_type",
+        "place_years",
+        "read_status",
+        "full_text_read",
+        "limitations",
+        "url",
+        "nso_credit",
+    ],
+    "Value": ["value", "unit", "source_ids"],
+    "Season": ["code", "label", "window", "source_ids"],
+    "Rule": ["code", "label", "rule_text", "threshold_source_id", "values_source_ids", "computed_by"],
+    "YearRow": ["year", "shares"],
+    "PastYearsResponse": ["province", "rules", "years", "sources", "n_cells"],
+    "CropSpan": [
+        "crop_key",
+        "crop_id",
+        "crop",
+        "variety",
+        "season",
+        "sow_from",
+        "sow_to",
+        "harvest_from",
+        "harvest_to",
+        "source_ids",
+    ],
+    "Period": ["from", "to"],
+    "MoneyItem": ["crop_key", "crop", "season", "profit", "cost", "flag"],
+    "Money": ["items", "total", "price_year", "definition", "text_only"],
+    "CropExposure": ["crop_key", "crop", "per_year"],
+    "StabilityYear": ["year", "real", "oos_prediction", "range_80"],
+    "Stability": [
+        "crop_key",
+        "season",
+        "label",
+        "model_status",
+        "years_count",
+        "scope",
+        "per_year",
+        "summary",
+        "worst_years",
+    ],
+    "WaterFact": ["crop_key", "measure", "value", "scope", "note"],
+    "LandCheck": ["value", "principle_source_ids"],
+    "LandCare": ["crops_in_year", "living_days", "legume"],
+    "RiskItem": ["text", "source_ids"],
+    "Why": ["why", "evidence", "benefits", "gaps", "risks"],
+    "Plan": [
+        "id",
+        "name",
+        "is_usual",
+        "calendar",
+        "bare_periods",
+        "money",
+        "exposure",
+        "stability",
+        "water",
+        "land",
+        "why",
+    ],
+    "CompareRequest": ["province", "land", "years", "priority"],
+    "Interval": ["value", "ci90_low", "ci90_high"],
+    "GateRow": ["gate", "season", "model_id", "passed", "detail", "source_ids"],
+    "CompareResponse": ["request", "test_years", "n_cells", "seasons", "rules", "gates", "plans", "sources"],
+    "MetricRow": [
+        "model_id",
+        "season",
+        "role",
+        "scheme",
+        "sensitivity",
+        "detail",
+        "subset",
+        "rmse",
+        "mae",
+        "r2_oos",
+        "skill_vs_b0",
+        "skill_vs_b2",
+        "skill_vs_bnw",
+        "coverage_80",
+        "n_rows",
+        "n_test_years",
+        "source_ids",
+    ],
+    "WeatherClaim": ["season", "model_id", "made", "source_ids"],
+    "ReportItem": ["id", "title", "text", "source_ids"],
+    "CoverageCell": ["row_key", "crop", "axis", "text", "source_ids"],
+    "ExplainTerm": ["key", "title", "text", "source_ids"],
+    "MethodResponse": [
+        "test_years",
+        "freeze_commit",
+        "metrics",
+        "gates",
+        "weather_claims",
+        "reports",
+        "coverage",
+        "explain_terms",
+        "limitations",
+        "rain_check",
+        "sources",
+    ],
+    "RainCheck": ["months", "cc", "mean_imerg", "mean_power", "source_ids"],
+    "HealthResponse": ["status", "artifacts"],
+}
+RULE_CODES = ["heavy_rain", "heat", "drought_rain_consecutive", "drought_rain_any2", "cold"]  # §11 RuleCode order
+PLAN_IDS = ["usual", "usual_p03", "cc1", "cc2", "cc3", "cc4"]  # §11 canonical plan order
+EXPLAIN_KEYS = ["evapotranspiration", "soil_moisture", "ndvi", "frost", "water_balance", "data_types"]  # §11 order
+T = {"vi": "[x]", "en": "[x]"}
+PCT = {"vi": "%", "en": "%"}
+
+
+def val(v: str = "xx") -> dict:
+    return {"value": v, "unit": PCT, "source_ids": ["E-019"]}
+
+
+@pytest.mark.parametrize(("name", "fields"), CONTRACT_FIELDS.items())
+def test_every_model_has_exactly_the_contract_fields(name: str, fields: list[str]) -> None:
+    model = getattr(s, name)
+    assert [f.alias or key for key, f in model.model_fields.items()] == fields
+
+
+def test_text_needs_both_languages() -> None:
+    with pytest.raises(ValidationError):
+        s.RiskItem.model_validate({"text": {"vi": "[x]"}, "source_ids": []})
+
+
+def test_a_value_needs_at_least_one_source() -> None:
+    # §11: Value.source_ids ">= 1 id"; H5: numbers without a source must not be shown
+    with pytest.raises(ValidationError):
+        s.Value.model_validate({"value": "xx", "unit": PCT, "source_ids": []})
+
+
+def test_unknown_fields_and_enum_values_are_rejected() -> None:
+    with pytest.raises(ValidationError):
+        s.Value.model_validate({**val(), "score": 1})  # H3: no score in the output
+    with pytest.raises(ValidationError):
+        s.CompareRequest.model_validate(
+            {"province": "nghe_an", "land": "irrigated", "years": [2000], "priority": "income"}
+        )
+
+
+def test_period_uses_the_contract_key_from() -> None:
+    assert s.Period.model_validate({"from": "11-01", "to": "01-31"}).model_dump(by_alias=True) == {
+        "from": "11-01",
+        "to": "01-31",
+    }
+
+
+def test_shares_need_all_five_rule_codes() -> None:
+    # §11 validation: every `shares` has the five codes
+    full = dict.fromkeys(RULE_CODES)
+    assert s.YearRow.model_validate({"year": 2000, "shares": full}).shares == full
+    with pytest.raises(ValidationError):
+        s.YearRow.model_validate({"year": 2000, "shares": dict.fromkeys(RULE_CODES[:4])})
+
+
+def span(**dates: str | None) -> dict:
+    base = {"sow_from": "02-01", "sow_to": "02-01", "harvest_from": "05-01", "harvest_to": "06-01"}
+    return {
+        "crop_key": "cc1_spring_peanut",
+        "crop_id": "peanut",
+        "crop": T,
+        "variety": None,
+        "season": "spring",
+        **base,
+        **dates,
+        "source_ids": ["R-P02"],
+    }
+
+
+def test_crop_span_dates_are_all_set_or_all_null_and_in_order() -> None:
+    # §11 CropSpan: all four set, or all four null; sow_from <= sow_to <= harvest_from <= harvest_to
+    s.CropSpan.model_validate(span())
+    s.CropSpan.model_validate(span(sow_from=None, sow_to=None, harvest_from=None, harvest_to=None))
+    with pytest.raises(ValidationError):
+        s.CropSpan.model_validate(span(harvest_to=None))
+    with pytest.raises(ValidationError):
+        s.CropSpan.model_validate(span(harvest_from="01-15"))
+
+
+def source(sid: str) -> dict:
+    return {
+        "id": sid,
+        "citation": T,
+        "study_type": T,
+        "place_years": T,
+        "read_status": None,
+        "full_text_read": None,
+        "limitations": [],
+        "url": None,
+        "nso_credit": False,
+    }
+
+
+def rule(code: str) -> dict:
+    return {
+        "code": code,
+        "label": T,
+        "rule_text": T,
+        "threshold_source_id": "R-A01",
+        "values_source_ids": ["R-N01", "R-N02"],
+        "computed_by": "E-019",
+    }
+
+
+def past_years(years: list[int], codes: list[str] = RULE_CODES) -> dict:
+    return {
+        "province": "nghe_an",
+        "rules": [rule(c) for c in codes],
+        "years": [{"year": y, "shares": dict.fromkeys(RULE_CODES)} for y in years],
+        "sources": {},
+        "n_cells": 0,
+    }
+
+
+def test_past_years_needs_the_five_rules_in_order_and_ascending_years() -> None:
+    # §11 validation: rules has the five codes in order; years non-empty and strictly ascending
+    s.PastYearsResponse.model_validate(past_years([1995, 1996]))
+    for bad in (
+        past_years([]),
+        past_years([1996, 1995]),
+        past_years([1995, 1995]),
+        past_years([1995], RULE_CODES[::-1]),
+    ):
+        with pytest.raises(ValidationError):
+            s.PastYearsResponse.model_validate(bad)
+
+
+def stability(reals: list[str | None], summary: dict | None, worst: list[int], years_count: int) -> dict:
+    return {
+        "crop_key": "usual_spring_rice",
+        "season": "spring",
+        "label": T,
+        "model_status": "not_shown",
+        "years_count": years_count,
+        "scope": T,
+        "per_year": [
+            {"year": 2000 + i, "real": None if r is None else val(r), "oos_prediction": None, "range_80": None}
+            for i, r in enumerate(reals)
+        ],
+        "summary": summary,
+        "worst_years": worst,
+    }
+
+
+def test_summary_only_from_two_real_values_t25() -> None:
+    # §11 Stability: summary null when fewer than 2 non-null real values; worst_years [] when summary is null;
+    # years_count = picked years with a non-null real value (D-95, T25)
+    one = stability(["-1", None], None, [], 1)
+    assert s.Stability.model_validate(one).summary is None
+    two = stability(["-1", "-2"], {"min": val("-2"), "median": val("-1"), "max": val("-1")}, [2001], 2)
+    s.Stability.model_validate(two)
+    for bad in (
+        stability(["-1", None], {"min": val("-1"), "median": val("-1"), "max": val("-1")}, [2000], 1),
+        stability(["-1", "-2"], None, [], 2),
+        stability(["-1", None], None, [2000], 1),
+        stability(["-1", None], None, [], 2),
+    ):
+        with pytest.raises(ValidationError):
+            s.Stability.model_validate(bad)
+
+
+def test_worst_years_are_the_years_equal_to_the_minimum() -> None:
+    # §11: years whose real value equals summary.min, ties give more than one, ascending
+    tie = stability(["-2", "-1", "-2"], {"min": val("-2"), "median": val("-2"), "max": val("-1")}, [2000, 2002], 3)
+    s.Stability.model_validate(tie)
+    for worst in ([2000], [2002, 2000], [2001]):
+        with pytest.raises(ValidationError):
+            s.Stability.model_validate({**tie, "worst_years": worst})
+
+
+def empty_plan(pid: str) -> dict:
+    land = {"value": None, "principle_source_ids": []}
+    return {
+        "id": pid,
+        "name": T,
+        "is_usual": False,
+        "calendar": [],
+        "bare_periods": [],
+        "money": {"items": [], "total": None, "price_year": None, "definition": T, "text_only": None},
+        "exposure": [],
+        "stability": None,
+        "water": [],
+        "land": {
+            "crops_in_year": land,
+            "living_days": land,
+            "legume": {"present": False, "crops": [], "principle_source_ids": []},
+        },
+        "why": {"why": T, "evidence": T, "benefits": T, "gaps": T, "risks": []},
+    }
+
+
+def compare(plans: list[dict], years: list[int] | None = None) -> dict:
+    return {
+        "request": {"province": "nghe_an", "land": "dry", "years": years or [2010, 2020], "priority": "income"},
+        "test_years": {"first": 2016, "last": 2024},
+        "n_cells": 0,
+        "seasons": [],
+        "rules": [rule(c) for c in RULE_CODES],
+        "gates": [],
+        "plans": plans,
+        "sources": {},
+    }
+
+
+def test_compare_holds_the_six_plans_in_canonical_order() -> None:
+    # §11 validation: plans holds exactly the six plan ids in canonical order (H3: order is final)
+    s.CompareResponse.model_validate(compare([empty_plan(p) for p in PLAN_IDS]))
+    for ids in (PLAN_IDS[::-1], PLAN_IDS[:5]):
+        with pytest.raises(ValidationError):
+            s.CompareResponse.model_validate(compare([empty_plan(p) for p in ids]))
+
+
+def with_rice_years(rows: list[dict], years: list[int] | None = None) -> dict:
+    plans = [empty_plan(p) for p in PLAN_IDS]
+    block = stability([None] * len(rows), None, [], 0)
+    block["per_year"] = rows
+    plans[0]["stability"] = [block]
+    return compare(plans, years or [r["year"] for r in rows])
+
+
+def test_no_prediction_or_range_outside_the_test_years_t23() -> None:
+    # §11 validation (T23, D-82): no prediction and no range outside test_years; a range only with a
+    # prediction, D-94
+    rng = {"low": val("-3"), "high": val("3")}
+    inside = {"year": 2016, "real": None, "oos_prediction": val(), "range_80": rng}
+    s.CompareResponse.model_validate(with_rice_years([inside]))
+    for bad in (
+        {"year": 2015, "real": None, "oos_prediction": val(), "range_80": None},
+        {"year": 2015, "real": None, "oos_prediction": None, "range_80": rng},
+        {"year": 2016, "real": None, "oos_prediction": None, "range_80": rng},
+    ):
+        with pytest.raises(ValidationError):
+            s.CompareResponse.model_validate(with_rice_years([bad]))
+
+
+def test_every_per_year_lists_exactly_the_requested_years() -> None:
+    # §11 validation: every `per_year` lists exactly the requested years
+    row = {"year": 2010, "real": None, "oos_prediction": None, "range_80": None}
+    s.CompareResponse.model_validate(with_rice_years([row]))
+    with pytest.raises(ValidationError):
+        s.CompareResponse.model_validate(with_rice_years([row], years=[2010, 2020]))
+    plans = [empty_plan(p) for p in PLAN_IDS]
+    plans[2]["exposure"] = [{"crop_key": "cc1_spring_peanut", "crop": T, "per_year": []}]
+    with pytest.raises(ValidationError):
+        s.CompareResponse.model_validate(compare(plans, [2010]))
+
+
+def method(coverage: list[tuple[str, str]], keys: list[str] = EXPLAIN_KEYS) -> dict:
+    return {
+        "test_years": {"first": 2016, "last": 2024},
+        "freeze_commit": "[hash]",
+        "metrics": [],
+        "gates": [],
+        "weather_claims": [],
+        "reports": [],
+        "coverage": [{"row_key": r, "crop": T, "axis": a, "text": T, "source_ids": []} for r, a in coverage],
+        "explain_terms": [{"key": k, "title": T, "text": T, "source_ids": []} for k in keys],
+        "limitations": [],
+        "rain_check": None,
+        "sources": {},
+    }
+
+
+def test_method_coverage_cells_are_unique_and_explain_terms_ordered() -> None:
+    # §11 validation: each (row_key, axis) of coverage occurs once; explain_terms has the six keys in order
+    s.MethodResponse.model_validate(method([("rice", "money"), ("rice", "model")]))
+    for bad in (method([("rice", "money"), ("rice", "money")]), method([], EXPLAIN_KEYS[::-1])):
+        with pytest.raises(ValidationError):
+            s.MethodResponse.model_validate(bad)
+
+
+def test_source_facts_shape_round_trips() -> None:
+    assert s.SourceFacts.model_validate(source("R-A01")).model_dump() == source("R-A01")
