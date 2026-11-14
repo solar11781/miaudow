@@ -262,6 +262,11 @@ a {
     opacity: 1;
     transform: none;
   }
+  /* pseudo-elements of the view transition are not matched by the universal selector above (H1, D-155) */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }
 :root[data-lite='true'] *,
 :root[data-lite='true'] *::before,
