@@ -2,6 +2,10 @@
 
 ## Brand architecture
 
+> Redesign of 15 Nov 2026 (D-043 to D-049): night surfaces for the story, rice-water light (`#F1F3EE`, not cream) for
+> the tools, one accent (ripe-rice gold) for the action a person takes, photographs carry the colour. The sections
+> below are updated where the redesign changed them.
+
 **Core experience:** Vietnamese rural heritage × editorial luxury × scientific precision. No AI neon, no generic green-tech ornament. The soul is Nghệ An lowland agriculture and Lam River atmosphere; atmospheric images are artistic, sources are scientific.
 
 ### Visual principles
@@ -29,12 +33,15 @@
 
 **Critical**: labels and charts must not rely on color alone. Text contrast for 10–12 px microcopy needs specific AA validation. The decorative research caption font may be <14 px, but never in the farmer primary path.
 
-### Typography
+### Typography (redesign, 15 Nov 2026, D-044)
 
-- Display: `Noto Serif` with Vietnamese support verified before production. Scale desktop: 52–119 px depending context, mobile: 35–70 px.
-- Primary UI: `Be Vietnam Pro`, weights 400–700. Body default 15 px site-wide, **farmer UI 15–18 px**, 1.65–1.85 line height.
-- Data: `DM Mono`, limited to numeric and provenance notes.
-- No font binaries included. Hosted type may fall back to Georgia/system fonts without network.
+- Display: **Darker Grotesque** (variable, 700–750), tight (-0.02em), line height 0.94–1.04. Hero 56–132 px, page titles
+  48–100 px. Headings rise out of a line mask once per page (GSAP SplitText); the mask is padded so Vietnamese marks
+  above and below (ộ, ụ, ữ) are never clipped.
+- Text and numbers: **Hanken Grotesk** (variable, 400–650), 18 px body, 17 px floor everywhere (H6), tabular figures for
+  numbers. No monospace face, no italic.
+- Both OFL-1.1, served by the app with their Vietnamese subsets (D-155).
+
 
 ### Spacing and shape
 
@@ -45,13 +52,14 @@
 - Atypical image silhouette such as top-right 140 px leaf corner reserved for hero editorial imagery, not scattered across ordinary controls.
 - Shadows low contrast on paper, more emphasis from typography, color and photography.
 
-### Motion
+### Motion (redesign, D-043)
 
-- 400–1000 ms editorial motion, cubic-bezier `.2,.75,.25,1`.
-- Atmospheric hero Ken Burns 22 s max only when motion permitted; no constant aggressive animation.
-- Hover: 3–5% image scale, subtle translateY ≤ 7 px.
-- Science stage: pointer drag rotates CSS 3D illustration. For **real georeferenced** rendering use MapLibre/deck.gl or Cesium after geometry exists and licences are approved.
-- `prefers-reduced-motion` and manual Lite disable motion; Lite deliberately avoids loading heavyweight immersive layers in future.
+- GSAP 3.15.0 in one module (`web/src/motion/cinema.ts`). Easing by character: heavy `expo.out` 1.1–2.6 s for the
+  cinema, `power3.inOut` for transitions, under 250 ms for the tools. Nothing bounces.
+- One authored moment per page; no fade-up on every block. The CSS holds the final state; GSAP animates from elsewhere.
+- The opening photographs change every 7 s with a visible pause button; under reduced motion or "Máy yếu" nothing
+  moves and every word is visible (H1, D-155). No video.
+
 
 ### Component semantic rules
 

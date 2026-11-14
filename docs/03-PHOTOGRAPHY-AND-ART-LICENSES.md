@@ -57,3 +57,12 @@ These are research sources and creative references; **never copy them into `publ
 ## Golden-grade method
 
 The color-grade package uses restrained saturation, slightly lifted warmth, subtle contrast and a small vignette. It does not transform a source image into scientific data. The original concept variants are retained for comparison. The recommended palette is forest `#0C2015`, rice gold `#E7BB55`, warm paper `#F3EFE5`, all with accessible text contrast verified during integration.
+
+## Mood photographs of the team (15 Nov 2026, D-045)
+
+The team's folder `photoS_aesthetics_vietfarm` holds 22 files (21 distinct photographs) of Vietnamese farm life with no
+recorded author, source page or licence. Nine carry a visible signature or logo: Daniel Kordan (two), Lê Khánh, Lê Hồng
+Hà, Hoàng Cường (two), Tuổi Trẻ, "GA", and one small mark on the right edge. They are used only on a machine that runs
+`web/pipeline/build_mood.mjs`; the outputs (`web/public/media/mood/`, `web/src/data/generated/media.mood.json`) are
+git-ignored, and every published build falls back to the licensed photographs above. No signature is cropped or
+covered, and no mood photograph is captioned with a place. Publishing them needs each photographer's permission.

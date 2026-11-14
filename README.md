@@ -9,7 +9,7 @@ every number with its source. Team Miaudow, NASA Space Apps Challenge 2026 (Hà 
 
 | Area | Route | For | What it does |
 |---|---|---|---|
-| Home | `#/` | everyone | Eight chapters from Nghệ An rice land to the satellite grid, on licensed photographs |
+| Home | `#/` | everyone | The problem in one sentence, the four AI cores (what each does, uses, gives and cannot do yet), thirty years in one chart, the four farmer steps and the observatory |
 | Farmer | `#/nong-dan` … `/phuong-an` | farmers | Four tap-only steps; plan cards with a 12-month calendar, trial profit, weather, water, land care, sourced risks and questions for the officer. No 3D, nothing stored in the browser |
 | Officer | `#/can-bo` | extension officers | Evidence desk: conclusion → meaning → number → source → method and limits, the fit with a family's field, the matrix |
 | Science | `#/khoa-hoc?nam=2020` | judges, researchers | WebGL observatory of the real province outline and NASA grid; one shared year across the 34-year rain strip, NASA POWER vs CHIRPS, MODIS NDVI, the closest past years and the unusual years (climate ML, with its test results), rice history and the model test |
@@ -80,7 +80,8 @@ NASA POWER daily caches for the five cells are committed under `data/raw/power*`
 .venv/Scripts/python -m pytest api/tests pipeline/tests -q   # 288 tests
 .venv/Scripts/ruff check api pipeline scripts
 cd web && npx tsc -b && npx eslint . && npx vitest run      # 39 unit tests
-cd web && npm run build && npx playwright test e2e/journey.spec.ts   # 48 browser tests incl. WCAG 2.2 AA
+cd web && npm run build && npx playwright test e2e/journey.spec.ts   # 54 browser tests incl. WCAG 2.2 AA
+npx impeccable@4.7.0 detect web/src                          # template-pattern audit (0 findings)
 .venv/Scripts/python api/eval/run_retrieval_eval.py          # retrieval benchmark
 .venv/Scripts/python api/eval/run_climate_ml_eval.py         # climate ML evaluation
 .venv/Scripts/python pipeline/check_quality.py               # data-quality report
@@ -95,7 +96,8 @@ Results, performance measurements and the completion matrix: `docs/09-VERIFICATI
 - Past years are never a forecast; the copilot refuses forecasts, prices and rankings.
 - Plans are listed in the study's order and never scored, ranked or sorted.
 - Missing values stay missing; nothing is interpolated or filled with zero.
-- Photographs carry their creator and licence; concept art is always labelled as illustration.
+- Pictures carry no text; every photograph's creator and licence is in the footer list, concept art says it is an
+  illustration in its alt text, and the team's unlicensed mood photographs never leave the machine they were built on.
 - Nothing is stored in the browser.
 
 ## Folders
@@ -119,4 +121,8 @@ geoBoundaries (gbOpen; ADM2 under CC BY 3.0 IGO, source OCHA ROAP), NASA GIBS im
 imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and
 Information System (ESDIS)"), NASA Eyes (opened, not copied), CesiumJS (Apache-2.0), Cục Thống kê (NSO Vietnam),
 Vietnamese legal texts (not subject to copyright, Luật SHTT Điều 15). Photographs: see `assets/photos/PHOTO_MANIFEST.json`
-and the footer of the app. MIAUDOW is not endorsed by NASA, ESA or any data provider.
+and the footer of the app. Fonts: Darker Grotesque and Hanken Grotesk (OFL-1.1). Motion: GSAP 3.15.0 and @gsap/react
+2.1.2 (GSAP Standard no-charge licence, not OSI). Design references read, no code copied: cinematic-ui by
+akseolabs-seo (MIT, commit 37651d0), GSAP skills by GreenSock (MIT, commit aed9cfd), Impeccable by Paul Bakaus
+(Apache-2.0, commit 1995764; its detector 4.7.0 was run), React Bits by David Haz (MIT + Commons Clause, commit
+cf28010). MIAUDOW is not endorsed by NASA, ESA or any data provider.
