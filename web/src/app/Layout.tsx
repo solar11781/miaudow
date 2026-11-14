@@ -1,8 +1,8 @@
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
-import { Fragment, Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { useSettings, useT } from './settings';
+import { useT } from './settings';
 import s from './Layout.module.css';
 
 function OfflineNotice() {
@@ -25,14 +25,13 @@ const tone = (path: string) => (path === '/' ? 'overlay' : path.startsWith('/kho
 export function Layout() {
   const t = useT();
   const { pathname } = useLocation();
-  const { lang } = useSettings();
   return (
     <>
       <a className="skip" href="#main">{t.nav.skip}</a>
       <Header tone={tone(pathname)} />
       <OfflineNotice />
       <Suspense fallback={<div className={s.loading} role="status">{t.common.loading}</div>}>
-        <Fragment key={lang}><Outlet /></Fragment>
+        <Outlet />
       </Suspense>
       <Footer />
       <ScrollRestoration />

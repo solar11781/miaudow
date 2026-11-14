@@ -28,11 +28,17 @@ function Hero() {
   const root = useRef<HTMLElement>(null);
   const [shown, setShown] = useState(0);
   const [paused, setPaused] = useState(false);
-  const slides = ART.hero;
+  const [later, setLater] = useState(false);
+  const slides = later ? ART.hero : ART.hero.slice(0, 1);
   const playing = !calm && !paused;
 
   useEffect(() => {
-    if (!playing) return;
+    const id = window.setTimeout(() => setLater(true), 2500);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || slides.length < 2) return;
     const id = window.setInterval(() => setShown((n) => (n + 1) % slides.length), SLIDE_MS);
     return () => window.clearInterval(id);
   }, [playing, slides.length]);
@@ -51,7 +57,7 @@ function Hero() {
       <div className={s.heroStage} data-hero-stage>
         {slides.map((shot, n) => (
           <div key={shot.slug} className={[s.slide, n === shown ? s.slideOn : ''].join(' ')}>
-            <Media slug={shot.slug} narrow={shot.narrow} priority sizes="100vw" decorative drift={playing && n === shown} />
+            <Media slug={shot.slug} narrow={shot.narrow} priority={n === 0} sizes="100vw" decorative drift={playing && n === shown} />
           </div>
         ))}
       </div>

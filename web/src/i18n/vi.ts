@@ -42,7 +42,7 @@ export const vi = {
     titleA: 'Ruộng làng ta,',
     titleB: 'đọc bằng dữ liệu vũ trụ.',
     lead: 'Hơn 30 năm mưa nắng từ NASA, đặt cạnh 6 cách trồng đã thử ở Đô Lương. Để mỗi nhà tự so sánh trước mùa tới.',
-    ctaFarmer: 'Xem ruộng nhà mình',
+    ctaFarmer: 'Tìm hiểu ruộng nhà mình',
     ctaScience: 'Khám phá dữ liệu Nghệ An',
     ctaCopilot: 'Hỏi trợ lý',
     ctaCores: 'Bốn lõi AI làm gì?',
