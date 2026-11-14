@@ -78,8 +78,7 @@ export function PlansStep() {
         <ol>{t.farmer.officerQuestions.map((q) => <li key={q}>{q}</li>)}</ol>
         <div className="cluster">
           <ButtonLink to="/can-bo" variant="secondary" icon="arrowRight">{t.farmer.officerView}</ButtonLink>
-          <ButtonLink to="/nong-dan/ruong" variant="ghost" leadingIcon="rotateL"
-            onClick={() => { try { window.localStorage.removeItem('miaudow.farmer.v1'); } catch { /* ignore */ } }}>
+          <ButtonLink to="/nong-dan/ruong" variant="ghost" leadingIcon="rotateL">
             {t.farmer.restart}
           </ButtonLink>
         </div>

@@ -1,11 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { parseFarmerState, serializeFarmerState, type FarmerState } from '../../domain/farmerState';
 import { Icon } from '../../design-system/Icon';
 import { useT } from '../../app/settings';
 import s from './farmer.module.css';
 
-const STORE = 'miaudow.farmer.v1';
 export const STEP_PATHS = ['/nong-dan/ruong', '/nong-dan/nam', '/nong-dan/uu-tien', '/nong-dan/phuong-an'] as const;
 
 interface FarmerCtx {
@@ -23,22 +22,11 @@ export function useFarmer() {
   return c;
 }
 
-/** Holds the farmer's answers in the URL (shareable, survives reload) and mirrors them to local storage. */
+/** Holds the farmer's answers in the URL only (shareable, survives reload). Nothing is written to the browser's
+ * storage (UI-UX-SPEC H14): closing the tab forgets the answers unless the link was kept. */
 export function FarmerLayout() {
   const [params, setParams] = useSearchParams();
   const state = useMemo(() => parseFarmerState(params), [params]);
-
-  useEffect(() => {
-    if ([...params.keys()].length) return;
-    try {
-      const saved = window.localStorage.getItem(STORE);
-      if (saved) setParams(new URLSearchParams(saved), { replace: true });
-    } catch { /* storage blocked: start fresh */ }
-  }, [params, setParams]);
-
-  useEffect(() => {
-    try { window.localStorage.setItem(STORE, serializeFarmerState(state).toString()); } catch { /* ignore */ }
-  }, [state]);
 
   const update = useCallback(
     (patch: Partial<FarmerState>) => setParams(serializeFarmerState({ ...state, ...patch }), { replace: true, preventScrollReset: true }),

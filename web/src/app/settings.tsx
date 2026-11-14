@@ -17,26 +17,23 @@ interface Settings {
   calm: boolean;
 }
 
-const KEY = 'miaudow.settings.v1';
 const SettingsContext = createContext<Settings | null>(null);
 
-function readStored(): Partial<Pick<Settings, 'lang' | 'lite' | 'theme'>> {
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Partial<Settings>) : {};
-  } catch {
-    return {};
-  }
+/** Starting language from the browser (UI-UX-SPEC H16): Vietnamese when the browser lists Vietnamese, else English.
+ * Nothing is stored in the browser (H14): settings live only in memory for this visit. */
+export function browserLang(languages: readonly string[] | undefined): Lang {
+  return (languages ?? []).some((l) => l.toLowerCase().startsWith('vi')) ? 'vi' : 'en';
 }
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [stored] = useState(readStored);
-  const [lang, setLang] = useState<Lang>(stored.lang === 'en' ? 'en' : 'vi');
-  const [lite, setLite] = useState<boolean>(stored.lite === true);
-  const [theme, setTheme] = useState<Theme>(stored.theme ?? 'auto');
+  const [lang, setLang] = useState<Lang>(() =>
+    typeof navigator === 'undefined' ? 'vi' : browserLang(navigator.languages?.length ? navigator.languages : [navigator.language]),
+  );
+  const [lite, setLite] = useState(false);
+  const [theme, setTheme] = useState<Theme>('auto');
   const [reduced, setReduced] = useState(prefersReducedMotion);
 
   useEffect(() => {
@@ -48,11 +45,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(KEY, JSON.stringify({ lang, lite, theme }));
-    } catch {
-      /* storage blocked: the page still works, settings just are not remembered */
-    }
     const root = document.documentElement;
     root.lang = lang;
     root.dataset.lite = String(lite);
