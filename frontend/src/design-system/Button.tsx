@@ -1,5 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { Link, type LinkProps } from 'react-router-dom';
+import { useLocalTo } from '../app/paths';
 import { Icon, type IconName } from './Icon';
 import s from './Button.module.css';
 
@@ -62,10 +63,12 @@ export function ButtonLink({
   block,
   children,
   className,
+  to,
   ...rest
 }: Common & LinkProps) {
+  const local = useLocalTo();
   return (
-    <Link className={cls(variant, size, block, className)} viewTransition {...rest}>
+    <Link className={cls(variant, size, block, className)} viewTransition to={local(to)} {...rest}>
       <Inner icon={icon} leadingIcon={leadingIcon} variant={variant}>
         {children}
       </Inner>

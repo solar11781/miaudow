@@ -7,7 +7,7 @@ import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-do
 import { api, ApiError, type SavedSet } from '../../api';
 import { SettingsProvider } from '../../app/settings';
 import { vi as text } from '../../i18n/vi';
-import { AccountProvider, useAccount } from './AccountProvider';
+import { AccountProvider, safeBack, useAccount } from './AccountProvider';
 import { SaveAnswers } from './SaveAnswers';
 import { SavedPage } from './SavedPage';
 import { SignInPage } from './SignInPage';
@@ -304,5 +304,23 @@ describe('save these answers', () => {
     await userEvent.click(await screen.findByRole('button', { name: t.save }));
     expect(await screen.findByText(t.expired)).toBeTruthy();
     expect(screen.getByRole('link', { name: t.signInAgain })).toBeTruthy();
+  });
+});
+
+describe('return after signing in', () => {
+  // D-174: the plan cards and the saved answers page in both path languages; anything else goes to the saved answers
+  it.each([
+    [
+      '/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income',
+      '/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income',
+    ],
+    ['/farmer/plans?ruong=canal_end&nam=2010&uutien=income', '/farmer/plans?ruong=canal_end&nam=2010&uutien=income'],
+    ['/da-luu', '/da-luu'],
+    ['/saved', '/saved'],
+    ['/farmer/plansx', '/da-luu'],
+    ['//example.com', '/da-luu'],
+    [null, '/da-luu'],
+  ])('%s returns to %s', (raw, back) => {
+    expect(safeBack(raw)).toBe(back);
   });
 });

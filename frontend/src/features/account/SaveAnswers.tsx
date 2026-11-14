@@ -3,6 +3,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { api, ApiError, type SavedAnswers } from '../../api';
 import { Button, ButtonLink } from '../../design-system/Button';
 import { useT } from '../../app/settings';
+import { useLocalTo } from '../../app/paths';
 import { signInLink, useAccount, useSignInAvailable } from './AccountProvider';
 import s from './account.module.css';
 
@@ -20,6 +21,7 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
   const available = useSignInAvailable();
   const [status, setStatus] = useState<Status>('idle');
   const started = useRef(false);
+  const local = useLocalTo();
 
   const save = async (signedIn: string) => {
     setStatus('saving');
@@ -82,7 +84,7 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
       <p role="status">
         {message}{' '}
         {(status === 'saved' || status === 'full') && (
-          <Link to="/da-luu" className={s.link}>
+          <Link to={local('/da-luu')} className={s.link}>
             {t.account.goSaved}
           </Link>
         )}

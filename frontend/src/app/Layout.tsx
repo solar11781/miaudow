@@ -2,6 +2,7 @@ import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { Suspense, useEffect, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { pathFor } from './paths';
 import { useSettings, useT } from './settings';
 import { api, SNAPSHOT_MODE } from '../api';
 import { useApi } from '../hooks/useApi';
@@ -59,7 +60,7 @@ export function Layout() {
       <a className="skip" href="#main">
         {t.nav.skip}
       </a>
-      <Header tone={tone(pathname)} />
+      <Header tone={tone(pathFor(pathname, 'vi'))} />
       {SNAPSHOT_MODE ? <SnapshotNotice /> : <OfflineNotice />}
       <Suspense
         fallback={
