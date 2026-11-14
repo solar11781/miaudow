@@ -32,7 +32,6 @@ from typing import Annotated, Literal
 import anthropic
 from pydantic import BaseModel, ConfigDict, StringConstraints, ValidationError
 
-from fieldshift.api.caps import ModelCallsFullError
 from fieldshift.api.explain import (
     BASE_URL,
     MAX_RETRIES,
@@ -745,13 +744,14 @@ def answer(
     req: CopilotRequest, corpus: Corpus, client: anthropic.Anthropic | None, charge: Callable[[], bool]
 ) -> CopilotResponse:
     """The fixed answers without a key or for a fixed route; else the server's candidates and one model call that
-    picks among them (`charge` takes that call from the caps first, and False refuses it: ModelCallsFullError)."""
+    picks among them (`charge` takes that call from the caps first; False, a full cap, gives the fixed answers, so
+    farmers keep getting sourced answers: security audit 2026-11-15)."""
     if client is None or fixed_only(req):
         return deterministic(req, corpus)
     found = candidates(req, corpus)
     if not found:  # nothing to pick from: no model call
         return _response("insufficient_evidence", corpus.answers.insufficient[req.lang], set(), trace=_trace(found))
     if not charge():
-        raise ModelCallsFullError
+        return deterministic(req, corpus)
     message = _create(client, corpus.system, [{"role": "user", "content": _content(req, found)}], _schema(found))
     return _shown(_picked(message), found, req, corpus)

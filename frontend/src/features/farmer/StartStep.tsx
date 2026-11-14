@@ -16,7 +16,7 @@ export function StartStep() {
     <div className={s.shell}>
       <article className={`${s.startCard} surface-forest`}>
         <div className={s.startPhoto}>
-          <Media slug="do-luong-nam-son-road-rice" priority sizes="(min-width: 640px) 560px, 100vw" />
+          <Media slug="do-luong-nam-son-road-rice" priority sizes="(max-width: 700px) 320px, 600px" />
           <span className={s.photoCaption}>{pick(media('do-luong-nam-son-road-rice').caption)}</span>
         </div>
         <div className={s.startBody}>
