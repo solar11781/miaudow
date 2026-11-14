@@ -140,7 +140,7 @@ async def _internal_error(_: Request, __: Exception) -> JSONResponse:
 
 
 def _add_privacy_routes(app: FastAPI, page: bytes) -> None:
-    """The notice at the path registered with Google, and /privacy as a permanent redirect to it (team, 2026-11-14)."""
+    """The notice at the path registered with Google, and /privacy as a permanent redirect to it (D-164)."""
 
     @app.get("/quyen-rieng-tu")
     def privacy_route() -> Response:

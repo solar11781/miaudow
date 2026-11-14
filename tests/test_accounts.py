@@ -235,7 +235,7 @@ def test_an_unreachable_database_at_start_turns_sign_in_off(
 
 
 def test_every_database_connection_gives_up_after_5_seconds(on: str, monkeypatch: pytest.MonkeyPatch) -> None:
-    # team, 2026-11-14: a database that is down holds the start (and the farmer routes) for 5 s, not psycopg's 130 s
+    # D-164: a database that is down holds the start (and the farmer routes) for 5 s, not psycopg's 130 s
     timeouts: list[object] = []
     real_connect = psycopg.connect
 
@@ -434,7 +434,7 @@ def test_the_key_download_checks_tls_with_the_default_context_and_has_a_timeout(
     calls = fake_download(monkeypatch, Answer(public_keys(keys)))
     assert accounts.HttpsRequest()(GOOGLE_CERTS).status == 200
     [call] = calls
-    assert call.timeout == 10  # team, 2026-11-14: an account request never hangs for minutes
+    assert call.timeout == 10  # D-164: an account request never hangs for minutes
     # Python ssl docs: ssl.create_default_context() requires a valid certificate and checks the host name
     assert call.context.verify_mode == ssl.CERT_REQUIRED
     assert call.context.check_hostname

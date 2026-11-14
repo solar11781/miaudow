@@ -402,7 +402,7 @@ def test_privacy_notice_is_served_with_sign_in_off(tmp_path: Path) -> None:
 
 
 def test_the_english_privacy_path_redirects_permanently(client: TestClient) -> None:
-    # team decision 2026-11-14: /privacy is a permanent redirect (308) to /quyen-rieng-tu
+    # D-164: /privacy is a permanent redirect (308) to /quyen-rieng-tu
     r = client.get("/privacy", follow_redirects=False)
     assert r.status_code == 308
     assert r.headers["location"] == "/quyen-rieng-tu"
