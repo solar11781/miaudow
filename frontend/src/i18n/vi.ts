@@ -88,6 +88,12 @@ export const vi = {
     type: 'Loại nghiên cứu',
     placeYears: 'Nơi và năm',
     readStatus: 'Chúng tôi đã đọc',
+    readStatusValues: {
+      READ: 'Đã đọc',
+      ABSTRACT: 'Chỉ đọc phần tóm tắt',
+      SUMMARY: 'Chỉ có bản tóm lược thứ cấp',
+      NOT_READ: 'Chưa đọc',
+    },
     fullText: 'Đã đọc toàn văn',
     limits: 'Giới hạn',
     yes: 'Có',

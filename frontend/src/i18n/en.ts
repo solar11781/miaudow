@@ -90,6 +90,12 @@ export const en: Messages = {
     type: 'Type of study',
     placeYears: 'Place and years',
     readStatus: 'What we read',
+    readStatusValues: {
+      READ: 'Read',
+      ABSTRACT: 'Abstract only',
+      SUMMARY: 'Only a secondary summary',
+      NOT_READ: 'Not read',
+    },
     fullText: 'Full text read',
     limits: 'Limitations',
     yes: 'Yes',
