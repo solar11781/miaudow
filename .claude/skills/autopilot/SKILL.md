@@ -38,7 +38,8 @@ enforces. Anything the gate refuses waits for the team.
 0. Check the clock (`date`). If a checkpoint of the `checkpoints` skill's table passed since the last check, send its
    message with PushNotification and note it in `status.md` (reminders scheduled elsewhere do not fire while this
    session is busy).
-1. Mark it `running` in `status.md`.
+1. Before choosing it, pull both members' latest marks as the task skill's step 0 says; skip an item another member
+   has marked. Mark it `running` in `status.md`.
 2. Run the `task` skill for it. Under the autopilot, the task skill parks questions instead of asking.
 3. Check the item's "done when" yourself, with the real command output.
 4. Mark it `merged` with the pull request link, `waiting-merge` with the gate's reason, or `parked` / `skipped`
