@@ -93,7 +93,6 @@ export const en: Messages = {
     obsLead: 'This is the real border of Nghệ An, divided into NASA POWER grid cells about 55 × 66 km wide. The darker a cell, the more farmland it holds. Each cell carries daily weather since 1990.',
     obsCells: 'grid cells with farmland',
     obsYears: 'years against the normal',
-    obsDays: 'days of data per cell',
     obsCta: 'Open the 3D observatory',
     honestyEyebrow: '07 · Honest science',
     honestyTitle: 'We say so even when the model does not win',

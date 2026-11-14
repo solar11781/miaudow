@@ -91,7 +91,6 @@ export const vi = {
     obsLead: 'Đây là ranh giới thật của tỉnh Nghệ An, chia theo các ô lưới NASA POWER rộng khoảng 55 × 66 km. Ô càng đậm, càng nhiều đất trồng. Mỗi ô mang số liệu thời tiết từng ngày từ năm 1990.',
     obsCells: 'ô lưới có đất trồng',
     obsYears: 'năm so với mức bình thường',
-    obsDays: 'ngày số liệu cho mỗi ô',
     obsCta: 'Mở đài quan sát 3D',
     honestyEyebrow: '07 · Khoa học trung thực',
     honestyTitle: 'Chúng tôi nói rõ cả khi mô hình không thắng',
