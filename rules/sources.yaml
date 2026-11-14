@@ -5,6 +5,20 @@
 # `full_text_read` is set by hand per source (D-102): false for a partial reading (chapters, file attributes).
 # EXPERIMENTS ids (our own computations) have read_status and full_text_read null. Study type, place, years and
 # limitations are drafts for the copy review.
+- id: E-008
+  citation: {vi: "Thực nghiệm E-008 của nhóm: các lần chạy kiểm tra độ vững của M1 (cửa sổ mùa vụ sớm hơn, muộn hơn hoặc rộng hơn một tháng; một điểm ở tâm tỉnh thay cho các ô có trọng số đất trồng)",
+             en: "Our experiment E-008: robustness runs of M1 (season window one month earlier, later or wider; one point at the province centre instead of farmland-weighted cells)"}
+  study_type: {vi: "Các lần chạy mô hình của chúng tôi để kiểm tra độ vững", en: "Our model runs, robustness checks"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chỉ để kiểm tra; không bao giờ thay thế kết quả chính.",
+       en: "Checks only; they never replace the main result."}
+    - {vi: "Với cửa sổ muộn hơn hoặc rộng hơn, lúa vụ Mùa được tính trên 429 trong 462 dòng, vì số liệu ngày chỉ có đến 31/12/2024.",
+       en: "With the later or wider window, winter rice is scored on 429 of 462 rows, because the daily data end on 31 Dec 2024."}
+  url: null
+  nso_credit: false
 - id: E-010
   citation: {vi: "Thực nghiệm E-010 của nhóm: chọn cách tính năng suất bình thường",
              en: "Our experiment E-010: choice of the normal-yield method"}
@@ -29,6 +43,42 @@
   limitations:
     - {vi: "Cho trung bình của cả tỉnh, không cho một ruộng. Năm đã qua không phải là dự báo.",
        en: "For a province average, not for one field. Past years are not a forecast."}
+  url: null
+  nso_credit: false
+- id: E-013
+  citation: {vi: "Thực nghiệm E-013 của nhóm: mô hình cây tăng cường LightGBM (M2) cho độ lệch năng suất lúa",
+             en: "Our experiment E-013: boosted trees model (M2, LightGBM) of rice yield anomalies"}
+  study_type: {vi: "Mô hình phụ của chúng tôi, báo cáo bên cạnh M1", en: "Our secondary model, reported next to M1"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chỉ để báo cáo; M1 vẫn là mô hình được dùng. Cùng các dòng và năm kiểm tra như E-012.",
+       en: "Reported only; M1 stays the model used. Same rows and test years as E-012."}
+  url: null
+  nso_credit: false
+- id: E-017
+  citation: {vi: "Thực nghiệm E-017 của nhóm: mô hình rừng ngẫu nhiên (M3) cho độ lệch năng suất lúa",
+             en: "Our experiment E-017: random forest model (M3) of rice yield anomalies"}
+  study_type: {vi: "Mô hình phụ của chúng tôi, báo cáo bên cạnh M1", en: "Our secondary model, reported next to M1"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chỉ để báo cáo; M1 vẫn là mô hình được dùng. Cùng các dòng và năm kiểm tra như E-012.",
+       en: "Reported only; M1 stays the model used. Same rows and test years as E-012."}
+  url: null
+  nso_credit: false
+- id: E-018
+  citation: {vi: "Thực nghiệm E-018 của nhóm: các lần chạy độ nhạy của M1 đã đăng ký trước (bỏ các dòng FAO đánh dấu; mức hơn tính theo MAE; đặc trưng là tỉ lệ đất đạt các quy tắc cấp độ rủi ro)",
+             en: "Our experiment E-018: pre-registered sensitivity runs of M1 (without the FAO-flagged rows; skill from MAE; risk-level share features)"}
+  study_type: {vi: "Các lần chạy mô hình của chúng tôi để kiểm tra độ nhạy", en: "Our model runs, sensitivity checks"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  read_status: null
+  full_text_read: null
+  limitations:
+    - {vi: "Chỉ để kiểm tra; không bao giờ thay thế kết quả chính.",
+       en: "Checks only; they never replace the main result."}
   url: null
   nso_credit: false
 - id: E-019
