@@ -144,12 +144,16 @@ export function mergeRequest(command) {
   const idx = segs.findIndex((s) => s[0] === 'gh' && s[1] === 'pr' && s[2] === 'merge');
   if (idx === -1) return null;
   const args = segs[idx].slice(3);
-  const pr = args.find((a) => /^\d+$/.test(a)) ?? null;
-  // a flag counts by its name, so --squash=true is checked like --squash
-  const has = (...f) => args.some((a) => f.includes(a.split('=')[0]));
+  const numbers = args.filter((a) => /^\d+$/.test(a));
+  const pr = numbers[0] ?? null;
+  // a flag counts by its name (--squash=true is --squash), and grouped short flags count one by one (-dm is -d -m)
+  const flags = args.flatMap((a) => (/^-[a-zA-Z]{2,}$/.test(a) ? [...a.slice(1)].map((c) => `-${c}`) : [a.split('=')[0]]));
+  const has = (...f) => flags.some((a) => f.includes(a));
   let problem = null;
   if (segs.length > 1) problem = 'run the merge command alone, not chained with other commands';
   else if (!pr) problem = 'name the pull request number';
+  else if (numbers.length > 1) problem = 'name exactly one pull request number and nothing else that is a bare number';
+  else if (has('-R', '--repo')) problem = 'no -R or --repo (merge only in this repository)';
   else if (has('--admin')) problem = 'no --admin (it bypasses checks)';
   else if (has('--delete-branch', '-d')) problem = 'no --delete-branch (branches are kept)';
   else if (has('--auto')) problem = 'no --auto (merge only after the gate passes now)';
