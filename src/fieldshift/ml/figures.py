@@ -13,7 +13,7 @@ import math
 from collections.abc import Callable
 from decimal import ROUND_HALF_UP, Decimal
 
-from fieldshift.ml.results_chart import BACKGROUND, LABEL_X, WIDTH, ZERO, svg_document, svg_text
+from fieldshift.ml.results_chart import BACKGROUND, LABEL_X, MARK, WIDTH, ZERO, svg_document, svg_text
 
 NGHE_AN = "Nghe An"  # risk_table.json unit_id of Nghệ An (province_nso spelling, 05-DATA-CONTRACTS section 5)
 RICE = "rice"
@@ -24,7 +24,6 @@ STATUS_NOTES = {  # risk_table.json seasons[].model_status (UI-UX-SPEC section 1
     "not_modeled": "This season is not modelled; no model estimates.",
 }
 
-BAR = "#1f4e79"  # the results chart's mark colour, 8.7:1 on white
 ESTIMATE = "#b04a00"  # 5.5:1 on white (WCAG 2.1 non-text contrast needs 3:1)
 GRID = "#d9d9d9"  # decorative grid lines; the zero line uses ZERO
 
@@ -83,7 +82,7 @@ def _year_labels(years: list[int], bottom: float) -> list[str]:
 def _bar(attrs: str, x: float, width: float, fraction: float, y_of: Callable[[float], float]) -> str:
     """A bar from 0 to the value; both ends rounded once, so the drawn ends are the value's ends."""
     top, bottom = round(y_of(max(fraction, 0.0)), 1), round(y_of(min(fraction, 0.0)), 1)
-    return f'<rect {attrs} x="{x:.1f}" y="{top:.1f}" width="{width:.1f}" height="{bottom - top:.1f}" fill="{BAR}"/>'
+    return f'<rect {attrs} x="{x:.1f}" y="{top:.1f}" width="{width:.1f}" height="{bottom - top:.1f}" fill="{MARK}"/>'
 
 
 def _missing(x: float, y_zero: float) -> str:
