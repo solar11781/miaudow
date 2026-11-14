@@ -33,7 +33,7 @@ SCHEMA = (
     " account_id bigint NOT NULL REFERENCES account (id) ON DELETE CASCADE,"
     " land text NOT NULL, years integer[] NOT NULL, priority text NOT NULL)",
 )
-BIGINT_MAX = 2**63 - 1  # largest PostgreSQL bigint, the type of every id (PostgreSQL 17 docs, numeric types)
+BIGINT_MAX = 2**63 - 1  # largest PostgreSQL bigint, the type of every id (PostgreSQL 18 docs, numeric types)
 KEY_BYTES = 32  # RFC 2104 §3: an HMAC key at least as long as the hash output (32 bytes for SHA-256)
 # account id and expiry (at most the 19 digits of a PostgreSQL bigint), then the SHA-256 HMAC in hex
 TOKEN = re.compile(r"([0-9]{1,19})\.([0-9]{1,19})\.([0-9a-f]{64})")

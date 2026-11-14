@@ -3,7 +3,7 @@
 Spec: UI-UX-SPEC §12c (every farmer route works without signing in; store only Google's account id and the saved
 answers; a delete-everything call; several saved sets per account), §6b (the answers: land, years, priority, with the
 same rules as the compare request), H14 (no cookie). The routes are on only when GOOGLE_CLIENT_ID and DATABASE_URL are
-both set; otherwise they answer 503. The database is a throwaway PostgreSQL 17: TEST_DATABASE_URL when set (the
+both set; otherwise they answer 503. The database is a throwaway PostgreSQL 18: TEST_DATABASE_URL when set (the
 service container in CI), otherwise a container this module starts with Docker; the module is skipped with the reason
 when neither is available. Google's token check runs for real on tokens signed with a test key; only the download of
 Google's public keys is replaced, so no test touches the network.
@@ -44,7 +44,7 @@ ROUTES = [
 ]
 
 
-# ---- a throwaway PostgreSQL 17
+# ---- a throwaway PostgreSQL 18, the major version of the Railway database image (postgres-ssl:18)
 
 
 def _ready(url: str, seconds: float) -> bool:
@@ -71,16 +71,16 @@ def database_url() -> Iterator[str]:
     if docker is None:
         pytest.skip("Docker is not installed and TEST_DATABASE_URL is not set: no PostgreSQL for the sign-in tests")
     started = _docker(
-        docker, "run", "-d", "--rm", "-e", "POSTGRES_PASSWORD=test", "-p", "127.0.0.1::5432", "postgres:17"
+        docker, "run", "-d", "--rm", "-e", "POSTGRES_PASSWORD=test", "-p", "127.0.0.1::5432", "postgres:18"
     )
     if started.returncode != 0:
-        pytest.skip(f"Docker could not start postgres:17: {started.stderr.strip()[:300]}")
+        pytest.skip(f"Docker could not start postgres:18: {started.stderr.strip()[:300]}")
     container = started.stdout.strip()
     try:
         port = _docker(docker, "port", container, "5432/tcp").stdout.strip().rsplit(":", 1)[-1]
         url = f"postgresql://postgres:test@127.0.0.1:{port}/postgres"
         if not _ready(url, 60):
-            pytest.fail("the postgres:17 container did not accept connections within 60 s")
+            pytest.fail("the postgres:18 container did not accept connections within 60 s")
         yield url
     finally:
         _docker(docker, "stop", container)  # started with --rm, so stopping also removes it
