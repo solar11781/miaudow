@@ -14,6 +14,7 @@ import asyncio
 import ipaddress
 import json
 import logging
+import re
 import shutil
 import socket
 from collections.abc import Iterator
@@ -464,6 +465,31 @@ def test_frontend_files_answer_get_and_head_only(tmp_path: Path) -> None:
     for method in ("POST", "PUT", "DELETE"):
         assert c.request(method, "/").status_code == 405, method
         assert c.request(method, "/favicon.svg").status_code == 405, method
+
+
+def test_every_response_carries_the_security_headers(tmp_path: Path) -> None:
+    c = built_frontend(tmp_path)
+    for r in (
+        c.get("/"),
+        c.get("/api/health"),
+        c.get("/api/nothing"),
+        c.get("/quyen-rieng-tu"),
+        c.post("/api/compare"),
+    ):
+        assert r.headers["x-content-type-options"] == "nosniff"
+        assert r.headers["referrer-policy"] == "no-referrer"
+        csp = r.headers["content-security-policy"]
+        assert "frame-ancestors 'none'" in csp
+        assert "default-src 'self'" in csp
+
+
+def test_the_csp_allows_only_the_d167_outside_origins(tmp_path: Path) -> None:
+    csp = built_frontend(tmp_path).get("/").headers["content-security-policy"]
+    outside = set(re.findall(r"https://[^\s;]+", csp))
+    assert outside == {"https://gibs.earthdata.nasa.gov", "https://eyes.nasa.gov"}  # D-167 exception, /dai-quan-sat
+    assert "'unsafe-eval'" not in csp
+    # the observatory's Cesium workers compile WebAssembly (checked in the browser, 2026-11-14); eval stays blocked
+    assert "script-src 'self' 'wasm-unsafe-eval'" in csp
 
 
 def test_start_command_turns_off_the_access_log() -> None:

@@ -33,6 +33,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from pydantic import BaseModel, ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import ClientDisconnect
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from fieldshift.api.accounts import (
     BIGINT_MAX,
@@ -67,6 +68,26 @@ FILE_METHODS = ("GET", "HEAD")
 ALL_METHODS = ("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 REVALIDATE = {"cache-control": "no-cache"}  # index.html names the current chunks, so a browser asks again each time
 IMMUTABLE = {"cache-control": "public, max-age=31536000, immutable"}  # a hashed name never changes its content
+# H14 and D-167 in the browser: our own origin only, plus NASA GIBS tiles and the NASA Eyes frame of /dai-quan-sat.
+# Inline style attributes are React style props; data: and blob: images, blob: workers and WebAssembly are Cesium's.
+CSP = "; ".join(
+    (
+        "default-src 'self'",
+        "script-src 'self' 'wasm-unsafe-eval'",  # Cesium's workers compile WebAssembly; eval stays blocked
+        "img-src 'self' data: blob: https://gibs.earthdata.nasa.gov",
+        "connect-src 'self' https://gibs.earthdata.nasa.gov",
+        "frame-src https://eyes.nasa.gov",
+        "worker-src 'self' blob:",
+        "style-src 'self' 'unsafe-inline'",
+        "font-src 'self'",
+        "frame-ancestors 'none'",
+    )
+)
+SECURITY_HEADERS = [
+    (b"x-content-type-options", b"nosniff"),
+    (b"referrer-policy", b"no-referrer"),
+    (b"content-security-policy", CSP.encode()),
+]
 ACCOUNT_THREADS = 4  # D-164: account work gets its own small worker limit, so it never holds the farmer routes
 M = TypeVar("M", bound=BaseModel)
 T = TypeVar("T")
@@ -312,6 +333,26 @@ def _add_frontend(app: FastAPI, frontend: Path) -> None:
         return FileResponse(file, headers=IMMUTABLE if path.startswith("assets/") else None)
 
 
+class SecurityHeaders:
+    """Adds the security headers to every response (security review 2026-11-14), as plain ASGI so request bodies
+    still stream to the size and time limits of _body."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                message["headers"] = [*message.get("headers", []), *SECURITY_HEADERS]
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
+
+
 def create_app(root: Path | str | None = None, frontend_dir: Path | str | None = None) -> FastAPI:
     base = Path(root) if root else ROOT
     frontend = Path(frontend_dir) if frontend_dir else base / "frontend" / "dist"
@@ -329,6 +370,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     app.add_exception_handler(RequestValidationError, _unprocessable)
     app.add_exception_handler(ExplainError, _bad_gateway)
     app.add_exception_handler(Exception, _internal_error)
+    app.add_middleware(SecurityHeaders)
 
     @app.get("/api/health")
     def health_route() -> Response:
