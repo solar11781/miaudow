@@ -1036,6 +1036,13 @@ export const vi = {
     failed: 'Chưa làm được. Hãy thử lại.',
     goSaved: 'Xem câu trả lời đã lưu',
   },
+  snapshot: {
+    notice: (madeAt: string | null) =>
+      `Bản lưu ngoại tuyến các câu trả lời thật của máy chủ${madeAt ? `, tạo lúc ${madeAt}` : ''}.`,
+    missing: 'Bản lưu ngoại tuyến không có kết quả cho đúng các lựa chọn này. Các lựa chọn đã lưu:',
+    landDry: 'Ruộng thiếu nước (một trong ba ô đầu)',
+    saved: (land: string, years: string, priority: string) => `${land} · năm ${years} · ưu tiên ${priority}`,
+  },
   errors: {
     notFound: 'Không tìm thấy trang này.',
     goHome: 'Về trang chủ',

@@ -4,7 +4,7 @@ import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
-import { api } from '../../api';
+import { api, SnapshotMissError, type SnapshotEntry } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
 import { compareRequest, serializeFarmerState } from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
@@ -89,9 +89,35 @@ function Cards({ res }: { res: CompareResponse }) {
   );
 }
 
+/** Offline copy only: these answers were not saved, so no cards; the saved answer sets are listed instead. */
+function SnapshotMiss({ saved }: { saved: SnapshotEntry[] }) {
+  const t = useT();
+  return (
+    <div className={s.note} role="alert" data-testid="snapshot-miss">
+      <Icon name="alert" size={20} />
+      <div>
+        <p>{t.snapshot.missing}</p>
+        <ul className={s.noteList}>
+          {saved.map((e) => (
+            <li key={e.file}>
+              {t.snapshot.saved(
+                e.land === 'dry' ? t.snapshot.landDry : t.farmer.lands.ask.title,
+                e.years.join(', '),
+                t.farmer.prios[e.priority].title,
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 function Compare({ body }: { body: CompareRequest }) {
   const [res, retry] = useApi((signal) => api.compare(body, signal), JSON.stringify(body));
-  return res.status === 'ok' ? <Cards res={res.data} /> : <LoadState state={res} retry={retry} />;
+  if (res.status === 'ok') return <Cards res={res.data} />;
+  if (res.status === 'error' && res.error instanceof SnapshotMissError) return <SnapshotMiss saved={res.error.saved} />;
+  return <LoadState state={res} retry={retry} />;
 }
 
 export function PlansStep() {
