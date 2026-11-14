@@ -1,0 +1,75 @@
+{
+ "dataset_id": "geoboundaries_vnm_adm2_do_luong",
+ "title": {
+  "vi": "Ranh giới huyện Đô Lương (cũ), Nghệ An — geoBoundaries ADM2",
+  "en": "Former Đô Lương district boundary, Nghệ An — geoBoundaries ADM2"
+ },
+ "provider": "geoBoundaries (William & Mary geoLab); source OCHA ROAP, Government of Viet Nam",
+ "source_id": "VNM-ADM2-81297802",
+ "source_url": "https://www.geoboundaries.org/api/current/gbOpen/VNM/ADM2/",
+ "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO) (licence source: data.humdata.org/dataset/viet-nam-administrative-boundaries-polygon-polyline); attribute geoBoundaries and OCHA ROAP",
+ "source_revision": "geoBoundaries commit in download URL (9469f09); buildDate Dec 12, 2023; sourceDataUpdateDate Thu Jan 19 07:31:04 2023",
+ "retrieved_at": "2026-11-14T10:29:56Z",
+ "temporal_coverage": "boundary year represented 2020 (pre-July-2025 districts)",
+ "spatial_resolution": "vector polygon, 658 vertices (full); web copy simplified at 0.0005°",
+ "geometry_crs": "EPSG:4326",
+ "variables": [
+  "outline",
+  "bbox",
+  "area_km2"
+ ],
+ "missing_policy": "No commune (ADM3) layer exists in geoBoundaries for Viet Nam; Lưu Sơn is null, not drawn from another source.",
+ "allowed_use": {
+  "vi": "Vẽ vùng nghiên cứu và cắt dữ liệu vệ tinh; không dùng làm ranh giới pháp lý.",
+  "en": "Draw the study area and clip satellite data; not a legal boundary."
+ },
+ "version_sha256": "3217828a5154376ce026134aac2e6b04997a9dcaa6a91b68b32f3ae8da56a633",
+ "ingestion_status": "INGESTED",
+ "is_field_measurement": false,
+ "notes": [
+  {
+   "vi": "Ranh giới là huyện Đô Lương (cũ): Việt Nam bỏ cấp huyện từ 1/7/2025; ranh giới theo geoBoundaries (năm đại diện 2020, OCHA ROAP / Chính phủ Việt Nam), không phải bản đồ địa chính.",
+   "en": "The outline is the former Đô Lương district: Viet Nam abolished the district level on 1 July 2025; the boundary is geoBoundaries (year represented 2020, OCHA ROAP / Government of Viet Nam), not a cadastral map."
+  },
+  {
+   "vi": "Diện tích tính được 354.2 km², lệch +1.1 % so với 350,433 km² công bố (Wikipedia tiếng Việt, số liệu Nghệ An 2019).",
+   "en": "Computed area 354.2 km², +1.1 % from the published 350.433 km² (Vietnamese Wikipedia, Nghệ An 2019 statistics)."
+  },
+  {
+   "vi": "Đường viền web được đơn giản hoá (dung sai 0.0005°, khoảng 50 m); chỉ dùng để vẽ.",
+   "en": "The web outline is simplified (tolerance 0.0005°, about 50 m); for drawing only."
+  },
+  {
+   "vi": "Điểm Lưu Sơn là điểm đánh dấu xã trên Wikidata, không phải vị trí ruộng thử nghiệm. Xã Lưu Sơn đã nhập vào xã Đô Lương mới năm 2025.",
+   "en": "The Lưu Sơn point is the commune marker on Wikidata, not the trial field. Lưu Sơn commune merged into the new Đô Lương commune in 2025."
+  }
+ ],
+ "checks": {
+  "crs_wgs84": true,
+  "in_nghe_an_adm1": true,
+  "study_point_inside": true,
+  "area_km2": 354.245,
+  "area_km2_sphere_crosscheck": 355.336,
+  "area_method": "PROJ laea ellps=WGS84 centred on the bbox (rasterio.warp.transform_geom) + shapely area",
+  "area_reference": {
+   "area_km2": 350.433,
+   "source": "Vietnamese Wikipedia 'Đô Lương (huyện)', revision 75606999 (2026-10-02), citing the Nghệ An 2019 statistics (ref NA2019)",
+   "url": "https://vi.wikipedia.org/w/index.php?title=%C4%90%C3%B4_L%C6%B0%C6%A1ng_(huy%E1%BB%87n)&oldid=75606999"
+  },
+  "area_difference_pct": 1.088,
+  "adm3_api_status": 404
+ },
+ "provenance": {
+  "source": "geoBoundaries gbOpen VNM ADM2 (VNM-ADM2-81297802), source OCHA ROAP, Government of Viet Nam, year represented 2020, build Dec 12, 2023",
+  "license": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
+  "license_source": "data.humdata.org/dataset/viet-nam-administrative-boundaries-polygon-polyline",
+  "api_url": "https://www.geoboundaries.org/api/current/gbOpen/VNM/ADM2/",
+  "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/VNM/ADM2/geoBoundaries-VNM-ADM2.geojson",
+  "retrieved_at": "2026-11-14T10:29:56Z",
+  "sha256_country_file": "17db305257c1794fb5f3f4ff3c4f747a07cc5525774b8edb395d53f65219fc33",
+  "boundary_year_represented": "2020",
+  "source_data_update": "Thu Jan 19 07:31:04 2023",
+  "citation": "Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866. https://doi.org/10.1371/journal.pone.0231866"
+ },
+ "script": "pipeline/fetch_boundaries.py"
+}
