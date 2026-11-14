@@ -139,5 +139,6 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   the registers; hard rule H5), `tests/test_architecture.py` (layers). `scripts/attribution.py` prints the Python
   licence table for the README from the lock file.
 - Other skills in `.claude/skills/`: `ste` (clear explanations), `cognitive-walkthrough` (task walkthrough as a
-  first-time user), `spec-review` (two-axis review of a diff). Each third-party folder holds its licence;
+  first-time user), `spec-review` (two-axis review of a diff), `unslop` (anti-"AI look" audit of the finished screens,
+  audit and polish mode only; the UI spec wins, as its `SOURCE.md` says). Each third-party folder holds its licence;
   `spec-review/NOTICE.md` and `.claude/hooks/GUARD-NOTICE.md` list the changes made.
