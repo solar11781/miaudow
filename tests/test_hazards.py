@@ -214,7 +214,9 @@ def test_risk_level_shares_weight_the_cells_that_meet_each_rule_in_a_window():
     a.loc["2010-08-01", "PRECTOTCORR"] = 100.0  # outside the window
     b.loc["2010-04-01":"2010-04-03", "T2M_MAX"] = 36.0
     b.loc["2010-02-10":"2010-02-15", "T2M"] = 12.0
-    shares = hz.risk_level_shares({"A": a, "B": b}, {"A": 0.6, "B": 0.4}, date(2010, 2, 1), date(2010, 6, 30))
+    shares = hz.risk_level_shares(
+        {"A": a, "B": b}, {"A": 0.6, "B": 0.4}, date(2010, 2, 1), date(2010, 6, 30), cold_rule=hz.cold
+    )
     assert shares == {
         "risk_heavy_rain": pytest.approx(0.6),
         "risk_heat": pytest.approx(0.4),
@@ -226,4 +228,90 @@ def test_risk_level_shares_refuse_missing_weather_in_the_window():
     c = _cell()
     c.loc["2010-03-05", "T2M_MAX"] = np.nan
     with pytest.raises(ValueError, match="missing"):
-        hz.risk_level_shares({"A": c}, {"A": 1.0}, date(2010, 2, 1), date(2010, 6, 30))
+        hz.risk_level_shares({"A": c}, {"A": 1.0}, date(2010, 2, 1), date(2010, 6, 30), cold_rule=hz.cold)
+
+
+def _days(*runs: tuple[float, int]) -> pd.Series:
+    """Daily means made of (temperature, number of days) runs, between mild 20 C days."""
+    values = [20.0]
+    for temp, n in runs:
+        values += [temp] * n + [20.0]
+    return pd.Series(values, index=pd.date_range("2010-01-01", periods=len(values), freq="D"))
+
+
+@pytest.mark.parametrize(
+    ("runs", "met"),
+    [
+        # Art. 53.1 a, "vùng núi, trung du Bắc Bộ": "từ trên 8°c đến 13°c ... kéo dài trên 10 ngày"
+        ([(10.0, 10)], False),
+        ([(10.0, 11)], True),
+        ([(13.0, 11)], True),  # 13.0 included ("đến 13°c")
+        # Art. 53.1 b: "từ trên 4°c đến 8°c, kéo dài từ trên 5 ngày đến 10 ngày"
+        ([(6.0, 5)], False),
+        ([(6.0, 6)], True),
+        ([(8.0, 6)], True),  # 8.0 is in band b ("đến 8°c"), not band a ("từ trên 8°c")
+        # Art. 53.1 c: "từ 0°c đến 4°c, kéo dài từ 3 ngày đến 5 ngày"
+        ([(2.0, 2)], False),
+        ([(2.0, 3)], True),
+        ([(0.0, 3)], True),
+        # Art. 53.2 đ (level 2): "dưới 0°c, kéo dài từ 3 ngày đến 5 ngày"
+        ([(-1.0, 3)], True),
+        ([(-1.0, 2)], False),
+    ],
+)
+def test_cold_rule_of_the_northern_mountains_follows_art_53(runs, met):
+    assert hz.cold_mountains(_days(*runs)) is met
+
+
+def test_a_long_spell_at_or_below_4_c_counts_in_the_mountains_although_it_swaps_bands_daily():
+    # Art. 53.3 b "từ 4°c trở xuống, kéo dài trên 10 ngày": 11 days alternating 1 C and -1 C; no 3-day run stays
+    # inside band c (0-4 C) or band đ (below 0 C), yet the whole run is at or below 4 C for more than 10 days
+    temps = [20.0] + [1.0 if i % 2 == 0 else -1.0 for i in range(11)] + [20.0]
+    series = pd.Series(temps, index=pd.date_range("2010-01-01", periods=len(temps), freq="D"))
+    assert hz.cold_mountains(series)
+    assert not hz.cold_mountains(series.drop(series.index[11]))  # 10 such days
+
+
+def test_a_plains_spell_is_not_a_mountain_spell():
+    # Art. 53.1 a: 6 days at 8-13 C meet the plains wording (more than 5 days) but not the mountain one (more than 10)
+    six = _days((10.0, 6))
+    assert hz.cold(six)
+    assert not hz.cold_mountains(six)
+
+
+@pytest.mark.parametrize(
+    ("province", "region", "rule"),
+    [
+        ("Lao Cai", "northern_mountains", "mountains"),  # NSO "Northern midlands and mountain areas" (team 2026-11-14)
+        ("Ha Noi", "red_river_delta", "plains"),  # "đồng bằng Bắc Bộ"
+        ("Quang Ninh", "red_river_delta", "plains"),  # NSO Red River Delta
+        ("Nghe An", "north_central", "plains"),  # QĐ 18/2021 Phụ lục II "Khu vực Bắc Trung Bộ"
+        ("Quang Ngai", "central_coast", "plains"),  # Phụ lục II "Khu vực Trung Trung Bộ"
+        ("Binh Dinh", "central_coast", None),  # Phụ lục II "Khu vực Nam Trung Bộ": Art. 53 names no rule
+        ("Gia Lai", "highlands_southeast", None),  # Tây Nguyên: no rule
+        ("Can Tho", "mekong", None),  # Nam Bộ: no rule
+    ],
+)
+def test_each_province_gets_the_cold_wording_of_its_art_53_region(province, region, rule):
+    expected = {"mountains": hz.cold_mountains, "plains": hz.cold, None: None}[rule]
+    assert hz.cold_rule_of(province, region) is expected
+
+
+def test_risk_level_shares_use_the_given_cold_rule_and_zero_where_none_applies():
+    # Art. 53: 7 days at 10 C meet the plains wording, not the mountain one; a region without a cold rule meets none
+    c = _cell()
+    c.loc["2010-02-10":"2010-02-16", "T2M"] = 10.0
+    window = (date(2010, 2, 1), date(2010, 6, 30))
+    assert hz.risk_level_shares({"A": c}, {"A": 1.0}, *window, cold_rule=hz.cold)["risk_cold"] == 1.0
+    assert hz.risk_level_shares({"A": c}, {"A": 1.0}, *window, cold_rule=hz.cold_mountains)["risk_cold"] == 0.0
+    assert hz.risk_level_shares({"A": c}, {"A": 1.0}, *window, cold_rule=None)["risk_cold"] == 0.0
+
+
+def test_risk_level_shares_refuse_a_window_with_days_missing_from_the_data():
+    # Python rules: missing data fail loudly; a dropped day must not join two spells into one
+    c = _cell().drop(pd.Timestamp("2010-03-05"))
+    with pytest.raises(ValueError, match="missing"):
+        hz.risk_level_shares({"A": c}, {"A": 1.0}, date(2010, 2, 1), date(2010, 6, 30), cold_rule=hz.cold)
+    short = _cell().loc[:"2010-03-31"]
+    with pytest.raises(ValueError, match="missing"):
+        hz.risk_level_shares({"A": short}, {"A": 1.0}, date(2010, 2, 1), date(2010, 6, 30), cold_rule=hz.cold)
