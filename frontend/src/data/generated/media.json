@@ -1340,5 +1340,185 @@
   },
   "is_study_area": false,
   "use": "section"
+ },
+ "high-field-hard-to-water": {
+  "kind": "illustration",
+  "width": 474,
+  "height": 356,
+  "sources": [
+   {
+    "w": 474,
+    "avif": "media/field/high-field-hard-to-water.avif",
+    "webp": "media/field/high-field-hard-to-water.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRr4AAABXRUJQVlA4ILIAAABQBQCdASoYABIAPu1sqlGppaOiqAqpMB2JYwCw+iAAEVGkRZqhZLk82BY0DEum1aP9rAAA/s4DBUcuSXq4/xtz5wN9MdQ/QWIHLthelEwsh6jJ8ANJq6Zh6IL8nxhEadeInsYpvfcM25HSbijnUyqMOI/xOVXXGLJ7AXAoEJyhRx3sMzjAQZHc7ClcYZvvIGFw2bYuT1tEQ3BLxArwATCIKVJ3oGevUUH0gY8cE7HSEAAA",
+  "dominant": "#7c6e47",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Tranh: máy bơm đưa nước từ mương thấp lên ruộng cao",
+   "en": "Illustration: raised dry rice plot with a water pump and hose"
+  },
+  "caption": {
+   "vi": "Tranh minh họa, không phải ảnh chụp Đô Lương. Ruộng cao, khó lấy nước.",
+   "en": "Illustration, not a photograph of Đô Lương. High field, hard to water."
+  },
+  "credit": null,
+  "license": null,
+  "license_url": null,
+  "source_url": null,
+  "geography": {
+   "vi": "Không phải địa điểm thật; tranh do máy tạo, không gắn với Nghệ An",
+   "en": "Not a real place; machine-generated picture, not located in Nghệ An"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "field-at-end-of-canal": {
+  "kind": "illustration",
+  "width": 474,
+  "height": 356,
+  "sources": [
+   {
+    "w": 474,
+    "avif": "media/field/field-at-end-of-canal.avif",
+    "webp": "media/field/field-at-end-of-canal.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRr4AAABXRUJQVlA4ILIAAAAQBQCdASoYABIAPu1qrlCppaQiqAqpMB2JZADHFMgBAqpDeKaH1Mg4UdVsJmlHQYRAAP7RXcQsAh6T6ATQT7EjfxePO9/5ZeZaIMSv4vVNRPj7Ry+bqxm72qr9+TiR1t8DiodwXjWUlK4C5ZD7fUHUPj6JFDeNXtl6S6F8tcLgU8Hmwp+B/lbKlxsV8/6ILINVFOnw65xhHlt6ri1IVaqUcsqbhaCeaIJDY8tI2zpy4AAA",
+  "dominant": "#939836",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Tranh: mương thủy lợi nhỏ, nước về cuối tuyến ít",
+   "en": "Illustration: small shallow canal beside a green rice field"
+  },
+  "caption": {
+   "vi": "Tranh minh họa, không phải ảnh chụp Đô Lương. Ruộng cuối kênh.",
+   "en": "Illustration, not a photograph of Đô Lương. Field at the end of the canal."
+  },
+  "credit": null,
+  "license": null,
+  "license_url": null,
+  "source_url": null,
+  "geography": {
+   "vi": "Không phải địa điểm thật; tranh do máy tạo, không gắn với Nghệ An",
+   "en": "Not a real place; machine-generated picture, not located in Nghệ An"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "field-often-short-of-water": {
+  "kind": "illustration",
+  "width": 474,
+  "height": 356,
+  "sources": [
+   {
+    "w": 474,
+    "avif": "media/field/field-often-short-of-water.avif",
+    "webp": "media/field/field-often-short-of-water.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAQBQCdASoYABIAPu1orlCppaQiqAqpMB2JQBOmcBA1FM9PRhK7lbccR7tV++LzapSAAP5m2hCa0InZrVQRAYQmUw4e6MSGvO3XFKCEnJt560RYO+TXD4EuDljO2wram//bTEUGCd7XQxJHHpzzS+tk/z1tU+PObzreioWfNunGCtJyUU21P1GXmpUEQJ7FCv4AAA==",
+  "dominant": "#8b7d39",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Tranh: đất khô nứt và lúa vàng yếu trong mùa thiếu nước",
+   "en": "Illustration: dry soil with stressed rice plants"
+  },
+  "caption": {
+   "vi": "Tranh minh họa, không phải ảnh chụp Đô Lương. Ruộng thường thiếu nước.",
+   "en": "Illustration, not a photograph of Đô Lương. Field often short of water."
+  },
+  "credit": null,
+  "license": null,
+  "license_url": null,
+  "source_url": null,
+  "geography": {
+   "vi": "Không phải địa điểm thật; tranh do máy tạo, không gắn với Nghệ An",
+   "en": "Not a real place; machine-generated picture, not located in Nghệ An"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "water-under-control": {
+  "kind": "illustration",
+  "width": 474,
+  "height": 356,
+  "sources": [
+   {
+    "w": 474,
+    "avif": "media/field/water-under-control.avif",
+    "webp": "media/field/water-under-control.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRsIAAABXRUJQVlA4ILYAAABwBQCdASoYABIAPu1ur1IppiQiqAgBMB2JZgC7ICYDu5QE5/JA6V5e4EUoxmy/tfFWB4gAAP54rBt8yZSaZ/xhBzRXgldoT1ybZxDSiLF1rrYc8R6UGoeIXhs8/a1KKXFghRNDgb5ockm1SGtsNy8k9XUO/TcpT/5sydYWhyVUhXvhFuMUMkC3RVou0VwrYQcxGz4Yj7xGbiVU89NdqUoxzf2qdhL6RxLsFCGPvhN946GCcgAAAA==",
+  "dominant": "#788c37",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Tranh: nước chảy vào ruộng lúa xanh từ cống dẫn",
+   "en": "Illustration: irrigation water flowing into a lush rice paddy"
+  },
+  "caption": {
+   "vi": "Tranh minh họa, không phải ảnh chụp Đô Lương. Chủ động nước tưới.",
+   "en": "Illustration, not a photograph of Đô Lương. Water under control."
+  },
+  "credit": null,
+  "license": null,
+  "license_url": null,
+  "source_url": null,
+  "geography": {
+   "vi": "Không phải địa điểm thật; tranh do máy tạo, không gắn với Nghệ An",
+   "en": "Not a real place; machine-generated picture, not located in Nghệ An"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "ask-extension-officer": {
+  "kind": "illustration",
+  "width": 474,
+  "height": 356,
+  "sources": [
+   {
+    "w": 474,
+    "avif": "media/field/ask-extension-officer.avif",
+    "webp": "media/field/ask-extension-officer.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRvAAAABXRUJQVlA4IOQAAADQBQCdASoYABIAPu1qrVCppaQiqAqpMB2JZgCdMt9OABOAX/xRZK5W/2KHiN0X55+tdstQ5h0AAP62FQ/l2rjSa1mCwTqVexTH5twRhNqCdKYtTvZGkKNO1C8NYxNQkNZ/UAcIKYph5+AZoXziBZ+w0NVtrLYirNopWo5PH0IHL+Krx3LJ1uHhUQfHE/hgUQSkgxX5LnDD2PehZ896LRvvirXpxIskqn67DsRiOghQthB6N2T30q2P0cjIFDDW3b3mWIjwYYVtjSp/K5jNYe8DFDOds6dubrZe+J8CmxPetmkgAAA=",
+  "dominant": "#b3a96c",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Tranh: người nông dân cùng cán bộ xem bản đồ và trao đổi trên ruộng",
+   "en": "Illustration: agricultural extension worker and farmer consult a field map"
+  },
+  "caption": {
+   "vi": "Tranh minh họa, không phải ảnh chụp Đô Lương. Chưa rõ, hỏi cán bộ khuyến nông.",
+   "en": "Illustration, not a photograph of Đô Lương. Not sure, ask the extension officer."
+  },
+  "credit": null,
+  "license": null,
+  "license_url": null,
+  "source_url": null,
+  "geography": {
+   "vi": "Không phải địa điểm thật; tranh do máy tạo, không gắn với Nghệ An",
+   "en": "Not a real place; machine-generated picture, not located in Nghệ An"
+  },
+  "is_study_area": false,
+  "use": "card"
  }
 }

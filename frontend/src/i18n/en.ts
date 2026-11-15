@@ -269,7 +269,7 @@ export const en: Messages = {
       ask: { title: 'Not sure, ask the extension officer', body: 'The officer helps you choose.' },
     },
     pickFirst: 'Pick a type of field to go on',
-    artNote: 'The pictures are illustrations to help you recognise the field, not photographs of Đô Lương.',
+    artNote: 'The pictures are AI-made illustrations to help you recognise the field, not photographs of Đô Lương.',
     wetNote:
       'The plans in this app were tested on water-short fields. None was tested for fields with reliable water, so the app offers no comparison for this kind of field.',
     dryNote:

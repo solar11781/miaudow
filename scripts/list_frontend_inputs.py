@@ -25,7 +25,8 @@ GROUPS: list[tuple[str, str, str]] = [
         "frontend/src/data/generated",
         "media.json",
         f"Built by `web/pipeline/build_media.mjs` in {LAMGIANG}; rights in its `assets/photos/PHOTO_MANIFEST.json` "
-        "and `assets/ASSET_MANIFEST.json`.",
+        "and `assets/ASSET_MANIFEST.json`. The five field-step entries were added by hand from its "
+        "`assets/field-conditions/manifest.json` (PR #63).",
     ),
     (
         "frontend/public/media/photo",
@@ -41,7 +42,8 @@ GROUPS: list[tuple[str, str, str]] = [
     (
         "frontend/public/media/field",
         "*",
-        f"AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in {LAMGIANG}).",
+        f"AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in {LAMGIANG}); "
+        "the AVIF copies were encoded from these WebP files with Pillow 13.0.0 at quality 60 (PR #63).",
     ),
     (
         "frontend/public/media/sat",

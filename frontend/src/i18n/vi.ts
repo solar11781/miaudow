@@ -260,7 +260,7 @@ export const vi = {
       ask: { title: 'Không chắc, hỏi cán bộ khuyến nông', body: 'Cán bộ sẽ giúp bạn chọn.' },
     },
     pickFirst: 'Chọn một loại ruộng để đi tiếp',
-    artNote: 'Ảnh minh họa giúp bạn nhận ra loại ruộng, không phải ảnh chụp ở Đô Lương.',
+    artNote: 'Tranh minh họa do AI tạo, giúp bạn nhận ra loại ruộng, không phải ảnh chụp ở Đô Lương.',
     wetNote:
       'Các cách trồng trong ứng dụng được thử trên ruộng thiếu nước. Chưa có cách nào được thử cho ruộng chủ động nước, nên ứng dụng không đưa ra so sánh cho loại ruộng này.',
     dryNote:

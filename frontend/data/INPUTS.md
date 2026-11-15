@@ -20,9 +20,9 @@ Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py`
 
 ## frontend/src/data/generated
 
-Built by `web/pipeline/build_media.mjs` in member B's `lamgiang/` folder on branch feat/lamgiang-2; rights in its `assets/photos/PHOTO_MANIFEST.json` and `assets/ASSET_MANIFEST.json`.
+Built by `web/pipeline/build_media.mjs` in member B's `lamgiang/` folder on branch feat/lamgiang-2; rights in its `assets/photos/PHOTO_MANIFEST.json` and `assets/ASSET_MANIFEST.json`. The five field-step entries were added by hand from its `assets/field-conditions/manifest.json` (PR #63).
 
-- `frontend/src/data/generated/media.json` ea24823d91495262beb2aede279df3ae1f0638bebb1ba38df2c3a4f32ca19814
+- `frontend/src/data/generated/media.json` 4b16e5f8a0adef9d3efb24f9acce4ebdb3e11946acfc2be683536314ebf8de0c
 
 ## frontend/public/media/photo
 
@@ -184,13 +184,17 @@ AI-generated illustrations (OpenAI image generation, `assets/ASSET_MANIFEST.json
 
 ## frontend/public/media/field
 
-AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in member B's `lamgiang/` folder on branch feat/lamgiang-2).
+AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in member B's `lamgiang/` folder on branch feat/lamgiang-2); the AVIF copies were encoded from these WebP files with Pillow 13.0.0 at quality 60 (PR #63).
 
+- `frontend/public/media/field/ask-extension-officer.avif` 2a82afbff064ab31e766e5221b65e221022a3167ba75ff7c75d3e4e3b86765ea
 - `frontend/public/media/field/ask-extension-officer.webp` 1e300e0c19409ba593e9c033b44b0553213dd291099ad53344fcd8f68cfd1861
-- `frontend/public/media/field/bonus-irrigation-canal.webp` 33b43954ecbd426bebfd0ef4f74a00a9967d84bbc795a0e337cb7de66c301b7b
+- `frontend/public/media/field/field-at-end-of-canal.avif` 8a3f9ed26703aecb06bbc4b97397ff75030f51df413105f63313d615ed8fffed
 - `frontend/public/media/field/field-at-end-of-canal.webp` 1059b67c1eac5496b1d2e3b249ff8c3672a5bb04049eee361262d094238e742b
+- `frontend/public/media/field/field-often-short-of-water.avif` cc6bf65b41fb8013c400de7a5ef4a9eb1b34a0bfd2fe5f8ab9470e34e640b23c
 - `frontend/public/media/field/field-often-short-of-water.webp` 68277cd64ab2cb987a293c5251f8e3cdbeea274c84097e426122b1c9fd131558
+- `frontend/public/media/field/high-field-hard-to-water.avif` 0f40dce14b51669fec9d2c8bfad551085fc35b404895286ee06ee04756807c9a
 - `frontend/public/media/field/high-field-hard-to-water.webp` 843287a721d74e93d553288434b4d5a7dd2d71c9efdf0fb3cf6ba2b9c0bef1b3
+- `frontend/public/media/field/water-under-control.avif` a54c7f2b12c981ef3c6099f7b084cd3f36d0114efe06b742c24e653eee46722a
 - `frontend/public/media/field/water-under-control.webp` 60d237b7edf4ffca7bde6b90c7b84ecfce513a4e7299ace1d95f58c7a8da955e
 
 ## frontend/public/media/sat

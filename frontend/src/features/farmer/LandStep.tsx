@@ -1,18 +1,19 @@
 import { StepShell, useFarmer } from './FarmerLayout';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
+import { Media } from '../../design-system/Media';
 import { LANDS, type Land } from '../../domain/farmerState';
 import { useT } from '../../app/settings';
 import s from './farmer.module.css';
 
-// AI-generated illustrations made for MIAUDOW (assets/field-conditions/manifest.json): they help a farmer recognise
-// the situation; they are not photographs of Đô Lương and carry no data. The words on the card always say it.
-const ART: Record<Land, string> = {
-  high_field: 'media/field/high-field-hard-to-water.webp',
-  canal_end: 'media/field/field-at-end-of-canal.webp',
-  water_short: 'media/field/field-often-short-of-water.webp',
-  reliable: 'media/field/water-under-control.webp',
-  ask: 'media/field/ask-extension-officer.webp',
+// AI-generated illustrations made for MIAUDOW (media.json, kind illustration): they help a farmer recognise the
+// situation; they are not photographs of Đô Lương and carry no data. The words on the card always say it.
+export const LAND_ART: Record<Land, string> = {
+  high_field: 'high-field-hard-to-water',
+  canal_end: 'field-at-end-of-canal',
+  water_short: 'field-often-short-of-water',
+  reliable: 'water-under-control',
+  ask: 'ask-extension-officer',
 };
 
 export function LandStep() {
@@ -55,7 +56,7 @@ export function LandStep() {
               onClick={() => update({ land })}
             >
               <span className={s.landArt}>
-                <img src={ART[land]} alt="" width={474} height={356} loading="lazy" decoding="async" />
+                <Media slug={LAND_ART[land]} sizes="474px" decorative />
                 <span className={s.landTick} aria-hidden="true">
                   {on ? <Icon name="check" size={22} strokeWidth={2.8} /> : null}
                 </span>
