@@ -527,7 +527,7 @@ export const en: Messages = {
     thousandPerHa: 'thousand VND/ha',
   },
   science: {
-    eyebrow: 'Data room · for judges and researchers',
+    eyebrow: 'Data room · for researchers',
     title: 'Nghệ An across 30 seasons',
     lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline and NSO rice yields.',
     globeCta: 'See it on the 3D globe, from space down to the fields',
@@ -979,7 +979,7 @@ export const en: Messages = {
   },
   method: {
     title: 'Method, data and limitations',
-    lead: 'For extension officers and judges: what the model answers, its test results, which data exist for each crop, and the limits.',
+    lead: 'For extension officers: what the model answers, its test results, which data exist for each crop, and the limits.',
     question: (first: number, last: number) =>
       `How much of the year-to-year swing in regional rice yield (not one field) can NASA weather predict? Tested on ${first}–${last}, years the model had not seen.`,
     metricsTitle: 'Model test results',
