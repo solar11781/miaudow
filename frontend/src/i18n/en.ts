@@ -227,6 +227,8 @@ export const en: Messages = {
     honestyCta: 'See the test',
   },
   farmer: {
+    hardYears: 'Don’t remember? Pick the hardest years for me',
+    hardYearsNote: 'For each hazard, the most recent year it covered the most farmland. You can still change them.',
     dataLine: (names: string) => `Data: ${names}`,
     dataSources: {
       'R-N01': 'NASA POWER',

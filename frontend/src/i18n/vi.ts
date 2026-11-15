@@ -221,6 +221,8 @@ export const vi = {
     inviteLead: 'Không cần tài khoản, không lưu gì trên máy của bạn.',
   },
   farmer: {
+    hardYears: 'Không nhớ năm nào? Chọn giúp tôi những năm khó nhất',
+    hardYearsNote: 'Với mỗi loại thiên tai, chọn năm gần nhất mà nó phủ nhiều đất trồng nhất. Bạn vẫn đổi được.',
     dataLine: (names: string) => `Dữ liệu: ${names}`,
     dataSources: {
       'R-N01': 'NASA POWER',
