@@ -38,6 +38,9 @@ const grade = (img) => img.modulate({ saturation: 1.03 }).linear([1.02, 1, 0.97]
 const PHOTO_USE = {
   'do-luong-nam-son-road-rice': 'hero',
   'nam-dan-ql46-rice-plain': 'hero',
+  'terrace-sunset-reflection': 'hero',
+  'hoang-su-phi-nam-khoa-terraces': 'hero',
+  'mai-chau-buffalo-ploughing': 'hero',
   'lam-river-vinh-ben-thuy': 'section',
   'con-cuong-lam-river-chau-khe': 'section',
   'con-cuong-chau-khe-rice-field': 'section',
