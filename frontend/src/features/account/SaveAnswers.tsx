@@ -18,11 +18,13 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
   const t = useT();
   const { pathname, search } = useLocation();
   const [params, setParams] = useSearchParams();
-  const { token, expired, check, hold } = useAccount();
+  const { token, expired, check, hold, release } = useAccount();
   const available = useSignInAvailable();
   const [status, setStatus] = useState<Status>('idle');
   const started = useRef(false);
   const local = useLocalTo();
+  // back on the plan cards, a way back held for an earlier tap is stale: the farmer may change the numbers here
+  useEffect(() => release(), [release]);
 
   const save = async (signedIn: string) => {
     setStatus('saving');

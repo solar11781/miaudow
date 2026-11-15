@@ -1,5 +1,5 @@
-/** "Your price and costs" (UI-UX-SPEC section 12d, D-163), worked out in the browser so the farmer's numbers never
- * leave the phone (H14): revenue = study yield (t/ha) x your price (đ/kg), which is thousand đ/ha; margin = revenue -
+/** "Your price and costs" (UI-UX-SPEC section 12d, D-163), worked out in the browser; the farmer's numbers reach the
+ * server only in a signed-in save (D-180): revenue = study yield (t/ha) x your price (đ/kg), which is thousand đ/ha; margin = revenue -
  * your cost (thousand đ/ha), only with a cost. Exact until one rounding at the end, half away from zero like the
  * engine's ROUND_HALF_UP (D-156); the results use the API's notation ("16,200"), so they display like its values. */
 
