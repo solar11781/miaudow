@@ -33,8 +33,10 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi.testclient import TestClient
 from google.auth import crypt, jwt
 from google.auth.exceptions import TransportError
+from pydantic import ValidationError
 
 from fieldshift.api import accounts
+from fieldshift.api.accounts import SavedAnswers
 from fieldshift.api.app import SAVE_MAX_BODY_BYTES, create_app
 from fieldshift.engine.rules import load_plans
 
@@ -707,6 +709,52 @@ def test_rows_saved_before_prices_and_costs_read_back_with_empty_maps(on: str, k
     assert [{k: s[k] for k in ("land", "prices", "costs")} for s in listed.json()["saved"]] == [
         {"land": "canal_end", **NO_OWN}
     ]
+
+
+def test_a_stored_crop_key_no_longer_in_the_rules_is_dropped_on_read(on: str, keys: dict, fetched: list) -> None:
+    # D-180: a crop key renamed later in rules/rotations.yaml drops only that typed entry; the list never answers 500
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    kept = c.post("/api/account/saved", headers=me, json={**ANSWERS, **OWN})
+    with psycopg.connect(on) as conn:
+        conn.execute(
+            "INSERT INTO saved_answers (account_id, land, years, priority, prices, costs)"
+            " SELECT id, 'canal_end', ARRAY[2010], 'income',"
+            ' \'{"renamed_crop": "31357", "cc1_spring_peanut": "24689"}\', \'{"renamed_crop": "12"}\' FROM account'
+        )
+    listed = c.get("/api/account/saved", headers=me)
+    assert listed.status_code == 200, listed.text
+    old = {"land": "canal_end", "years": [2010], "priority": "income"}
+    assert [{k: v for k, v in s.items() if k != "id"} for s in listed.json()["saved"]] == [
+        {**ANSWERS, **OWN},
+        {**old, "prices": {"cc1_spring_peanut": "24689"}, "costs": {}},
+    ]
+    assert listed.json()["saved"][0]["id"] == kept.json()["id"]
+
+
+def test_the_crop_keys_come_from_the_root_the_service_is_started_with(on: str, tmp_path: Path) -> None:
+    # python.md: repository-root paths are built in one place per layer, so a root given to create_app is the one read
+    (tmp_path / "rules").mkdir()
+    rotations = (REPO / "rules" / "rotations.yaml").read_text(encoding="utf-8")
+    (tmp_path / "rules" / "rotations.yaml").write_text(
+        rotations.replace("cc1_spring_peanut", "renamed_spring_peanut"), encoding="utf-8"
+    )
+    service = accounts.accounts_from({"GOOGLE_CLIENT_ID": CLIENT_ID, "DATABASE_URL": on}, tmp_path)
+    assert service is not None
+    service.sign_in("110169484474386276334")
+    owner = service.account("110169484474386276334")
+    with psycopg.connect(on) as conn:
+        conn.execute(
+            "INSERT INTO saved_answers (account_id, land, years, priority, prices) VALUES (%s, 'canal_end',"
+            ' ARRAY[2010], \'income\', \'{"cc1_spring_peanut": "31357", "renamed_spring_peanut": "24689"}\')',
+            (owner,),
+        )
+    assert service.saved(owner).saved[0].prices == {"renamed_spring_peanut": "24689"}
+    # the save route checks its body with the service's crop keys as pydantic's validation context
+    with pytest.raises(ValidationError):
+        SavedAnswers.model_validate({**ANSWERS, "prices": {"cc1_spring_peanut": "31357"}}, context=service.crop_keys)
+    renamed = {**ANSWERS, "prices": {"renamed_spring_peanut": "1"}}
+    assert SavedAnswers.model_validate(renamed, context=service.crop_keys).prices == {"renamed_spring_peanut": "1"}
 
 
 def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict, fetched: list) -> None:
