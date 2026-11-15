@@ -55,7 +55,8 @@ describe('answers', () => {
   it('answers a crop question from the trial table, without accents too', () => {
     const a = ask('trong lac lai bao nhieu');
     expect(a.type).toBe('crop');
-    expect(a.lines.some((l) => l.ref?.value.startsWith('26.0'))).toBe(true);
+    // P-02 Table 13: L20 peanut, 25,980 thousand đ/ha
+    expect(a.lines.some((l) => l.ref?.value.startsWith('25980 '))).toBe(true);
   });
   it('says it has no evidence for unrelated questions', () => {
     for (const q of ['giá vé máy bay đi Đà Nẵng', 'bóng đá tối nay', 'công thức nấu phở', 'tỉ số trận đấu', '']) {

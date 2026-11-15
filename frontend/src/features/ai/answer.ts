@@ -1,6 +1,6 @@
 import { YEARS } from '../../data';
 import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
-import { CROPS, PLANS, planProfitMillion, type CropId, type CropInfo } from '../../domain/plans';
+import { CROPS, PLANS, planProfit, type CropId, type CropInfo } from '../../domain/plans';
 import { riceYear } from '../../domain/rice';
 import type { EvidenceKind, SourceRef } from '../../domain/provenance';
 import { SOURCES } from '../../domain/sources';
@@ -135,11 +135,11 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
       ref: {
         sourceId: 'p02',
         kind: 'study',
-        value: `${f.n(c.profit / 1000, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`,
+        value: `${f.n(c.profit)} ${vi ? 'nghìn đồng/ha' : 'thousand đ/ha'}`,
         label: `${name} ${c.variety}`,
         detail: vi
-          ? `Chi phí ${f.n(c.cost)} nghìn đ/ha; giá ${f.n(c.price)} đ/kg.`
-          : `Cost ${f.n(c.cost)} thousand VND/ha; price ${f.n(c.price)} VND/kg.`,
+          ? `Chi phí ${f.n(c.cost)} nghìn đồng/ha; giá ${f.n(c.price)} đồng/kg.`
+          : `Cost ${f.n(c.cost)} thousand đ/ha; price ${f.n(c.price)} đ/kg.`,
       },
     });
   }
@@ -170,7 +170,7 @@ function rankingAnswer(lang: Lang, f: Fmt, intro: string): Answer {
   const vi = lang === 'vi';
   const lines: AnswerLine[] = [{ text: intro }];
   for (const p of PLANS) {
-    const total = planProfitMillion(p);
+    const total = planProfit(p);
     const label = p.textOnly ? p.textOnly.sequence[lang] : p.crops.map((c) => CROPS[c.crop].name[lang]).join(' → ');
     lines.push({
       text: label,
@@ -179,7 +179,7 @@ function rankingAnswer(lang: Lang, f: Fmt, intro: string): Answer {
           ? {
               sourceId: 'p02',
               kind: 'derived',
-              value: `${f.n(total, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`,
+              value: `${f.n(total)} ${vi ? 'nghìn đồng/ha' : 'thousand đ/ha'}`,
               label: vi ? 'Lãi cả năm' : 'Yearly profit',
               chain: ['p02'],
             }

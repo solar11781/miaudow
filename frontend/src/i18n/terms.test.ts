@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import rotationsJson from '@data/rotations.generated.json';
+import { answer, type Fmt } from '../features/ai/answer';
 import { en } from './en';
 import { vi } from './vi';
 
@@ -10,10 +11,14 @@ const perHa = rotationsJson.plans.flatMap((p) => (p.reported_economics.unit ? [p
 const PER_HA = { vi: perHa[0]?.vi, en: perHa[0]?.en };
 const PER_KG = { vi: 'đồng/kg', en: 'đ/kg' };
 
-// Other spellings of the same units that the plans page never shows.
+// Other spellings of the same units, and the million unit, that the plans page never shows.
 const OTHER_SPELLINGS = { vi: [/nghìn đ\/ha/, /\sđ\/kg/], en: [/thousand VND\/ha/, /VND\/kg/] };
+const MILLION = { vi: [/triệu/], en: [/million/, /M VND/] };
 
 const sources = import.meta.glob<string>(['./vi.ts', './en.ts'], { query: '?raw', import: 'default', eager: true });
+
+const f: Fmt = { pct: (v) => `${v}`, signedPct: (v) => `${v}`, n: (v, d = 0) => v.toFixed(d) };
+const text = { noEvidence: 'NO_EVIDENCE', noRanking: 'NO_RANKING' };
 
 describe('one money unit (F9)', () => {
   it('every plan in the API data has the same money unit', () => {
@@ -34,5 +39,22 @@ describe('one money unit (F9)', () => {
     expect(vis.length).toBeGreaterThan(0);
     for (const re of OTHER_SPELLINGS.vi) expect(vis, String(re)).not.toMatch(re);
     for (const re of OTHER_SPELLINGS.en) expect(ens, String(re)).not.toMatch(re);
+  });
+
+  it.each([
+    ['vi', 'trong lac lai bao nhieu'],
+    ['vi', 'Nên trồng gì cho ruộng nhà tôi?'],
+    ['en', 'trong lac lai bao nhieu'],
+    ['en', 'Nên trồng gì cho ruộng nhà tôi?'],
+  ] as const)('the assistant answers money in the plans page unit (%s: %s)', (lang, q) => {
+    const a = answer(q, lang, f, text);
+    const money = a.lines.flatMap((l) =>
+      l.ref && l.ref.sourceId === 'p02' ? [`${l.ref.value} ${l.ref.detail ?? ''}`] : [],
+    );
+    expect(money.length).toBeGreaterThan(0);
+    for (const m of money) {
+      expect(m).toContain(PER_HA[lang]);
+      for (const re of [...OTHER_SPELLINGS[lang], ...MILLION[lang]]) expect(m, String(re)).not.toMatch(re);
+    }
   });
 });

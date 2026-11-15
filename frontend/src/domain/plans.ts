@@ -353,8 +353,14 @@ export const PLANS: Plan[] = [
 
 export const planById = (id: PlanId) => PLANS.find((p) => p.id === id);
 
-/** Sum of the per-crop profits, our arithmetic on Table 13, in million VND/ha. */
-export const planProfitMillion = (plan: Plan): number | null =>
-  plan.crops.length ? Math.round(plan.crops.reduce((s, c) => s + c.profit, 0)) / 1000 : null;
+/** Sum of the per-crop profits, our arithmetic on Table 13, in thousand VND/ha (the unit of the table). */
+export const planProfit = (plan: Plan): number | null =>
+  plan.crops.length ? plan.crops.reduce((s, c) => s + c.profit, 0) : null;
+
+/** The same sum in million VND/ha. */
+export const planProfitMillion = (plan: Plan): number | null => {
+  const total = planProfit(plan);
+  return total === null ? null : total / 1000;
+};
 
 export const planHasLegume = (plan: Plan) => plan.crops.some((c) => CROPS[c.crop].legume);
