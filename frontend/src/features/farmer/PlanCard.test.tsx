@@ -11,12 +11,12 @@ import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { SOURCES } from '../../domain/sources';
 import { decisionPlan, rulebookPlan } from '../../data/rulebook';
-import type { SeasonValue } from '../../types';
+import type { Plan, SeasonValue } from '../../types';
 
 const own = { values: NO_OWN, set: () => undefined };
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
-function renderCard(languages: string[] = ['vi-VN', 'vi']) {
+function renderCard(languages: string[] = ['vi-VN', 'vi'], edit?: (plan: Plan) => void) {
   Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
   const res = validateCompare(compare(), body);
   const plan = res.plans[2];
@@ -26,6 +26,7 @@ function renderCard(languages: string[] = ['vi-VN', 'vi']) {
   plan.water = [
     { crop_key: plan.calendar[0]?.crop_key ?? '', measure: 'to_apply', value: water, scope: null, note: null },
   ];
+  edit?.(plan);
   render(
     <SettingsProvider>
       <ProvenanceProvider>
@@ -166,6 +167,26 @@ describe('card face', () => {
     }
     const water = document.querySelector(`[data-testid="card-${id}-row-water"] h3 > button`);
     expect(water?.textContent).toContain(vi.farmer.yourPriority);
+  });
+  // tonight's walkthrough of F1: the folded things-to-weigh row says on its face how many it holds
+  it('shows the number of things to weigh in its heading, only when there are some', () => {
+    const heading = (id: string) => document.querySelector(`[data-testid="card-${id}-row-checks"] h3 > button`);
+    const id = renderCard(['vi-VN', 'vi'], (plan) => {
+      plan.why.risks = [1, 2, 3].map((n) => ({ text: { vi: `rủi ro ${n}`, en: `risk ${n}` }, source_ids: [] }));
+    });
+    expect(heading(id)?.textContent).toContain('Cần cân nhắc (3)');
+    cleanup();
+    const two = renderCard(['en-GB', 'en'], (plan) => {
+      plan.why.risks = plan.why.risks.concat(plan.why.risks.map((r) => ({ ...r, text: { vi: 'khác', en: 'other' } })));
+    });
+    expect(heading(two)?.textContent).toContain('Weigh this (2)');
+    cleanup();
+    const none = renderCard(['en-GB', 'en'], (plan) => {
+      plan.why.risks = [];
+    });
+    expect(heading(none)?.textContent).toContain(en.farmer.rows.checks);
+    expect(heading(none)?.textContent).not.toContain('(');
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
   });
 });
 
@@ -740,7 +761,7 @@ describe('considerations', () => {
       expect(text).toContain(vi.farmer.considerations[key].source);
     }
     for (const r of CC2) expect(text).not.toContain(r.text.vi);
-    expect(row.querySelector('h3')?.textContent).toBe(vi.farmer.rows.checks);
+    expect(row.querySelector('h3')?.textContent).toBe('Cần cân nhắc (6)');
   });
   it('opens the full quote with the source button of its line', () => {
     const row = checks(CC2);

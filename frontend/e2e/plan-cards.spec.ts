@@ -114,3 +114,33 @@ test('D-187 the jump strip marks the card in view', async ({ page }, info) => {
     if (info.project.name === 'phone-360') await expect(current, id).toHaveCount(1);
   }
 });
+
+// tonight's walkthrough of F1: a row or card brought into view lands below the sticky jump strip, not under it
+test('D-187 the water shortcut and the jump strip land below the strip', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const strip = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  const below = async (target: ReturnType<Page['locator']>) => {
+    const [s, t] = await Promise.all([strip.boundingBox(), target.boundingBox()]);
+    return (t?.y ?? 0) - ((s?.y ?? 0) + (s?.height ?? 0));
+  };
+  await page
+    .getByTestId('card-cc2')
+    .getByRole('link', { name: vi.farmer.summaryWater(vi.farmer.rows.water) })
+    .click();
+  const heading = page.getByTestId('card-cc2-row-water').locator('h3');
+  await expect(heading).toBeInViewport();
+  expect(await below(heading)).toBeGreaterThanOrEqual(0);
+  await strip.locator('a[href="#the-cc4"]').click();
+  const card = page.getByTestId('card-cc4');
+  // the strip scrolls smoothly: wait until the card stops moving
+  let last = NaN;
+  await expect
+    .poll(async () => {
+      const [was, now] = [last, (last = await below(card))];
+      return now === was;
+    })
+    .toBe(true);
+  expect(last).toBeGreaterThanOrEqual(0);
+  await expect(card.locator('h2')).toBeInViewport();
+});
