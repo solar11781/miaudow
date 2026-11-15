@@ -48,6 +48,7 @@ export const en: Messages = {
     open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',
+    perKg: 'VND/kg',
     notListed: 'Not listed in the source',
     noData: 'No data yet',
     farmland: 'farmland',
@@ -558,8 +559,6 @@ export const en: Messages = {
     filterAll: 'All',
     costs: 'Cost',
     price: 'Price',
-    perKg: 'VND/kg',
-    thousandPerHa: 'thousand VND/ha',
   },
   science: {
     eyebrow: 'Data room · for researchers',
