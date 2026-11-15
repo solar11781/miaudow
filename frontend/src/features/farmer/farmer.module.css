@@ -531,6 +531,12 @@
   border-color: var(--fg-3);
 }
 
+/* the plan in view: a thicker border and bold text, not colour alone (H11) */
+.jump a[aria-current='true'] {
+  border: 2px solid var(--fg);
+  font-weight: 700;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

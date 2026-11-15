@@ -340,6 +340,7 @@ export const en: Messages = {
     datesAsReported: 'dates as reported',
     overlapNote: 'Two crops sit on separate lanes because the reported dates overlap.',
     rows: {
+      calendar: '12-month calendar',
       money: 'Profit in the trial, not on your own field',
       weather: 'Bad weather while the crop is in the field',
       weatherNote:

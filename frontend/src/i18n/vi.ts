@@ -330,6 +330,7 @@ export const vi = {
     datesAsReported: 'ngày theo thử nghiệm',
     overlapNote: 'Hai cây nằm trên hai hàng riêng vì ngày ghi trong bài báo trùng nhau.',
     rows: {
+      calendar: 'Lịch 12 tháng',
       money: 'Tiền lãi trong thử nghiệm, không phải của ruộng nhà bạn',
       weather: 'Thời tiết xấu khi cây đang trên ruộng',
       weatherNote:
