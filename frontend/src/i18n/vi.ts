@@ -372,6 +372,29 @@ export const vi = {
     needAnswers: 'Còn thiếu câu trả lời ở bước trước.',
     yearHeading: (year: number) => `Năm ${year}`,
     eachYear: 'Xem từng năm',
+    // UI-UX-SPEC section 12d (D-163): the farmer's own price and costs, never mixed with the trial's numbers
+    yourNumbers: 'Tính với giá bán và chi phí của bạn',
+    yourNumbersLabel: 'Năng suất của thử nghiệm với giá bán và chi phí của bạn, không phải sản lượng ruộng nhà bạn.',
+    own: {
+      help: 'Nhập giá bán (theo kg) và chi phí tính trên 1 ha của nhà bạn cho từng cây. Ô nào chưa biết thì để trống.',
+      study: 'Trong thử nghiệm',
+      yield: 'năng suất',
+      price: 'giá bán',
+      yourPrice: 'Giá bán của bạn',
+      yourCost: 'Chi phí của bạn',
+      invalid: 'Hãy nhập số nguyên, từ 0 trở lên, tối đa 9 chữ số. Số này chưa được dùng.',
+      title: 'Số của bạn',
+      revenue: 'Tổng thu theo giá của bạn, chưa trừ chi phí',
+      margin: 'Còn lại sau chi phí bạn nhập',
+      needPrice: 'Nhập giá bán để tính.',
+      yearSum: 'Cả năm, phép cộng của chúng tôi',
+      costNote:
+        'Chi phí trong thử nghiệm gồm vật tư, công lao động, năng lượng và lãi vay. Nếu chi phí của bạn không tính công của nhà mình, số còn lại không so được với lãi của thử nghiệm.',
+      sheetNote:
+        'Năng suất của thử nghiệm nhân giá bán của bạn, rồi trừ chi phí của bạn. Giá bán và chi phí là số bạn tự nhập, chưa ai kiểm tra.',
+      private: (button: string) =>
+        `Các số bạn nhập chỉ nằm trong địa chỉ trang trên máy này, trừ khi bạn đăng nhập và lưu các câu trả lời: khi đó các số này được lưu cùng, và bị xóa khi bạn xóa tài khoản. Nút "${button}" không kèm các số này.`,
+    },
     monthAxis: 'Tháng',
     definitionPlain: {
       p02: 'Nói cách khác: tiền bán trừ các khoản chi nghiên cứu đã tính (vật tư, công lao động, năng lượng, lãi vay).',
@@ -1016,7 +1039,7 @@ export const vi = {
     noticeTitle: 'Đọc trước khi đăng nhập',
     noticeLead: 'Chỉ lưu mã tài khoản Google và câu trả lời của bạn; xóa được bất cứ lúc nào.',
     notice: [
-      'Đăng nhập chỉ để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất), để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào.',
+      'Đăng nhập chỉ để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất, giá bán và chi phí bạn tự nhập, nếu có), để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào.',
       'Chúng tôi chỉ lưu mã tài khoản Google của bạn (một mã do Google cấp) và các câu trả lời bạn lưu. Không lưu tên, email hay ảnh.',
       'Dữ liệu nằm trong một cơ sở dữ liệu do Railway lưu trữ, ở vùng máy chủ Singapore, cho đến khi bạn xóa.',
       'Google tự làm việc đăng nhập, theo chính sách quyền riêng tư của Google. Đoạn mã của Google chỉ chạy trên trang này và trang câu trả lời đã lưu, và có thể đặt cookie ở đó.',

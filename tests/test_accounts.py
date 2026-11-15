@@ -35,7 +35,8 @@ from google.auth import crypt, jwt
 from google.auth.exceptions import TransportError
 
 from fieldshift.api import accounts
-from fieldshift.api.app import MAX_BODY_BYTES, create_app
+from fieldshift.api.app import SAVE_MAX_BODY_BYTES, create_app
+from fieldshift.engine.rules import load_plans
 
 REPO = Path(__file__).resolve().parents[1]
 CLIENT_ID = "test-client.apps.googleusercontent.com"
@@ -43,6 +44,10 @@ GOOGLE_CERTS = "https://www.googleapis.com/oauth2/v1/certs"  # google-auth 2.62.
 GOOGLE_CACHE = "public, max-age=23762, must-revalidate, no-transform"  # Google's header on GOOGLE_CERTS, 2026-11-14
 # the farmer's own field answer (member B's names, D-169), so a saved set reopens as that answer
 ANSWERS = {"land": "canal_end", "years": [1995, 2007, 2013], "priority": "income"}
+# D-180: a set saved without typed prices and costs reads back with empty maps
+NO_OWN = {"prices": {}, "costs": {}}
+# D-180: the typed price (đ/kg) and cost (thousand đ/ha) by crop key of rules/rotations.yaml, as the page's digits
+OWN = {"prices": {"cc1_spring_peanut": "31357", "usual_spring_rice": "0"}, "costs": {"cc1_spring_peanut": "24689"}}
 ROUTES = [
     ("post", "/api/account/sign-in"),
     ("get", "/api/account/saved"),
@@ -306,6 +311,8 @@ def test_sign_in_creates_the_account_with_only_the_google_id(on: str, keys: dict
         ("saved_answers", "land"),
         ("saved_answers", "years"),
         ("saved_answers", "priority"),
+        ("saved_answers", "prices"),  # D-180: the typed prices and costs of a saved set
+        ("saved_answers", "costs"),
     ]
     assert "farmer@example.com" not in str(rows(on, "SELECT * FROM account"))
 
@@ -519,9 +526,10 @@ def test_saved_sets_round_trip(on: str, keys: dict, fetched: list) -> None:
     made = [c.post("/api/account/saved", headers=me, json=answers) for answers in (ANSWERS, second)]
     assert [r.status_code for r in made] == [201, 201]
     ids = [r.json()["id"] for r in made]
-    assert [r.json() for r in made] == [{"id": ids[0], **ANSWERS}, {"id": ids[1], **second}]
+    assert [r.json() for r in made] == [{"id": ids[0], **ANSWERS, **NO_OWN}, {"id": ids[1], **second, **NO_OWN}]
     listed = c.get("/api/account/saved", headers=me)
-    assert listed.json() == {"saved": [{"id": ids[0], **ANSWERS}, {"id": ids[1], **second}]}  # D-150: several sets
+    # D-150: several sets
+    assert listed.json() == {"saved": [{"id": ids[0], **ANSWERS, **NO_OWN}, {"id": ids[1], **second, **NO_OWN}]}
     assert listed.headers["cache-control"] == "no-store"
 
 
@@ -582,12 +590,123 @@ def test_each_field_answer_with_plans_is_saved_as_given(on: str, keys: dict, fet
     assert [s["land"] for s in c.get("/api/account/saved", headers=me).json()["saved"]] == [land]
 
 
+def test_the_save_body_limit_leaves_room_for_the_largest_valid_set() -> None:
+    # all 30 years, the longest land and priority values, and a 9-digit price and cost (D-179) for each of the 17 crop
+    # keys of rules/rotations.yaml, indented by 4 spaces: 2262 bytes (computed 2026-11-15)
+    crops = [s.crop_key for p in load_plans(REPO) for s in p.seasons]
+    assert len(crops) == 17
+    largest = {
+        "land": "water_short",
+        "years": list(range(1995, 2025)),
+        "priority": "stability",
+        "prices": dict.fromkeys(crops, "999999999"),
+        "costs": dict.fromkeys(crops, "999999999"),
+    }
+    assert len(json.dumps(largest, indent=4).encode()) < SAVE_MAX_BODY_BYTES
+
+
+def test_a_save_of_exactly_the_body_limit_is_accepted(on: str, keys: dict, fetched: list) -> None:
+    c = TestClient(create_app(root=REPO))
+    content = json.dumps({**ANSWERS, **OWN}).encode()
+    headers = {**sign_in(c, keys), "content-type": "application/json"}
+    exact = content + b" " * (SAVE_MAX_BODY_BYTES - len(content))
+    assert c.post("/api/account/saved", headers=headers, content=exact).status_code == 201
+
+
 def test_saved_answers_over_the_body_limit_are_422(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     content = json.dumps(ANSWERS).encode()
-    padded = content + b" " * (MAX_BODY_BYTES + 1 - len(content))
+    padded = content + b" " * (SAVE_MAX_BODY_BYTES + 1 - len(content))
     headers = {**sign_in(c, keys), "content-type": "application/json"}
     no_echo(c.post("/api/account/saved", headers=headers, content=padded), 422)
+
+
+# ---- the typed prices and costs of a saved set (D-180)
+
+
+def test_typed_prices_and_costs_round_trip(on: str, keys: dict, fetched: list) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    made = c.post("/api/account/saved", headers=me, json={**ANSWERS, **OWN})
+    assert made.status_code == 201, made.text
+    assert made.json() == {"id": made.json()["id"], **ANSWERS, **OWN}
+    assert c.get("/api/account/saved", headers=me).json() == {"saved": [made.json()]}
+    c = TestClient(create_app(root=REPO))  # a restart keeps them
+    assert c.get("/api/account/saved", headers=sign_in(c, keys)).json() == {"saved": [made.json()]}
+
+
+@pytest.mark.parametrize(
+    "own",
+    [
+        {"prices": {"cc1_spring_peanut": "999999999"}},  # D-179: at most 9 digits
+        {"costs": {"cc4_autumn_winter_sweet_potato": "0"}},  # D-179: a whole number of 0 or more
+        {"prices": {}, "costs": {}},
+    ],
+)
+def test_prices_and_costs_the_page_accepts_are_saved(on: str, keys: dict, fetched: list, own: dict) -> None:
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    made = c.post("/api/account/saved", headers=me, json={**ANSWERS, **own})
+    assert made.status_code == 201, made.text
+    listed = c.get("/api/account/saved", headers=me).json()["saved"]
+    assert listed == [{"id": made.json()["id"], **ANSWERS, **NO_OWN, **own}]
+
+
+@pytest.mark.parametrize(
+    "own",
+    [
+        {"prices": {"zz-secret": "31357"}},  # not a crop key of rules/rotations.yaml
+        {"prices": {"zz_secret_crop": "31357"}},
+        {"costs": {"CC1_SPRING_PEANUT": "31357"}},  # keys are [a-z0-9_]+, as the page reads them
+        {"prices": {"cc1_spring_peanut": "1000000000"}},  # D-179: 10 digits
+        {"prices": {"cc1_spring_peanut": ""}},
+        {"prices": {"cc1_spring_peanut": "-3"}},
+        {"prices": {"cc1_spring_peanut": "3.5"}},
+        {"prices": {"cc1_spring_peanut": "1e5"}},
+        {"prices": {"cc1_spring_peanut": " 31357"}},
+        {"prices": {"cc1_spring_peanut": "31357\n"}},
+        {"prices": {"cc1_spring_peanut": "٣١"}},  # Arabic-Indic digits: ASCII 0-9 only (D-179)
+        {"prices": {"cc1_spring_peanut": 31357}},  # a digit string, as in the page address
+        {"prices": {"cc1_spring_peanut": None}},
+        {"prices": ["cc1_spring_peanut", "31357"]},
+        {"prices": "zz-secret"},
+        {"costs": None},
+    ],
+)
+def test_prices_and_costs_the_page_refuses_are_422_and_never_stored(
+    on: str, keys: dict, fetched: list, own: dict
+) -> None:
+    c = TestClient(create_app(root=REPO))
+    r = c.post("/api/account/saved", headers=sign_in(c, keys), json={**ANSWERS, **own})
+    no_echo(r, 422)
+    assert all(set(item) == {"type", "loc", "msg"} for item in r.json()["detail"])
+    for echoed in ("31357", "zz_secret", "CC1_SPRING_PEANUT", "cc1_spring_peanut"):
+        assert echoed not in r.text
+    assert rows(on, "SELECT count(*) FROM saved_answers") == [(0,)]
+
+
+def test_rows_saved_before_prices_and_costs_read_back_with_empty_maps(on: str, keys: dict, fetched: list) -> None:
+    # D-180: the Railway database already holds rows of the schema without these columns; the start adds them
+    with psycopg.connect(on) as conn:
+        conn.execute(
+            "CREATE TABLE account (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, google_sub text NOT NULL UNIQUE)"
+        )
+        conn.execute(
+            "CREATE TABLE saved_answers (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,"
+            " account_id bigint NOT NULL REFERENCES account (id) ON DELETE CASCADE,"
+            " land text NOT NULL, years integer[] NOT NULL, priority text NOT NULL)"
+        )
+        conn.execute("INSERT INTO account (google_sub) VALUES ('110169484474386276334')")
+        conn.execute(
+            "INSERT INTO saved_answers (account_id, land, years, priority)"
+            " SELECT id, 'canal_end', ARRAY[2010], 'income' FROM account"
+        )
+    c = TestClient(create_app(root=REPO))
+    listed = c.get("/api/account/saved", headers=sign_in(c, keys))
+    assert listed.status_code == 200, listed.text
+    assert [{k: s[k] for k in ("land", "prices", "costs")} for s in listed.json()["saved"]] == [
+        {"land": "canal_end", **NO_OWN}
+    ]
 
 
 def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict, fetched: list) -> None:

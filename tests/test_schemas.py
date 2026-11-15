@@ -39,7 +39,7 @@ CONTRACT_FIELDS = {
         "source_ids",
     ],
     "Period": ["from", "to"],
-    "MoneyItem": ["crop_key", "crop", "season", "profit", "cost", "flag"],
+    "MoneyItem": ["crop_key", "crop", "season", "profit", "cost", "yield", "price", "flag"],
     "Money": ["items", "total", "price_year", "definition", "text_only"],
     "CropExposure": ["crop_key", "crop", "per_year"],
     "StabilityYear": ["year", "real", "oos_prediction", "range_80"],

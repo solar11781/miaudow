@@ -379,6 +379,28 @@ export const en: Messages = {
     needAnswers: 'An answer from an earlier step is missing.',
     yearHeading: (year: number) => `Year ${year}`,
     eachYear: 'Show each year',
+    yourNumbers: 'Work it out with your price and costs',
+    yourNumbersLabel: "The trial's yield with your prices and costs, not your field's harvest.",
+    own: {
+      help: 'Type your sale price per kg and your costs per hectare for each crop. Leave a box empty if you do not know it.',
+      study: 'In the trial',
+      yield: 'yield',
+      price: 'sale price',
+      yourPrice: 'Your sale price',
+      yourCost: 'Your costs',
+      invalid: 'Type a whole number, 0 or more, up to 9 digits. This number is not used yet.',
+      title: 'Your numbers',
+      revenue: 'Sales money at your price, before costs',
+      margin: 'Left after the costs you typed',
+      needPrice: 'Type a sale price to work it out.',
+      yearSum: 'Whole year, our addition',
+      costNote:
+        "The trial's costs count materials, labour, energy and interest. If your costs leave out your family's own labour, what is left cannot be compared with the trial's profit.",
+      sheetNote:
+        "The trial's yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.",
+      private: (button: string) =>
+        `The numbers you type stay only in this page's address on this phone, unless you sign in and save your answers: then they are saved with them, and deleted when you delete your account. The "${button}" button leaves them out.`,
+    },
     monthAxis: 'Month',
     definitionPlain: {
       p02: 'In other words: sales money minus the costs the study counted (materials, labour, energy, interest).',
@@ -1012,7 +1034,7 @@ export const en: Messages = {
     noticeTitle: 'Please read before you sign in',
     noticeLead: 'Only your Google account id and your answers are saved; you can delete them at any time.',
     notice: [
-      'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you), so you can open them again on another phone. Saving does not change any number.',
+      'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you, the sale prices and costs you typed, if any), so you can open them again on another phone. Saving does not change any number.',
       'We store only your Google account id (a code that Google gives) and the answers you save. No name, email or picture.',
       'This data is kept in a database hosted by Railway, in the Singapore region, until you delete it.',
       "Google carries out the sign-in itself, under Google's privacy policy. Google's code runs only on this page and the saved answers page, and may set cookies there.",
