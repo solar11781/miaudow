@@ -7,7 +7,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { hazards, model, YEARS } from '../../data';
 import { ART } from '../../data/art';
 import { RULES } from '../../domain/hazards';
+import { lowerFirst } from '../../domain/format';
 import { PLANS } from '../../domain/plans';
+import { modelVerdict } from '../../domain/rice';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
@@ -437,7 +439,6 @@ function Honesty() {
   const t = useT();
   const pick = usePick();
   const f = useFormat();
-  const status = (season: 'spring' | 'winter') => model.seasons.find((x) => x.season === season)?.model_status;
   const m1 = (season: 'spring' | 'winter') =>
     model.metrics.find(
       (m) =>
@@ -451,20 +452,17 @@ function Honesty() {
     ok: boolean;
     skill: number | undefined;
   }[] = [
-    {
-      key: 'spring',
-      title: t.science.seasons.spring,
-      body: t.home.honestySpring,
-      ok: status('spring') === 'shown',
-      skill: m1('spring')?.skill_vs_bnw?.value,
-    },
-    {
-      key: 'winter',
-      title: t.science.seasons.winter,
-      body: t.home.honestyWinter,
-      ok: status('winter') === 'shown',
-      skill: m1('winter')?.skill_vs_bnw?.value,
-    },
+    ...(['spring', 'winter'] as const).map((season) => {
+      const v = modelVerdict(season);
+      const name = lowerFirst(t.science.seasons[season]);
+      return {
+        key: season,
+        title: t.science.seasons[season],
+        body: `${v.weatherHelps ? t.home.honestyHelps : t.home.honestyNoHelp} ${v.shown ? t.home.honestyShown(name) : t.home.honestyHidden(name)}`,
+        ok: v.weatherHelps,
+        skill: m1(season)?.skill_vs_bnw?.value,
+      };
+    }),
     { key: 'summer', title: t.science.seasons.summer_autumn, body: t.home.honestySummer, ok: false, skill: undefined },
   ];
   return (
@@ -488,7 +486,7 @@ function Honesty() {
               </span>
               <h3 className="h3">{c.title}</h3>
               <p>{c.body}</p>
-              {c.key === 'winter' && (
+              {c.key === 'winter' && c.ok && (
                 <p>
                   <strong>{t.common.winterFragile}</strong>
                 </p>

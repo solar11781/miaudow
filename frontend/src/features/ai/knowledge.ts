@@ -1,7 +1,9 @@
 import { model } from '../../data';
+import { lowerFirst, upperFirst } from '../../domain/format';
 import { RULES } from '../../domain/hazards';
 import { CROPS, PLANS, planProfitMillion } from '../../domain/plans';
 import type { Bilingual, EvidenceKind, SourceId } from '../../domain/provenance';
+import { modelVerdict, type ModelVerdict } from '../../domain/rice';
 import { en } from '../../i18n/en';
 import { vi } from '../../i18n/vi';
 
@@ -175,32 +177,48 @@ function rulePassages(): Passage[] {
   }));
 }
 
+/** Whether a season's test-year estimates are shown, and with their 80% range, as the run decided. */
+function shownLine(v: ModelVerdict): Bilingual {
+  if (!v.shown) return { vi: vi.science.modelHidden, en: en.science.modelHidden };
+  return {
+    vi: `Ước tính của mô hình cho năm kiểm tra 2016–2024 được hiện cạnh số liệu thật${v.range ? ', kèm khoảng 80%' : ''}.`,
+    en: `The model estimate for each test year 2016–2024 is shown next to the real values${v.range ? ', with an 80% range' : ''}.`,
+  };
+}
+
+// the answer follows the run's verdict for the season (src/domain/rice.ts modelVerdict), so a re-run cannot leave it
+// wrong; D-165: the narrow, fragile wording belongs to the winter result
 function modelPassages(): Passage[] {
   const g = (season: string) => model.gates.find((x) => x.gate === 'G2' && x.season === season);
-  return [
-    {
-      id: 'model-spring',
+  const question = {
+    spring: { vi: 'Mô hình dự đoán lúa vụ Đông Xuân có tốt không?', en: 'Is the spring rice model any good?' },
+    winter: { vi: 'Mô hình dự đoán lúa vụ Mùa thì sao?', en: 'What about the winter rice model?' },
+  };
+  const keys = { spring: 'lua xuan dong xuan spring', winter: 'lua mua winter' };
+  return (['spring', 'winter'] as const).map((season) => {
+    const v = modelVerdict(season);
+    const name = { vi: lowerFirst(vi.science.seasons[season]), en: lowerFirst(en.science.seasons[season]) };
+    const detail = { vi: g(season)?.detail.vi ?? '', en: g(season)?.detail.en ?? '' };
+    const fragile =
+      season === 'winter' ? { vi: ` ${vi.common.winterFragile}.`, en: ` ${en.common.winterFragile}.` } : null;
+    const shown = shownLine(v);
+    return {
+      id: `model-${season}`,
       kind: 'model',
       sources: ['e012'],
-      keys: 'mo hinh du doan lua xuan spring skill bnw khong thang',
-      title: { vi: 'Mô hình dự đoán lúa vụ Đông Xuân có tốt không?', en: 'Is the spring rice model any good?' },
-      text: {
-        vi: `Chưa đủ tốt để hiện. Trên các năm kiểm tra 2016–2024, mô hình có thời tiết NASA không vượt rõ ràng cùng mô hình bỏ thời tiết: ${g('spring')?.detail.vi ?? ''} Vì vậy Miaudow không hiện dự đoán lúa vụ Đông Xuân, chỉ hiện số liệu thật.`,
-        en: `Not good enough to show. On the 2016–2024 test years the model with NASA weather did not clearly beat the same model without weather: ${g('spring')?.detail.en ?? ''} So Miaudow shows no spring prediction, only real values.`,
-      },
-    },
-    {
-      id: 'model-winter',
-      kind: 'model',
-      sources: ['e012'],
-      keys: 'mo hinh du doan lua mua winter skill thang',
-      title: { vi: 'Mô hình dự đoán lúa vụ Mùa thì sao?', en: 'What about the winter rice model?' },
-      text: {
-        vi: `Lúa vụ Mùa qua bài kiểm tra, nhưng chỉ hơn một chút: ${g('winter')?.detail.vi ?? ''} ${vi.common.winterFragile}. Ước tính của mô hình cho năm kiểm tra 2016–2024 được hiện cạnh số liệu thật, kèm khoảng 80%.`,
-        en: `Winter rice passed by a small margin: ${g('winter')?.detail.en ?? ''} ${en.common.winterFragile}. The model estimate for each test year 2016–2024 is shown next to the real values, with an 80% range.`,
-      },
-    },
-  ];
+      keys: `mo hinh du doan ${keys[season]} skill bnw ${v.weatherHelps ? 'thang' : 'khong thang'}`,
+      title: question[season],
+      text: v.weatherHelps
+        ? {
+            vi: `${upperFirst(name.vi)} qua bài kiểm tra, nhưng chỉ hơn một chút: ${detail.vi}${fragile?.vi ?? ''} ${shown.vi}`,
+            en: `${upperFirst(name.en)} passed by a small margin: ${detail.en}${fragile?.en ?? ''} ${shown.en}`,
+          }
+        : {
+            vi: `Chưa đủ tốt để hiện. Trên các năm kiểm tra 2016–2024, mô hình có thời tiết NASA không vượt rõ ràng cùng mô hình bỏ thời tiết: ${detail.vi} Vì vậy Miaudow không hiện dự đoán ${name.vi}, chỉ hiện số liệu thật.`,
+            en: `Not good enough to show. On the 2016–2024 test years the model with NASA weather did not clearly beat the same model without weather: ${detail.en} So Miaudow shows no ${name.en} prediction, only real values.`,
+          },
+    };
+  });
 }
 
 export const PASSAGES: Passage[] = [...STATIC, ...planPassages(), ...rulePassages(), ...modelPassages()];
