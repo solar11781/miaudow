@@ -521,7 +521,8 @@ function Steps() {
         <h2 id="steps-title" className="h1">
           <Accent text={t.home.stepsTitle} />
         </h2>
-        <ol className={s.strip} data-stagger>
+        {/* the strip scrolls sideways on a phone: focusable so a keyboard can scroll it (axe scrollable-region-focusable) */}
+        <ol className={s.strip} data-stagger tabIndex={0} aria-labelledby="steps-title">
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
               <div className={s.step}>
