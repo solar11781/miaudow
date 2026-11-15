@@ -5,6 +5,7 @@ import { api } from '../../api';
 import type { PastYearsResponse, YearRow as Row } from '../../types';
 import { RULES } from '../../domain/hazards';
 import { MAX_YEARS, toggleYear } from '../../domain/farmerState';
+import { hardestYears } from '../../domain/hardYears';
 import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
@@ -73,6 +74,12 @@ function Years({ res }: { res: PastYearsResponse }) {
   }, [added, calm, shown]);
   return (
     <>
+      <div className={s.hardYears}>
+        <button type="button" className={s.hardYearsButton} onClick={() => update({ years: hardestYears(res) })}>
+          {t.farmer.hardYears}
+        </button>
+        <p className="muted small">{t.farmer.hardYearsNote}</p>
+      </div>
       <div className={s.yearGridHead}>
         <span>{t.farmer.yearsPicked(picked.length)}</span>
         <span className="muted small">
