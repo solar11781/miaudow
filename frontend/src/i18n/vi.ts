@@ -827,8 +827,6 @@ export const vi = {
       satA: 'Vệ tinh cờ Việt Nam',
       satB: 'NASA Terra (cờ Mỹ)',
       province: 'Nghệ An',
-      lat: 'Vĩ độ',
-      lon: 'Kinh độ',
       pause: 'Tạm dừng',
       play: 'Chạy tiếp',
       caption:

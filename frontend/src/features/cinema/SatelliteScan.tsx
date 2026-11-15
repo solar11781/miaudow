@@ -2,8 +2,8 @@
 // the province. SVG only. The markup is the finished still (both satellites mid-pass, beams on, cells lit by their
 // farmland share, border drawn); GSAP, through useCinema, animates *from* other values, so nothing is hidden at rest,
 // in lite mode, under reduced motion or before the script runs. The loop can be paused (H1).
-import { useEffect, useId, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
-import { useFormat, useSettings } from '../../app/settings';
+import { useEffect, useId, useRef, useState, type JSX, type RefObject } from 'react';
+import { useSettings } from '../../app/settings';
 import { geo } from '../../data';
 import { Icon } from '../../design-system/Icon';
 import { EASE, gsap, useCinema, ScrollTrigger } from '../../motion/cinema';
@@ -17,17 +17,10 @@ export interface SatelliteScanLabels {
   caption: string;
   pause: string;
   play: string;
-  lat: string;
-  lon: string;
 }
 
-type Fmt = (v: number, digits?: number) => string;
 type Timeline = ReturnType<typeof gsap.timeline>;
 type Pick = (selector: string) => Element[];
-interface Readout {
-  lat: string;
-  lon: string;
-}
 
 /* ---------- scene constants (viewBox 1600 × 900) ---------- */
 
@@ -107,7 +100,6 @@ interface SceneGeo {
   maxX: number;
   minY: number;
   maxY: number;
-  toLonLat: (x: number, y: number) => [number, number];
 }
 
 const pointList = (pts: [number, number][]) => pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
@@ -122,11 +114,6 @@ function buildScene(): SceneGeo {
     const u = (lon - midLon) * k * 100 * TILT.sx;
     const v = (midLat - lat) * 100 * TILT.sy;
     return [EARTH.cx + u + TILT.lean * v, GROUND_Y + v];
-  };
-  const toLonLat = (x: number, y: number): [number, number] => {
-    const v = y - GROUND_Y;
-    const u = x - EARTH.cx - TILT.lean * v;
-    return [midLon + u / (k * 100 * TILT.sx), midLat - v / (100 * TILT.sy)];
   };
   const rings = geo.outline.map((ring) => ring.map(([lon, lat]) => toScene(lon, lat)));
   const xs = rings.flat().map((p) => p[0]);
@@ -145,7 +132,6 @@ function buildScene(): SceneGeo {
   return {
     outline: rings.map(pointList),
     cells,
-    toLonLat,
     minX: Math.min(...xs),
     maxX: Math.max(...xs),
     minY: Math.min(...ys),
@@ -170,12 +156,6 @@ const scanX = (angle: number) => {
   const [x, y] = footprint(angle);
   return x - TILT.lean * (y - GROUND_Y);
 };
-
-function readout(angle: number, n: Fmt): Readout {
-  const [x, y] = footprint(angle);
-  const [lon, lat] = SCENE.toLonLat(x, y);
-  return { lat: `${n(lat, 2)}°`, lon: `${n(lon, 2)}°` };
-}
 
 interface PassWindow {
   xIn: number;
@@ -214,20 +194,7 @@ function fadeWindow(tl: Timeline, targets: Element[], on: number, off: number, d
   tl.to(targets, { opacity: 0, duration: d }, off);
 }
 
-function hudWriter(q: Pick, c: Craft, n: Fmt) {
-  const lat = q(`[data-hud="${c.key}-lat"]`)[0];
-  const lon = q(`[data-hud="${c.key}-lon"]`)[0];
-  let last = '';
-  return (angle: number) => {
-    const r = readout(angle, n);
-    if (r.lat + r.lon === last) return;
-    last = r.lat + r.lon;
-    if (lat) lat.textContent = r.lat;
-    if (lon) lon.textContent = r.lon;
-  };
-}
-
-function addPass(tl: Timeline, q: Pick, c: Craft, n: Fmt) {
+function addPass(tl: Timeline, q: Pick, c: Craft) {
   const w = passWindow(c);
   const span = w.tOut - w.tIn;
   const scan = q(`[data-scan="${c.key}"]`);
@@ -244,16 +211,6 @@ function addPass(tl: Timeline, q: Pick, c: Craft, n: Fmt) {
     { attr: { transform: shift(w.xIn) } },
     { attr: { transform: shift(w.xOut) }, duration: span, ease: 'none' },
     w.tIn,
-  );
-  // The readout follows the footprint only while it is over the province, so it never shows a place outside it.
-  const edge = passWindow(c, 0);
-  const write = hudWriter(q, c, n);
-  const probe = { a: edge.aIn };
-  tl.fromTo(
-    probe,
-    { a: edge.aIn },
-    { a: edge.aOut, duration: edge.tOut - edge.tIn, ease: 'none', onUpdate: () => write(probe.a) },
-    edge.tIn,
   );
 }
 
@@ -289,11 +246,11 @@ function addTwinkles(tl: Timeline, q: Pick) {
   });
 }
 
-function buildTimeline(scope: HTMLElement, n: Fmt, rest: Record<Craft['key'], Readout>, fleet: Fleet): Timeline {
+function buildTimeline(scope: HTMLElement, fleet: Fleet): Timeline {
   const q: Pick = gsap.utils.selector(scope);
   const loop = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } });
-  addPass(loop, q, fleet.a, n);
-  addPass(loop, q, fleet.b, n);
+  addPass(loop, q, fleet.a);
+  addPass(loop, q, fleet.b);
   addCells(loop, q, fleet);
   addTwinkles(loop, q);
   loop.set({}, {}, LOOP);
@@ -310,15 +267,6 @@ function buildTimeline(scope: HTMLElement, n: Fmt, rest: Record<Craft['key'], Re
   );
   master.from(q('[data-place]'), { opacity: 0, y: 10, duration: 1.2, ease: EASE.calm }, a.tOut);
 
-  // When the motion is reverted (lite mode, reduced motion, unmount) the readout goes back to the still frame.
-  gsap.context(() => () => {
-    (['a', 'b'] as const).forEach((key) => {
-      const lat = q(`[data-hud="${key}-lat"]`)[0];
-      const lon = q(`[data-hud="${key}-lon"]`)[0];
-      if (lat) lat.textContent = rest[key].lat;
-      if (lon) lon.textContent = rest[key].lon;
-    });
-  });
   return master;
 }
 
@@ -440,8 +388,8 @@ function SceneSvg({ uid }: { uid: string }) {
   );
 }
 
-/** Legend and readout in one: each satellite's flag and name, and the latitude and longitude under its beam. */
-function Telemetry({ labels, rest }: { labels: SatelliteScanLabels; rest: Record<Craft['key'], Readout> }) {
+/** Legend: each satellite's flag and name (no coordinates: the drawn orbits are illustrations, H5). */
+function Telemetry({ labels }: { labels: SatelliteScanLabels }) {
   const rows = [
     { c: CRAFT_A, name: labels.satA },
     { c: CRAFT_B, name: labels.satB },
@@ -449,13 +397,6 @@ function Telemetry({ labels, rest }: { labels: SatelliteScanLabels; rest: Record
   return (
     <div className={s.panel}>
       <table className={s.hud}>
-        <thead>
-          <tr>
-            <td />
-            <th scope="col">{labels.lat}</th>
-            <th scope="col">{labels.lon}</th>
-          </tr>
-        </thead>
         <tbody>
           {rows.map(({ c, name }) => (
             <tr key={c.key}>
@@ -466,8 +407,6 @@ function Telemetry({ labels, rest }: { labels: SatelliteScanLabels; rest: Record
                   {name}
                 </span>
               </th>
-              <td data-hud={`${c.key}-lat`}>{rest[c.key].lat}</td>
-              <td data-hud={`${c.key}-lon`}>{rest[c.key].lon}</td>
             </tr>
           ))}
         </tbody>
@@ -493,7 +432,6 @@ function useNarrowStage(stage: RefObject<HTMLElement | null>) {
 
 export function SatelliteScan({ labels, className }: { labels: SatelliteScanLabels; className?: string }): JSX.Element {
   const { calm } = useSettings();
-  const f = useFormat();
   const uid = `ss${useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
   const root = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -501,11 +439,10 @@ export function SatelliteScan({ labels, className }: { labels: SatelliteScanLabe
   const timeline = useRef<Timeline | null>(null);
   const pausedRef = useRef(false);
   const [paused, setPaused] = useState(false);
-  const rest = useMemo(() => ({ a: readout(CRAFT_A.rest, f.n), b: readout(CRAFT_B.rest, f.n) }), [f]);
 
   useCinema(root, () => {
     if (!root.current) return;
-    const tl = buildTimeline(root.current, f.n, rest, narrow ? FLEET.narrow : FLEET.wide);
+    const tl = buildTimeline(root.current, narrow ? FLEET.narrow : FLEET.wide);
     timeline.current = tl;
     // play only while on screen, and never against the visitor's pause
     const onScreen = () => ScrollTrigger.isInViewport(root.current as Element);
@@ -518,7 +455,7 @@ export function SatelliteScan({ labels, className }: { labels: SatelliteScanLabe
         if (!pausedRef.current) tl.paused(!self.isActive);
       },
     });
-  }, [f, rest, narrow]);
+  }, [narrow]);
 
   const toggle = () => {
     const next = !pausedRef.current;
@@ -535,13 +472,13 @@ export function SatelliteScan({ labels, className }: { labels: SatelliteScanLabe
           <span>{labels.province}</span>
         </p>
         {!calm && (
-          <button type="button" className={s.motion} onClick={toggle} aria-pressed={paused}>
+          <button type="button" className={s.motion} onClick={toggle}>
             <Icon name={paused ? 'play' : 'pause'} size={18} />
             {paused ? labels.play : labels.pause}
           </button>
         )}
       </div>
-      <Telemetry labels={labels} rest={rest} />
+      <Telemetry labels={labels} />
       <figcaption className={s.caption}>{labels.caption}</figcaption>
     </figure>
   );

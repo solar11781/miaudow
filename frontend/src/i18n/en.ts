@@ -829,8 +829,6 @@ export const en: Messages = {
       satA: 'Satellite with the flag of Viet Nam',
       satB: 'NASA Terra (US flag)',
       province: 'Nghệ An',
-      lat: 'Latitude',
-      lon: 'Longitude',
       pause: 'Pause',
       play: 'Play',
       caption:
