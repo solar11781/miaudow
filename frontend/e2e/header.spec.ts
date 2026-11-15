@@ -31,6 +31,25 @@ for (const route of ['/', '/#/nong-dan']) {
   });
 }
 
+// T7, D-187: every header control, the open menu sheet included, keeps a 44 x 44 px target on a 360 px phone
+for (const route of ['/', '/#/nong-dan/ruong']) {
+  test(`T7 tap-targets every header control is at least 44 x 44 px at 360 px (${route})`, async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto(route);
+    await expect(page.locator('header a[class*="brand"]')).toBeVisible();
+    const menu = page.locator('header button[class*="menuBtn"]');
+    if (await menu.isVisible()) await menu.click();
+    const small = await page.getByRole('banner').evaluate((h) =>
+      [...h.querySelectorAll('a, button')]
+        .filter((e) => e.getClientRects().length > 0)
+        .map((e) => ({ name: e.getAttribute('aria-label') ?? e.textContent?.trim(), box: e.getBoundingClientRect() }))
+        .filter(({ box }) => box.width < 44 || box.height < 44)
+        .map(({ name, box }) => `${name}: ${box.width} x ${box.height}`),
+    );
+    expect(small).toEqual([]);
+  });
+}
+
 // audit F10, D-187: the switch only stops motion, and the theme button showed a bare icon
 test('the farmer header names its motion switch and shows the theme it is on at 360 px', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
