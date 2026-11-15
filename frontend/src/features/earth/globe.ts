@@ -62,7 +62,7 @@ const PLACES = [
   { vi: 'NGHỆ AN', en: 'NGHE AN', lat: 19.25, lon: 104.75, big: true, dot: false, near: 1e5, far: 1.6e6 },
   {
     vi: 'Đô Lương (cũ)',
-    en: 'former Đô Lương',
+    en: 'former Do Luong',
     lat: 18.98,
     lon: 105.33,
     big: false,
@@ -191,7 +191,7 @@ export function createGlobe(
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     },
     label: {
-      text: lang === 'vi' ? 'Lưu Sơn · nơi thử nghiệm' : 'Lưu Sơn · trial site',
+      text: lang === 'vi' ? 'Lưu Sơn · nơi thử nghiệm' : 'Luu Son · trial site',
       font: '600 17px "Be Vietnam Pro", sans-serif',
       fillColor: Color.WHITE,
       outlineColor: Color.BLACK,

@@ -86,10 +86,12 @@ describe('translations', () => {
   });
 });
 
-// D-186: English text writes "Nghe An" and "Vietnam"; titles, names and quotes stay verbatim (the journal "Nghệ An S&T")
+// D-186, D-191: English text writes place names without accent marks ("Nghe An", "Vietnam", "Do Luong"); titles,
+// people's names and quotes stay verbatim (the journal "Nghệ An S&T")
 describe('place names in English', () => {
-  it('use Nghe An and Vietnam outside verbatim titles', () => {
-    const lines = enSource.split(/\r?\n/).filter((l) => /Nghệ An|Viet Nam|Việt Nam/.test(l) && !l.includes('S&T'));
+  it('drop the accent marks outside verbatim titles', () => {
+    const places = /Nghệ An|Viet Nam|Việt Nam|Lưu Sơn|Đô Lương|Hà Tĩnh|Thanh Hóa/;
+    const lines = enSource.split(/\r?\n/).filter((l) => places.test(l) && !l.includes('S&T'));
     expect(lines).toEqual([]);
   });
 });

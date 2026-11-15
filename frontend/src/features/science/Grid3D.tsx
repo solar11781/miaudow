@@ -11,7 +11,7 @@ const HMAX = 115;
 // Places for orientation only; both positions are approximate town centres.
 const PLACES = [
   { id: 'vinh', lat: 18.68, lon: 105.68, vi: '≈ TP Vinh', en: '≈ Vinh city' },
-  { id: 'doluong', lat: 18.9, lon: 105.3, vi: '≈ Đô Lương · nơi thử nghiệm', en: '≈ Đô Lương · trial site' },
+  { id: 'doluong', lat: 18.9, lon: 105.3, vi: '≈ Đô Lương · nơi thử nghiệm', en: '≈ Do Luong · trial site' },
 ];
 const DEFAULT_VIEW = { rx: 55, rz: -24 };
 

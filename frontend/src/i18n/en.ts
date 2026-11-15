@@ -139,7 +139,7 @@ export const en: Messages = {
     problemTitle: 'Low-return (inefficient) rice land, often in drought',
     // rules/rotations.yaml `usual` why.evidence (P-02 p. 45)
     problemLead:
-      'One trial in Lưu Sơn commune, Đô Lương district, from June 2020 to June 2021 (p. 45); one unreplicated plot of 1,000 m² per crop and season.',
+      'One trial in Luu Son commune, Do Luong district, from June 2020 to June 2021 (p. 45); one unreplicated plot of 1,000 m² per crop and season.',
     riceSpring: 'profit of spring rice 2021 on the trial plot',
     trialNote: 'One plot, one year (2020–2021), at that year’s prices. Not the profit to expect on your field.',
     verseTitle: 'The land of Nghệ',
@@ -167,7 +167,7 @@ export const en: Messages = {
       {
         name: 'Evidence core',
         does: 'Finds the passage of a document that answers a question, and says “no source yet” when it finds none.',
-        uses: 'Two studies in Lưu Sơn, Decision 18/2021, TCVN 8641, statistics office data',
+        uses: 'Two studies in Luu Son, Decision 18/2021, TCVN 8641, statistics office data',
         gives: 'An answer with the document name and page',
         limit: 'Searches by words; a question worded very differently from the documents is not found yet.',
         to: '/bang-chung',
@@ -255,7 +255,7 @@ export const en: Messages = {
     helpsTitle: 'This part helps you',
     helps: [
       'Look back at the dry, hot and wet years you remember, with NASA weather data.',
-      'Put 6 ways of farming tested in Đô Lương side by side: calendar, profit in the trial, water, soil.',
+      'Put 6 ways of farming tested in Do Luong side by side: calendar, profit in the trial, water, soil.',
       'Have questions ready to take to the extension officer.',
     ],
     notTitle: 'This part does not',
@@ -282,11 +282,11 @@ export const en: Messages = {
       ask: { title: 'Not sure, ask the extension officer', body: 'The officer helps you choose.' },
     },
     pickFirst: 'Pick a type of field to go on',
-    artNote: 'The pictures are AI-made illustrations to help you recognise the field, not photographs of Đô Lương.',
+    artNote: 'The pictures are AI-made illustrations to help you recognise the field, not photographs of Do Luong.',
     wetNote:
       'The plans in this app were tested on water-short fields. None was tested for fields with reliable water, so the app offers no comparison for this kind of field.',
     dryNote:
-      'The trial used “low-return (inefficient) rice land, often in drought” in Lưu Sơn, Đô Lương. Your field may be like that land; ask the extension officer to be sure.',
+      'The trial used “low-return (inefficient) rice land, often in drought” in Luu Son, Do Luong. Your field may be like that land; ask the extension officer to be sure.',
     askNote: 'You can carry on. Remember to ask the extension officer whether your field is like the trial field.',
     yearsTitle: 'What happened in past years?',
     yearsHelp: 'Pick the years you remember: a drought year, a cold year, a poor harvest. Up to 10 years.',
@@ -368,7 +368,7 @@ export const en: Messages = {
     priceYear: (y: string) => `Prices of ${y}.`,
     priceYearNotStated: 'The source does not state the price year.',
     trialNote:
-      'The plans come from one unreplicated trial in Lưu Sơn, Đô Lương (2020–21). Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
+      'The plans come from one unreplicated trial in Luu Son, Do Luong (2020–21). Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
     rice: {
       real: 'Actual',
       prediction: 'Model estimate for a test year',
@@ -428,7 +428,7 @@ export const en: Messages = {
     shareHelp: 'The link opens this card with your years and priority. You can paste it into Zalo.',
     askOfficer: 'Questions to take to the officer',
     officerQuestions: [
-      'Is my field like the trial field in Lưu Sơn?',
+      'Is my field like the trial field in Luu Son?',
       'Who buys these crops in our commune, and at what price?',
       'How much capital do we need, and can we borrow?',
     ],
@@ -448,7 +448,7 @@ export const en: Messages = {
       'Method and limits',
     ],
     conclusion: (seq: string) =>
-      `In the 2020–21 trial in Lưu Sơn, Đô Lương, the sequence ${seq} was grown and each season's profit recorded.`,
+      `In the 2020–21 trial in Luu Son, Do Luong, the sequence ${seq} was grown and each season's profit recorded.`,
     meaning:
       'The number shows what this plan once did on one plot, in one year, at that year’s prices. It is not a profit the family asking can count on.',
     whereP02:
@@ -462,7 +462,7 @@ export const en: Messages = {
     lead: 'Each row on a farmer’s card comes from a specific source. This page gathers them so officers can explain, and says plainly where the evidence is thin.',
     scopeTitle: 'Scope of the evidence',
     scope: [
-      { label: 'Trial site', value: 'Lưu Sơn commune, Đô Lương, Nghe An' },
+      { label: 'Trial site', value: 'Luu Son commune, Do Luong, Nghe An' },
       { label: 'Period', value: 'June 2020 – June 2021, one year' },
       { label: 'Design', value: 'One 1,000 m² plot per crop, not replicated' },
       { label: 'Land type', value: 'Low-return (inefficient) rice land, often in drought' },
@@ -505,7 +505,7 @@ export const en: Messages = {
         do: 'Say “in the 2020–21 trial, peanut made about 26 million VND/ha”',
         dont: 'Do not say “peanut will make 26 million”',
       },
-      { do: 'Say “the plots were in Lưu Sơn; your field may differ”', dont: 'Do not say “this plan suits your field”' },
+      { do: 'Say “the plots were in Luu Son; your field may differ”', dont: 'Do not say “this plan suits your field”' },
     ],
     talkDrought: (year: number, share: string) => ({
       do: `Say “in ${year}, ${share} of Nghe An farmland met the drought condition of Decision 18/2021”`,
@@ -584,7 +584,7 @@ export const en: Messages = {
       b2: 'B2 · like last year',
       b0: 'B0 · climatology',
     },
-    subsets: { national: 'Nationwide', na_ht_th: 'Nghe An, Hà Tĩnh, Thanh Hóa', nghe_an: 'Nghe An only' },
+    subsets: { national: 'Nationwide', na_ht_th: 'Nghe An, Ha Tinh, Thanh Hoa', nghe_an: 'Nghe An only' },
     gatesTitle: 'Four gates before a prediction is shown',
     gateNames: {
       G1: 'Enough data',
@@ -702,7 +702,7 @@ export const en: Messages = {
   climate: {
     noChirps: 'No CHIRPS values for this cell yet.',
     twoTitle: (y: number) => `Monthly rain in ${y}: NASA POWER and CHIRPS v3, same grid cell`,
-    ndviTitle: 'Vegetation greenness around Lưu Sơn (MODIS NDVI), 2015–2024',
+    ndviTitle: 'Vegetation greenness around Luu Son (MODIS NDVI), 2015–2024',
     ndviMedian: 'Median of the pixels',
     ndviBand: 'Middle half of the pixels',
     trialSeason: 'Trial year 2020–21',
@@ -869,11 +869,11 @@ export const en: Messages = {
       'nghe-an': {
         title: 'Nghe An',
         short: 'Nghe An',
-        body: 'The pale gold line is Nghe An province; the white-edged area is the former Đô Lương district. You can switch on a satellite layer to see greenness, rainfall or soil moisture.',
+        body: 'The pale gold line is Nghe An province; the white-edged area is the former Do Luong district. You can switch on a satellite layer to see greenness, rainfall or soil moisture.',
       },
       'do-luong': {
-        title: 'Đô Lương and Lưu Sơn',
-        short: 'Đô Lương',
+        title: 'Do Luong and Luu Son',
+        short: 'Do Luong',
         body: 'Sentinel-2 shows how green the fields were in one season. Deep green is leafy crops; brown is bare soil or water.',
       },
       analysis: {
@@ -1016,7 +1016,7 @@ export const en: Messages = {
       raw === 'national'
         ? 'Nationwide'
         : raw === 'na_ht_th'
-          ? 'Nghe An, Hà Tĩnh, Thanh Hóa'
+          ? 'Nghe An, Ha Tinh, Thanh Hoa'
           : raw.replace(/^(unit|region):/, ''),
     skillCi: (v: string, lo: string, hi: string) => `${v} (${lo} to ${hi})`,
     notRun: 'Not run',
@@ -1064,7 +1064,7 @@ export const en: Messages = {
     predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',
     predictionsDetail:
       'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
-    ndviLabel: 'NDVI greenness around Lưu Sơn',
+    ndviLabel: 'NDVI greenness around Luu Son',
     ndviDetail:
       'Median and middle half (25th–75th percentile) of the reliable 250 m pixels on each 16-day date; a date without a reliable pixel is left empty.',
     cropProfitLabel: (crop: string) => `Profit, ${crop}`,
