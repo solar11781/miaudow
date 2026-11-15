@@ -117,6 +117,7 @@ export const en: Messages = {
     yes: 'Yes',
     no: 'No',
     ruleText: 'Text of the rule',
+    quote: 'The quote in full',
     registerId: 'Source registry id',
   },
   home: {
@@ -339,10 +340,11 @@ export const en: Messages = {
       water: 'Irrigation',
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
-      soilNote:
+      soilNote: 'NASA model value, not a field measurement. 100% is soil full of water.',
+      soilSheetNote:
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
       land: 'Care for the land',
-      checks: 'Weigh this (quoted from sources)',
+      checks: 'Weigh this',
       why: 'Why this plan is here',
       rice: 'Province rice against normal',
     },
@@ -359,10 +361,15 @@ export const en: Messages = {
     p03NoCalendar: 'The second paper gives no sowing dates, so there is no 12-month calendar and no weather per crop.',
     soilNormal: '1991–2020 average',
     waterLead: { to_apply: 'Water to apply to the field', crop_uses: 'Water the crop uses (rough estimate)' },
-    profit: 'Net profit in the trial (Table 13)',
+    profit: 'Net profit in the trial',
+    profitTable: 'Net profit: Table 13 of the paper (p. 50).',
+    paperDefinition: (definition: string) => `How the paper counts it: ${definition}.`,
     cost: 'Total cost in the trial',
     ourSum: 'our addition of the profit values, not reported as a sequence',
-    summaryWaterLabel: 'Water to apply (TCVN 8641, by region and planting method)',
+    ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',
+    summaryWaterLabel: 'Water to apply, by region',
+    summaryWaterNote:
+      'From the lowest to the highest of the TCVN 8641 rows for this crop and season; the rows differ by region and planting method.',
     noFigure: 'no figure in the source',
     summaryWater: (row: string) => `See the ${row} row below`,
     priceYear: (y: string) => `Prices of ${y}.`,
@@ -382,6 +389,33 @@ export const en: Messages = {
       nsoCredit: 'Rice yield: statistics of the National Statistics Office.',
     },
     noneListed: 'The sources list no risk to weigh.',
+    // D-187: one plain line per risk quote (rules/rotations.yaml), never more than the quote says; the quote is in the sheet
+    considerations: {
+      cost: {
+        line: 'Growing peanut and chili usually costs 2-3 times as much in total as growing rice.',
+        source: 'Trịnh Đức Toàn et al. (2023), p. 48',
+      },
+      market: {
+        line: 'Soybean and sesame are hard to sell locally; maize brings a lower economic return but sells easily.',
+        source: 'another trial by the same team, summer-autumn 2020',
+      },
+      fodder: {
+        line: 'The province leadership said areas of biomass maize grown as cattle fodder must have purchase contracts.',
+        source: 'VietNamNet, 31/08/2020',
+      },
+      riceZone: {
+        line: 'Crops may not be changed on rice land in a zone planned for high-yield, high-quality rice; a change must follow the plan of the competent authority.',
+        source: 'Decree 112/2024, Art. 6.1',
+      },
+      stillRice: {
+        line: 'Rice land that has changed crops is still counted as rice land.',
+        source: 'Decree 112/2024, Art. 6.4',
+      },
+      provincePlan: {
+        line: 'The province issues its plan for changing crops on rice land before 30 November of the year before the plan year.',
+        source: 'Decree 112/2024, Art. 7.1',
+      },
+    },
     localReview: 'Check these with farmers or agricultural experts where you live before you change.',
     whyParts: { why: 'Why', evidence: 'Evidence', benefits: 'Benefits', gaps: 'Gaps' },
     explain: {
