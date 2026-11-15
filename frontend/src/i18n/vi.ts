@@ -833,6 +833,7 @@ export const vi = {
         'Minh họa: hai vệ tinh bay qua Nghệ An, mỗi chiếc quét một dải đất. Ranh giới tỉnh và các ô lưới NASA POWER là thật; ô sáng theo phần đất trồng của ô.',
     },
     scanLight: 'Bản nhẹ của đài quan sát: cảnh vệ tinh vẽ bằng hình, không cần 3D.',
+    flagships: { vn: 'Việt Nam · vệ tinh minh họa', terra: 'NASA Terra · MODIS' },
     satPause: 'Dừng vệ tinh',
     satPlay: 'Cho vệ tinh bay',
     flagshipNote:

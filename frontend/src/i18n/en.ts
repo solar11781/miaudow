@@ -835,6 +835,7 @@ export const en: Messages = {
         'Illustration: two satellites pass over Nghệ An, each scanning a strip of land. The province border and the NASA POWER cells are real; a cell lights up by its share of farmland.',
     },
     scanLight: 'The light version of the observatory: a drawn satellite scene, no 3D needed.',
+    flagships: { vn: 'Viet Nam · illustrative satellite', terra: 'NASA Terra · MODIS' },
     satPause: 'Pause satellites',
     satPlay: 'Fly satellites',
     flagshipNote:
