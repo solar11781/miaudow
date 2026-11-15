@@ -77,7 +77,9 @@ test('T6 T7 T8 the open form: 44 px targets, 17 px text and no WCAG 2.2 AA viola
   await page.goto(PLANS_URL);
   const card = await typeNumbers(page);
   await card.getByRole('spinbutton', { name: /^Đậu xanh.*Giá bán của bạn/ }).fill('-3');
-  await expect(card.getByText('Hãy nhập số nguyên, từ 0 trở lên. Số này chưa được dùng.')).toBeVisible();
+  await expect(
+    card.getByText('Hãy nhập số nguyên, từ 0 trở lên, tối đa 9 chữ số. Số này chưa được dùng.'),
+  ).toBeVisible();
   const form = card.locator('[id="card-cc1-own-form"]');
   for (const target of await form.locator('input, button').all()) {
     const box = await target.boundingBox();

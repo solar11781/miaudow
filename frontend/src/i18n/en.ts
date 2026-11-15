@@ -388,7 +388,7 @@ export const en: Messages = {
       price: 'sale price',
       yourPrice: 'Your sale price',
       yourCost: 'Your costs',
-      invalid: 'Type a whole number, 0 or more. This number is not used yet.',
+      invalid: 'Type a whole number, 0 or more, up to 9 digits. This number is not used yet.',
       title: 'Your numbers',
       revenue: 'Sales money at your price, before costs',
       margin: 'Left after the costs you typed',

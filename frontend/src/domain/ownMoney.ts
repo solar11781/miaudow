@@ -3,7 +3,7 @@
  * your cost (thousand đ/ha), only with a cost. Exact until one rounding at the end, half away from zero like the
  * engine's ROUND_HALF_UP (D-156); the results use the API's notation ("16,200"), so they display like its values. */
 
-// routine cap (privacy review of PR #66): far above any real price in đ/kg or cost in thousand đ/ha, and a crafted
+// routine cap (D-179, privacy review of PR #66): far above any real price in đ/kg or cost in thousand đ/ha, and a crafted
 // link with huge values cannot freeze the page
 const MAX_DIGITS = 9;
 const WHOLE = new RegExp(`^[0-9]{1,${MAX_DIGITS}}$`);

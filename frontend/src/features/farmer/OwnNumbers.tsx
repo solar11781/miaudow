@@ -88,9 +88,10 @@ export function OwnNumbers({
     items.map((i) => i.yield.value),
     items.map((i) => ({ price: prices[i.crop_key] ?? null, cost: costs[i.crop_key] ?? null })),
   );
-  // a computed number cites the study yield it multiplies; the sheet says the price and costs are the farmer's own
+  // a computed number cites the study yield it multiplies and the engine's arithmetic E-022 (D-158); the sheet says
+  // the price and costs are the farmer's own
   const computed = (value: string, ids: SourceId[], label: string) => {
-    const v: Value = { value, unit: first.profit.unit, source_ids: ids };
+    const v: Value = { value, unit: first.profit.unit, source_ids: [...ids, 'E-022'] };
     return { ...refs.value(v, label), note: t.farmer.own.sheetNote };
   };
   const yieldIds = items.flatMap((i) => i.yield.source_ids);
