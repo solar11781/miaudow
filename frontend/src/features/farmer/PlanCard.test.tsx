@@ -219,6 +219,17 @@ describe('money notes', () => {
   });
   // never compare P-03 money with P-02 money (UI-UX-SPEC section 9): the P-03 card keeps saying, in one plain line,
   // that its profit takes off material costs only
+  // D-192: the plain "in other words" line comes right under the number, before the source block
+  it('puts the plain line under the number of the whole-year total and the crop profit, before the source', () => {
+    money(2, 'R-P02');
+    for (const value of ['53.380 nghìn đồng/ha', '16.200 nghìn đồng/ha']) {
+      const sheet = sheetOf(value);
+      const plain = sheet.indexOf(vi.farmer.definitionPlain.p02);
+      expect(plain, value).toBeGreaterThan(sheet.indexOf(value));
+      expect(plain, value).toBeLessThan(sheet.indexOf(vi.sheet.placeYears));
+      expect(sheet.split(vi.farmer.definitionPlain.p02), value).toHaveLength(2);
+    }
+  });
   it('keeps the plain P-03 definition on the card and its paper definition in the sheet', () => {
     const text = money(1, 'R-P03');
     expect(text).toContain(vi.farmer.definitionPlain.p03);

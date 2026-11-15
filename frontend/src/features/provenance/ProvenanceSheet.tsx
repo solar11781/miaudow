@@ -175,6 +175,7 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
           <Icon name="close" />
         </button>
       </header>
+      {value.plain && <p>{value.plain}</p>}
       {value.quote && (
         <section className={s.arith}>
           <h3>{t.sheet.quote}</h3>

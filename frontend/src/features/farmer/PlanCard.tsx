@@ -97,17 +97,16 @@ type Hl = { highlight: boolean; line: ReactNode };
 /** The parts given, as one closing note of a source sheet. */
 const sentences = (...parts: (string | null | false | undefined)[]) => parts.filter(Boolean).join(' ');
 
-/** The source notes of a plan's money, kept off the card and closing the sheet of each money value (D-187): the
- * paper's definition as the API gives it, then the same in plain words for the study the money cites (D-170). */
+/** The source notes of a plan's money, kept off the card (D-187): the paper's definition as the API gives it closes
+ * the sheet of each money value, and the same in plain words for the study the money cites (D-170) comes right under
+ * its number (D-192). */
 function useMoneyNotes(plan: Plan) {
   const t = useT();
   const pick = usePick();
   const study = moneyStudy(plan);
-  const definition = sentences(
-    t.farmer.paperDefinition(pick(plan.money.definition)),
-    study && t.farmer.definitionPlain[study],
-  );
-  return { study, definition, total: sentences(t.farmer.ourSumNote, definition) };
+  const definition = t.farmer.paperDefinition(pick(plan.money.definition));
+  const plain = study ? t.farmer.definitionPlain[study] : undefined;
+  return { study, definition, plain, total: sentences(t.farmer.ourSumNote, definition) };
 }
 
 function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: OwnState }) {
@@ -124,7 +123,7 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
         <div className={s.money}>
-          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>
+          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>
           <span className={s.unit}>
@@ -147,6 +146,7 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
                   label={`${t.farmer.profit} · ${name}`}
                   refs={refs}
                   note={sentences(t.farmer.profitTable, flag, notes.definition)}
+                  plain={notes.plain}
                   money
                 />
                 <span>{t.farmer.cost}</span>
@@ -157,7 +157,11 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
         </ul>
       )}
       {m.text_only && (
-        <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} note={notes.definition} />
+        <SourceValue
+          {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)}
+          note={notes.definition}
+          plain={notes.plain}
+        />
       )}
       {/* P-03 money takes off material costs only, so its card keeps saying so: never compared with P-02 (section 9) */}
       {notes.study === 'p03' && <p className={s.rowNote}>{t.farmer.definitionPlain.p03}</p>}
@@ -477,7 +481,7 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
       {m.total ? (
         <p>
           {t.farmer.rows.money}:{' '}
-          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>
+          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>{' '}
           {refs.money(m.total).unit} · {t.farmer.own.yearSum}
@@ -486,7 +490,11 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
         m.text_only && (
           <p>
             {t.farmer.rows.money}:{' '}
-            <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} note={notes.definition} />
+            <SourceValue
+              {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)}
+              note={notes.definition}
+              plain={notes.plain}
+            />
           </p>
         )
       )}
