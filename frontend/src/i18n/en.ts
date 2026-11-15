@@ -781,8 +781,7 @@ export const en: Messages = {
       'Sum of 12 months of CHIRPS v3 (satellite and station blend, 0.05°), mean of the cell’s Nghe An pixels. Final product, never the preliminary one.',
   },
   places: {
-    trialSite: 'Luu Son · trial site',
-    vinhCity: 'Vinh city',
+    trialSite: 'former Luu Son · trial site',
     approx: (name: string) => `≈ ${name}`,
     vietnam: 'VIETNAM',
     hanoi: 'Hanoi',

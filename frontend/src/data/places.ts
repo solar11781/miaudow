@@ -4,7 +4,7 @@ import doLuongJson from '@data/geo_do_luong.json';
 
 export interface MapPlace {
   id: 'vinh' | 'trial';
-  name: 'vinhCity' | 'trialSite';
+  name: 'vinh' | 'trialSite';
   lat: number;
   lon: number;
   /** A rounded position, marked "≈" on the flat map. */
@@ -14,5 +14,5 @@ export interface MapPlace {
 const { lat, lon } = doLuongJson.study_point;
 export const TRIAL_SITE: MapPlace = { id: 'trial', name: 'trialSite', lat, lon, approx: false };
 // rounded city centre, for orientation only
-const VINH: MapPlace = { id: 'vinh', name: 'vinhCity', lat: 18.68, lon: 105.68, approx: true };
+const VINH: MapPlace = { id: 'vinh', name: 'vinh', lat: 18.68, lon: 105.68, approx: true };
 export const MAP_PLACES: MapPlace[] = [VINH, TRIAL_SITE];

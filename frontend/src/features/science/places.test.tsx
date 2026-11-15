@@ -21,7 +21,7 @@ describe('trial site on the maps', () => {
   it('put the shared trial site at the study point, named Lưu Sơn', () => {
     const site = MAP_PLACES.find((p) => p.id === 'trial');
     expect(site && { lat: site.lat, lon: site.lon }).toEqual(STUDY_POINT);
-    expect(site && vi.places[site.name]).toBe('Lưu Sơn · nơi thử nghiệm');
+    expect(site && vi.places[site.name]).toBe('Lưu Sơn (cũ) · nơi thử nghiệm');
   });
   it('labels the trial site Lưu Sơn on the flat map', () => {
     render(
