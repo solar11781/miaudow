@@ -30,3 +30,15 @@ for (const route of ['/', '/#/nong-dan']) {
     expect(box?.height).toBeGreaterThanOrEqual(44);
   });
 }
+
+test.describe('on a phone in light mode', () => {
+  test.use({ colorScheme: 'light' });
+  // audit F10, D-187: the theme Auto stayed dark on a phone set to light mode
+  test('the theme Auto shows the light page', async ({ page }) => {
+    await page.goto('/#/nong-dan/ruong');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    const [r, g, b] = (bg.match(/\d+/g) ?? []).map(Number);
+    expect(Math.min(r, g, b)).toBeGreaterThan(200);
+  });
+});
