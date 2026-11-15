@@ -107,7 +107,7 @@ def test_drought_readings_report_counts_the_seasons_whose_shares_differ():
     assert "differ in 2 of 5 province seasons" in en
     assert "(spring season 1 of 2; summer-autumn season 0 of 1; winter season 1 of 2)" in en  # method.yaml labels
     assert "(vụ Đông Xuân: 1 trong 2" in vi
-    assert "1 of 3 Nghệ An seasons" in en
+    assert "1 of 3 Nghe An seasons" in en
     assert "2 trong 5" in vi
     assert '"Drought (rain part), 2 months in a row"' in en  # conditions.yaml labels of the two readings
     assert '"Hạn hán (phần lượng mưa), 2 tháng bất kỳ"' in vi

@@ -3,6 +3,12 @@ import { en } from './en';
 import { vi } from './vi';
 import method from '../../snapshot/method.json';
 import enSource from './en.ts?raw';
+import sourcesSource from '../domain/sources.ts?raw';
+import plansSource from '../domain/plans.ts?raw';
+import hazardsSource from '../domain/hazards.ts?raw';
+import claimsSource from '../features/evidence/claims.ts?raw';
+import knowledgeSource from '../features/ai/knowledge.ts?raw';
+import missionsSource from '../features/earth/missions.ts?raw';
 
 type Node = unknown;
 
@@ -87,11 +93,32 @@ describe('translations', () => {
 });
 
 // D-186, D-191: English text writes place names without accent marks ("Nghe An", "Vietnam", "Do Luong"); titles,
-// people's names and quotes stay verbatim (the journal "Nghệ An S&T")
+// people's names and quotes stay verbatim (the journal "Nghệ An S&T", the Vietnamese folk verse)
 describe('place names in English', () => {
+  const places =
+    /Nghệ|Lưu Sơn|Đô Lương|Hà Tĩnh|Thanh Hó|Thanh Hoá|Bắc [bB]ộ|Trung [bB]ộ|Nam [bB]ộ|Hà Tây|Việt Nam|Viet Nam|Điều \d|tên bài báo/;
+
   it('drop the accent marks outside verbatim titles', () => {
-    const places = /Nghệ An|Viet Nam|Việt Nam|Lưu Sơn|Đô Lương|Hà Tĩnh|Thanh Hóa/;
-    const lines = enSource.split(/\r?\n/).filter((l) => places.test(l) && !l.includes('S&T'));
+    const lines = enSource.split(/\r?\n/).filter((l) => places.test(l) && !l.includes('S&T') && !l.includes('verse:'));
     expect(lines).toEqual([]);
+  });
+
+  // the inline en: strings of the data files; quoted text and the Vietnamese journal name stay verbatim
+  it('drop the accent marks in the en strings of the data files', () => {
+    const files = { sourcesSource, plansSource, hazardsSource, claimsSource, knowledgeSource, missionsSource };
+    const bad = Object.entries(files).flatMap(([name, text]) =>
+      text
+        .split(/\r?\n/)
+        .filter((l) => /\ben:/.test(l))
+        .map((l) =>
+          l
+            .slice(l.search(/\ben:/))
+            .replace(/"[^"]*"|“[^”]*”/g, '')
+            .replace('Nghệ An Science', ''),
+        )
+        .filter((l) => places.test(l))
+        .map((l) => `${name}: ${l}`),
+    );
+    expect(bad).toEqual([]);
   });
 });

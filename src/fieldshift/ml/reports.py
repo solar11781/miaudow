@@ -159,7 +159,7 @@ def drought_readings_report(readings: pd.DataFrame) -> dict:
             f"below the {normal} normal. Each reading is computed per NASA POWER cell, then as a share of the "
             f"province's farmland. Over the province rice seasons with NSO rice yield data {first}-{last} (the rows "
             f"of the model's training table), within each season's window, the two shares differ in {total[1]} province seasons "
-            f"({by_en}), and in {nghe_an[1]} Nghệ An seasons.",
+            f"({by_en}), and in {nghe_an[1]} Nghe An seasons.",
         ),
         "source_ids": ["E-014", "R-A01"],
     }
@@ -196,7 +196,7 @@ def heavy_rain_check_report(heavy_rain_years: set[int], damage_years: set[int], 
             f"cả hai: {neither}; trùng nhau ở {both + neither} trong {n} năm. Với cùng số năm mỗi loại, chỉ do ngẫu "
             f"nhiên đã có khoảng {chance_vi} trong {n} năm trùng nhau, nên phép kiểm tra này không xác nhận các năm "
             "mưa lớn. DesInventar chỉ dùng để kiểm tra; các bản ghi của nó không được hiển thị.",
-            f"Nghệ An {first}-{last}. Heavy-rain year: a year whose share of farmland meeting the official heavy-rain "
+            f"Nghe An {first}-{last}. Heavy-rain year: a year whose share of farmland meeting the official heavy-rain "
             "rule, while a trial crop was in the field, is above 0 (our reading). Recorded rice flood damage: only the "
             "DesInventar flood, flash flood and inundation records with rice area damaged count; other record types, "
             f"such as cyclone, hailstorm and storm, are left out. Both in {both} years; heavy rain only in {rain_only}; recorded damage only in {damage_only}; "

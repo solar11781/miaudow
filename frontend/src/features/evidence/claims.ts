@@ -44,7 +44,7 @@ const crop = (planId: string, key: string): PlanCrop => {
 
 const TRIAL: Bilingual = {
   vi: 'Một ô 1.000 m² cho mỗi cây, xã Lưu Sơn, Đô Lương, tháng 6/2020 – 6/2021; giá bán lúc thu hoạch năm đó.',
-  en: 'One 1,000 m² plot per crop, Lưu Sơn commune, Đô Lương, June 2020 – June 2021; sale prices at that harvest.',
+  en: 'One 1,000 m² plot per crop, Luu Son commune, Do Luong, June 2020 – June 2021; sale prices at that harvest.',
 };
 
 /** Claims of the evidence library, each built from the same data the rest of the app shows (no copy of a number). */
@@ -135,7 +135,7 @@ export function useClaims(): Claim[] {
         status: 'DERIVED',
         conclusion: {
           vi: `Năm 2010, ${f.pct(drought2010)} đất trồng Nghệ An có ít nhất hai tháng mưa thiếu hơn một nửa so với bình thường.`,
-          en: `In 2010, ${f.pct(drought2010)} of Nghệ An farmland had at least two months with less than half the usual rain.`,
+          en: `In 2010, ${f.pct(drought2010)} of Nghe An farmland had at least two months with less than half the usual rain.`,
         },
         meaning: {
           vi: 'Đó là một năm thiếu mưa trên phần lớn đất trồng của tỉnh, theo cách đọc ngưỡng hạn của văn bản nhà nước.',
@@ -152,7 +152,7 @@ export function useClaims(): Claim[] {
         },
         appliesTo: {
           vi: 'Năm ô lưới NASA (mỗi ô khoảng 55 × 66 km) có đất trồng ở Nghệ An.',
-          en: 'The five NASA grid cells (about 55 × 66 km each) that hold Nghệ An farmland.',
+          en: 'The five NASA grid cells (about 55 × 66 km each) that hold Nghe An farmland.',
         },
         notProve: {
           vi: 'Không phải số đo tại ruộng, không phải công bố chính thức về hạn hán, và không phải dự báo cho năm sau.',
@@ -165,7 +165,7 @@ export function useClaims(): Claim[] {
         status: 'DERIVED',
         conclusion: {
           vi: `Năm ${last}, ${f.pct(heatLast)} đất trồng Nghệ An có đợt nắng nóng từ ba ngày liền trở lên.`,
-          en: `In ${last}, ${f.pct(heatLast)} of Nghệ An farmland had a heat spell of three days or more.`,
+          en: `In ${last}, ${f.pct(heatLast)} of Nghe An farmland had a heat spell of three days or more.`,
         },
         meaning: {
           vi: 'Nắng nóng theo ngưỡng 35 °C của văn bản nhà nước, trong thời gian có cây trên ruộng thử nghiệm.',
@@ -195,7 +195,7 @@ export function useClaims(): Claim[] {
         status: 'VERIFIED',
         conclusion: {
           vi: 'Theo cùng một tiêu chuẩn Việt Nam, nước phải tưới cho lúa vụ xuân là 6.500–7.500 m³/ha ở Trung bộ (lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha ở Bắc bộ, cho lạc khoảng 2.000 m³/ha.',
-          en: 'By the same Vietnamese standard, the water to apply for spring rice is 6,500–7,500 m³/ha in Trung bộ (transplanted or direct-seeded) and 6,000–7,000 m³/ha in Bắc bộ, and for peanut about 2,000 m³/ha.',
+          en: 'By the same Vietnamese standard, the water to apply for spring rice is 6,500–7,500 m³/ha in Trung Bo (transplanted or direct-seeded) and 6,000–7,000 m³/ha in Bac Bo, and for peanut about 2,000 m³/ha.',
         },
         meaning: {
           vi: 'Nếu ruộng hay thiếu nước, đây là con số để hỏi cán bộ thủy lợi về lịch tưới.',
@@ -214,7 +214,7 @@ export function useClaims(): Claim[] {
         },
         appliesTo: {
           vi: 'Mức chuẩn cho vùng; tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
-          en: 'Regional norms; the standard does not say whether Nghệ An is central or northern.',
+          en: 'Regional norms; the standard does not say whether Nghe An is central or northern.',
         },
         notProve: {
           vi: 'Không phải lượng nước ruộng bạn nhận được; chỉ là nước tưới dưỡng, chưa kể nước làm đất.',
@@ -305,17 +305,17 @@ export function useClaims(): Claim[] {
         },
         meaning: {
           vi: 'Mọi số thời tiết đang ở mức ô lưới lớn, không phải ở mức thửa ruộng. Ảnh Sentinel-2 20 m của Đô Lương chỉ cho độ xanh theo mùa; mỗi điểm ảnh trộn nhiều thửa ruộng, bờ, đường và nhà.',
-          en: 'All weather numbers are at the scale of large grid cells, not of fields. The 20 m Sentinel-2 images of Đô Lương show seasonal greenness only; each pixel mixes fields, bunds, roads and houses.',
+          en: 'All weather numbers are at the scale of large grid cells, not of fields. The 20 m Sentinel-2 images of Do Luong show seasonal greenness only; each pixel mixes fields, bunds, roads and houses.',
         },
         refs: [],
         // catalog.json: sentinel2_l2a_do_luong_vi INGESTED (vegetation.json composites, media/sat); nasa_hlss30 and nasa_hlsl30 BLOCKED
         location: {
           vi: 'Sentinel-2 L2A: đã nạp, ảnh NDVI theo mùa 20 m của Đô Lương (2020–21 và 2024), hiện ở Đài quan sát. NASA HLS: bị chặn, cần tài khoản Earthdata.',
-          en: 'Sentinel-2 L2A: loaded, seasonal 20 m NDVI composites of Đô Lương (2020–21 and 2024), shown on the Earth observatory. NASA HLS: blocked, needs an Earthdata Login.',
+          en: 'Sentinel-2 L2A: loaded, seasonal 20 m NDVI composites of Do Luong (2020–21 and 2024), shown on the Earth observatory. NASA HLS: blocked, needs an Earthdata Login.',
         },
         method: {
           vi: 'Cần ranh giới chính xác của khu vực nghiên cứu; geoBoundaries không có lớp ranh giới xã nên Lưu Sơn chỉ là một điểm.',
-          en: 'Needs an exact study-area boundary; geoBoundaries has no commune layer, so Lưu Sơn is only a marker point.',
+          en: 'Needs an exact study-area boundary; geoBoundaries has no commune layer, so Luu Son is only a marker point.',
         },
         appliesTo: { vi: 'Cả ứng dụng.', en: 'The whole app.' },
         notProve: {
@@ -329,7 +329,7 @@ export function useClaims(): Claim[] {
         status: 'UNAVAILABLE',
         conclusion: {
           vi: 'Chưa có đánh giá nhận dạng giọng nói tiếng Nghệ.',
-          en: 'Speech recognition of the Nghệ An dialect has not been evaluated.',
+          en: 'Speech recognition of the Nghe An dialect has not been evaluated.',
         },
         meaning: {
           vi: 'Trợ lý cho nói bằng giọng qua trình duyệt, nhưng luôn cho bạn đọc lại câu trước khi gửi.',
@@ -356,7 +356,7 @@ export function useClaims(): Claim[] {
         status: 'ILLUSTRATIVE',
         conclusion: {
           vi: 'Các tranh cảnh đồng quê vàng nắng là tranh minh họa, không phải ảnh chụp Nghệ An.',
-          en: 'The golden countryside paintings are illustrations, not photographs of Nghệ An.',
+          en: 'The golden countryside paintings are illustrations, not photographs of Nghe An.',
         },
         meaning: {
           vi: 'Ảnh thật trong ứng dụng luôn ghi tác giả, nơi chụp và giấy phép.',

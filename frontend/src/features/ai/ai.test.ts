@@ -80,9 +80,9 @@ describe('answers', () => {
     for (const part of ['6.500–7.500 m³/ha (Trung bộ, lúa cấy', 'lúa gieo thẳng', '6.000–7.000 m³/ha (Bắc bộ'])
       expect(vi).toContain(part);
     expect(CROPS.rice.tcvn.map((r) => `${r.value.en} (${r.scope.en})`)).toEqual([
-      '6,500–7,500 (Trung bộ, transplanted rice, spring season)',
-      '6,500–7,500 (Trung bộ, direct-seeded rice, spring season)',
-      '6,000–7,000 (Bắc bộ, spring season)',
+      '6,500–7,500 (Trung Bo, transplanted rice, spring season)',
+      '6,500–7,500 (Trung Bo, direct-seeded rice, spring season)',
+      '6,000–7,000 (Bac Bo, spring season)',
     ]);
   });
   it('only shows numbers that exist in the data', () => {

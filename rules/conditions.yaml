@@ -27,11 +27,11 @@
       Bộ."
     en: "Our translation: a) A forecast heat spell with a daily maximum temperature from 35°C to 37°C, lasting 3 days
       or more;\n\
-      b) A forecast heat spell with a daily maximum temperature above 37°C to 39°C, lasting from 3 to 25 days in Bắc
-      Bộ and Trung Bộ, or from 3 to 10 days in Tây Nguyên and Nam Bộ;\n\
-      c) A forecast heat spell with a daily maximum temperature above 39°C to 41°C, lasting from 3 to 5 days in Bắc Bộ
-      and Trung Bộ;\n\
-      d) A forecast heat spell with a daily maximum temperature above 41°C, lasting from 3 to 5 days in Trung Bộ."
+      b) A forecast heat spell with a daily maximum temperature above 37°C to 39°C, lasting from 3 to 25 days in Bac
+      Bo and Trung Bo, or from 3 to 10 days in Tay Nguyen and Nam Bo;\n\
+      c) A forecast heat spell with a daily maximum temperature above 39°C to 41°C, lasting from 3 to 5 days in Bac Bo
+      and Trung Bo;\n\
+      d) A forecast heat spell with a daily maximum temperature above 41°C, lasting from 3 to 5 days in Trung Bo."
   article: "Art. 47.1"
   threshold_source_id: R-A01
   values_source_ids: [R-N01, R-N02]
@@ -50,13 +50,13 @@
       Bộ, Trung Bộ."
     en: "Our translation: a) A forecast shortfall of the monthly rain total of more than 50% against the long-term
       average, lasting from 2 to 3 months, and a shortfall of surface water in the area of 20% to 50% against the
-      long-term average, in Trung Bộ, Tây Nguyên and Nam Bộ;\n\
+      long-term average, in Trung Bo, Tay Nguyen and Nam Bo;\n\
       b) A forecast shortfall of the monthly rain total of more than 50% against the long-term average, lasting from 2
       to 3 months, and a shortfall of surface water in the area of above 50% to 70% against the long-term average, in
-      Bắc Bộ;\n\
+      Bac Bo;\n\
       c) A forecast shortfall of the monthly rain total of more than 50% against the long-term average, lasting from
       above 3 to 5 months, and a shortfall of surface water in the area of 20% to 50% against the long-term average,
-      in Bắc Bộ and Trung Bộ."
+      in Bac Bo and Trung Bo."
   article: "Art. 48.1"
   threshold_source_id: R-A01
   values_source_ids: [R-N01, R-N02]
@@ -77,10 +77,10 @@
       d) Dự báo đợt rét hại với nhiệt độ không khí trung bình ngày từ 8°c trở xuống, kéo dài từ 3 ngày đến 5 ngày ở
       vùng đồng bằng Bắc Bộ, Bắc Trung Bộ, Trung Trung Bộ."
     en: "Our translation: a) A forecast damaging cold spell with a daily mean air temperature above 8°C to 13°C,
-      lasting from more than 5 days to 10 days in the plains of Bắc Bộ, Bắc Trung Bộ and Trung Trung Bộ, or more than
-      10 days in the mountains and midlands of Bắc Bộ;\n\
+      lasting from more than 5 days to 10 days in the plains of Bac Bo, Bac Trung Bo and Trung Trung Bo, or more than
+      10 days in the mountains and midlands of Bac Bo;\n\
       d) A forecast damaging cold spell with a daily mean air temperature of 8°C or below, lasting from 3 to 5 days in
-      the plains of Bắc Bộ, Bắc Trung Bộ and Trung Trung Bộ."
+      the plains of Bac Bo, Bac Trung Bo and Trung Trung Bo."
   article: "Art. 53.1 a, d"
   threshold_source_id: R-A01
   values_source_ids: [R-N01, R-N02]
