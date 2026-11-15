@@ -132,7 +132,7 @@ export const en: Messages = {
       'Looks back at past years with NASA data. No forecast of next season.',
       'Does not choose for your family, and scores nothing.',
     ],
-    moreTitle: 'For extension officers and judges',
+    moreTitle: 'For extension officers',
     moreLead: 'The data, the AI cores and the model test behind the app. Farmers do not need this part to use it.',
     play: 'Play photos',
     // the paper's own land words (D-160), in the translation rules/rotations.yaml and the officer page use

@@ -40,7 +40,7 @@ describe('home trial chapter', () => {
 });
 
 // D-187 (roleplay audit F6): the farmer meets what the app is and the four steps first; the AI cores, the model
-// numbers and the other proof material sit lower, under a plain heading for officers and judges.
+// numbers and the other proof material sit lower, under a plain heading for extension officers.
 describe('home page order', () => {
   afterEach(() => {
     cleanup();

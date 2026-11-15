@@ -130,7 +130,7 @@ export const vi = {
       'Xem lại các năm đã qua bằng số liệu NASA. Không dự báo mùa tới.',
       'Không chọn thay gia đình bạn, không chấm điểm.',
     ],
-    moreTitle: 'Cho cán bộ và ban giám khảo',
+    moreTitle: 'Cho cán bộ khuyến nông',
     moreLead:
       'Dữ liệu, các lõi AI và bài kiểm tra mô hình đứng sau ứng dụng. Bà con không cần đọc phần này để dùng ứng dụng.',
     play: 'Chạy ảnh',
