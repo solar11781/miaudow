@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { en } from './en';
 import { vi } from './vi';
 import method from '../../snapshot/method.json';
+import { SOURCES } from '../domain/sources';
 import enSource from './en.ts?raw';
 import sourcesSource from '../domain/sources.ts?raw';
 import plansSource from '../domain/plans.ts?raw';
@@ -90,6 +91,14 @@ describe('translations', () => {
       );
     }
   });
+  // D-192: English writes et al. where Vietnamese writes và cs., in the text files and the short source names
+  it('write et al. in English and và cs. in Vietnamese', () => {
+    expect(strings(en).join(' ')).not.toContain('và cs.');
+    for (const src of Object.values(SOURCES)) {
+      expect(src.short.en, src.id).not.toContain('và cs.');
+      if (src.short.vi.includes('và cs.')) expect(src.short.en, src.id).toContain('et al.');
+    }
+  });
 });
 
 // D-186, D-191: English text writes place names without accent marks ("Nghe An", "Vietnam", "Do Luong"); titles,
@@ -114,7 +123,8 @@ describe('place names in English', () => {
           l
             .slice(l.search(/\ben:/))
             .replace(/"[^"]*"|“[^”]*”/g, '')
-            .replace('Nghệ An Science', ''),
+            .replace('Nghệ An Science', '')
+            .replace('KH&CN Nghệ An', ''),
         )
         .filter((l) => places.test(l))
         .map((l) => `${name}: ${l}`),

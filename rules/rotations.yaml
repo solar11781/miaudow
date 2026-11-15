@@ -98,12 +98,25 @@
     definition:
       vi: "Lợi nhuận = GR - Tổng chi phí vật chất"
       en: "Profit = GR - total material costs (labour may not be counted)"
-    text_only:
-      vi: "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng):
-        \"gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha\". Vụ Thu Đông: bỏ hoang."
-      en: "Spring-season rice 2021 (control): economic return (\"hiệu quả kinh tế\") 5.36 million VND/ha. Summer-autumn
-        rice 2020 (control): \"almost no profit, the economic return only reaches 1.16 million/ha\" (our translation).
-        Autumn-winter: fallow."
+    unit: {vi: "triệu đồng/ha", en: "million VND/ha"}  # P-03 writes its money in million đồng per ha
+    season_values:  # D-191: each season as the paper gives it, never summed; no number where the paper gives none
+      - season: spring
+        value: "5.36"
+        page: "4-5"  # the spring 2021 results run over pp. [4]-[5]
+        words:
+          vi: "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha."
+          en: "Spring-season rice 2021 (control): economic return (\"hiệu quả kinh tế\") 5.36 million VND/ha."
+      - season: summer_autumn
+        value: "1.16"
+        page: "4"
+        words:
+          vi: "Lúa vụ Hè Thu 2020 (đối chứng): \"gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha\"."
+          en: "Summer-autumn rice 2020 (control): \"almost no profit, the economic return only reaches 1.16
+            million/ha\" (our translation)."
+      - season: autumn_winter
+        value: null  # fallow: the paper gives no money for this season
+        page: "2"  # the control structure "Lúa - lúa - bỏ hoang"
+        words: {vi: "Vụ Thu Đông: bỏ hoang.", en: "Autumn-winter: fallow."}
     price_year: "2020-21"  # D-103: P-03 p.3 prices at harvest; trial June 2020 - June 2021
   risks: []
   why:

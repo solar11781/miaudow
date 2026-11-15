@@ -53,7 +53,7 @@ function passageLines(p: Passage, lang: Lang): AnswerLine[] {
   const ref = (id: Passage['sources'][number]): SourceRef => ({
     sourceId: id,
     kind: SOURCES[id].kind,
-    value: SOURCES[id].short,
+    value: SOURCES[id].short[lang],
     label: p.title[lang],
   });
   const [first, ...rest] = p.sources;

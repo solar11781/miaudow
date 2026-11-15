@@ -316,7 +316,7 @@ note, data line, computed note, trial note, total note and card warnings are fro
    `sources` map, the rule texts (`rules`), the season labels and the gate verdicts of the shown seasons (UI-UX-SPEC
    §11).
 3. Comparability. Nothing is ranked, so there is no separate comparability field. The contract itself marks
-   non-comparable evidence: P-03 money is `text_only` with its own definition, water lines carry their `measure`, and
+   non-comparable evidence: P-03 money is per season in `season_values` with its own definition, never summed, water lines carry their `measure`, and
    missing values are `null` or "not listed" and are never imputed.
 4. Display (UK DCLG Multi-criteria analysis manual 2009). Each plan gets one card, and all cards have the same rows in
    real units. There is no weighted score, no min-max normalization, no tie rule and no dominance flags (unreplicated

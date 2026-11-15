@@ -11,6 +11,7 @@ import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { SOURCES } from '../../domain/sources';
 import { decisionPlan, rulebookPlan } from '../../data/rulebook';
+import type { SeasonValue } from '../../types';
 
 const own = { values: NO_OWN, set: () => undefined };
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
@@ -133,19 +134,60 @@ describe('rule names', () => {
   });
 });
 
-// UI-UX-SPEC section 9: the check row is "always open (no disclosure)"; the why row is a disclosure, collapsed
-describe('check and why rows', () => {
+// D-187 item 4 (F1, replaces section 9's "every row stays open"): the card face fits one phone screen, so each row
+// under the head folds behind its own heading button; the folded part stays in the page, so print shows it (T35)
+const FOLDED = ['calendar', 'money', 'weather', 'water', 'land', 'checks', 'why'];
+describe('card face', () => {
   afterEach(cleanup);
-  it('keep the risks open and fold only the reasons', () => {
+  it('folds each row behind one heading button, closed at first', async () => {
     const id = renderCard();
-    expect(document.querySelector(`[data-testid="card-${id}-row-checks"]`)?.closest('details')).toBeNull();
-    const why = document.querySelector(`[data-testid="card-${id}-row-why"]`)?.closest('details');
-    expect(why).not.toBeNull();
-    expect(why?.open).toBe(false);
+    for (const row of FOLDED) {
+      const box = document.querySelector(`[data-testid="card-${id}-row-${row}"]`);
+      const button = box?.querySelector('h3 > button');
+      expect(button?.getAttribute('aria-expanded'), row).toBe('false');
+      const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+      expect(box?.contains(panel ?? null), row).toBe(true);
+      expect(panel?.hasAttribute('hidden'), row).toBe(false);
+      (button as HTMLButtonElement | null)?.click();
+      await Promise.resolve();
+      expect(button?.getAttribute('aria-expanded'), row).toBe('true');
+    }
+  });
+  it('keeps the warnings and the priority label outside every fold (H17, H11)', () => {
+    const id = renderCard();
+    const panels = [...document.querySelectorAll('h3 > button')].map((b) =>
+      document.getElementById(b.getAttribute('aria-controls') ?? ''),
+    );
+    const folded = (el: Element) => panels.some((p) => p?.contains(el));
+    const card = document.querySelector(`[data-testid="card-${id}"]`);
+    for (const line of [vi.farmer.trialNote, vi.farmer.priceYearNotStated, vi.common.notForecast, vi.common.support]) {
+      const el = [...(card?.querySelectorAll('p') ?? [])].find((p) => p.textContent === line);
+      expect(el && !folded(el), line).toBe(true);
+    }
+    const water = document.querySelector(`[data-testid="card-${id}-row-water"] h3 > button`);
+    expect(water?.textContent).toContain(vi.farmer.yourPriority);
   });
 });
 
 /** Taps the source button showing `value` and returns the text of the sheet it opens. */
+// D-191: the P-03 rice control per season as rules/rotations.yaml holds it (P-03 pp. [2], [4]-[5]), never summed
+const P03_UNIT = { vi: 'triệu đồng/ha', en: 'million VND/ha' };
+const P03_SEASONS: SeasonValue[] = [
+  {
+    season: 'spring',
+    value: { value: '5.36', unit: P03_UNIT, source_ids: ['R-P03'] },
+    page: '4-5',
+    words: { vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha.', en: 'x' },
+  },
+  {
+    season: 'summer_autumn',
+    value: { value: '1.16', unit: P03_UNIT, source_ids: ['R-P03'] },
+    page: '4',
+    words: { vi: 'Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận".', en: 'x' },
+  },
+  { season: 'autumn_winter', value: null, page: '2', words: { vi: 'Vụ Thu Đông: bỏ hoang.', en: 'x' } },
+];
+
 function sheetOf(value: string, root: ParentNode = document): string {
   const button = [...root.querySelectorAll('button[data-value]')].find((e) => e.getAttribute('data-value') === value);
   if (!(button instanceof HTMLElement)) throw new Error(`no button ${value}`);
@@ -169,7 +211,6 @@ describe('money notes', () => {
     vi: 'Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau ở mọi cột; bài báo không giải thích điều này.',
     en: 'In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the paper does not explain this.',
   };
-  const P03_TEXT = { vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha.', en: 'x' };
   const money = (planIndex: number, study: 'R-P02' | 'R-P03') => {
     const res = validateCompare(compare(), body);
     const plan = res.plans[planIndex];
@@ -186,7 +227,7 @@ describe('money notes', () => {
         source_ids: ['R-P02'],
       };
     } else {
-      plan.money = { ...plan.money, definition: P03_DEF, items: [], total: null, text_only: P03_TEXT };
+      plan.money = { ...plan.money, definition: P03_DEF, items: [], total: null, season_values: P03_SEASONS };
       res.sources = { ...res.sources, 'R-P03': { ...res.sources['R-P02'], id: 'R-P03' } } as typeof res.sources;
     }
     render(
@@ -223,11 +264,31 @@ describe('money notes', () => {
   });
   // never compare P-03 money with P-02 money (UI-UX-SPEC section 9): the P-03 card keeps saying, in one plain line,
   // that its profit takes off material costs only
+  // D-192: the plain "in other words" line comes right under the number, before the source block
+  it('puts the plain line under the number of the whole-year total and the crop profit, before the source', () => {
+    money(2, 'R-P02');
+    for (const value of ['53.380 nghìn đồng/ha', '16.200 nghìn đồng/ha']) {
+      const sheet = sheetOf(value);
+      const plain = sheet.indexOf(vi.farmer.definitionPlain.p02);
+      expect(plain, value).toBeGreaterThan(sheet.indexOf(value));
+      expect(plain, value).toBeLessThan(sheet.indexOf(vi.sheet.placeYears));
+      expect(sheet.split(vi.farmer.definitionPlain.p02), value).toHaveLength(2);
+    }
+  });
   it('keeps the plain P-03 definition on the card and its paper definition in the sheet', () => {
     const text = money(1, 'R-P03');
     expect(text).toContain(vi.farmer.definitionPlain.p03);
     expect(text).not.toContain(P03_DEF.vi);
-    expect(sheetOf(P03_TEXT.vi)).toContain(P03_DEF.vi);
+    expect(sheetOf('5,36 triệu đồng/ha')).toContain(P03_DEF.vi);
+  });
+  it('shows each P-03 season as the paper gives it, in its million unit, with no whole-year total', () => {
+    const text = money(1, 'R-P03');
+    for (const shown of ['5,36', '1,16', 'triệu đồng/ha', 'Vụ Thu Đông: bỏ hoang.']) expect(text).toContain(shown);
+    expect(text).not.toContain(vi.farmer.own.yearSum);
+    expect(text).not.toContain('6,52'); // never the sum of the two seasons
+    expect(sheetOf('1,16 triệu đồng/ha')).toContain(vi.farmer.paperPage('4'));
+    expect(sheetOf('5,36 triệu đồng/ha')).toContain(P03_SEASONS[0]?.words.vi);
+    expect(sheetOf('Vụ Thu Đông: bỏ hoang.')).toContain(vi.farmer.paperPage('2'));
   });
 });
 
@@ -344,13 +405,9 @@ describe('per-year tables', () => {
 });
 
 // D-172: under the plan name, the card's money total and where its water facts are, each reusing the card's values.
-// Values from /api/compare (2026-11-15): the usual plan's total and the P-03 text of usual_p03.
+// Values from /api/compare (2026-11-15): the usual plan's total and the P-03 season values of usual_p03.
 describe('card summary', () => {
   afterEach(cleanup);
-  const P03_TEXT = {
-    vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha". Vụ Thu Đông: bỏ hoang.',
-    en: 'Spring-season rice 2021 (control): economic return ("hiệu quả kinh tế") 5.36 million VND/ha. Summer-autumn rice 2020 (control): "almost no profit, the economic return only reaches 1.16 million/ha" (our translation). Autumn-winter: fallow.',
-  };
   const head = (planIndex: number) => {
     const res = validateCompare(compare(), body);
     const usual = res.plans[0];
@@ -361,7 +418,7 @@ describe('card summary', () => {
       unit: { vi: 'nghìn đồng/ha', en: 'thousand VND/ha' },
       source_ids: ['R-P02', 'E-022'],
     };
-    p03.money = { ...p03.money, items: [], total: null, text_only: P03_TEXT };
+    p03.money = { ...p03.money, items: [], total: null, season_values: P03_SEASONS };
     res.sources = { ...res.sources, 'E-022': { ...res.sources['R-P02'], id: 'E-022' } } as typeof res.sources;
     const plan = res.plans[planIndex];
     if (!plan) throw new Error('no plan');
@@ -385,10 +442,10 @@ describe('card summary', () => {
     const button = box.querySelector('[data-value="30.799 nghìn đồng/ha"]');
     expect(button?.tagName).toBe('BUTTON');
   });
-  it('shows the P-03 money as its text only, with no total', () => {
+  it('shows the P-03 money of each season with its source button, with no total', () => {
     const { box } = head(1);
-    const button = [...box.querySelectorAll('[data-value]')].find((e) => e.getAttribute('data-value') === P03_TEXT.vi);
-    expect(button?.tagName).toBe('BUTTON');
+    for (const shown of ['5,36 triệu đồng/ha', '1,16 triệu đồng/ha', 'Vụ Thu Đông: bỏ hoang.'])
+      expect(box.querySelector(`button[data-value="${shown}"]`), shown).not.toBeNull();
     expect(box.textContent).not.toContain(vi.farmer.own.yearSum);
     expect(box.textContent).not.toContain('30.799');
   });
@@ -417,6 +474,8 @@ describe('card summary', () => {
     expect(scroll).toHaveBeenCalledTimes(1);
     expect(document.activeElement).toBe(row);
     expect(row?.getAttribute('tabindex')).toBe('-1');
+    // D-187 item 4: the water row folds, so the link opens it
+    expect(row?.querySelector('h3 > button')?.getAttribute('aria-expanded')).toBe('true');
   });
 });
 
@@ -501,7 +560,10 @@ describe('explain simply', () => {
   it('says only that the part could not be reworded on a 502', async () => {
     answer(502, { detail: 'Bad Gateway' });
     const { row } = card(true);
-    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.why) }));
+    // the row's own heading button also starts with "Vì sao", so the name starts with the explain button's text
+    fireEvent.click(
+      row.getByRole('button', { name: new RegExp(`^${vi.farmer.explain.button}.*${vi.farmer.whyParts.why}`) }),
+    );
     expect(await row.findByText('Không viết lại được đoạn này. Hãy đọc đoạn gốc ở trên.')).not.toBeNull();
     expect(en.farmer.explain.refused).toBe('Could not reword this part. Please read the text above.');
   });
@@ -720,15 +782,94 @@ describe('questions for the officer', () => {
     if (!row) throw new Error('no checks row');
     return [...row.querySelectorAll('ol li')].map((li) => li.textContent);
   };
-  it('lists the officer page questions of the plan, in their order', () => {
-    expect(questions('cc1')).toEqual(decisionPlan('cc1')?.questions_for_officer.map((q) => q.vi));
+  // D-191: the trial-field question every plan shares is asked once, in the closing box of the plans page
+  const ownQuestions = (id: 'cc1' | 'cc5') =>
+    (decisionPlan(id)?.questions_for_officer ?? [])
+      .filter((q) => !q.en.includes('like the trial field'))
+      .map((q) => q.vi);
+  it('lists the officer page questions of the plan, in their order, without the shared trial-field one', () => {
+    expect(questions('cc1')).toEqual(ownQuestions('cc1'));
     cleanup();
-    expect(questions('usual')).toEqual(decisionPlan('cc5')?.questions_for_officer.map((q) => q.vi));
+    expect(questions('usual')).toEqual(ownQuestions('cc5'));
+    expect(ownQuestions('cc1').length).toBeGreaterThan(0);
+    expect(questions('usual').join(' ')).not.toContain('ruộng thử ở Lưu Sơn');
+    expect(vi.farmer.officerQuestions[0]).toContain('ruộng thử nghiệm ở Lưu Sơn');
   });
   it('heads them with the take-to-the-officer label', () => {
     questions('cc1');
     const row = document.querySelector('[data-testid="card-cc1-row-checks"]');
     expect(row?.textContent).toContain(vi.farmer.askOfficer);
     expect(decisionPlan('cc1')?.questions_for_officer.length).toBeGreaterThan(0);
+  });
+});
+
+// D-192 (screen check of the plans page, 2026-11-15)
+describe('screen check details', () => {
+  afterEach(cleanup);
+  const card = (id: 'usual' | 'cc1' | 'cc2', languages = ['vi-VN', 'vi'], priority: 'income' | 'land' = 'income') => {
+    Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
+    onTestFinished(() => {
+      Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+    });
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === id);
+    if (!plan) throw new Error('no plan');
+    return { res, plan, priority };
+  };
+  const show = ({ res, plan, priority }: ReturnType<typeof card>) =>
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority={priority} own={own} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+  it('points from the bad-weather table to the irrigation row for drought, in both languages', () => {
+    show(card('cc1'));
+    const fold = document.getElementById('card-cc1-weather-years');
+    expect(fold?.firstElementChild?.textContent).toBe('Hạn hán: xem mục “Nước tưới” bên dưới.');
+    expect(vi.farmer.rows.water).toBe('Nước tưới');
+    cleanup();
+    show(card('cc1', ['en-GB', 'en']));
+    expect(document.getElementById('card-cc1-weather-years')?.firstElementChild?.textContent).toBe(
+      'Drought: see “Irrigation” below.',
+    );
+    expect(en.farmer.rows.water).toBe('Irrigation');
+  });
+  it('names each risk source button by the word source and its short line, once', () => {
+    const c = card('cc2');
+    c.plan.why.risks = (rulebookPlan('cc2')?.risk_lines ?? []).map((r) => ({
+      text: r.text,
+      source_ids: [r.source_id],
+    }));
+    for (const id of ['R-P03', 'R-C13', 'R-G06', 'R-G27'])
+      c.res.sources = { ...c.res.sources, [id]: { ...c.res.sources['R-P02'], id } } as typeof c.res.sources;
+    const view = show(c);
+    const line = vi.farmer.considerations.market.line;
+    const button = view.getByRole('button', { name: `Nguồn: ${line}` });
+    expect(button.textContent).not.toMatch(/Nguồn.*Nguồn/);
+  });
+  it('says 1 crop, not 1 crops, in English and keeps loại cây in Vietnamese', () => {
+    const one = (c: ReturnType<typeof card>) => {
+      c.plan.land.crops_in_year.value = { value: '1', unit: { vi: 'loại cây', en: 'crops' }, source_ids: ['R-P02'] };
+      return c;
+    };
+    show(one(card('cc1', ['en-GB', 'en'])));
+    const values = () => [...document.querySelectorAll('[data-testid="card-cc1-row-land"] [data-value]')];
+    expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 crop');
+    cleanup();
+    show(one(card('cc1')));
+    expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 loại cây');
+  });
+  it('writes et al. in English where Vietnamese writes và cs.', () => {
+    show(card('cc1', ['en-GB', 'en'], 'land'));
+    const line = document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent ?? '';
+    expect(line).toContain('Trịnh Đức Toàn et al. 2023');
+    expect(line).not.toContain('và cs.');
+    cleanup();
+    show(card('cc1', ['vi-VN', 'vi'], 'land'));
+    expect(document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent).toContain(
+      'Trịnh Đức Toàn và cs. 2023',
+    );
   });
 });

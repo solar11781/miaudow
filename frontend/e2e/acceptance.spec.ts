@@ -46,7 +46,10 @@ async function openPlans(page: Page): Promise<Compare> {
 
 // the per-year share tables fold (UI-UX-SPEC section 9); open them so their buttons count too
 async function openFolds(page: Page) {
-  const folded = page.locator('main button[aria-controls$="-years"][aria-expanded="false"]');
+  // the card rows (D-187 item 4) and the per-year tables inside them (D-170)
+  const folded = page.locator(
+    'main button:is([aria-controls$="-body"], [aria-controls$="-years"])[aria-expanded="false"]',
+  );
   await folded.evaluateAll((folds) => folds.forEach((b) => (b as HTMLButtonElement).click()));
   await expect(folded).toHaveCount(0);
 }
@@ -232,6 +235,9 @@ test('T26 every stability block shows its years count and its scope', async ({ p
       .filter({ hasText: yearsCount(years_count) })
       .filter({ hasText: scope.vi });
     await expect(lines, `card ${id}`).toHaveCount(same.length);
+    // D-187 item 4: the weather row folds behind its heading button
+    const fold = page.getByTestId(`card-${id}-row-weather`).locator('h3 > button');
+    if ((await fold.getAttribute('aria-expanded')) === 'false') await fold.click();
     await expect(lines.first()).toBeVisible();
   }
 });
