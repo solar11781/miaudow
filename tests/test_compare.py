@@ -26,7 +26,7 @@ PCT = {"vi": "%", "en": "%"}
 SHARE_IDS = ["R-A01", "R-N01", "R-N02", "E-019"]  # hazard_labels.json crop rows: threshold, values, computed_by
 SOIL_IDS = ["R-N01", "R-W12", "R-N02", "R-A15", "E-020"]  # soil_wetness.json rows: source_ids, computed_by
 REAL_IDS = ["R-D01", "E-010"]  # risk_table.json anom_history_source_ids
-P02_UNIT = {"vi": "nghìn đồng/ha", "en": "thousand đ/ha"}  # rules/rotations.yaml reported_economics.unit
+P02_UNIT = {"vi": "nghìn đồng/ha", "en": "thousand VND/ha"}  # rules/rotations.yaml reported_economics.unit
 WHY_PARTS = ("why", "evidence", "benefits", "gaps")
 
 
@@ -259,7 +259,7 @@ def test_money_items_carry_the_study_yield_and_price(resp: dict, plan_id: str) -
     assert [(i["crop_key"], i["yield"]["value"], i["price"]["value"]) for i in items] == P02_YIELD_PRICE[plan_id]
     for item in items:
         assert item["yield"]["unit"] == {"vi": "tấn/ha", "en": "t/ha"}
-        assert item["price"]["unit"] == {"vi": "đồng/kg", "en": "đ/kg"}
+        assert item["price"]["unit"] == {"vi": "đồng/kg", "en": "VND/kg"}
         assert item["yield"]["source_ids"] == item["price"]["source_ids"] == ["R-P02"]
 
 

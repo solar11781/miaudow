@@ -89,6 +89,15 @@ describe('home page order', () => {
     expect(start?.getAttribute('href')).toBe('/nong-dan/ruong');
   });
 
+  // screen check 2026-11-15: steps 2-4 need the earlier answers, so their links ended on "an answer is missing"
+  it('shows the four steps as an outline whose only way in is the start button', () => {
+    renderHome();
+    const steps = document.querySelector('section[aria-labelledby="steps-title"]');
+    expect(steps?.querySelectorAll('ol li')).toHaveLength(4);
+    expect(steps?.querySelectorAll('ol a')).toHaveLength(0);
+    expect([...(steps?.querySelectorAll('a') ?? [])].map((a) => a.getAttribute('href'))).toEqual(['/nong-dan/ruong']);
+  });
+
   it('folds what each AI core uses, gives and cannot do yet, one tap away, so the proof part is shorter', () => {
     renderHome();
     const folds = [...document.querySelectorAll('#cores article details')];

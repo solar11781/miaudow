@@ -764,6 +764,32 @@ export const vi = {
     drySpell: 'Đợt khô dài nhất',
     hotDays: 'Ngày từ 35 °C',
     gridNote: 'Số theo ô lưới NASA POWER (mô hình), không đo tại ruộng.',
+    monthTip: (y: number, m: number, value: string) => `${y}, tháng ${m}: ${value}`,
+    days: (n: string) => `${n} ngày`,
+    annualDetail: (base: string, normal: string) =>
+      `Tổng mưa 12 tháng, trung bình theo trọng số đất trồng của 5 ô NASA POWER. Bình thường ${base}: ${normal} mm.`,
+    dryMonthsDetail: (base: string, months: string) =>
+      `Tháng có mưa thấp hơn một nửa mức bình thường ${base} (QĐ 18/2021, Điều 48): ${months || 'không có'}.`,
+    drySpellDetail:
+      'Số ngày liền mưa dưới 1 mm dài nhất trong năm (chỉ số CDD, Zhang và cs. 2011), trung bình theo trọng số các ô.',
+    hotDaysDetail:
+      'Ngày có nhiệt độ cao nhất từ 35 °C (ngưỡng dưới của QĐ 18/2021, Điều 47), trung bình theo trọng số các ô.',
+    powerDetail:
+      'Tổng 12 tháng của PRECTOTCORR (mô hình tái phân tích), ô 0,5° × 0,625°. Tháng thiếu ngày thì không cộng.',
+    chirpsDetail:
+      'Tổng 12 tháng của CHIRPS v3 (vệ tinh kết hợp trạm đo, 0,05°), trung bình các điểm ảnh thuộc Nghệ An trong ô. Bản cuối, không dùng bản sơ bộ.',
+  },
+  places: {
+    trialSite: 'Lưu Sơn (cũ) · nơi thử nghiệm',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIỆT NAM',
+    hanoi: 'Hà Nội',
+    vinh: 'Vinh',
+    ngheAn: 'NGHỆ AN',
+    formerDoLuong: 'Đô Lương (cũ)',
+    hoangSa: 'QĐ. Hoàng Sa (Việt Nam)',
+    truongSa: 'QĐ. Trường Sa (Việt Nam)',
+    phuQuoc: 'Đảo Phú Quốc',
   },
   media: {
     illustration: 'Do AI tạo, không phải ảnh thật',
