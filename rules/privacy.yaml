@@ -21,3 +21,5 @@ paragraphs:
     en: "Google carries out the sign-in itself, under Google's privacy policy. Google's sign-in script runs only on the sign-in page and the saved answers page, and may set cookies there."
   - vi: "Nhật ký mạng của Railway giữ địa chỉ IP và đường dẫn trang trong 7 ngày; câu trả lời của bạn không bao giờ nằm trong đường dẫn đó."
     en: "Railway's network logs keep the IP address and the page path for 7 days; your answers are never in that path."
+  - vi: "Trợ lý và nút “Giải thích dễ hiểu” dùng Claude, AI của Anthropic, qua máy chủ của chúng tôi. Trợ lý gửi câu hỏi bạn gõ tới Anthropic để chọn những đoạn trả lời; nút giải thích chỉ gửi văn bản có sẵn của ứng dụng. Đừng gõ tên, số điện thoại hay thông tin riêng vào câu hỏi."
+    en: "The assistant and the “explain simply” button use Claude, Anthropic's AI, through our server. The assistant sends the question you type to Anthropic to pick the passages of its answer; the explain button sends only the app's own text. Do not type names, phone numbers or other personal details into a question."
