@@ -130,15 +130,13 @@ test('T10 /dang-nhap does not scroll sideways once the Google button is shown', 
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test('T32 the saved answers page is reachable from the menu, the footer and the farmer start page', async ({
-  page,
-}, info) => {
+// member A, 2026-11-15: the footer no longer carries the saved answers link; the menu and the start page do
+test('T32 the saved answers page is reachable from the menu and the farmer start page', async ({ page }, info) => {
   await signInOn(page);
   await page.goto('/#/nong-dan');
   await page.getByRole('main').getByRole('link', { name: 'Câu trả lời đã lưu' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Câu trả lời đã lưu' })).toBeVisible();
   await page.goto('/#/can-bo');
-  await expect(page.locator('footer').getByRole('link', { name: 'Câu trả lời đã lưu' })).toBeVisible();
   if (info.project.name === 'phone-360') {
     await page.getByRole('button', { name: 'Mở menu' }).click();
     await page.getByRole('dialog').getByRole('link', { name: 'Câu trả lời đã lưu' }).click();

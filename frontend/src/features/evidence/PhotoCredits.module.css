@@ -1,0 +1,6 @@
+.credits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  font-size: var(--t-small);
+}

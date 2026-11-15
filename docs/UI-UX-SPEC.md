@@ -917,9 +917,12 @@ item 5):
 
 ## 12b. Footer, About page, Sources and credits page
 
-- Every page has a footer: links `footer.about` -> `/gioi-thieu`, `footer.sources` -> `/nguon` (each at least 44 x 44
-  px, H7), and the line `common.dataLine` (H19). MUST NOT show any NASA, FAO or Space Apps logo. MUST NOT mention
-  Space Apps anywhere in the app. MUST NOT imply endorsement by NASA, FAO, NSO or any ministry.
+- Every page has a short footer (member A, 2026-11-15): the Miaudow emblem and wordmark, the reminder
+  `common.support`, two links (`footer.privacy` to the privacy page, `footer.code` to the code repository, each at
+  least 44 x 44 px, H7) and the team and licence line `footer.team`. Nothing else: no copy of the menu, no data line,
+  no build time. Data credits stay next to the values they credit; the photo credits are a section of the evidence
+  page (`evidence.photosTitle`). MUST NOT show any NASA, FAO or Space Apps logo. MUST NOT mention Space Apps anywhere
+  in the app. MUST NOT imply endorsement by NASA, FAO, NSO or any ministry.
 - `/gioi-thieu` (title `about.title`) sections, in this order:
   1. What it is and who it is for: compares a few tested one-year crop plans for drought-prone, low-productivity rice
      land in Nghệ An; it compares, it does not decide.
