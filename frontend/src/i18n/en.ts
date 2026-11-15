@@ -123,12 +123,18 @@ export const en: Messages = {
   home: {
     titleA: 'Our village fields,',
     titleB: 'read with data from space.',
-    lead: 'More than 30 years of NASA weather next to 6 ways of farming tested in Đô Lương, so each family can compare before the next season.',
     ctaFarmer: 'Understand my field',
     ctaScience: 'Explore Nghệ An data',
     ctaCopilot: 'Ask the copilot',
-    ctaCores: 'What do the four AI cores do?',
     pause: 'Pause photos',
+    aboutTitle: 'What does this app do?',
+    about: [
+      'Water-short rice land in Nghệ An: compares 6 tested ways of farming, keeping rice among them.',
+      'Looks back at past years with NASA data. No forecast of next season.',
+      'Does not choose for your family, and scores nothing.',
+    ],
+    moreTitle: 'For extension officers',
+    moreLead: 'The data, the AI cores and the model test behind the app. Farmers do not need this part to use it.',
     play: 'Play photos',
     // the paper's own land words (D-160), in the translation rules/rotations.yaml and the officer page use
     problemTitle: 'Low-return (inefficient) rice land, often in drought',
@@ -147,6 +153,7 @@ export const en: Messages = {
     coreUses: 'Uses',
     coreGives: 'Gives',
     coreLimit: 'Cannot do yet',
+    coreMore: 'What it uses, what it gives, what it cannot do yet',
     coreOpen: (where: string) => `See it on ${where}`,
     cores: [
       {
@@ -191,7 +198,7 @@ export const en: Messages = {
       'Each bar is one year, 1995–2024: the share of Nghệ An farmland that met the drought condition of Decision 18/2021 while crops were in the field.',
     droughtAxis: 'Share of farmland meeting the condition',
     evidenceCta: 'See the evidence',
-    stepsTitle: 'Four taps, no typing',
+    stepsTitle: 'Four steps, no typing',
     stepLabel: (n: number) => `Step ${n}`,
     steps: [
       { title: 'What is your field like?', body: 'High field, canal end, or reliable water. One tap.' },

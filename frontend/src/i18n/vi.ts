@@ -121,12 +121,19 @@ export const vi = {
   home: {
     titleA: 'Ruộng làng ta,',
     titleB: 'đọc bằng dữ liệu vũ trụ.',
-    lead: 'Hơn 30 năm mưa nắng từ NASA, đặt cạnh 6 cách trồng đã thử ở Đô Lương. Để mỗi nhà tự so sánh trước mùa tới.',
     ctaFarmer: 'Tìm hiểu ruộng nhà mình',
     ctaScience: 'Khám phá dữ liệu Nghệ An',
     ctaCopilot: 'Hỏi trợ lý',
-    ctaCores: 'Bốn lõi AI làm gì?',
     pause: 'Dừng ảnh',
+    aboutTitle: 'Ứng dụng này làm gì?',
+    about: [
+      'Ruộng lúa thiếu nước ở Nghệ An: so sánh 6 cách trồng đã thử, kể cả giữ lúa.',
+      'Xem lại các năm đã qua bằng số liệu NASA. Không dự báo mùa tới.',
+      'Không chọn thay gia đình bạn, không chấm điểm.',
+    ],
+    moreTitle: 'Cho cán bộ khuyến nông',
+    moreLead:
+      'Dữ liệu, các lõi AI và bài kiểm tra mô hình đứng sau ứng dụng. Bà con không cần đọc phần này để dùng ứng dụng.',
     play: 'Chạy ảnh',
     // lời của bài báo về đất (D-160)
     problemTitle: 'Đất lúa kém hiệu quả, thường xuyên khô hạn',
@@ -144,6 +151,7 @@ export const vi = {
     coreUses: 'Dùng',
     coreGives: 'Cho ra',
     coreLimit: 'Chưa làm được',
+    coreMore: 'Dùng gì, cho ra gì, chưa làm được gì',
     coreOpen: (where: string) => `Xem ở ${where}`,
     cores: [
       {
@@ -188,7 +196,7 @@ export const vi = {
       'Mỗi cột là một năm, 1995–2024: phần đất trồng Nghệ An gặp điều kiện hạn của Quyết định 18/2021, trong lúc có cây trên ruộng.',
     droughtAxis: 'Phần đất trồng gặp điều kiện',
     evidenceCta: 'Xem bằng chứng',
-    stepsTitle: 'Bốn lần chạm, không phải gõ chữ',
+    stepsTitle: 'Bốn bước, không phải gõ chữ',
     stepLabel: (n: number) => `Bước ${n}`,
     steps: [
       { title: 'Ruộng nhà mình thế nào?', body: 'Ruộng cao, cuối kênh, hay chủ động nước. Một chạm.' },
