@@ -31,6 +31,7 @@ from fieldshift.engine.schemas import (
     Rule,
     RuleCode,
     SeasonCode,
+    SourcedLine,
     SourceFacts,
     SourceId,
     Text,
@@ -412,6 +413,7 @@ class MethodTexts(BaseModel):
     explain_terms: list[ExplainTerm]
     datasets_not_used: list[NotUsedDataset] = Field(min_length=1)
     limitations: list[Text] = Field(min_length=1)
+    picsa: SourcedLine
 
 
 class MlWindow(Entry):

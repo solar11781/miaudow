@@ -425,6 +425,12 @@ class NotUsedDataset(Contract):
     source_ids: list[SourceId] = Field(min_length=1)
 
 
+class SourcedLine(Contract):
+    """The sources of a fixed method-page sentence whose text is an i18n key (§11b item 5: `method.picsa`)."""
+
+    source_ids: list[SourceId] = Field(min_length=1)
+
+
 class RainMonth(Contract):
     month: str
     imerg: Value
@@ -450,6 +456,7 @@ class MethodResponse(Contract):
     explain_terms: list[ExplainTerm]
     limitations: list[Text]
     datasets_not_used: list[NotUsedDataset]
+    picsa: SourcedLine
     rain_check: RainCheck | None
     sources: dict[SourceId, SourceFacts]
 

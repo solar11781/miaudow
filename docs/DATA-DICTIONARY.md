@@ -413,6 +413,7 @@ axis, text {vi, en}, source_ids; one cell per row_key and axis, checked by a tes
 `crops.yaml` and the gates), `explain_terms` (the six `ExplainTerm` entries of UI-UX-SPEC §11b item 3 with
 source_ids), `datasets_not_used` (the datasets considered and not used, each with the dataset, why it was not used and
 its source; its own field in the method response, UI-UX-SPEC §11b item 4b), `limitations` (a list of {vi, en}),
+`picsa` (`{source_ids}`: the sources of the PICSA sentence, whose text is the i18n key `method.picsa`; D-63),
 `stability_scope` {vi, en} (the card scope text, ML-DESIGN.md §5b, with no number) and `season_labels` ({vi, en} with
 source_ids for each season code). The engine copies `stability_scope` into `Stability.scope` and `season_labels` into
 `Season.label`. `GET /api/method` serves this content.
