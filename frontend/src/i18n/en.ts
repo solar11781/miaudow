@@ -729,7 +729,7 @@ export const en: Messages = {
     gridNote: 'NASA POWER grid values (a model), not measured on a farm.',
   },
   media: {
-    illustration: 'Illustration, not a photograph',
+    illustration: 'AI-generated, not a photograph',
     photo: 'Photograph',
     pause: 'Pause the image motion',
     play: 'Play the image motion',
@@ -1077,7 +1077,7 @@ export const en: Messages = {
     team: 'Team Miaudow · NASA Space Apps Challenge 2026, Hanoi · Field Shift challenge',
     photos: 'Photographs and licences',
     photosLead:
-      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “Illustration” are machine-made, not photographs of Nghệ An.',
+      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” (the words are also printed on the picture) are not photographs of Nghệ An.',
     licence: 'Licence',
     source: 'Original file page',
     built: 'Data generated',
