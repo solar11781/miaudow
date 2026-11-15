@@ -60,6 +60,10 @@
 .credits :global(a) {
   text-decoration: underline;
 }
+/* CesiumJS shows and hides this link through its inline display, so padding (not min-height) makes the 44 px target */
+.credits :global(.cesium-credit-expand-link) {
+  padding-block: 11px;
+}
 .credits :global(img) {
   height: 18px;
   vertical-align: middle;
