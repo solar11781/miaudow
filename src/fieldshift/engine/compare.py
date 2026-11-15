@@ -59,6 +59,7 @@ from fieldshift.engine.schemas import (
     Rule,
     Season,
     SeasonCode,
+    SeasonValue,
     SoilWetness,
     SourceFacts,
     SourceId,
@@ -270,7 +271,7 @@ def _money(plan: PlanEntry, calendar: list[CropSpan]) -> Money:
         if unknown:
             raise ValueError(f"rules/rotations.yaml: {plan.id} {field} names crops not in the plan: {unknown}")
     items: list[MoneyItem] = []
-    if econ.profit_per_crop:  # P-03 reports money as text only (§7)
+    if econ.profit_per_crop:  # P-03 reports money per season only, in season_values (D-191)
         per_crop = (econ.profit_per_crop, econ.yield_per_crop, econ.price_per_crop)
         missing = [key for key in keys if any(key not in values for values in per_crop)]
         if missing or econ.unit is None or econ.yield_unit is None or econ.price_unit is None:
@@ -292,6 +293,17 @@ def _money(plan: PlanEntry, calendar: list[CropSpan]) -> Money:
                     flag=econ.flags.get(span.crop_key),
                 )
             )
+    if econ.season_values and (items or econ.unit is None):
+        raise ValueError(f"rules/rotations.yaml: {plan.id} season_values need the unit and no per-crop money (D-191)")
+    season_values = [
+        SeasonValue(
+            season=v.season,
+            value=None if v.value is None else Value(value=v.value, unit=econ.unit, source_ids=[econ.source_id]),
+            page=v.page,
+            words=v.words,
+        )
+        for v in econ.season_values
+    ]
     total = None
     if items:
         amount = sum(_amount(i.profit.value, f"{plan.id} {i.crop_key} profit") for i in items)
@@ -301,7 +313,7 @@ def _money(plan: PlanEntry, calendar: list[CropSpan]) -> Money:
         total=total,
         price_year=econ.price_year,
         definition=econ.definition,
-        text_only=econ.text_only,
+        season_values=season_values,
     )
 
 

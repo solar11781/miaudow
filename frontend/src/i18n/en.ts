@@ -374,6 +374,7 @@ export const en: Messages = {
     profit: 'Net profit in the trial',
     profitTable: 'Net profit: Table 13 of the paper (p. 50).',
     paperDefinition: (definition: string) => `How the paper counts it: ${definition}.`,
+    paperPage: (page: string) => `The paper, p. ${page}.`,
     cost: 'Total cost in the trial',
     ourSum: 'our addition of the profit values, not reported as a sequence',
     ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',

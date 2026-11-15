@@ -11,7 +11,7 @@ import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { SOURCES } from '../../domain/sources';
 import { decisionPlan, rulebookPlan } from '../../data/rulebook';
-import type { Plan } from '../../types';
+import type { Plan, SeasonValue } from '../../types';
 
 const own = { values: NO_OWN, set: () => undefined };
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
@@ -191,6 +191,24 @@ describe('card face', () => {
 });
 
 /** Taps the source button showing `value` and returns the text of the sheet it opens. */
+// D-191: the P-03 rice control per season as rules/rotations.yaml holds it (P-03 pp. [2], [4]-[5]), never summed
+const P03_UNIT = { vi: 'triệu đồng/ha', en: 'million VND/ha' };
+const P03_SEASONS: SeasonValue[] = [
+  {
+    season: 'spring',
+    value: { value: '5.36', unit: P03_UNIT, source_ids: ['R-P03'] },
+    page: '4-5',
+    words: { vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha.', en: 'x' },
+  },
+  {
+    season: 'summer_autumn',
+    value: { value: '1.16', unit: P03_UNIT, source_ids: ['R-P03'] },
+    page: '4',
+    words: { vi: 'Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận".', en: 'x' },
+  },
+  { season: 'autumn_winter', value: null, page: '2', words: { vi: 'Vụ Thu Đông: bỏ hoang.', en: 'x' } },
+];
+
 function sheetOf(value: string, root: ParentNode = document): string {
   const button = [...root.querySelectorAll('button[data-value]')].find((e) => e.getAttribute('data-value') === value);
   if (!(button instanceof HTMLElement)) throw new Error(`no button ${value}`);
@@ -214,7 +232,6 @@ describe('money notes', () => {
     vi: 'Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau ở mọi cột; bài báo không giải thích điều này.',
     en: 'In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the paper does not explain this.',
   };
-  const P03_TEXT = { vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha.', en: 'x' };
   const money = (planIndex: number, study: 'R-P02' | 'R-P03') => {
     const res = validateCompare(compare(), body);
     const plan = res.plans[planIndex];
@@ -231,7 +248,7 @@ describe('money notes', () => {
         source_ids: ['R-P02'],
       };
     } else {
-      plan.money = { ...plan.money, definition: P03_DEF, items: [], total: null, text_only: P03_TEXT };
+      plan.money = { ...plan.money, definition: P03_DEF, items: [], total: null, season_values: P03_SEASONS };
       res.sources = { ...res.sources, 'R-P03': { ...res.sources['R-P02'], id: 'R-P03' } } as typeof res.sources;
     }
     render(
@@ -283,7 +300,16 @@ describe('money notes', () => {
     const text = money(1, 'R-P03');
     expect(text).toContain(vi.farmer.definitionPlain.p03);
     expect(text).not.toContain(P03_DEF.vi);
-    expect(sheetOf(P03_TEXT.vi)).toContain(P03_DEF.vi);
+    expect(sheetOf('5,36 triệu đồng/ha')).toContain(P03_DEF.vi);
+  });
+  it('shows each P-03 season as the paper gives it, in its million unit, with no whole-year total', () => {
+    const text = money(1, 'R-P03');
+    for (const shown of ['5,36', '1,16', 'triệu đồng/ha', 'Vụ Thu Đông: bỏ hoang.']) expect(text).toContain(shown);
+    expect(text).not.toContain(vi.farmer.own.yearSum);
+    expect(text).not.toContain('6,52'); // never the sum of the two seasons
+    expect(sheetOf('1,16 triệu đồng/ha')).toContain(vi.farmer.paperPage('4'));
+    expect(sheetOf('5,36 triệu đồng/ha')).toContain(P03_SEASONS[0]?.words.vi);
+    expect(sheetOf('Vụ Thu Đông: bỏ hoang.')).toContain(vi.farmer.paperPage('2'));
   });
 });
 
@@ -400,13 +426,9 @@ describe('per-year tables', () => {
 });
 
 // D-172: under the plan name, the card's money total and where its water facts are, each reusing the card's values.
-// Values from /api/compare (2026-11-15): the usual plan's total and the P-03 text of usual_p03.
+// Values from /api/compare (2026-11-15): the usual plan's total and the P-03 season values of usual_p03.
 describe('card summary', () => {
   afterEach(cleanup);
-  const P03_TEXT = {
-    vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha". Vụ Thu Đông: bỏ hoang.',
-    en: 'Spring-season rice 2021 (control): economic return ("hiệu quả kinh tế") 5.36 million VND/ha. Summer-autumn rice 2020 (control): "almost no profit, the economic return only reaches 1.16 million/ha" (our translation). Autumn-winter: fallow.',
-  };
   const head = (planIndex: number) => {
     const res = validateCompare(compare(), body);
     const usual = res.plans[0];
@@ -417,7 +439,7 @@ describe('card summary', () => {
       unit: { vi: 'nghìn đồng/ha', en: 'thousand VND/ha' },
       source_ids: ['R-P02', 'E-022'],
     };
-    p03.money = { ...p03.money, items: [], total: null, text_only: P03_TEXT };
+    p03.money = { ...p03.money, items: [], total: null, season_values: P03_SEASONS };
     res.sources = { ...res.sources, 'E-022': { ...res.sources['R-P02'], id: 'E-022' } } as typeof res.sources;
     const plan = res.plans[planIndex];
     if (!plan) throw new Error('no plan');
@@ -441,10 +463,10 @@ describe('card summary', () => {
     const button = box.querySelector('[data-value="30.799 nghìn đồng/ha"]');
     expect(button?.tagName).toBe('BUTTON');
   });
-  it('shows the P-03 money as its text only, with no total', () => {
+  it('shows the P-03 money of each season with its source button, with no total', () => {
     const { box } = head(1);
-    const button = [...box.querySelectorAll('[data-value]')].find((e) => e.getAttribute('data-value') === P03_TEXT.vi);
-    expect(button?.tagName).toBe('BUTTON');
+    for (const shown of ['5,36 triệu đồng/ha', '1,16 triệu đồng/ha', 'Vụ Thu Đông: bỏ hoang.'])
+      expect(box.querySelector(`button[data-value="${shown}"]`), shown).not.toBeNull();
     expect(box.textContent).not.toContain(vi.farmer.own.yearSum);
     expect(box.textContent).not.toContain('30.799');
   });
