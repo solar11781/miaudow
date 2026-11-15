@@ -2,7 +2,7 @@ import type { CSSProperties, ElementType, ReactNode } from 'react';
 
 /**
  * A plain wrapper. It used to fade every block up on scroll, which reads as a template; the pages now choose one
- * authored GSAP moment each (src/motion). Kept so callers keep their markup; `delay` is accepted and ignored.
+ * authored GSAP moment each (src/motion). Kept so callers keep their markup.
  */
 export function Reveal({
   as: Tag = 'div',
@@ -14,7 +14,6 @@ export function Reveal({
   as?: ElementType;
   children: ReactNode;
   className?: string;
-  delay?: number;
   id?: string;
   style?: CSSProperties;
 }) {
