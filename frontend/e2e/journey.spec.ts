@@ -132,7 +132,7 @@ test('T33 language switch changes the whole interface', async ({ page }) => {
     await page.getByRole('button', { name: 'Mở menu' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Switch to English' }).click();
   }
-  await expect(page.getByRole('heading', { level: 1, name: 'Nghệ An across 30 seasons' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Nghe An across 30 seasons' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 

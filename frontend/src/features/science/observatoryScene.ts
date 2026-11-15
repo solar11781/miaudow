@@ -45,7 +45,7 @@ const HMAX = 6.5; // column height for the largest value of the chosen measure, 
 // The trial commune's map marker (Wikidata Q10788283) and Vinh, for orientation only.
 export const PLACES = [
   { id: 'vinh', lat: 18.68, lon: 105.68, vi: 'TP Vinh', en: 'Vinh city' },
-  { id: 'doluong', lat: 18.8964, lon: 105.2803, vi: 'Lưu Sơn · nơi thử nghiệm', en: 'Lưu Sơn · trial site' },
+  { id: 'doluong', lat: 18.8964, lon: 105.2803, vi: 'Lưu Sơn · nơi thử nghiệm', en: 'Luu Son · trial site' },
 ];
 export const WEIGHTED = geo.grid.filter((c) => c.weight > 0);
 
