@@ -69,7 +69,7 @@ const ZOOM_GAPS: Record<string, string> = {
   ...Object.fromEntries(SCENES.map((c) => [`/#/dai-quan-sat?canh=${c}`, PHOTO_STAGE])),
   '/#/nong-dan': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
   '/#/nong-dan/ruong': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
-  [PLANS_URL]: 'the plan card cuts the "Bạn quan tâm" label and the land-care rule lines at 180 px',
+  [PLANS_URL]: 'the plan card cuts the "Bạn quan tâm" label and a long question line at 180 px',
   '/#/tro-ly': 'the copilot page header cuts its title and lead at 180 px',
 };
 
