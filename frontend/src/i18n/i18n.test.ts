@@ -46,6 +46,19 @@ describe('translations', () => {
     expect(vi.common.winterFragile).toBe(report?.title.vi);
     expect(en.common.winterFragile).toBe(report?.title.en);
   });
+  // CLAUDE.md: money is the trial's, never the farmer's; a reference is not a forecast (final audit, 2026-11-15)
+  it('qualify every profit summary with the trial and never call the baseline a forecast', () => {
+    const vis = strings(vi);
+    const ens = strings(en);
+    for (const s of ['Tiền lãi cả năm trong thử nghiệm', 'Lãi cả năm trong thử nghiệm, ba vụ cộng lại'])
+      expect(vis).toContain(s);
+    for (const s of ['Profit over the year in the trial', 'Yearly profit in the trial, three seasons added'])
+      expect(ens).toContain(s);
+    expect(vis.filter((s) => /tiền lãi, nước/.test(s))).toEqual([]);
+    expect(ens.filter((s) => / profit, (water|soil)/.test(s))).toEqual([]);
+    expect(vis.filter((s) => /dự báo trung bình/.test(s))).toEqual([]);
+    expect(ens.filter((s) => /climatology forecast/.test(s))).toEqual([]);
+  });
   it('say the copilot model only picks passages, shown word for word, and never words the answer (D-172)', () => {
     expect(en.copilot.claudeOn).toMatch(/word for word/);
     expect(vi.copilot.claudeOn).toMatch(/nguyên văn/);

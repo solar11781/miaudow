@@ -169,7 +169,7 @@ export const en: Messages = {
       },
       {
         name: 'Crop comparison core',
-        does: 'Puts 6 tested ways of farming side by side: 12-month calendar, profit, water, soil. No score, no ranking.',
+        does: 'Puts 6 tested ways of farming side by side: 12-month calendar, profit in the trial, water, soil. No score, no ranking.',
         uses: 'Trial results 2020–2021, TCVN 8641, NASA soil moisture',
         gives: 'Six comparison cards and questions to take to the extension officer',
         limit: 'Each way of farming was tested on one plot, in one year.',
@@ -203,7 +203,10 @@ export const en: Messages = {
         title: 'What matters most to your family?',
         body: 'Income, stability, water or soil. Only highlighted, never ranked.',
       },
-      { title: 'See and compare the plans', body: 'A 12-month calendar, profit, water, soil and what to ask next.' },
+      {
+        title: 'See and compare the plans',
+        body: 'A 12-month calendar, profit in the trial, water, soil and what to ask next.',
+      },
     ],
     obsTitle: 'From the rice field, to the satellite grid',
     obsLead:
@@ -241,7 +244,7 @@ export const en: Messages = {
     helpsTitle: 'This part helps you',
     helps: [
       'Look back at the dry, hot and wet years you remember, with NASA weather data.',
-      'Put 6 ways of farming tested in Đô Lương side by side: calendar, profit, water, soil.',
+      'Put 6 ways of farming tested in Đô Lương side by side: calendar, profit in the trial, water, soil.',
       'Have questions ready to take to the extension officer.',
     ],
     notTitle: 'This part does not',
@@ -291,7 +294,7 @@ export const en: Messages = {
     prioTitle: 'What matters most to your family?',
     prioHelp: 'Your answer only highlights one row on every card. The app never scores or ranks.',
     prios: {
-      income: { title: 'Income', body: 'Profit over the year' },
+      income: { title: 'Income', body: 'Profit over the year in the trial' },
       stability: { title: 'Stability', body: 'Less bad weather' },
       water: { title: 'Save water', body: 'Less irrigation needed' },
       land: { title: 'Care for the land', body: 'Keep the soil good for the long term' },
@@ -560,7 +563,7 @@ export const en: Messages = {
     toMethod: 'See the model test results on the Method page',
     skillTitle: 'Does the model beat simple guesses?',
     skillLead:
-      'Skill against the climatology forecast (B0) on the test years 2016–2024. Above 0 is better than B0. Bars are 90% confidence intervals.',
+      'Skill against the multi-year average (B0) on the test years 2016–2024. Above 0 is better than B0. Bars are 90% confidence intervals.',
     skillVsBnw: 'The deciding test: the model with weather against the same model without weather (BNW)',
     models: {
       m1_ridge: 'M1 · ridge + NASA weather',
@@ -1051,7 +1054,7 @@ export const en: Messages = {
     cropProfitLabel: (crop: string) => `Profit, ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
       `Table 13: ${profit} thousand VND/ha, net of labour. Cost ${cost} thousand VND/ha; price ${price} VND/kg at harvest.`,
-    planProfitLabel: 'Yearly profit, three seasons added',
+    planProfitLabel: 'Yearly profit in the trial, three seasons added',
     planProfitSum: 'Table 13, Miaudow’s sum',
     tcvnLabel: (crop: string) => `Irrigation, ${crop}`,
   },
