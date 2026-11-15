@@ -76,7 +76,7 @@ export const plan = (id: string) => ({
     },
   ],
   bare_periods: [{ from: '05-02', to: '01-31' }],
-  money: { items: [], total: null, price_year: null, definition: text, text_only: null },
+  money: { items: [], total: null, price_year: null, definition: text, season_values: [] },
   exposure: [
     {
       crop_key: `${id}_spring_rice`,

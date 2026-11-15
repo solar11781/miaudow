@@ -284,6 +284,15 @@ class CropSeason(Entry):
     harvest_to: MonthDay | None
 
 
+class SeasonValueEntry(Entry):
+    """One season's money as the study writes it (D-191): its value, or null where the study gives none, and its words."""
+
+    season: SeasonCode
+    value: str | None
+    page: str
+    words: Text
+
+
 class Economics(Entry):
     """`reported_economics` of a plan (05-DATA-CONTRACTS §7): money as the study reports it, per crop key."""
 
@@ -298,7 +307,7 @@ class Economics(Entry):
     price_per_crop: dict[str, str] = {}
     price_year: str | None
     flags: dict[str, Text] = {}
-    text_only: Text | None = None
+    season_values: list[SeasonValueEntry] = []
 
 
 class WhyParts(Entry):

@@ -318,7 +318,7 @@ def test_crop_keys_ids_and_dates() -> None:
             assert span["variety"] is None or is_text(span["variety"])
 
 
-# P-03 running text, pp. [4] and [5]: the authors' term, season name and units for the rice control
+# P-03 running text, pp. [4] and [5] (spring, summer-autumn): the authors' term, season name and units for the rice control
 P03_CONTROL_TEXT = (
     "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha",  # season name of the copy glossary
     "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha",
@@ -333,11 +333,19 @@ def test_p02_money_per_crop() -> None:
         if plan_id == "usual_p03":
             assert money["source_id"] == "R-P03"
             assert "Lợi nhuận = GR - Tổng chi phí vật chất" in money["definition"]["vi"]  # P-03 p.3
-            assert is_text(money["text_only"])
-            for fragment in P03_CONTROL_TEXT:
-                assert fragment in " ".join(money["text_only"]["vi"].split()), fragment
-            assert "profit 5.36" not in money["text_only"]["en"].lower()  # the article's term is economic return
+            # D-191: each season as P-03 gives it (million đồng/ha), no number where the paper gives none
+            assert money["unit"] == {"vi": "triệu đồng/ha", "en": "million VND/ha"}
+            seasons = [(v["season"], v["value"], v["page"]) for v in money["season_values"]]
+            assert seasons == [("spring", "5.36", "4-5"), ("summer_autumn", "1.16", "4"), ("autumn_winter", None, "2")]
+            words = [" ".join(v["words"]["vi"].split()) for v in money["season_values"]]
+            for fragment, said in zip(P03_CONTROL_TEXT, words, strict=False):
+                assert fragment in said, fragment
+            assert "bỏ hoang" in words[2]  # P-03 p.2: the control "Lúa - lúa - bỏ hoang"
+            for v in money["season_values"]:
+                assert is_text(v["words"])
+                assert "profit 5.36" not in v["words"]["en"].lower()  # the article's term is economic return
             assert "profit_per_crop" not in money  # §7: no per-crop money list for P-03
+            assert "text_only" not in money
             continue
         assert money["source_id"] == "R-P02"
         assert "lợi nhuận thuần (RVAC) = GR - TVC" in money["definition"]["vi"]  # P-02, §7

@@ -92,12 +92,19 @@ export interface MoneyItem {
   price: Value;
   flag: Text | null;
 }
+/** One season's money as the study writes it (D-191, P-03): its value, or null where the study gives none. */
+export interface SeasonValue {
+  season: SeasonCode;
+  value: Value | null;
+  page: string;
+  words: Text;
+}
 export interface Money {
   items: MoneyItem[];
   total: Value | null;
   price_year: string | null;
   definition: Text;
-  text_only: Text | null;
+  season_values: SeasonValue[];
 }
 export interface CropExposure {
   crop_key: string;

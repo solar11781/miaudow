@@ -159,7 +159,7 @@ const plan = obj({
     total: nullable(value),
     price_year: nullable(str),
     definition: text,
-    text_only: nullable(text),
+    season_values: arr(obj({ season, value: nullable(value), page: str, words: text })),
   }),
   exposure: arr(
     obj({

@@ -40,7 +40,8 @@ CONTRACT_FIELDS = {
     ],
     "Period": ["from", "to"],
     "MoneyItem": ["crop_key", "crop", "season", "profit", "cost", "yield", "price", "flag"],
-    "Money": ["items", "total", "price_year", "definition", "text_only"],
+    "Money": ["items", "total", "price_year", "definition", "season_values"],
+    "SeasonValue": ["season", "value", "page", "words"],
     "CropExposure": ["crop_key", "crop", "per_year"],
     "StabilityYear": ["year", "real", "oos_prediction", "range_80"],
     "Stability": [
@@ -313,7 +314,7 @@ def empty_plan(pid: str) -> dict:
         "is_usual": False,
         "calendar": [],
         "bare_periods": [],
-        "money": {"items": [], "total": None, "price_year": None, "definition": T, "text_only": None},
+        "money": {"items": [], "total": None, "price_year": None, "definition": T, "season_values": []},
         "exposure": [],
         "stability": None,
         "water": [],
