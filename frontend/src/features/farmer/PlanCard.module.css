@@ -130,6 +130,13 @@
   color: var(--fg-3);
 }
 
+/* below the 360 px phone (200% zoom, H9) the "your priority" tag goes under the row title */
+@media (max-width: 359px) {
+  .rowHead {
+    flex-wrap: wrap;
+  }
+}
+
 .prioTag {
   margin-left: auto;
   display: inline-flex;
@@ -331,6 +338,7 @@
 
 .questions {
   padding-left: 1.3rem;
+  overflow-wrap: anywhere;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;

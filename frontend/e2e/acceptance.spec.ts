@@ -64,7 +64,6 @@ test('T2 no slider on any page', async ({ page }) => {
 
 // pages that fail T9 on main today (2026-11-15); each fixme names what is cut at 180 px
 const ZOOM_GAPS: Record<string, string> = {
-  [PLANS_URL]: 'the plan card cuts the "Bạn quan tâm" label and a long question line at 180 px',
   '/#/tro-ly': 'the copilot page header cuts its title and lead at 180 px',
 };
 
