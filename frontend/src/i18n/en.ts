@@ -298,7 +298,7 @@ export const en: Messages = {
     yearsPicked: (n: number) => `${n} years picked`,
     yearChipLegend: 'Gold line under each year: share of farmland meeting the drought (rain part) condition that year.',
     yearRowLabel: 'Share of Nghe An farmland meeting each condition while crops were in the field',
-    legendTitle: 'The conditions of Decision 18/2021',
+    legendTitle: 'Weather conditions in Decision 18/2021',
     limitsTitle: 'Limits of these numbers',
     cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghe An farmland, each about 55 × 66 km.`,
     limits: [
