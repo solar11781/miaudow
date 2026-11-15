@@ -5,6 +5,7 @@
 import { Cartesian3, Math as CMath } from 'cesium';
 import { en } from '../../i18n/en';
 import { vi } from '../../i18n/vi';
+import { starPoints } from '../cinema/parts';
 
 export type Flag = 'vn' | 'us';
 
@@ -72,7 +73,8 @@ export function trackPoint(f: { t: Cartesian3; u: Cartesian3 }, altKm: number, t
 export const wrap = (theta: number) => Math.atan2(Math.sin(theta), Math.cos(theta));
 
 const FLAGS: Record<Flag, string> = {
-  vn: '<rect x="49" y="29" width="22" height="15" fill="#DA251D"/><polygon points="60,31.2 61.6,35.6 66.2,35.7 62.5,38.5 63.9,43 60,40.3 56.1,43 57.5,38.5 53.8,35.7 58.4,35.6" fill="#FFFF00"/>',
+  // 3:2, the star's points on a circle of 0.3 x the height, as the cinema flag draws it
+  vn: `<rect x="48.75" y="29" width="22.5" height="15" fill="#DA251D"/><polygon points="${starPoints(60, 36.5, 4.5)}" fill="#FFFF00"/>`,
   us:
     '<rect x="49" y="29" width="22" height="15" fill="#B22234"/>' +
     [1, 3, 5, 7, 9, 11, 13]

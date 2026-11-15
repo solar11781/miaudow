@@ -9,7 +9,7 @@ const url = (uid: string, name: string) => `url(#${uid}-${name})`;
 
 /* ---------- flags ---------- */
 
-function starPoints(cx: number, cy: number, r: number): string {
+export function starPoints(cx: number, cy: number, r: number): string {
   const inner = r * 0.382;
   return Array.from({ length: 10 }, (_, i) => {
     const a = -Math.PI / 2 + (i * Math.PI) / 5;
