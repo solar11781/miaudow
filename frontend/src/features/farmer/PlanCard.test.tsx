@@ -716,10 +716,18 @@ describe('questions for the officer', () => {
     if (!row) throw new Error('no checks row');
     return [...row.querySelectorAll('ol li')].map((li) => li.textContent);
   };
-  it('lists the officer page questions of the plan, in their order', () => {
-    expect(questions('cc1')).toEqual(decisionPlan('cc1')?.questions_for_officer.map((q) => q.vi));
+  // D-191: the trial-field question every plan shares is asked once, in the closing box of the plans page
+  const ownQuestions = (id: 'cc1' | 'cc5') =>
+    (decisionPlan(id)?.questions_for_officer ?? [])
+      .filter((q) => !q.en.includes('like the trial field'))
+      .map((q) => q.vi);
+  it('lists the officer page questions of the plan, in their order, without the shared trial-field one', () => {
+    expect(questions('cc1')).toEqual(ownQuestions('cc1'));
     cleanup();
-    expect(questions('usual')).toEqual(decisionPlan('cc5')?.questions_for_officer.map((q) => q.vi));
+    expect(questions('usual')).toEqual(ownQuestions('cc5'));
+    expect(ownQuestions('cc1').length).toBeGreaterThan(0);
+    expect(questions('usual').join(' ')).not.toContain('ruộng thử ở Lưu Sơn');
+    expect(vi.farmer.officerQuestions[0]).toContain('ruộng thử nghiệm ở Lưu Sơn');
   });
   it('heads them with the take-to-the-officer label', () => {
     questions('cc1');
