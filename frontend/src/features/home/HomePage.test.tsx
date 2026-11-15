@@ -76,7 +76,7 @@ describe('home page order', () => {
     const box = document.querySelector('section[aria-labelledby="about-title"]');
     expect(box?.querySelector('h2')?.textContent).toBe('Ứng dụng này làm gì?');
     expect(box?.textContent).toContain('Nghệ An');
-    expect(box?.textContent).toContain('Không dự báo mùa tới');
+    expect(box?.textContent).toContain('Không dự báo vụ tới');
     expect(box?.textContent).toContain('Không chọn thay gia đình bạn');
   });
 

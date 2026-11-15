@@ -8,7 +8,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'p02',
     registerId: 'R-P02',
     kind: 'study',
-    short: 'Trịnh Đức Toàn và cs. 2023 · VAAS',
+    short: { vi: 'Trịnh Đức Toàn và cs. 2023 · VAAS', en: 'Trịnh Đức Toàn et al. 2023 · VAAS' },
     title: {
       vi: 'Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An',
       en: 'Testing of some crops on ineffective, frequently drought-affected rice land in Nghệ An province',
@@ -37,7 +37,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'p03',
     registerId: 'R-P03',
     kind: 'study',
-    short: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An',
+    short: { vi: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An', en: 'Trịnh Đức Toàn et al. 2023 · KH&CN Nghệ An' },
     title: {
       vi: 'Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An',
       en: 'Testing some rotation formulas on low-return (inefficient), water-short rice land in Nghệ An province',
@@ -62,7 +62,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'qd18',
     registerId: 'R-A01',
     kind: 'standard',
-    short: 'QĐ 18/2021/QĐ-TTg',
+    short: { vi: 'QĐ 18/2021/QĐ-TTg', en: 'QĐ 18/2021/QĐ-TTg' },
     title: {
       vi: 'Quyết định 18/2021/QĐ-TTg quy định về dự báo, cảnh báo, truyền tin thiên tai và cấp độ rủi ro thiên tai',
       en: 'Prime Minister’s Decision 18/2021 on disaster forecasting, warning and risk levels',
@@ -91,7 +91,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'tcvn8641',
     registerId: 'R-W15',
     kind: 'standard',
-    short: 'TCVN 8641:2011',
+    short: { vi: 'TCVN 8641:2011', en: 'TCVN 8641:2011' },
     title: {
       vi: 'TCVN 8641:2011 Công trình thủy lợi – Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm',
       en: 'TCVN 8641:2011 Irrigation techniques for food crops',
@@ -113,7 +113,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'fao-tm3',
     registerId: 'R-M02',
     kind: 'standard',
-    short: 'FAO Training Manual 3',
+    short: { vi: 'FAO Training Manual 3', en: 'FAO Training Manual 3' },
     title: {
       vi: 'FAO Irrigation Water Management, Training Manual 3, Bảng 14',
       en: 'FAO Irrigation Water Management, Training Manual 3, Table 14',
@@ -135,7 +135,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'nasa-power',
     registerId: 'R-N01',
     kind: 'data',
-    short: 'NASA POWER',
+    short: { vi: 'NASA POWER', en: 'NASA POWER' },
     title: {
       vi: 'NASA POWER – thời tiết theo ngày (API Daily, cộng đồng AG)',
       en: 'NASA POWER daily weather (Daily API, AG community)',
@@ -165,7 +165,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'chirps-v3',
     registerId: 'R-D05',
     kind: 'data',
-    short: 'CHIRPS v3',
+    short: { vi: 'CHIRPS v3', en: 'CHIRPS v3' },
     title: {
       vi: 'CHIRPS v3 – lượng mưa tháng (vệ tinh kết hợp trạm đo)',
       en: 'CHIRPS v3 monthly rainfall (satellite and station blend)',
@@ -204,7 +204,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'modis-ndvi',
     registerId: 'R-N11',
     kind: 'data',
-    short: 'NASA MODIS MOD13Q1',
+    short: { vi: 'NASA MODIS MOD13Q1', en: 'NASA MODIS MOD13Q1' },
     title: {
       vi: 'MODIS MOD13Q1 v061 – chỉ số thực vật NDVI 16 ngày, 250 m',
       en: 'MODIS MOD13Q1 v061 – 16-day NDVI, 250 m',
@@ -235,7 +235,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'sentinel2',
     registerId: 'R-D06',
     kind: 'data',
-    short: 'Copernicus Sentinel-2 L2A',
+    short: { vi: 'Copernicus Sentinel-2 L2A', en: 'Copernicus Sentinel-2 L2A' },
     title: {
       vi: 'ESA Copernicus Sentinel-2 Mức 2A (MSI), qua Element 84 Earth Search v1',
       en: 'ESA Copernicus Sentinel-2 Level-2A (MSI), via Element 84 Earth Search v1',
@@ -271,7 +271,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'modis',
     registerId: 'R-N02',
     kind: 'data',
-    short: 'NASA MODIS MCD12C1',
+    short: { vi: 'NASA MODIS MCD12C1', en: 'NASA MODIS MCD12C1' },
     title: {
       vi: 'MODIS Land Cover MCD12C1 v061 – trọng số đất trồng',
       en: 'MODIS Land Cover MCD12C1 v061 – farmland weights',
@@ -298,7 +298,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'nso',
     registerId: 'R-D01',
     kind: 'data',
-    short: 'Cục Thống kê',
+    short: { vi: 'Cục Thống kê', en: 'National Statistics Office' },
     title: { vi: 'Năng suất lúa theo tỉnh và vụ, 1995–2024', en: 'Rice yield by province and season, 1995–2024' },
     publisher: { vi: 'Cục Thống kê (www.gso.gov.vn)', en: 'National Statistics Office of Vietnam (www.gso.gov.vn)' },
     where: { vi: 'Toàn tỉnh Nghệ An, trung bình cả tỉnh', en: 'Province average for Nghệ An' },
@@ -319,7 +319,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'geoboundaries',
     registerId: 'R-D04',
     kind: 'data',
-    short: 'geoBoundaries',
+    short: { vi: 'geoBoundaries', en: 'geoBoundaries' },
     title: {
       vi: 'Ranh giới tỉnh Việt Nam (geoBoundaries gbOpen VNM ADM1)',
       en: 'Vietnam province boundaries (geoBoundaries gbOpen VNM ADM1)',
@@ -339,7 +339,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'e012',
     registerId: 'E-012',
     kind: 'model',
-    short: 'E-012 · bài kiểm tra chính',
+    short: { vi: 'E-012 · bài kiểm tra chính', en: 'E-012 · primary test' },
     title: {
       vi: 'Bài kiểm tra chính E-012: mô hình M1 ridge, kiểm tra trên các năm 2016–2024',
       en: 'Primary test E-012: M1 ridge model, tested on 2016–2024',
@@ -364,7 +364,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'e010',
     registerId: 'E-010',
     kind: 'derived',
-    short: 'E-010 · mức bình thường',
+    short: { vi: 'E-010 · mức bình thường', en: 'E-010 · normal yield' },
     title: { vi: 'Cách tính năng suất bình thường (E-010)', en: 'How the normal yield is computed (E-010)' },
     publisher: { vi: 'Nhóm Miaudow', en: 'Team Miaudow' },
     where: { vi: 'Mọi tỉnh và vụ', en: 'All provinces and seasons' },
@@ -383,7 +383,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'zhang2011',
     registerId: 'R-A10',
     kind: 'study',
-    short: 'Zhang et al. 2011',
+    short: { vi: 'Zhang et al. 2011', en: 'Zhang et al. 2011' },
     title: {
       vi: 'Chỉ số cực trị khí hậu trên dữ liệu lưới (Zhang và cộng sự, 2011)',
       en: 'Climate extremes indices on gridded data (Zhang et al., 2011)',

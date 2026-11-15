@@ -133,15 +133,38 @@ describe('rule names', () => {
   });
 });
 
-// UI-UX-SPEC section 9: the check row is "always open (no disclosure)"; the why row is a disclosure, collapsed
-describe('check and why rows', () => {
+// D-187 item 4 (F1, replaces section 9's "every row stays open"): the card face fits one phone screen, so each row
+// under the head folds behind its own heading button; the folded part stays in the page, so print shows it (T35)
+const FOLDED = ['calendar', 'money', 'weather', 'water', 'land', 'checks', 'why'];
+describe('card face', () => {
   afterEach(cleanup);
-  it('keep the risks open and fold only the reasons', () => {
+  it('folds each row behind one heading button, closed at first', async () => {
     const id = renderCard();
-    expect(document.querySelector(`[data-testid="card-${id}-row-checks"]`)?.closest('details')).toBeNull();
-    const why = document.querySelector(`[data-testid="card-${id}-row-why"]`)?.closest('details');
-    expect(why).not.toBeNull();
-    expect(why?.open).toBe(false);
+    for (const row of FOLDED) {
+      const box = document.querySelector(`[data-testid="card-${id}-row-${row}"]`);
+      const button = box?.querySelector('h3 > button');
+      expect(button?.getAttribute('aria-expanded'), row).toBe('false');
+      const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+      expect(box?.contains(panel ?? null), row).toBe(true);
+      expect(panel?.hasAttribute('hidden'), row).toBe(false);
+      (button as HTMLButtonElement | null)?.click();
+      await Promise.resolve();
+      expect(button?.getAttribute('aria-expanded'), row).toBe('true');
+    }
+  });
+  it('keeps the warnings and the priority label outside every fold (H17, H11)', () => {
+    const id = renderCard();
+    const panels = [...document.querySelectorAll('h3 > button')].map((b) =>
+      document.getElementById(b.getAttribute('aria-controls') ?? ''),
+    );
+    const folded = (el: Element) => panels.some((p) => p?.contains(el));
+    const card = document.querySelector(`[data-testid="card-${id}"]`);
+    for (const line of [vi.farmer.trialNote, vi.farmer.priceYearNotStated, vi.common.notForecast, vi.common.support]) {
+      const el = [...(card?.querySelectorAll('p') ?? [])].find((p) => p.textContent === line);
+      expect(el && !folded(el), line).toBe(true);
+    }
+    const water = document.querySelector(`[data-testid="card-${id}-row-water"] h3 > button`);
+    expect(water?.textContent).toContain(vi.farmer.yourPriority);
   });
 });
 
@@ -223,6 +246,17 @@ describe('money notes', () => {
   });
   // never compare P-03 money with P-02 money (UI-UX-SPEC section 9): the P-03 card keeps saying, in one plain line,
   // that its profit takes off material costs only
+  // D-192: the plain "in other words" line comes right under the number, before the source block
+  it('puts the plain line under the number of the whole-year total and the crop profit, before the source', () => {
+    money(2, 'R-P02');
+    for (const value of ['53.380 nghìn đồng/ha', '16.200 nghìn đồng/ha']) {
+      const sheet = sheetOf(value);
+      const plain = sheet.indexOf(vi.farmer.definitionPlain.p02);
+      expect(plain, value).toBeGreaterThan(sheet.indexOf(value));
+      expect(plain, value).toBeLessThan(sheet.indexOf(vi.sheet.placeYears));
+      expect(sheet.split(vi.farmer.definitionPlain.p02), value).toHaveLength(2);
+    }
+  });
   it('keeps the plain P-03 definition on the card and its paper definition in the sheet', () => {
     const text = money(1, 'R-P03');
     expect(text).toContain(vi.farmer.definitionPlain.p03);
@@ -417,6 +451,8 @@ describe('card summary', () => {
     expect(scroll).toHaveBeenCalledTimes(1);
     expect(document.activeElement).toBe(row);
     expect(row?.getAttribute('tabindex')).toBe('-1');
+    // D-187 item 4: the water row folds, so the link opens it
+    expect(row?.querySelector('h3 > button')?.getAttribute('aria-expanded')).toBe('true');
   });
 });
 
@@ -501,7 +537,10 @@ describe('explain simply', () => {
   it('says only that the part could not be reworded on a 502', async () => {
     answer(502, { detail: 'Bad Gateway' });
     const { row } = card(true);
-    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.why) }));
+    // the row's own heading button also starts with "Vì sao", so the name starts with the explain button's text
+    fireEvent.click(
+      row.getByRole('button', { name: new RegExp(`^${vi.farmer.explain.button}.*${vi.farmer.whyParts.why}`) }),
+    );
     expect(await row.findByText('Không viết lại được đoạn này. Hãy đọc đoạn gốc ở trên.')).not.toBeNull();
     expect(en.farmer.explain.refused).toBe('Could not reword this part. Please read the text above.');
   });
@@ -720,15 +759,94 @@ describe('questions for the officer', () => {
     if (!row) throw new Error('no checks row');
     return [...row.querySelectorAll('ol li')].map((li) => li.textContent);
   };
-  it('lists the officer page questions of the plan, in their order', () => {
-    expect(questions('cc1')).toEqual(decisionPlan('cc1')?.questions_for_officer.map((q) => q.vi));
+  // D-191: the trial-field question every plan shares is asked once, in the closing box of the plans page
+  const ownQuestions = (id: 'cc1' | 'cc5') =>
+    (decisionPlan(id)?.questions_for_officer ?? [])
+      .filter((q) => !q.en.includes('like the trial field'))
+      .map((q) => q.vi);
+  it('lists the officer page questions of the plan, in their order, without the shared trial-field one', () => {
+    expect(questions('cc1')).toEqual(ownQuestions('cc1'));
     cleanup();
-    expect(questions('usual')).toEqual(decisionPlan('cc5')?.questions_for_officer.map((q) => q.vi));
+    expect(questions('usual')).toEqual(ownQuestions('cc5'));
+    expect(ownQuestions('cc1').length).toBeGreaterThan(0);
+    expect(questions('usual').join(' ')).not.toContain('ruộng thử ở Lưu Sơn');
+    expect(vi.farmer.officerQuestions[0]).toContain('ruộng thử nghiệm ở Lưu Sơn');
   });
   it('heads them with the take-to-the-officer label', () => {
     questions('cc1');
     const row = document.querySelector('[data-testid="card-cc1-row-checks"]');
     expect(row?.textContent).toContain(vi.farmer.askOfficer);
     expect(decisionPlan('cc1')?.questions_for_officer.length).toBeGreaterThan(0);
+  });
+});
+
+// D-192 (screen check of the plans page, 2026-11-15)
+describe('screen check details', () => {
+  afterEach(cleanup);
+  const card = (id: 'usual' | 'cc1' | 'cc2', languages = ['vi-VN', 'vi'], priority: 'income' | 'land' = 'income') => {
+    Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
+    onTestFinished(() => {
+      Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+    });
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === id);
+    if (!plan) throw new Error('no plan');
+    return { res, plan, priority };
+  };
+  const show = ({ res, plan, priority }: ReturnType<typeof card>) =>
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority={priority} own={own} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+  it('points from the bad-weather table to the irrigation row for drought, in both languages', () => {
+    show(card('cc1'));
+    const fold = document.getElementById('card-cc1-weather-years');
+    expect(fold?.firstElementChild?.textContent).toBe('Hạn hán: xem mục “Nước tưới” bên dưới.');
+    expect(vi.farmer.rows.water).toBe('Nước tưới');
+    cleanup();
+    show(card('cc1', ['en-GB', 'en']));
+    expect(document.getElementById('card-cc1-weather-years')?.firstElementChild?.textContent).toBe(
+      'Drought: see “Irrigation” below.',
+    );
+    expect(en.farmer.rows.water).toBe('Irrigation');
+  });
+  it('names each risk source button by the word source and its short line, once', () => {
+    const c = card('cc2');
+    c.plan.why.risks = (rulebookPlan('cc2')?.risk_lines ?? []).map((r) => ({
+      text: r.text,
+      source_ids: [r.source_id],
+    }));
+    for (const id of ['R-P03', 'R-C13', 'R-G06', 'R-G27'])
+      c.res.sources = { ...c.res.sources, [id]: { ...c.res.sources['R-P02'], id } } as typeof c.res.sources;
+    const view = show(c);
+    const line = vi.farmer.considerations.market.line;
+    const button = view.getByRole('button', { name: `Nguồn: ${line}` });
+    expect(button.textContent).not.toMatch(/Nguồn.*Nguồn/);
+  });
+  it('says 1 crop, not 1 crops, in English and keeps loại cây in Vietnamese', () => {
+    const one = (c: ReturnType<typeof card>) => {
+      c.plan.land.crops_in_year.value = { value: '1', unit: { vi: 'loại cây', en: 'crops' }, source_ids: ['R-P02'] };
+      return c;
+    };
+    show(one(card('cc1', ['en-GB', 'en'])));
+    const values = () => [...document.querySelectorAll('[data-testid="card-cc1-row-land"] [data-value]')];
+    expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 crop');
+    cleanup();
+    show(one(card('cc1')));
+    expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 loại cây');
+  });
+  it('writes et al. in English where Vietnamese writes và cs.', () => {
+    show(card('cc1', ['en-GB', 'en'], 'land'));
+    const line = document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent ?? '';
+    expect(line).toContain('Trịnh Đức Toàn et al. 2023');
+    expect(line).not.toContain('và cs.');
+    cleanup();
+    show(card('cc1', ['vi-VN', 'vi'], 'land'));
+    expect(document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent).toContain(
+      'Trịnh Đức Toàn và cs. 2023',
+    );
   });
 });

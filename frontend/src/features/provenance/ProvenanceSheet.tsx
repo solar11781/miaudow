@@ -62,7 +62,7 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
               <ol className={s.chain}>
                 {value.chain.map((id) => (
                   <li key={id}>
-                    <KindBadge kind={SOURCES[id].kind} compact /> <span>{SOURCES[id].short}</span>
+                    <KindBadge kind={SOURCES[id].kind} compact /> <span>{pick(SOURCES[id].short)}</span>
                   </li>
                 ))}
               </ol>
@@ -175,6 +175,7 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
           <Icon name="close" />
         </button>
       </header>
+      {value.plain && <p>{value.plain}</p>}
       {value.quote && (
         <section className={s.arith}>
           <h3>{t.sheet.quote}</h3>
