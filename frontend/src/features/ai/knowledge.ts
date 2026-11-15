@@ -29,7 +29,7 @@ const STATIC: Passage[] = [
     title: { vi: 'Dữ liệu NASA POWER là gì?', en: 'What is the NASA POWER data?' },
     text: {
       vi: 'NASA POWER cho thời tiết theo ngày trên lưới ô, mỗi ô khoảng 55 × 66 km. Đây là dữ liệu tái phân tích: một mô hình vật lý khớp với vệ tinh và trạm đo. Miaudow dùng 5 ô có đất trồng ở Nghệ An, 1990–2024. Ô lưới làm mượt cực trị và không đo ruộng nhà bạn.',
-      en: 'NASA POWER gives daily weather on a grid of cells about 55 × 66 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghệ An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
+      en: 'NASA POWER gives daily weather on a grid of cells about 55 × 66 km. It is reanalysis: a physics model fitted to satellites and stations. Miaudow uses the 5 cells with farmland in Nghe An, 1990–2024. Grid cells smooth extremes and do not measure your field.',
     },
   },
   {
@@ -59,10 +59,10 @@ const STATIC: Passage[] = [
     kind: 'study',
     sources: ['p02'],
     keys: 'p02 thu nghiem luu son do luong o 1000 m2 khong lap lai co cau',
-    title: { vi: 'Thử nghiệm ở Lưu Sơn được làm thế nào?', en: 'How was the Lưu Sơn trial done?' },
+    title: { vi: 'Thử nghiệm ở Lưu Sơn được làm thế nào?', en: 'How was the Luu Son trial done?' },
     text: {
       vi: 'Thử nghiệm ở xã Lưu Sơn, Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không.',
-      en: 'The trial ran in Lưu Sơn, Đô Lương, from June 2020 to June 2021 on low-return (inefficient) rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
+      en: 'The trial ran in Luu Son, Do Luong, from June 2020 to June 2021 on low-return (inefficient) rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence.',
     },
   },
   {
@@ -76,7 +76,7 @@ const STATIC: Passage[] = [
     },
     text: {
       vi: 'Bài báo thứ hai của Trịnh Đức Toàn và cs. (2023) ghi lúa vụ Hè Thu năm 2020 ở Lưu Sơn lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác bài báo thứ nhất. Bài này mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”.',
-      en: 'The second paper of Trịnh Đức Toàn et al. (2023) records 2020 summer-autumn rice profit in Lưu Sơn of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from the first paper. It describes current practice as “rice – rice – fallow”.',
+      en: 'The second paper of Trịnh Đức Toàn et al. (2023) records 2020 summer-autumn rice profit in Luu Son of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from the first paper. It describes current practice as “rice – rice – fallow”.',
     },
   },
   {
@@ -102,7 +102,7 @@ const STATIC: Passage[] = [
     },
     text: {
       vi: 'Theo TCVN 8641:2011, nước phải tưới dưỡng cho lúa vụ xuân là 6.500–7.500 m³/ha (Trung bộ, lúa cấy hoặc lúa gieo thẳng) và 6.000–7.000 m³/ha (Bắc bộ); ngô 2.000–2.500; lạc và đậu tương khoảng 2.000; khoai lang 1.200–1.400 m³/ha. Tiêu chuẩn không nói Nghệ An thuộc vùng nào.',
-      en: 'Under TCVN 8641:2011, the water to apply for maintenance irrigation of spring rice is 6,500–7,500 m³/ha (Trung bộ, transplanted or direct-seeded) and 6,000–7,000 m³/ha (Bắc bộ); maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. The standard does not say which region Nghệ An is in.',
+      en: 'Under TCVN 8641:2011, the water to apply for maintenance irrigation of spring rice is 6,500–7,500 m³/ha (Trung Bo, transplanted or direct-seeded) and 6,000–7,000 m³/ha (Bac Bo); maize 2,000–2,500; peanut and soybean about 2,000; sweet potato 1,200–1,400 m³/ha. The standard does not say which region Nghe An is in.',
     },
   },
   {
@@ -138,7 +138,7 @@ const STATIC: Passage[] = [
     title: { vi: 'Nên hỏi cán bộ khuyến nông điều gì?', en: 'What to ask the extension officer?' },
     text: {
       vi: 'Ruộng nhà mình có giống ruộng thử nghiệm ở Lưu Sơn không; ở xã ai thu mua và giá bao nhiêu; cần bao nhiêu vốn và có được vay không. Giá trong thử nghiệm là giá lúc thu hoạch năm 2020–21.',
-      en: 'Whether your field is like the Lưu Sơn trial field; who buys in your commune and at what price; how much capital is needed and whether you can borrow. Trial prices are 2020–21 harvest prices.',
+      en: 'Whether your field is like the Luu Son trial field; who buys in your commune and at what price; how much capital is needed and whether you can borrow. Trial prices are 2020–21 harvest prices.',
     },
   },
 ];
@@ -171,9 +171,12 @@ function rulePassages(): Passage[] {
     id: `rule-${r.code}`,
     kind: 'standard' as const,
     sources: ['qd18', 'nasa-power'] as SourceId[],
-    keys: `${r.name.vi} ${r.name.en} ${r.article} nguong`,
+    keys: `${r.name.vi} ${r.name.en} ${r.article.vi} ${r.article.en} nguong`,
     title: { vi: `Luật “${r.name.vi}” tính thế nào?`, en: `How is the “${r.name.en}” rule computed?` },
-    text: { vi: `${r.article}: “${r.quote}”. ${r.computed.vi}`, en: `${r.article}: “${r.quote}”. ${r.computed.en}` },
+    text: {
+      vi: `${r.article.vi}: “${r.quote}”. ${r.computed.vi}`,
+      en: `${r.article.en}: “${r.quote}”. ${r.computed.en}`,
+    },
   }));
 }
 

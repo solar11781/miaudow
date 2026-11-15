@@ -9,7 +9,7 @@
   citation: {vi: "Thực nghiệm E-008 của nhóm: các lần chạy kiểm tra độ vững của M1 (cửa sổ mùa vụ sớm hơn, muộn hơn hoặc rộng hơn một tháng; một điểm ở tâm tỉnh thay cho các ô có trọng số đất trồng)",
              en: "Our experiment E-008: robustness runs of M1 (season window one month earlier, later or wider; one point at the province centre instead of farmland-weighted cells)"}
   study_type: {vi: "Các lần chạy mô hình của chúng tôi để kiểm tra độ vững", en: "Our model runs, robustness checks"}
-  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Vietnam; test years 2016-2024"}
   read_status: null
   full_text_read: null
   limitations:
@@ -24,7 +24,7 @@
              en: "Our experiment E-010: choice of the normal-yield method"}
   study_type: {vi: "Tính toán của chúng tôi", en: "Our computation"}
   place_years: {vi: "Các tỉnh Việt Nam (số liệu Cục Thống kê); các năm trước giai đoạn kiểm tra",
-                en: "Provinces of Viet Nam (NSO data); the years before the test period"}
+                en: "Provinces of Vietnam (NSO data); the years before the test period"}
   read_status: null
   full_text_read: null
   limitations:
@@ -37,7 +37,7 @@
              en: "Our experiment E-012: ridge regression model (M1) of rice yield anomalies"}
   study_type: {vi: "Mô hình của chúng tôi, có kết quả các bước kiểm tra G1-G4",
                en: "Our model, with the results of gates G1-G4"}
-  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Vietnam; test years 2016-2024"}
   read_status: null
   full_text_read: null
   limitations:
@@ -49,7 +49,7 @@
   citation: {vi: "Thực nghiệm E-013 của nhóm: mô hình cây tăng cường LightGBM (M2) cho độ lệch năng suất lúa",
              en: "Our experiment E-013: boosted trees model (M2, LightGBM) of rice yield anomalies"}
   study_type: {vi: "Mô hình phụ của chúng tôi, báo cáo bên cạnh M1", en: "Our secondary model, reported next to M1"}
-  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Vietnam; test years 2016-2024"}
   read_status: null
   full_text_read: null
   limitations:
@@ -62,7 +62,7 @@
              en: "Our experiment E-014: the two readings of the drought rule's months (2 months in a row; any 2 months)"}
   study_type: {vi: "Tính toán của chúng tôi, không phải ghi nhận chính thức", en: "Our computation, not an official record"}
   place_years: {vi: "Các tỉnh Việt Nam; các vụ lúa 1995-2024, mức thường 1991-2020",
-                en: "Provinces of Viet Nam; rice seasons 1995-2024, normal 1991-2020"}
+                en: "Provinces of Vietnam; rice seasons 1995-2024, normal 1991-2020"}
   read_status: null
   full_text_read: null
   limitations:
@@ -75,7 +75,7 @@
   citation: {vi: "Thực nghiệm E-016 của nhóm: năm mưa lớn so với thiệt hại lúa do lũ được ghi trong DesInventar",
              en: "Our experiment E-016: heavy-rain years checked against rice flood damage recorded in DesInventar"}
   study_type: {vi: "Kiểm tra của chúng tôi với các bản ghi được báo cáo", en: "Our check against reported records"}
-  place_years: {vi: "Nghệ An; 1995-2008", en: "Nghệ An; 1995-2008"}
+  place_years: {vi: "Nghệ An; 1995-2008", en: "Nghe An; 1995-2008"}
   read_status: null
   full_text_read: null
   limitations:
@@ -89,7 +89,7 @@
   citation: {vi: "Thực nghiệm E-017 của nhóm: mô hình rừng ngẫu nhiên (M3) cho độ lệch năng suất lúa",
              en: "Our experiment E-017: random forest model (M3) of rice yield anomalies"}
   study_type: {vi: "Mô hình phụ của chúng tôi, báo cáo bên cạnh M1", en: "Our secondary model, reported next to M1"}
-  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Vietnam; test years 2016-2024"}
   read_status: null
   full_text_read: null
   limitations:
@@ -101,7 +101,7 @@
   citation: {vi: "Thực nghiệm E-018 của nhóm: các lần chạy độ nhạy của M1 đã đăng ký trước (bỏ các dòng FAO đánh dấu; mức hơn tính theo MAE; đặc trưng là tỉ lệ đất đạt các quy tắc cấp độ rủi ro)",
              en: "Our experiment E-018: pre-registered sensitivity runs of M1 (without the FAO-flagged rows; skill from MAE; risk-level share features)"}
   study_type: {vi: "Các lần chạy mô hình của chúng tôi để kiểm tra độ nhạy", en: "Our model runs, sensitivity checks"}
-  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Viet Nam; test years 2016-2024"}
+  place_years: {vi: "Các tỉnh Việt Nam; năm kiểm tra 2016-2024", en: "Provinces of Vietnam; test years 2016-2024"}
   read_status: null
   full_text_read: null
   limitations:
@@ -110,16 +110,16 @@
     - {vi: "Lần chạy (a): các dòng FAO đánh dấu không bao giờ được dùng để huấn luyện hay để chấm điểm, nhưng vẫn được giữ trong năng suất bình thường và trong cách dự báo bằng năm trước (B2).",
        en: "Run (a): FAO-flagged rows are never trained on or scored, but stay in the normal yields and in the last-year reference (B2)."}
     - {vi: "Lần chạy (c): quy tắc rét hại theo vùng của từng tỉnh trong Điều 53. Việc coi \"vùng núi, trung du Bắc Bộ\" là vùng Trung du và miền núi phía Bắc của Cục Thống kê là cách hiểu của chúng tôi, vì Quyết định không liệt kê tỉnh nào. Nam Trung Bộ, Tây Nguyên và Nam Bộ không có quy tắc rét hại trong Điều 53, nên tỉ lệ của các vùng này là 0.",
-       en: "Run (c): the cold rule follows each province's Art. 53 region. Reading \"vùng núi, trung du Bắc Bộ\" as the NSO Northern midlands and mountain areas is our reading, since the decision lists no provinces. Nam Trung Bộ, Tây Nguyên and Nam Bộ have no cold rule in Art. 53, so their share is 0."}
+       en: "Run (c): the cold rule follows each province's Art. 53 region. Reading \"vùng núi, trung du Bắc Bộ\" as the NSO Northern midlands and mountain areas is our reading, since the decision lists no provinces. Nam Trung Bo, Tay Nguyen and Nam Bo have no cold rule in Art. 53, so their share is 0."}
     - {vi: "Các lần chạy được chạy lại sau khi rà soát.", en: "The runs were redone after a review."}
   url: null
   nso_credit: false
 - id: E-019
   citation: {vi: "Thực nghiệm E-019 của nhóm: tỉ lệ đất trồng trọt của Nghệ An đạt mỗi quy tắc chính thức",
-             en: "Our experiment E-019: share of Nghệ An farmland where each official rule was met"}
+             en: "Our experiment E-019: share of Nghe An farmland where each official rule was met"}
   study_type: {vi: "Tính toán của chúng tôi, không phải ghi nhận chính thức",
                en: "Our computation, not an official record"}
-  place_years: {vi: "Nghệ An; 1995-2024", en: "Nghệ An; 1995-2024"}
+  place_years: {vi: "Nghệ An; 1995-2024", en: "Nghe An; 1995-2024"}
   read_status: null
   full_text_read: null
   limitations:
@@ -131,7 +131,7 @@
   citation: {vi: "Thực nghiệm E-020 của nhóm: độ ẩm đất tầng rễ khi cây ở ngoài ruộng, theo từng cây và năm",
              en: "Our experiment E-020: root-zone soil wetness while each crop was in the field, per crop and year"}
   study_type: {vi: "Tính toán của chúng tôi từ giá trị mô hình của NASA", en: "Our computation from NASA model values"}
-  place_years: {vi: "Nghệ An; 1995-2024, mức thường 1991-2020", en: "Nghệ An; 1995-2024, normal 1991-2020"}
+  place_years: {vi: "Nghệ An; 1995-2024, mức thường 1991-2020", en: "Nghe An; 1995-2024, normal 1991-2020"}
   read_status: null
   full_text_read: null
   limitations:
@@ -144,7 +144,7 @@
              en: "Our experiment E-022: engine computations (sums, counts, minimum, median, maximum)"}
   study_type: {vi: "Tính toán của chúng tôi", en: "Our computation"}
   place_years: {vi: "Nghệ An; năm thử nghiệm 2020-21 và các năm đã qua được chọn",
-                en: "Nghệ An; the trial year 2020-21 and the picked past years"}
+                en: "Nghe An; the trial year 2020-21 and the picked past years"}
   read_status: null
   full_text_read: null
   limitations:
@@ -159,7 +159,7 @@
       (Decision 18/2021/QD-TTg on forecasting, warning and communicating natural disasters and disaster risk levels)"
   study_type: {vi: "Văn bản quy phạm pháp luật (quyết định của Thủ tướng Chính phủ)",
                en: "Official regulation (decision of the Prime Minister)"}
-  place_years: {vi: "Việt Nam; năm 2021", en: "Viet Nam; 2021"}
+  place_years: {vi: "Việt Nam; năm 2021", en: "Vietnam; 2021"}
   read_status: "READ"
   full_text_read: true
   limitations:
@@ -207,7 +207,7 @@
              en: "DesInventar Sendai, Viet Nam national disaster loss database (data from CCFSC)"}
   study_type: {vi: "Cơ sở dữ liệu thiệt hại do thiên tai (các bản ghi được báo cáo)",
                en: "Disaster loss database (reported records)"}
-  place_years: {vi: "Việt Nam; dùng các bản ghi của Nghệ An 1995-2008", en: "Viet Nam; Nghệ An records 1995-2008 used"}
+  place_years: {vi: "Việt Nam; dùng các bản ghi của Nghệ An 1995-2008", en: "Vietnam; Nghe An records 1995-2008 used"}
   read_status: "READ (data); licence unclear"
   full_text_read: true
   limitations:
@@ -231,7 +231,7 @@
   citation: {vi: "Đỗ Tất Lợi, Những cây thuốc và vị thuốc Việt Nam, tr. 239-240 (đậu đen)",
              en: "Đỗ Tất Lợi, Những cây thuốc và vị thuốc Việt Nam (Vietnamese medicinal plants), pp. 239-240 (black bean)"}
   study_type: {vi: "Sách tham khảo", en: "Reference book"}
-  place_years: {vi: "Việt Nam", en: "Viet Nam"}
+  place_years: {vi: "Việt Nam", en: "Vietnam"}
   read_status: "READ (transcription)"
   full_text_read: false
   limitations:
@@ -243,9 +243,9 @@
   nso_credit: false
 - id: R-C13
   citation: {vi: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (dẫn lời Phó Chủ tịch UBND tỉnh Nghệ An)",
-             en: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (quotes the vice chair of the Nghệ An People's Committee)"}
+             en: "VietNamNet, Trồng ngô sinh khối liên kết, hướng đi mới giúp nông dân làm giàu (quotes the vice chair of the Nghe An People's Committee)"}
   study_type: {vi: "Tin báo", en: "News report"}
-  place_years: {vi: "Nghệ An; đăng ngày 31/08/2020", en: "Nghệ An; published 31/08/2020"}
+  place_years: {vi: "Nghệ An; đăng ngày 31/08/2020", en: "Nghe An; published 31/08/2020"}
   read_status: "READ"
   full_text_read: true
   limitations:
@@ -258,7 +258,7 @@
     vi: "Cục Thống kê, cơ sở dữ liệu PX-Web E06 Nông nghiệp, lâm nghiệp và thủy sản, các bảng E06.13-E06.35"
     en: "Cục Thống kê (General Statistics Office / NSO Vietnam), PX-Web database E06 Agriculture, Forestry and Fishing, tables E06.13-E06.35"
   study_type: {vi: "Số liệu thống kê quốc gia", en: "National statistics"}
-  place_years: {vi: "Các tỉnh Việt Nam; 1995-2024", en: "Provinces of Viet Nam; 1995-2024"}
+  place_years: {vi: "Các tỉnh Việt Nam; 1995-2024", en: "Provinces of Vietnam; 1995-2024"}
   read_status: "READ (data)"
   full_text_read: true
   limitations:
@@ -272,7 +272,7 @@
     en: "ESA Copernicus Sentinel-2 Level-2A (MSI), via Element 84 Earth Search v1 (collection sentinel-2-l2a, hosted by AWS Open Data); legal notice: Copernicus Sentinel Data Legal Notice"
   study_type: {vi: "Ảnh vệ tinh của ESA Copernicus (dữ liệu mở)", en: "ESA Copernicus satellite images (open data)"}
   place_years: {vi: "Huyện Đô Lương (cũ); 6/2020-6/2021 và 1/2023-12/2024",
-                en: "Former Đô Lương district; 2020-06 to 2021-06 and 2023-01 to 2024-12"}
+                en: "Former Do Luong district; 2020-06 to 2021-06 and 2023-01 to 2024-12"}
   read_status: "READ (collection page, legal notice)"
   full_text_read: false
   limitations:
@@ -290,7 +290,7 @@
   full_text_read: true
   limitations:
     - {vi: "Một nguyên tắc chung, không đo trên đất thử nghiệm ở Nghệ An.",
-       en: "A general principle, not measured on the Nghệ An trial land."}
+       en: "A general principle, not measured on the Nghe An trial land."}
   url: "https://doi.org/10.3389/fsufs.2021.691786"
   nso_credit: false
 - id: R-E12
@@ -301,7 +301,7 @@
   full_text_read: true
   limitations:
     - {vi: "Một nguyên tắc chung, không đo trên đất thử nghiệm ở Nghệ An.",
-       en: "A general principle, not measured on the Nghệ An trial land."}
+       en: "A general principle, not measured on the Nghe An trial land."}
   url: "https://www.nrcs.usda.gov/conservation-basics/soil/soil-health/soil-health-on-cropland"
   nso_credit: false
 - id: R-E13
@@ -319,7 +319,7 @@
   citation: {vi: "Nghị định 112/2024/NĐ-CP hướng dẫn về đất trồng lúa",
              en: "Nghị định 112/2024/NĐ-CP hướng dẫn về đất trồng lúa (Decree 112/2024/ND-CP on rice land)"}
   study_type: {vi: "Văn bản quy phạm pháp luật (nghị định của Chính phủ)", en: "Official regulation (Government decree)"}
-  place_years: {vi: "Việt Nam; ngày 11/9/2024", en: "Viet Nam; 11 September 2024"}
+  place_years: {vi: "Việt Nam; ngày 11/9/2024", en: "Vietnam; 11 September 2024"}
   read_status: "READ"
   full_text_read: true
   limitations:
@@ -331,7 +331,7 @@
   citation: {vi: "Nghị định 112/2024/NĐ-CP, Điều 7-8 (kế hoạch chuyển đổi hằng năm)",
              en: "Nghị định 112/2024/NĐ-CP, Art. 7-8 (annual conversion plans)"}
   study_type: {vi: "Văn bản quy phạm pháp luật (nghị định của Chính phủ)", en: "Official regulation (Government decree)"}
-  place_years: {vi: "Việt Nam; ngày 11/9/2024", en: "Viet Nam; 11 September 2024"}
+  place_years: {vi: "Việt Nam; ngày 11/9/2024", en: "Vietnam; 11 September 2024"}
   read_status: "READ"
   full_text_read: true
   limitations:
@@ -395,7 +395,7 @@
     vi: "Đào Anh Công, Nguyễn Văn Lượng, Lê Hữu Huấn, Phan Thị Như Xuyến, Ngô Sỹ Giai (2022). Tính toán và phân tích chỉ số bốc thoát hơi tiềm năng và chỉ số thỏa mãn nhu cầu nước của lúa và một số cây màu tại huyện Tĩnh Gia và Quan Hóa, tỉnh Thanh Hóa trong thời kỳ 1991-2020. Tạp chí Khí tượng Thủy văn 737: 26-39"
     en: "Đào Anh Công, Nguyễn Văn Lượng, Lê Hữu Huấn, Phan Thị Như Xuyến, Ngô Sỹ Giai (2022). Tính toán và phân tích chỉ số bốc thoát hơi tiềm năng và chỉ số thỏa mãn nhu cầu nước của lúa và một số cây màu tại huyện Tĩnh Gia và Quan Hóa, tỉnh Thanh Hóa trong thời kỳ 1991-2020. Tạp chí Khí tượng Thủy văn 737: 26-39"
   study_type: {vi: "Bài báo khoa học trên tạp chí", en: "Journal article"}
-  place_years: {vi: "Tĩnh Gia và Quan Hóa (Thanh Hóa); 1991-2020", en: "Tĩnh Gia and Quan Hóa (Thanh Hóa); 1991-2020"}
+  place_years: {vi: "Tĩnh Gia và Quan Hóa (Thanh Hóa); 1991-2020", en: "Tinh Gia and Quan Hoa (Thanh Hoa); 1991-2020"}
   read_status: "READ"
   full_text_read: true
   limitations:
@@ -460,7 +460,7 @@
   study_type: {vi: "Số liệu tái phân tích của NASA (giá trị mô hình theo ô lưới)",
                en: "NASA reanalysis data (gridded model values)"}
   place_years: {vi: "Các ô lưới có đất trồng trọt ở Việt Nam; số liệu ngày 1990-2024",
-                en: "Grid cells with farmland in Viet Nam; daily values 1990-2024"}
+                en: "Grid cells with farmland in Vietnam; daily values 1990-2024"}
   read_status: "READ (data)"
   full_text_read: true
   limitations:
@@ -486,7 +486,7 @@
     vi: "Huffman, G.J., Stocker, E.F., Bolvin, D.T., Nelkin, E.J., Tan, J. (2023) GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07 (GPM_3IMERGM), GES DISC, doi:10.5067/GPM/IMERG/3B-MONTH/07"
     en: "Huffman, G.J., Stocker, E.F., Bolvin, D.T., Nelkin, E.J., Tan, J. (2023) GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07 (GPM_3IMERGM), GES DISC, doi:10.5067/GPM/IMERG/3B-MONTH/07"
   study_type: {vi: "Số liệu mưa vệ tinh của NASA, kết hợp với trạm đo mưa", en: "NASA satellite rain data, merged with rain gauges"}
-  place_years: {vi: "Vùng quanh Nghệ An; các tháng 2001-2024", en: "Area around Nghệ An; months 2001-2024"}
+  place_years: {vi: "Vùng quanh Nghệ An; các tháng 2001-2024", en: "Area around Nghe An; months 2001-2024"}
   read_status: "READ (file attributes)"
   full_text_read: false
   limitations:
@@ -546,7 +546,7 @@
   study_type: {vi: "Một thử nghiệm đồng ruộng; mỗi cây một ô 1.000 m2 mỗi vụ, không lặp lại",
                en: "One field trial; one 1,000 m2 plot per crop and season, not replicated"}
   place_years: {vi: "Lưu Sơn, Đô Lương, Nghệ An; tháng 6/2020 đến tháng 6/2021",
-                en: "Lưu Sơn, Đô Lương, Nghệ An; June 2020 to June 2021"}
+                en: "Luu Son, Do Luong, Nghe An; June 2020 to June 2021"}
   read_status: "READ (full text, VJOL copy 167049)"
   full_text_read: true
   limitations:
@@ -573,7 +573,7 @@
   study_type: {vi: "Một thử nghiệm đồng ruộng; mỗi cây một ô 1.000 m2, không lặp lại",
                en: "One field trial; one 1,000 m2 plot per crop, not replicated"}
   place_years: {vi: "Lưu Sơn, Đô Lương, Nghệ An; tháng 6/2020 đến tháng 6/2021",
-                en: "Lưu Sơn, Đô Lương, Nghệ An; June 2020 to June 2021"}
+                en: "Luu Son, Do Luong, Nghe An; June 2020 to June 2021"}
   read_status: "READ (PDF from team)"
   full_text_read: true
   limitations:
@@ -601,7 +601,7 @@
   citation: {vi: "Cục Thống kê, Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm",
              en: "NSO, Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm (annex 1: sowing and harvest calendar of annual crops)"}
   study_type: {vi: "Phụ lục điều tra của cơ quan thống kê", en: "Survey annex of the statistics office"}
-  place_years: {vi: "Các vùng của Việt Nam; năm 2019", en: "Regions of Viet Nam; 2019"}
+  place_years: {vi: "Các vùng của Việt Nam; năm 2019", en: "Regions of Vietnam; 2019"}
   read_status: "READ"
   full_text_read: true
   limitations:
@@ -624,12 +624,12 @@
   citation: {vi: "TCVN 8641:2011 Công trình thủy lợi - Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm (bản chép lại trên caselaw.vn)",
              en: "TCVN 8641:2011 Công trình thủy lợi - Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm (Irrigation works: irrigation and drainage for food crops; third-party transcription on caselaw.vn)"}
   study_type: {vi: "Tiêu chuẩn quốc gia", en: "National standard"}
-  place_years: {vi: "Việt Nam; năm 2011", en: "Viet Nam; 2011"}
+  place_years: {vi: "Việt Nam; năm 2011", en: "Vietnam; 2011"}
   read_status: "READ"
   full_text_read: true
   limitations:
     - {vi: "Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.",
-       en: "The standard does not say whether Nghệ An belongs to Trung bộ or Bắc bộ."}
+       en: "The standard does not say whether Nghe An belongs to Trung Bo or Bac Bo."}
     - {vi: "Bản chép lại của bên thứ ba, không phải bản PDF chính thức.",
        en: "A third-party transcription, not the official PDF."}
   url: "https://caselaw.vn/van-ban-phap-luat/252217-tieu-chuan-quoc-gia-tcvn-8641-2011-ve-cong-trinh-thuy-loi-ky-thuat-tuoi-tieu-nuoc-cho-cay-luong-thuc-va-cay-thuc-pham-nam-2011"

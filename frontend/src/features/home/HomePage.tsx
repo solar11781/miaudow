@@ -421,7 +421,7 @@ function Climate() {
         <figure className={s.chart}>
           <figcaption className={s.chartHead}>
             <span className={s.chartRule}>
-              {pick(RULES[rule].name)} · {RULES[rule].article}
+              {pick(RULES[rule].name)} · {pick(RULES[rule].article)}
             </span>
             <span className="muted">{t.home.droughtAxis}</span>
           </figcaption>

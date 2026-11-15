@@ -147,11 +147,11 @@ export const en: Messages = {
       'One trial in Luu Son commune, Do Luong district, from June 2020 to June 2021 (p. 45); one unreplicated plot of 1,000 m² per crop and season.',
     riceSpring: 'profit of spring rice 2021 on the trial plot',
     trialNote: 'One plot, one year (2020–2021), at that year’s prices. Not the profit to expect on your field.',
-    verseTitle: 'The land of Nghệ',
+    verseTitle: 'The land of Nghe',
     verse: ['Đường vô xứ Nghệ quanh quanh,', 'Non xanh nước biếc như tranh họa đồ.'],
     verseBy: 'Folk verse of Nghe An',
     verseNote:
-      '“The road into Nghệ winds round and round, / green hills, clear water, like a painted map.” (our translation)',
+      '“The road into Nghe winds round and round, / green hills, clear water, like a painted map.” (our translation)',
     coresTitle: 'Four AI cores, one source of data',
     coresLead: 'Each core does one job, on real data, and says plainly what it cannot do yet.',
     coreUses: 'Uses',

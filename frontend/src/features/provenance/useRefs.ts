@@ -16,7 +16,7 @@ export function useRefs() {
     const cropName = (c: PlanCrop) => `${pick(CROPS[c.crop].name)} ${c.variety}`;
     const span = `${YEARS[0]}–${YEARS[YEARS.length - 1]}`;
     const shareDetail = (rule: RuleCode, window: string) =>
-      r.shareDetail(RULES[rule].article, RULES[rule].quote, window);
+      r.shareDetail(pick(RULES[rule].article), RULES[rule].quote, window);
     return {
       share(rule: RuleCode, year: number, share: number, crop?: PlanCrop): SourceRef {
         const window = crop ? r.cropWindow(cropName(crop), crop.sow, crop.harvest) : r.anyCropWindow;

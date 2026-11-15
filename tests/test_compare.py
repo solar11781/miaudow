@@ -520,11 +520,11 @@ def test_water_facts_come_from_crops_yaml_per_crop(resp: dict) -> None:
         "crop_key": "usual_spring_rice",
         "measure": "to_apply",
         "value": {"value": "6,500-7,500", "unit": {"vi": "m3/ha", "en": "m3/ha"}, "source_ids": ["R-W15"]},
-        "scope": {"vi": "Trung bộ, lúa cấy, vụ xuân", "en": "Trung bộ, transplanted rice, spring season"},
+        "scope": {"vi": "Trung bộ, lúa cấy, vụ xuân", "en": "Trung Bo, transplanted rice, spring season"},
         "note": {
             "vi": "Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.",
             "en": "Maintenance irrigation only, land preparation not included. The standard does not say whether "
-            "Nghệ An belongs to Trung bộ or Bắc bộ.",
+            "Nghe An belongs to Trung Bo or Bac Bo.",
         },
     }
     # the TCVN 8641:2011 rows of the crop's own season, every region (UI-UX-SPEC §9, D-68, D-161: the standard does

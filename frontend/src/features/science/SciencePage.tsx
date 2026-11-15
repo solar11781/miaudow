@@ -60,7 +60,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
             >
               <i style={{ background: RULES[r].color }} aria-hidden="true" />
               {pick(RULES[r].name)}
-              <span className={s.article}>{RULES[r].article}</span>
+              <span className={s.article}>{pick(RULES[r].article)}</span>
             </button>
           ))}
         </div>
@@ -85,7 +85,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
           <aside className={s.side} aria-label={t.science.readingFor(year)}>
             <div className={s.kpi}>
               <p className={s.kpiLabel}>
-                {pick(info.name)} · {info.article} · <span className="num">{year}</span>
+                {pick(info.name)} · {pick(info.article)} · <span className="num">{year}</span>
               </p>
               <SourceValue size="xl" {...refs.share(rule, year, share)} />
               <p className={s.kpiSub}>{t.science.shareOfFarmland}</p>
