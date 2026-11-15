@@ -17,7 +17,7 @@ coverage:
      text: {vi: "Không: kiểm tra vụ Đông Xuân (G2) không đạt", en: "No: the spring test (G2) did not pass"},
      source_ids: [E-012]}
   - {row_key: rice_spring, crop: *rice_spring, axis: water_tcvn,
-     text: {vi: "Có (các dòng Trung bộ và Bắc bộ)", en: "Yes (Trung bộ and Bắc bộ rows)"}, source_ids: [R-W15]}
+     text: {vi: "Có (các dòng Trung bộ và Bắc bộ)", en: "Yes (Trung Bo and Bac Bo rows)"}, source_ids: [R-W15]}
   - {row_key: rice_spring, crop: *rice_spring, axis: water_fao, text: *yes, source_ids: [R-M02]}
 
   - {row_key: rice_summer_autumn, crop: &rice_sa {vi: "Lúa vụ Hè Thu (đối chứng của Trịnh Đức Toàn và cs 2023, “công thức luân canh”)", en: "Summer-autumn rice (control of Trịnh Đức Toàn et al. 2023, “rotation formulas”)"},
@@ -29,7 +29,7 @@ coverage:
      text: {vi: "Không bao giờ (không qua được kiểm tra G1)", en: "Never (G1 fails)"}, source_ids: [E-012]}
   - {row_key: rice_summer_autumn, crop: *rice_sa, axis: water_tcvn,
      text: {vi: "Có (các dòng Trung bộ; các dòng Bắc bộ là vụ xuân và vụ mùa)",
-            en: "Yes (Trung bộ rows; the Bắc bộ rows are spring and mùa)"}, source_ids: [R-W15]}
+            en: "Yes (Trung Bo rows; the Bac Bo rows are spring and winter)"}, source_ids: [R-W15]}
   - {row_key: rice_summer_autumn, crop: *rice_sa, axis: water_fao, text: *yes, source_ids: [R-M02]}
 
   - {row_key: peanut_maize_grain_soybean, crop: &pms {vi: "Lạc, ngô thương phẩm, đậu tương", en: "Peanut, grain maize, soybean"},
@@ -81,7 +81,7 @@ explain_terms:
         quanh Lưu Sơn dưới dạng biểu đồ độ xanh."
       en: "NDVI is calculated from the visible and near-infrared light reflected by vegetation. Not used in the yield
         model: an in-season vegetation signal would leak the outcome into the model inputs. The science page shows MODIS
-        NDVI around Lưu Sơn only as a chart of greenness."
+        NDVI around Luu Son only as a chart of greenness."
     source_ids: [R-N08]  # D-165: NASA's NDVI definition page
   - key: frost
     title: {vi: "Sương muối", en: "Frost"}
@@ -156,7 +156,7 @@ datasets_not_used:
       vi: "Các khối mascon trên lưới diện tích bằng nhau 3 độ, từ ngày 4/4/2002. Không dùng: một khối 3 độ lớn hơn cả
         vùng của năm ô lưới NASA POWER ở Nghệ An; bắt đầu từ năm 2002."
       en: "Mascons on an equal-area 3-degree grid, from 4 April 2002. Not used: one 3-degree mascon is larger than the
-        area of the five NASA POWER cells of Nghệ An; it starts in 2002."
+        area of the five NASA POWER cells of Nghe An; it starts in 2002."
     source_ids: [R-N07, R-N01]
   - dataset: GEDI
     reason:
@@ -195,17 +195,20 @@ limitations:
   - {vi: "Các lựa chọn đưa ra sau khi xem số liệu 1995-2024 (quy tắc làm sạch, bộ lọc diện tích) được nêu ra và cố định trước lần chạy mô hình đầu tiên.",
      en: "Choices made after looking at the 1995-2024 data (cleaning rules, the area filter) are stated and fixed before the first model run."}
   - {vi: "Năng suất bình thường ước tính gần các điểm gãy của chuỗi (tách tỉnh năm 2004, Hà Tây năm 2008) có thể tạo ra độ lệch giả.",
-     en: "The normal yield fitted near breaks in a series (the 2004 province splits, Hà Tây in 2008) can create false anomalies."}
+     en: "The normal yield fitted near breaks in a series (the 2004 province splits, Ha Tay in 2008) can create false anomalies."}
   - {vi: "Cửa sổ mùa vụ lấy từ một lịch thời vụ quốc gia (năm 2019) và khác nhau giữa các tỉnh.",
      en: "Season windows come from one national crop calendar (2019) and vary by province."}
   - {vi: "Độ nhạy của cả vùng không phải là độ nhạy của một ruộng.",
      en: "A region's sensitivity is not a farm's sensitivity."}
   - {vi: "Thay đổi địa giới hành chính trong quá khứ (Hà Tây năm 2008; sắp xếp năm 2025) có thể làm ghép số liệu sai.",
-     en: "Past administrative changes (Hà Tây in 2008; the 2025 restructuring) can corrupt data joins."}
+     en: "Past administrative changes (Ha Tay in 2008; the 2025 restructuring) can corrupt data joins."}
   - {vi: "Lúa của tỉnh phần lớn là lúa có tưới, nên độ nhạy của cả vùng có thể thấp hơn độ nhạy của đất thường xuyên khô hạn.",
      en: "Provincial rice is mostly irrigation-served, so regional sensitivity can understate the sensitivity of drought-prone land."}
   - {vi: "Quyết định không xếp loại các đợt nắng nóng hoặc rét hại có các ngày nằm ở nhiều khoảng nhiệt độ khác nhau, nên chúng tôi không tính các đợt như vậy; một chuỗi ngày đủ điều kiện nằm trong một khoảng nhiệt độ vẫn được tính, kể cả khi nó nằm trong một đợt dài hơn.",
      en: "The Decision does not classify heat or cold spells whose days fall in different temperature bands, so we do not count such spells; a run of days inside one band that meets its rule still counts, also inside a longer spell."}
+
+# picsa: the sources of the PICSA sentence, whose text is the i18n key method.picsa (UI-UX-SPEC §11b item 5; D-63).
+picsa: {source_ids: [R-U19]}
 
 # stability_scope: the card scope text (03-ML-SPEC §5b; UI-UX-SPEC §11 Stability.scope), no number.
 stability_scope: {vi: "Trung bình của tỉnh; phần lớn là lúa có tưới", en: "Province average; mostly irrigation-served rice"}

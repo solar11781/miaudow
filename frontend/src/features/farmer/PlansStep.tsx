@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
@@ -21,6 +21,7 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SaveAnswers } from '../account/SaveAnswers';
 import { usePick, useSettings, useT, type Lang } from '../../app/settings';
+import { planLabel } from '../../domain/plans';
 import { pathFor, useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
@@ -62,13 +63,44 @@ function Cards({ res }: { res: CompareResponse }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // the cards crossing the middle of the screen (one on a phone, a row of two on a wide screen) are in view; the jump
+  // strip marks them (D-187 item 4)
+  const [inView, setInView] = useState<ReadonlySet<string>>(new Set());
+  const strip = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const seen = new IntersectionObserver(
+      (entries) =>
+        setInView((now) => {
+          const next = new Set(now);
+          entries.forEach((e) => (e.isIntersecting ? next.add(e.target.id) : next.delete(e.target.id)));
+          return next;
+        }),
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    res.plans.forEach((p) => {
+      const el = document.getElementById(`the-${p.id}`);
+      if (el) seen.observe(el);
+    });
+    return () => seen.disconnect();
+  }, [res.plans]);
+  useEffect(() => {
+    const nav = strip.current;
+    const link = nav?.querySelector<HTMLElement>('[aria-current="true"]');
+    // the strip scrolls sideways on a phone, so the marked plan is kept in sight
+    if (nav && link) nav.scrollLeft = link.offsetLeft - nav.offsetLeft - 16;
+  }, [inView]);
+
   const share = useCallback(
     async (plan: Plan) => {
       // the farmer's own price and costs never go into a shared link (D-163, D-180)
       const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id, own: NO_OWN }), lang);
       try {
         if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
-          await navigator.share({ title: `Miaudow · ${pick(plan.name)}`, text: t.farmer.shareHelp, url });
+          await navigator.share({
+            title: `Miaudow · ${planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}`,
+            text: t.farmer.shareHelp,
+            url,
+          });
           return true;
         }
         await navigator.clipboard.writeText(url);
@@ -77,24 +109,25 @@ function Cards({ res }: { res: CompareResponse }) {
         return false;
       }
     },
-    [state, pick, t, lang],
+    [state, t, lang],
   );
 
   return (
     <>
       <DataLine sources={res.sources} className="muted small" />
-      <nav className={s.jump} aria-label={t.farmer.jumpTo}>
+      <nav className={s.jump} aria-label={t.farmer.jumpTo} ref={strip}>
         {res.plans.map((p) => (
           <a
             key={p.id}
             href={`#the-${p.id}`}
+            aria-current={inView.has(`the-${p.id}`) ? 'true' : undefined}
             onClick={(e) => {
               e.preventDefault();
               document.getElementById(`the-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               update({ plan: p.id });
             }}
           >
-            {p.is_usual ? t.farmer.current : p.id.toUpperCase()}
+            {planLabel({ id: p.id, current: p.is_usual }, t.farmer)}
             <span className="muted"> · {p.calendar.map((c) => pick(c.crop)).join(' → ')}</span>
           </a>
         ))}

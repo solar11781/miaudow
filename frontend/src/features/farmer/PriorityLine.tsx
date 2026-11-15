@@ -26,17 +26,18 @@ export function PriorityLine({
   const pick = usePick();
   if (!LINE_PLANS.includes(plan.id)) return null;
   const usual = res.plans.find((p) => p.id === 'usual');
-  const usualName = usual ? pick(usual.name) : t.common.notAvailable;
+  // the usual plan by its crops: the line already calls it the current practice (D-190, one name per plan)
+  const usualName = usual ? usual.calendar.map((c) => pick(c.crop)).join(' → ') : t.common.notAvailable;
   const l = t.farmer.priorityLine;
   // `name` labels the values in the source sheet; it is shown on the line only when the lead does not say it
-  const pair = (name: string, mine: Value | null, theirs: Value | null, shown = true) => (
+  const pair = (name: string, mine: Value | null, theirs: Value | null, shown = true, money = false) => (
     <p className={s.pair}>
       {shown && <span className={s.name}>{name}:</span>}
       <span className={s.side}>
-        {l.thisPlan} <NumberOr v={mine} label={`${name} · ${l.thisPlan}`} refs={refs} />
+        {l.thisPlan} <NumberOr v={mine} label={`${name} · ${l.thisPlan}`} refs={refs} money={money} />
       </span>
       <span className={s.side}>
-        {l.usualPlan} <NumberOr v={theirs} label={`${name} · ${l.usualPlan}`} refs={refs} />
+        {l.usualPlan} <NumberOr v={theirs} label={`${name} · ${l.usualPlan}`} refs={refs} money={money} />
       </span>
     </p>
   );
@@ -44,18 +45,18 @@ export function PriorityLine({
     <div className={s.line} data-testid={`card-${plan.id}-priority-line`}>
       {priority === 'income' && (
         <>
-          <p>{l.income(usualName, SOURCES.p02.short)}</p>
-          {pair(t.farmer.ourSum, plan.money.total, usual?.money.total ?? null, false)}
+          <p>{l.income(usualName, pick(SOURCES.p02.short))}</p>
+          {pair(t.farmer.ourSum, plan.money.total, usual?.money.total ?? null, false, true)}
         </>
       )}
       {priority === 'land' && (
         <>
-          <p>{l.land(usualName, SOURCES.p02.short)}</p>
+          <p>{l.land(usualName, pick(SOURCES.p02.short))}</p>
           {pair(t.farmer.cropsInYear, plan.land.crops_in_year.value, usual?.land.crops_in_year.value ?? null)}
           {pair(t.farmer.livingDays, plan.land.living_days.value, usual?.land.living_days.value ?? null)}
         </>
       )}
-      {(priority === 'stability' || priority === 'water') && <p>{l.perYear(usualName, SOURCES.p02.short)}</p>}
+      {(priority === 'stability' || priority === 'water') && <p>{l.perYear(usualName, pick(SOURCES.p02.short))}</p>}
     </div>
   );
 }

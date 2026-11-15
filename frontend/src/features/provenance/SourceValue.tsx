@@ -23,8 +23,13 @@ export function SourceValue(props: Props) {
         <span className={s.figure}>{children ?? ref.value}</span>
         {showSource && <span className={s.src}>{showSource}</span>}
       </span>
-      {/* the accessible name starts with the visible text, then says what it is and that it opens the source */}
-      <span className="visually-hidden">{`, ${ref.label ? `${ref.label}: ` : ''}${ref.value}. ${t.common.source}`}</span>
+      {/* the accessible name starts with the visible text, then says what it is and that it opens the source; a button
+          whose text is the word source itself says it once, then what it is for (D-192) */}
+      <span className="visually-hidden">
+        {ref.value === t.common.source
+          ? `: ${ref.label}`
+          : `, ${ref.label ? `${ref.label}: ` : ''}${ref.value}. ${t.common.source}`}
+      </span>
     </button>
   );
 }

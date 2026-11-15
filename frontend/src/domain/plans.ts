@@ -38,15 +38,15 @@ export const CROPS = {
     tcvn: [
       {
         value: { vi: '6.500–7.500', en: '6,500–7,500' },
-        scope: { vi: 'Trung bộ, lúa cấy, vụ xuân', en: 'Trung bộ, transplanted rice, spring season' },
+        scope: { vi: 'Trung bộ, lúa cấy, vụ xuân', en: 'Trung Bo, transplanted rice, spring season' },
       },
       {
         value: { vi: '6.500–7.500', en: '6,500–7,500' },
-        scope: { vi: 'Trung bộ, lúa gieo thẳng, vụ xuân', en: 'Trung bộ, direct-seeded rice, spring season' },
+        scope: { vi: 'Trung bộ, lúa gieo thẳng, vụ xuân', en: 'Trung Bo, direct-seeded rice, spring season' },
       },
       {
         value: { vi: '6.000–7.000', en: '6,000–7,000' },
-        scope: { vi: 'Bắc bộ, vụ xuân', en: 'Bắc bộ, spring season' },
+        scope: { vi: 'Bắc bộ, vụ xuân', en: 'Bac Bo, spring season' },
       },
     ],
     fao: '450–700',

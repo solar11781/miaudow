@@ -14,8 +14,9 @@ import type {
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
 import { consideration } from '../../domain/considerations';
-import { officerQuestions } from '../../data/rulebook';
+import { cardQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
+import { planLabel } from '../../domain/plans';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { OwnNumbers, type OwnState } from './OwnNumbers';
@@ -38,7 +39,9 @@ const FAMILY_DOT: Record<string, string> = {
 const WEATHER_RULES: RuleCode[] = ['heavy_rain', 'heat', 'cold'];
 const DROUGHT_RULES: RuleCode[] = ['drought_rain_consecutive', 'drought_rain_any2'];
 
-/** One card row; `hook` is its test hook card-<plan id>-row-<row> (UI-UX-SPEC section 14a, B's row names, D-169). */
+/** One card row; `hook` is its test hook card-<plan id>-row-<row> (UI-UX-SPEC section 14a, B's row names, D-169). The
+ * row folds behind its heading button so the card face fits one phone screen (D-187 item 4); the folded part stays in
+ * the page and is hidden by screen-only CSS, so print shows it (T35). */
 function Row({
   hook,
   icon,
@@ -54,13 +57,14 @@ function Row({
   title: string;
   note?: string;
   highlight?: boolean;
-  /** The priority line, shown right after the label of the highlighted row. */
+  /** The priority line, shown on the face right after the heading of the highlighted row. */
   line?: ReactNode;
-  /** A link elsewhere on the card moves the focus here. */
+  /** A link elsewhere on the card opens this row and moves the focus here. */
   target?: boolean;
   children: ReactNode;
 }) {
   const t = useT();
+  const [open, setOpen] = useState(false);
   return (
     <section
       id={hook}
@@ -70,18 +74,31 @@ function Row({
       data-highlighted={highlight ? 'true' : undefined}
     >
       <h3 className={s.rowHead}>
-        <Icon name={icon} size={18} />
-        {title}
-        {highlight && (
-          <span className={s.prioTag}>
-            <Icon name="check" size={14} strokeWidth={2.6} />
-            {t.farmer.yourPriority}
+        <button
+          type="button"
+          className={s.rowButton}
+          aria-expanded={open}
+          aria-controls={`${hook}-body`}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <Icon name={icon} size={18} />
+          <span className={s.rowTitle}>
+            {title}
+            {highlight && (
+              <span className={s.prioTag}>
+                <Icon name="check" size={14} strokeWidth={2.6} />
+                {t.farmer.yourPriority}
+              </span>
+            )}
           </span>
-        )}
+          <Icon name="chevronDown" size={18} />
+        </button>
       </h3>
       {highlight && line}
-      {children}
-      {note && <p className={s.rowNote}>{note}</p>}
+      <div id={`${hook}-body`} className={[s.rowBody, open ? '' : s.folded].join(' ')}>
+        {children}
+        {note && <p className={s.rowNote}>{note}</p>}
+      </div>
     </section>
   );
 }
@@ -96,17 +113,41 @@ type Hl = { highlight: boolean; line: ReactNode };
 /** The parts given, as one closing note of a source sheet. */
 const sentences = (...parts: (string | null | false | undefined)[]) => parts.filter(Boolean).join(' ');
 
-/** The source notes of a plan's money, kept off the card and closing the sheet of each money value (D-187): the
- * paper's definition as the API gives it, then the same in plain words for the study the money cites (D-170). */
+/** The source notes of a plan's money, kept off the card (D-187): the paper's definition as the API gives it closes
+ * the sheet of each money value, and the same in plain words for the study the money cites (D-170) comes right under
+ * its number (D-192). */
 function useMoneyNotes(plan: Plan) {
   const t = useT();
   const pick = usePick();
   const study = moneyStudy(plan);
-  const definition = sentences(
-    t.farmer.paperDefinition(pick(plan.money.definition)),
-    study && t.farmer.definitionPlain[study],
-  );
-  return { study, definition, total: sentences(t.farmer.ourSumNote, definition) };
+  const definition = t.farmer.paperDefinition(pick(plan.money.definition));
+  const plain = study ? t.farmer.definitionPlain[study] : undefined;
+  return { study, definition, plain, total: sentences(t.farmer.ourSumNote, definition) };
+}
+
+/** The P-03 money of each season as the paper gives it (D-191): its value with its source, or the paper's words where
+ * it gives no number; never summed. The words, the page and the definition close each sheet. */
+function useSeasonValues(plan: Plan, res: CompareResponse, refs: ApiRefs) {
+  const t = useT();
+  const pick = usePick();
+  const notes = useMoneyNotes(plan);
+  const textIds = plan.calendar.flatMap((c) => c.source_ids);
+  return plan.money.season_values.map((v) => {
+    const season = res.seasons.find((x) => x.code === v.season);
+    const label = season ? pick(season.label) : '';
+    const note = sentences(pick(v.words), t.farmer.paperPage(v.page), notes.definition);
+    const shown = v.value ? (
+      <>
+        <SourceValue {...refs.value(v.value, `${t.farmer.rows.money} · ${label}`, note)}>
+          {refs.money(v.value).number}
+        </SourceValue>{' '}
+        {refs.money(v.value).unit}
+      </>
+    ) : (
+      <SourceValue {...refs.sources(textIds, pick(v.words), `${t.farmer.rows.money} · ${label}`)} note={note} />
+    );
+    return { season: v.season, label: v.value ? label : '', shown };
+  });
 }
 
 function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: OwnState }) {
@@ -117,17 +158,17 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
     const season = res.seasons.find((x) => x.code === item.season);
     return `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
   });
-  const textIds = plan.calendar.flatMap((c) => c.source_ids);
   const notes = useMoneyNotes(plan);
+  const seasons = useSeasonValues(plan, res, refs);
   return (
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
         <div className={s.money}>
-          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>
-            {refs.number(m.total)}
+          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
+            {refs.money(m.total).number}
           </SourceValue>
           <span className={s.unit}>
-            {refs.unit(m.total)} · {t.farmer.own.yearSum}
+            {refs.money(m.total).unit} · {t.farmer.own.yearSum}
           </span>
         </div>
       )}
@@ -141,22 +182,30 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
               <li key={item.crop_key}>
                 <span>{name}</span>
                 <span>{t.farmer.profit}</span>
-                <SourceValue
-                  {...refs.value(
-                    item.profit,
-                    `${t.farmer.profit} · ${name}`,
-                    sentences(t.farmer.profitTable, flag, notes.definition),
-                  )}
+                <NumberOr
+                  v={item.profit}
+                  label={`${t.farmer.profit} · ${name}`}
+                  refs={refs}
+                  note={sentences(t.farmer.profitTable, flag, notes.definition)}
+                  plain={notes.plain}
+                  money
                 />
                 <span>{t.farmer.cost}</span>
-                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} note={flag} />
+                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} note={flag} money />
               </li>
             );
           })}
         </ul>
       )}
-      {m.text_only && (
-        <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} note={notes.definition} />
+      {seasons.length > 0 && (
+        <ul className={s.cropMoney}>
+          {seasons.map((v) => (
+            <li key={v.season}>
+              {v.label && <span>{v.label}</span>}
+              <div>{v.shown}</div>
+            </li>
+          ))}
+        </ul>
       )}
       {/* P-03 money takes off material costs only, so its card keeps saying so: never compared with P-02 (section 9) */}
       {notes.study === 'p03' && <p className={s.rowNote}>{t.farmer.definitionPlain.p03}</p>}
@@ -315,6 +364,8 @@ function WeatherRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
     >
       {plan.exposure.length > 0 && (
         <YearsFold id={`card-${plan.id}-weather-years`}>
+          {/* drought is a water reading, so the table says where it is (D-58, D-192) */}
+          <p className={s.rowNote}>{t.farmer.rows.droughtPointer(t.farmer.rows.water)}</p>
           {/* what the shares are, next to the tables it explains (D-187) */}
           <p className={s.rowNote}>{t.farmer.rows.weatherNote}</p>
           <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
@@ -458,15 +509,15 @@ function LandRow({ plan, refs, highlight, line }: Omit<Ctx, 'res'> & Hl) {
   );
 }
 
-/** The card's money total, or the P-03 text, then per crop the TCVN 8641 water to apply from the lowest to the highest
- * of its rows (D-172, D-175): the money is the money row's own value with its source; the water range carries the
- * rows' TCVN sources, is labelled by region and planting method because the rows differ in both and the standard does
- * not place Nghệ An (D-68), and leaves FAO out (D-64). */
-function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
+/** The card's money total, or the P-03 money of each season, then per crop the TCVN 8641 water to apply from the
+ * lowest to the highest of its rows (D-172, D-175): the money is the money row's own values with their sources; the
+ * water range carries the rows' TCVN sources, is labelled by region and planting method because the rows differ in both
+ * and the standard does not place Nghệ An (D-68), and leaves FAO out (D-64). */
+function Summary({ plan, res, refs }: Ctx) {
   const t = useT();
   const pick = usePick();
   const m = plan.money;
-  const textIds = plan.calendar.flatMap((c) => c.source_ids);
+  const seasons = useSeasonValues(plan, res, refs);
   const water = `card-${plan.id}-row-water`;
   const notes = useMoneyNotes(plan);
   return (
@@ -474,14 +525,22 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
       {m.total ? (
         <p>
           {t.farmer.rows.money}:{' '}
-          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>{refs.number(m.total)}</SourceValue>{' '}
-          {refs.unit(m.total)} · {t.farmer.own.yearSum}
+          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
+            {refs.money(m.total).number}
+          </SourceValue>{' '}
+          {refs.money(m.total).unit} · {t.farmer.own.yearSum}
         </p>
       ) : (
-        m.text_only && (
+        seasons.length > 0 && (
           <p>
             {t.farmer.rows.money}:{' '}
-            <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} note={notes.definition} />
+            {seasons.map((v, i) => (
+              <span key={v.season}>
+                {i > 0 && ' · '}
+                {v.label && `${v.label}: `}
+                {v.shown}
+              </span>
+            ))}
           </p>
         )
       )}
@@ -518,6 +577,8 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
         onClick={(e) => {
           e.preventDefault();
           const row = document.getElementById(water);
+          const open = row?.querySelector<HTMLButtonElement>('h3 > button[aria-expanded="false"]');
+          open?.click();
           row?.scrollIntoView({ block: 'start' });
           row?.focus({ preventScroll: true });
         }}
@@ -528,14 +589,16 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   );
 }
 
-function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
+function CardHead({ plan, res, refs }: Ctx) {
   const t = useT();
   const pick = usePick();
   return (
     <header className={`${s.head} surface-forest`} data-testid={`card-${plan.id}-row-header`}>
+      {/* one name per plan, its crops under it (D-190) */}
       <p className={s.kicker}>
-        {plan.is_usual && <span className={s.currentTag}>{t.farmer.current}</span>}
-        <span>{pick(plan.name)}</span>
+        <span className={plan.is_usual ? s.currentTag : undefined}>
+          {planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}
+        </span>
       </p>
       <h2 id={`title-${plan.id}`} className={s.chain}>
         {plan.calendar.map((c, i) => (
@@ -554,7 +617,7 @@ function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
           </span>
         ))}
       </h2>
-      <Summary plan={plan} refs={refs} />
+      <Summary plan={plan} res={res} refs={refs} />
     </header>
   );
 }
@@ -610,15 +673,20 @@ function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: 
   );
 }
 
-/** The risks, always open, then the four reasons of the API's Why behind a disclosure (UI-UX-SPEC section 9). */
+/** The risks, then the four reasons of the API's Why (UI-UX-SPEC section 9). */
 function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers: CompareRequest; explain: boolean }) {
   const t = useT();
   const pick = usePick();
   const { why } = plan;
-  const questions = officerQuestions(plan.id);
+  const questions = cardQuestions(plan.id);
   return (
     <>
-      <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
+      <Row
+        hook={`card-${plan.id}-row-checks`}
+        icon="alert"
+        // the folded row says on its face how many things it holds, so the risks are not missed
+        title={why.risks.length ? t.farmer.rows.checksCount(why.risks.length) : t.farmer.rows.checks}
+      >
         {why.risks.length ? (
           <ul className={s.risks}>
             {why.risks.map((r) => {
@@ -643,7 +711,7 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
           <p className={s.why}>{t.farmer.noneListed}</p>
         )}
         <p className={s.why}>{t.farmer.localReview}</p>
-        {/* the officer page's questions for this plan, so the farmer knows what to ask (D-187) */}
+        {/* the officer page's questions for this plan, so the farmer knows what to ask (D-187, D-191) */}
         {questions.length > 0 && (
           <div className={s.sub}>
             <p className={s.subHead}>{t.farmer.askOfficer}</p>
@@ -655,24 +723,17 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
           </div>
         )}
       </Row>
-      <details className={s.more}>
-        <summary>
-          <Icon name="question" size={18} />
-          {t.farmer.rows.why}
-          <Icon name="chevronDown" size={18} />
-        </summary>
-        <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
-          {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
-            <div key={k}>
-              <p className={s.why}>
-                <strong>{t.farmer.whyParts[k]}: </strong>
-                {displayUnit(pick(why[k]))}
-              </p>
-              {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
-            </div>
-          ))}
-        </Row>
-      </details>
+      <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
+        {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
+          <div key={k}>
+            <p className={s.why}>
+              <strong>{t.farmer.whyParts[k]}: </strong>
+              {displayUnit(pick(why[k]))}
+            </p>
+            {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
+          </div>
+        ))}
+      </Row>
     </>
   );
 }
@@ -708,9 +769,9 @@ export function PlanCard({
       className={[s.card, focused ? s.focused : ''].join(' ')}
       aria-labelledby={`title-${plan.id}`}
     >
-      <CardHead plan={plan} refs={refs} />
+      <CardHead plan={plan} res={res} refs={refs} />
       <div className={s.body}>
-        <div data-testid={`card-${plan.id}-row-calendar`}>
+        <Row hook={`card-${plan.id}-row-calendar`} icon="calendar" title={t.farmer.rows.calendar}>
           {hasDates ? (
             <MonthBar plan={plan} refs={refs} />
           ) : (
@@ -719,7 +780,7 @@ export function PlanCard({
               {t.farmer.p03NoCalendar}
             </p>
           )}
-        </div>
+        </Row>
         <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} line={line} own={own} />
         <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} line={line} />
         <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} line={line} />

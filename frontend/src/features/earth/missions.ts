@@ -45,7 +45,7 @@ export const MISSIONS: Mission[] = [
     status: 'ingested',
     statusNote: {
       vi: 'Đã nạp: 10 năm NDVI quanh Lưu Sơn (2015–2024).',
-      en: 'Loaded: ten years of NDVI around Lưu Sơn (2015–2024).',
+      en: 'Loaded: ten years of NDVI around Luu Son (2015–2024).',
     },
     eyesId: 'sc_terra',
     source: 'https://terra.nasa.gov/about',
@@ -71,7 +71,7 @@ export const MISSIONS: Mission[] = [
     status: 'ingested',
     statusNote: {
       vi: 'Đã nạp: 59 cảnh trên huyện Đô Lương (cũ), 6 ảnh NDVI theo mùa. Vệ tinh của châu Âu, không phải của NASA.',
-      en: 'Loaded: 59 scenes over the former Đô Lương district, 6 seasonal NDVI composites. A European satellite, not a NASA one.',
+      en: 'Loaded: 59 scenes over the former Do Luong district, 6 seasonal NDVI composites. A European satellite, not a NASA one.',
     },
     source: 'https://sentiwiki.copernicus.eu/web/s2-mission',
   },
@@ -93,7 +93,7 @@ export const MISSIONS: Mission[] = [
     status: 'blocked',
     statusNote: {
       vi: 'Tìm thấy 319 cảnh HLS trên Đô Lương 2020–2021, nhưng tải về cần tài khoản Earthdata.',
-      en: '319 HLS scenes over Đô Lương found for 2020–2021, but downloading needs an Earthdata login.',
+      en: '319 HLS scenes over Do Luong found for 2020–2021, but downloading needs an Earthdata login.',
     },
     eyesId: 'sc_landsat_9',
     source: 'https://landsat.gsfc.nasa.gov/satellites/landsat-9/',
@@ -168,7 +168,7 @@ export const MISSIONS: Mission[] = [
     status: 'blocked',
     statusNote: {
       vi: 'Tìm thấy 276 tệp trên Đô Lương 2020–2021, nhưng tải về cần tài khoản Earthdata.',
-      en: '276 files over Đô Lương found for 2020–2021, but downloading needs an Earthdata login.',
+      en: '276 files over Do Luong found for 2020–2021, but downloading needs an Earthdata login.',
     },
     eyesId: 'sc_iss_ecostress',
     source: 'https://ecostress.jpl.nasa.gov/',

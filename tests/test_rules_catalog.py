@@ -46,10 +46,22 @@ ID_SINGLE_KEYS = ("source_id", "threshold_source_id", "computed_by")
 LAND_CARE_PRINCIPLES = {"R-E13", "R-E12", "R-E06"}  # 05-DATA-CONTRACTS §7: principle sources of the land-care checks
 SOURCE_ID = re.compile(r"^(R-[A-Z]+\d+[a-z]?|E-\d{3}[a-z]?)$")  # UI-UX-SPEC §11 canonical source ids
 NOT_FULL_TEXT = re.compile(r"abstract|title|summary|metadata|secondary", re.IGNORECASE)  # 05-DATA-CONTRACTS §8
+DONG_UNIT = re.compile(r"(?<![^\W\d_])đ(?![^\W\d_])")  # D-190: "đ" standing alone as the currency, as in "đ/kg"
 
 
 def read(name: str) -> object:
     return yaml.safe_load((RULES / name).read_text(encoding="utf-8"))
+
+
+def dong_units(node: object, path: str = "") -> list[str]:
+    """The path and text of every English text that writes the currency as "đ" (D-190: English writes "VND")."""
+    if isinstance(node, list):
+        return [hit for i, item in enumerate(node) for hit in dong_units(item, f"{path}[{i}]")]
+    if not isinstance(node, dict):
+        return []
+    en = node.get("en")
+    hits = [f"{path}.en: {en}"] if isinstance(en, str) and DONG_UNIT.search(en) else []
+    return hits + [hit for key, value in node.items() for hit in dong_units(value, f"{path}.{key}")]
 
 
 def ids_in(node: object) -> set[str]:
@@ -306,7 +318,7 @@ def test_crop_keys_ids_and_dates() -> None:
             assert span["variety"] is None or is_text(span["variety"])
 
 
-# P-03 running text, pp. [4] and [5]: the authors' term, season name and units for the rice control
+# P-03 running text, pp. [4] and [5] (spring, summer-autumn): the authors' term, season name and units for the rice control
 P03_CONTROL_TEXT = (
     "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha",  # season name of the copy glossary
     "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha",
@@ -321,11 +333,19 @@ def test_p02_money_per_crop() -> None:
         if plan_id == "usual_p03":
             assert money["source_id"] == "R-P03"
             assert "Lợi nhuận = GR - Tổng chi phí vật chất" in money["definition"]["vi"]  # P-03 p.3
-            assert is_text(money["text_only"])
-            for fragment in P03_CONTROL_TEXT:
-                assert fragment in " ".join(money["text_only"]["vi"].split()), fragment
-            assert "profit 5.36" not in money["text_only"]["en"].lower()  # the article's term is economic return
+            # D-191: each season as P-03 gives it (million đồng/ha), no number where the paper gives none
+            assert money["unit"] == {"vi": "triệu đồng/ha", "en": "million VND/ha"}
+            seasons = [(v["season"], v["value"], v["page"]) for v in money["season_values"]]
+            assert seasons == [("spring", "5.36", "4-5"), ("summer_autumn", "1.16", "4"), ("autumn_winter", None, "2")]
+            words = [" ".join(v["words"]["vi"].split()) for v in money["season_values"]]
+            for fragment, said in zip(P03_CONTROL_TEXT, words, strict=False):
+                assert fragment in said, fragment
+            assert "bỏ hoang" in words[2]  # P-03 p.2: the control "Lúa - lúa - bỏ hoang"
+            for v in money["season_values"]:
+                assert is_text(v["words"])
+                assert "profit 5.36" not in v["words"]["en"].lower()  # the article's term is economic return
             assert "profit_per_crop" not in money  # §7: no per-crop money list for P-03
+            assert "text_only" not in money
             continue
         assert money["source_id"] == "R-P02"
         assert "lợi nhuận thuần (RVAC) = GR - TVC" in money["definition"]["vi"]  # P-02, §7
@@ -433,9 +453,17 @@ def method() -> dict:
     return read("method.yaml")
 
 
-def test_method_has_the_six_parts() -> None:
-    parts = {"coverage", "explain_terms", "datasets_not_used", "limitations", "stability_scope", "season_labels"}
-    assert set(method()) == parts  # D-165: datasets considered and not used get their own list
+def test_method_has_the_seven_parts() -> None:
+    parts = {
+        "coverage",
+        "explain_terms",
+        "datasets_not_used",
+        "limitations",
+        "picsa",
+        "stability_scope",
+        "season_labels",
+    }
+    assert set(method()) == parts  # D-165: datasets considered and not used get their own list; D-63: picsa
     assert is_text(method()["stability_scope"])
     assert method()["limitations"]
     assert all(is_text(line) for line in method()["limitations"])
@@ -570,3 +598,12 @@ def test_read_status_matches_the_references() -> None:
         assert sid in known, sid
         if sid.startswith("R-"):
             assert item.read_status == status[sid], sid
+
+
+# ---- every rules file
+
+
+def test_english_texts_write_the_currency_as_vnd() -> None:
+    # D-190 (member A, 2026-11-15): English text writes the currency as "VND", not "đ"
+    hits = [hit for f in sorted(RULES.glob("*.yaml")) for hit in dong_units(read(f.name), f.name)]
+    assert hits == []

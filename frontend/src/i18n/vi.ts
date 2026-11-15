@@ -43,9 +43,13 @@ export const vi = {
     back: 'Quay lại',
     next: 'Tiếp tục',
     source: 'Nguồn',
+    /** The singular of an API unit after the number 1: Vietnamese nouns have no plural (D-192). */
+    unitOfOne: (unit: string) => unit,
+    sourceFor: (name: string) => `Xem nguồn: ${name}`,
     open: 'Mở',
     close: 'Đóng',
-    millionPerHa: 'triệu đ/ha',
+    millionPerHa: 'triệu đồng/ha',
+    perKg: 'đồng/kg',
     notListed: 'Không có trong nguồn',
     noData: 'Chưa có số liệu',
     farmland: 'đất trồng',
@@ -128,7 +132,7 @@ export const vi = {
     aboutTitle: 'Ứng dụng này làm gì?',
     about: [
       'Ruộng lúa thiếu nước ở Nghệ An: so sánh 6 cách trồng đã thử, kể cả giữ lúa.',
-      'Xem lại các năm đã qua bằng số liệu NASA. Không dự báo mùa tới.',
+      'Xem lại các năm đã qua bằng số liệu NASA. Không dự báo vụ tới.',
       'Không chọn thay gia đình bạn, không chấm điểm.',
     ],
     moreTitle: 'Cho cán bộ khuyến nông',
@@ -159,7 +163,7 @@ export const vi = {
         does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn, nóng, rét, mưa lớn của nhà nước.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Quyết định 18/2021',
         gives: 'Thời tiết từng năm và phần đất trồng gặp từng điều kiện của Quyết định 18/2021',
-        limit: 'Không dự báo mùa tới. Năm đã qua không phải dự báo.',
+        limit: 'Không dự báo vụ tới. Năm đã qua không phải dự báo.',
         to: '/khoa-hoc',
         where: 'trang Khoa học',
       },
@@ -218,10 +222,11 @@ export const vi = {
     honestyLead:
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
     // chọn theo từng vụ từ kết quả của lần chạy (src/domain/rice.ts modelVerdict)
-    honestyNoHelp: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết.',
-    honestyHelps: 'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút.',
-    honestyHidden: (season: string) => `Dự đoán ${season} không được hiện.`,
-    honestyShown: (season: string) => `Dự đoán ${season} được hiện cạnh số liệu thật.`,
+    honestyNoHelp: 'Thời tiết NASA chưa giúp dự đoán tốt hơn mô hình bỏ thời tiết.',
+    honestyHelps: 'Thời tiết NASA giúp dự đoán tốt hơn mô hình bỏ thời tiết, nhưng chỉ hơn một chút.',
+    honestyHidden: (season: string) => `Không hiện ước tính của mô hình cho ${season}.`,
+    honestyShown: (season: string) =>
+      `Ước tính của mô hình cho ${season} trong các năm kiểm tra được hiện cạnh số liệu thật.`,
     vsBnw: 'so với BNW',
     skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
@@ -246,7 +251,7 @@ export const vi = {
     } as Record<string, string>,
     stepOf: (n: number) => `Bước ${n}/4`,
     startEyebrow: 'Đất lúa thiếu nước ở Nghệ An',
-    startTitle: 'Ruộng nhà mình, mùa tới trồng gì?',
+    startTitle: 'Ruộng nhà mình, vụ tới trồng gì?',
     startLead:
       'Bốn bước ngắn. Không phải gõ chữ. Cuối cùng bạn có 6 thẻ so sánh để bàn với gia đình và cán bộ khuyến nông.',
     startCta: 'Bắt đầu',
@@ -257,7 +262,7 @@ export const vi = {
       'Có sẵn câu hỏi để mang tới cán bộ khuyến nông.',
     ],
     notTitle: 'Phần này không làm',
-    nots: ['Không dự báo thời tiết mùa tới.', 'Không chọn thay gia đình bạn, không chấm điểm cách trồng nào.'],
+    nots: ['Không dự báo thời tiết vụ tới.', 'Không chọn thay gia đình bạn, không chấm điểm cách trồng nào.'],
     stepsLabel: 'Bốn bước',
     landTitle: 'Ruộng nhà mình thế nào?',
     landHelp: 'Chọn một ô giống ruộng nhà bạn nhất.',
@@ -284,6 +289,7 @@ export const vi = {
     yearsPicked: (n: number) => `Đã chọn ${n} năm`,
     yearChipLegend: 'Vạch vàng dưới mỗi năm: phần đất trồng gặp điều kiện hạn hán (phần lượng mưa) năm đó.',
     yearRowLabel: 'Phần đất trồng Nghệ An gặp điều kiện, trong thời gian có cây trên ruộng',
+    legendTitle: 'Các điều kiện thời tiết theo Quyết định 18/2021',
     limitsTitle: 'Giới hạn của các con số này',
     cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
@@ -324,11 +330,13 @@ export const vi = {
     datesAsReported: 'ngày theo thử nghiệm',
     overlapNote: 'Hai cây nằm trên hai hàng riêng vì ngày ghi trong bài báo trùng nhau.',
     rows: {
+      calendar: 'Lịch 12 tháng',
       money: 'Tiền lãi trong thử nghiệm, không phải của ruộng nhà bạn',
       weather: 'Thời tiết xấu khi cây đang trên ruộng',
       weatherNote:
         'Phần đất trồng Nghệ An gặp điều kiện trong thời gian cây trên ruộng, nếu gieo đúng ngày của thử nghiệm 2020–21, từng năm bạn chọn.',
       water: 'Nước tưới',
+      droughtPointer: (row: string) => `Hạn hán: xem mục “${row}” bên dưới.`,
       waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha).',
       soil: 'Độ ẩm đất NASA',
       soilNote: 'Giá trị mô hình NASA, không phải số đo tại ruộng. 100% là đất no nước.',
@@ -336,6 +344,7 @@ export const vi = {
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
       land: 'Chăm sóc đất',
       checks: 'Cần cân nhắc',
+      checksCount: (n: number) => `Cần cân nhắc (${n})`,
       why: 'Vì sao có cách trồng này',
       rice: 'Lúa cả tỉnh so với bình thường',
     },
@@ -356,6 +365,7 @@ export const vi = {
     profit: 'Lãi thuần trong thử nghiệm',
     profitTable: 'Lãi thuần: Bảng 13 của bài báo (tr. 50).',
     paperDefinition: (definition: string) => `Cách bài báo tính: ${definition}.`,
+    paperPage: (page: string) => `Bài báo, tr. ${page}.`,
     cost: 'Tổng chi trong thử nghiệm',
     ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
     ourSumNote: 'Chúng tôi cộng tiền lãi của các vụ; bài báo không báo cáo tiền lãi cho cả chuỗi.',
@@ -432,6 +442,8 @@ export const vi = {
       yourPrice: 'Giá bán của bạn',
       yourCost: 'Chi phí của bạn',
       invalid: 'Hãy nhập số nguyên, từ 0 trở lên, tối đa 9 chữ số. Số này chưa được dùng.',
+      invalidCost:
+        'Hãy nhập số triệu đồng, từ 0 trở lên, tối đa 6 chữ số trước dấu phẩy, ví dụ 24,7. Số này chưa được dùng.',
       title: 'Số của bạn',
       revenue: 'Tổng thu theo giá của bạn, chưa trừ chi phí',
       margin: 'Còn lại sau chi phí bạn nhập',
@@ -555,8 +567,6 @@ export const vi = {
     filterAll: 'Tất cả',
     costs: 'Chi phí',
     price: 'Giá bán',
-    perKg: 'đ/kg',
-    thousandPerHa: 'nghìn đ/ha',
   },
   science: {
     eyebrow: 'Phòng dữ liệu · dành cho nhà nghiên cứu',
@@ -762,6 +772,32 @@ export const vi = {
     drySpell: 'Đợt khô dài nhất',
     hotDays: 'Ngày từ 35 °C',
     gridNote: 'Số theo ô lưới NASA POWER (mô hình), không đo tại ruộng.',
+    monthTip: (y: number, m: number, value: string) => `${y}, tháng ${m}: ${value}`,
+    days: (n: string) => `${n} ngày`,
+    annualDetail: (base: string, normal: string) =>
+      `Tổng mưa 12 tháng, trung bình theo trọng số đất trồng của 5 ô NASA POWER. Bình thường ${base}: ${normal} mm.`,
+    dryMonthsDetail: (base: string, months: string) =>
+      `Tháng có mưa thấp hơn một nửa mức bình thường ${base} (QĐ 18/2021, Điều 48): ${months || 'không có'}.`,
+    drySpellDetail:
+      'Số ngày liền mưa dưới 1 mm dài nhất trong năm (chỉ số CDD, Zhang và cs. 2011), trung bình theo trọng số các ô.',
+    hotDaysDetail:
+      'Ngày có nhiệt độ cao nhất từ 35 °C (ngưỡng dưới của QĐ 18/2021, Điều 47), trung bình theo trọng số các ô.',
+    powerDetail:
+      'Tổng 12 tháng của PRECTOTCORR (mô hình tái phân tích), ô 0,5° × 0,625°. Tháng thiếu ngày thì không cộng.',
+    chirpsDetail:
+      'Tổng 12 tháng của CHIRPS v3 (vệ tinh kết hợp trạm đo, 0,05°), trung bình các điểm ảnh thuộc Nghệ An trong ô. Bản cuối, không dùng bản sơ bộ.',
+  },
+  places: {
+    trialSite: 'Lưu Sơn (cũ) · nơi thử nghiệm',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIỆT NAM',
+    hanoi: 'Hà Nội',
+    vinh: 'Vinh',
+    ngheAn: 'NGHỆ AN',
+    formerDoLuong: 'Đô Lương (cũ)',
+    hoangSa: 'QĐ. Hoàng Sa (Việt Nam)',
+    truongSa: 'QĐ. Trường Sa (Việt Nam)',
+    phuQuoc: 'Đảo Phú Quốc',
   },
   media: {
     illustration: 'Do AI tạo, không phải ảnh thật',
@@ -1080,6 +1116,8 @@ export const vi = {
     rainTable: 'Bảng mưa từng tháng',
     rainNotRun: 'Phép đối chiếu mưa chưa chạy.',
     notUsed: 'Bộ số liệu đã xem xét nhưng không dùng',
+    picsa:
+      'Phần so sánh làm theo các bước B đến G của sổ tay thực địa PICSA (Dorward, Clarkson và Stern 2015): khí hậu các năm đã qua, đếm số năm, một bảng các cách làm, và người nông dân tự quyết định. Đây không phải một quy trình PICSA đầy đủ: PICSA do cán bộ đã được tập huấn thực hiện cùng nhóm nông dân, và ứng dụng này chưa được thử với nông dân.',
     noUserTest: 'Ứng dụng chưa được thử với nông dân.',
   },
   refs: {
@@ -1101,7 +1139,7 @@ export const vi = {
       'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
     cropProfitLabel: (crop: string) => `Lãi ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
-      `Bảng 13: ${profit} nghìn đ/ha, đã trừ công. Chi phí ${cost} nghìn đ/ha; giá bán ${price} đ/kg lúc thu hoạch.`,
+      `Bảng 13: ${profit} nghìn đồng/ha, đã trừ công. Chi phí ${cost} nghìn đồng/ha; giá bán ${price} đồng/kg lúc thu hoạch.`,
     planProfitLabel: 'Lãi cả năm trong thử nghiệm, ba vụ cộng lại',
     planProfitSum: 'Bảng 13, phép cộng của Miaudow',
     tcvnLabel: (crop: string) => `Mức tưới ${crop}`,

@@ -16,7 +16,7 @@ export function useRefs() {
     const cropName = (c: PlanCrop) => `${pick(CROPS[c.crop].name)} ${c.variety}`;
     const span = `${YEARS[0]}–${YEARS[YEARS.length - 1]}`;
     const shareDetail = (rule: RuleCode, window: string) =>
-      r.shareDetail(RULES[rule].article, RULES[rule].quote, window);
+      r.shareDetail(pick(RULES[rule].article), RULES[rule].quote, window);
     return {
       share(rule: RuleCode, year: number, share: number, crop?: PlanCrop): SourceRef {
         const window = crop ? r.cropWindow(cropName(crop), crop.sow, crop.harvest) : r.anyCropWindow;
@@ -34,7 +34,7 @@ export function useRefs() {
         return {
           sourceId: 'nasa-power',
           kind: 'derived',
-          value: SOURCES['nasa-power'].short,
+          value: pick(SOURCES['nasa-power'].short),
           label: `${pick(RULES[rule].name)} · ${span}`,
           detail: shareDetail(rule, r.anyCropWindow),
           chain: ['nasa-power', 'qd18', 'modis'],
@@ -45,7 +45,7 @@ export function useRefs() {
         return {
           sourceId: 'nasa-power',
           kind: 'derived',
-          value: SOURCES['nasa-power'].short,
+          value: pick(SOURCES['nasa-power'].short),
           label: `${pick(RULES[rule].name)} · ${year}`,
           detail: r.cellDetail(pick(RULES[rule].unit), shareDetail(rule, r.anyCropWindow)),
           chain: ['nasa-power', 'qd18', 'modis'],
@@ -55,7 +55,7 @@ export function useRefs() {
         return {
           sourceId: 'nso',
           kind: 'data',
-          value: SOURCES.nso.short,
+          value: pick(SOURCES.nso.short),
           label: r.riceSeriesLabel(span),
           detail: r.riceDetail(r.riceSeason[season]),
           chain: ['nso', 'e010'],
@@ -65,7 +65,7 @@ export function useRefs() {
         return {
           sourceId: 'e012',
           kind: 'model',
-          value: SOURCES.e012.short,
+          value: pick(SOURCES.e012.short),
           label: r.predictionsLabel,
           detail: r.predictionsDetail,
           chain: ['nasa-power', 'nso', 'e012'],
@@ -75,7 +75,7 @@ export function useRefs() {
         return {
           sourceId: 'modis-ndvi',
           kind: 'data',
-          value: SOURCES['modis-ndvi'].short,
+          value: pick(SOURCES['modis-ndvi'].short),
           label: r.ndviLabel,
           detail: r.ndviDetail,
         };

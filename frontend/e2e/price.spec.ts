@@ -6,13 +6,16 @@ import { signInOn } from './fakeGoogle';
 // in the URL fragment, no request but a signed-in farmer's save carries them and nothing is stored
 const PLANS_URL = '/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020&uutien=income';
 const PRICE = '31357'; // digits that appear nowhere else, so a request that carries them is found
-const COST = '24689';
+const COST = '24689'; // kept in thousand đ/ha in the fragment and a saved set (D-180)
+const COST_TYPED = '24.689'; // typed in million đ/ha (D-192)
 
 async function typeNumbers(page: Page) {
   const card = page.locator('#the-cc1');
+  // D-187 item 4 (F1): the money row folds behind its heading button
+  await card.getByTestId('card-cc1-row-money').locator('h3 > button').click();
   await card.getByRole('button', { name: 'Tính với giá bán và chi phí của bạn' }).click();
   await card.getByRole('spinbutton', { name: /^Lạc.*Giá bán của bạn/ }).fill(PRICE);
-  await card.getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn/ }).fill(COST);
+  await card.getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn \(triệu đồng\/ha\)/ }).fill(COST_TYPED);
   return card;
 }
 
@@ -34,10 +37,12 @@ test('T4 T14 your price and costs: worked out in the browser, never in a request
   const sent = requests(page);
   await page.goto(PLANS_URL);
   const card = await typeNumbers(page);
-  // 3.91 t/ha (P-02 Table 12, peanut) x 31,357 đ/kg = 122,605.87 thousand đ/ha; minus 24,689 = 97,916.87
+  // 3.91 t/ha (P-02 Table 12, peanut) x 31,357 đ/kg = 122,605.87 thousand đ/ha; minus 24,689 = 97,916.87; shown in
+  // million đ/ha (D-190), the exact thousand value in the source sheet
   const own = card.getByTestId('card-cc1-own');
-  await expect(own).toContainText('Tổng thu theo giá của bạn, chưa trừ chi phí: 122.606 nghìn đồng/ha');
-  await expect(own).toContainText('Còn lại sau chi phí bạn nhập: 97.917 nghìn đồng/ha');
+  await expect(own).toContainText('Tổng thu theo giá của bạn, chưa trừ chi phí: 122,6 triệu đồng/ha');
+  await expect(own).toContainText('Còn lại sau chi phí bạn nhập: 97,9 triệu đồng/ha');
+  await expect(own.locator('[data-value="122.606 nghìn đồng/ha"]')).toHaveCount(1);
   await expect(own).toContainText('không phải sản lượng ruộng nhà bạn');
 
   // T4: numeric fields only, no text field
@@ -53,7 +58,7 @@ test('T4 T14 your price and costs: worked out in the browser, never in a request
   // section 12d: the numbers stay in the fragment and survive a reload
   await expect(page).toHaveURL(new RegExp(`#.*yp[.]cc1_spring_peanut=${PRICE}`));
   await page.reload();
-  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('122.606 nghìn đồng/ha');
+  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('122,6 triệu đồng/ha');
   // and still nothing after the reload (PR #68 removed the router's scroll restoration, which wrote sessionStorage)
   expect((await storage(page)).counts).toEqual([0, 0, 0]);
 
@@ -100,13 +105,18 @@ test('T14 a signed-in save carries your price and costs, no other request does, 
   ]);
   // back on the cards with the numbers: 3.91 t/ha (P-02 Table 12, peanut) x 31,357 đ/kg - 24,689 = 97,916.87
   await expect(page).toHaveURL(new RegExp(`yp[.]cc1_spring_peanut=${PRICE}`));
-  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97.917 nghìn đồng/ha');
+  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97,9 triệu đồng/ha');
 
   // the saved set reopens with them
   await page.getByRole('link', { name: 'Xem câu trả lời đã lưu' }).click();
   await page.getByRole('link', { name: /^Mở: / }).click();
   await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
-  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97.917 nghìn đồng/ha');
+  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97,9 triệu đồng/ha');
+  // the reopened card starts with its rows folded (D-187 item 4): open the money row to read the field
+  await page.locator('#the-cc1').getByTestId('card-cc1-row-money').locator('h3 > button').click();
+  await expect(page.locator('#the-cc1').getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn/ })).toHaveValue(
+    COST_TYPED,
+  );
 
   expect((await storage(page)).counts).toEqual([0, 0, 0]);
   const save = sent.filter((r) => r.startsWith('POST ') && r.includes('/api/account/saved'));
@@ -175,7 +185,7 @@ test('T31 two quick entries on a slow phone both stay in the fragment and the re
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 6 });
   await page.goto(PLANS_URL);
   const card = await typeNumbers(page);
-  await expect(card.getByTestId('card-cc1-own')).toContainText('97.917 nghìn đồng/ha');
+  await expect(card.getByTestId('card-cc1-own')).toContainText('97,9 triệu đồng/ha');
   await expect(page).toHaveURL(new RegExp(`yp[.]cc1_spring_peanut=${PRICE}`));
   await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
 });
@@ -185,6 +195,7 @@ test('T31 a link with a 200,000-digit price opens the cards promptly and does no
   await page.goto(`${PLANS_URL}&yp.cc1_spring_peanut=${'9'.repeat(200_000)}`);
   const card = page.locator('#the-cc1');
   await expect(card).toBeVisible({ timeout: 10_000 });
+  await card.getByTestId('card-cc1-row-money').locator('h3 > button').click({ timeout: 5_000 });
   await card.getByRole('button', { name: 'Tính với giá bán và chi phí của bạn' }).click({ timeout: 5_000 });
   await expect(card.getByRole('spinbutton', { name: /^Lạc.*Giá bán của bạn/ })).toHaveValue('');
   await expect(card.getByTestId('card-cc1-own')).toContainText('Nhập giá bán để tính.');

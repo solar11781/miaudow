@@ -26,7 +26,7 @@ PCT = {"vi": "%", "en": "%"}
 SHARE_IDS = ["R-A01", "R-N01", "R-N02", "E-019"]  # hazard_labels.json crop rows: threshold, values, computed_by
 SOIL_IDS = ["R-N01", "R-W12", "R-N02", "R-A15", "E-020"]  # soil_wetness.json rows: source_ids, computed_by
 REAL_IDS = ["R-D01", "E-010"]  # risk_table.json anom_history_source_ids
-P02_UNIT = {"vi": "nghìn đồng/ha", "en": "thousand đ/ha"}  # rules/rotations.yaml reported_economics.unit
+P02_UNIT = {"vi": "nghìn đồng/ha", "en": "thousand VND/ha"}  # rules/rotations.yaml reported_economics.unit
 WHY_PARTS = ("why", "evidence", "benefits", "gaps")
 
 
@@ -219,7 +219,7 @@ def test_money_items_are_the_reported_profit_and_cost_per_crop(resp: dict) -> No
     assert money["definition"]["vi"] == (
         "lợi nhuận thuần (RVAC) = GR - TVC; TVC gồm vật tư, công lao động, năng lượng và lãi vay"
     )
-    assert money["text_only"] is None
+    assert money["season_values"] == []
 
 
 # UI-UX-SPEC §12d, D-163: P-02 Tables 4 (p. 46), 8 (p. 48) and 12 (p. 49), "Năng suất (tấn/ha)" as printed (D-95) and
@@ -259,7 +259,7 @@ def test_money_items_carry_the_study_yield_and_price(resp: dict, plan_id: str) -
     assert [(i["crop_key"], i["yield"]["value"], i["price"]["value"]) for i in items] == P02_YIELD_PRICE[plan_id]
     for item in items:
         assert item["yield"]["unit"] == {"vi": "tấn/ha", "en": "t/ha"}
-        assert item["price"]["unit"] == {"vi": "đồng/kg", "en": "đ/kg"}
+        assert item["price"]["unit"] == {"vi": "đồng/kg", "en": "VND/kg"}
         assert item["yield"]["source_ids"] == item["price"]["source_ids"] == ["R-P02"]
 
 
@@ -295,11 +295,45 @@ def test_the_total_is_our_sum_of_the_profit_values(resp: dict, plan_id: str, tot
     assert plan(resp, plan_id)["money"]["total"] == {"value": total, "unit": P02_UNIT, "source_ids": ["R-P02", "E-022"]}
 
 
-def test_p03_money_is_text_only_with_its_own_definition(resp: dict) -> None:
+# D-191: P-03 pp. [4]-[5] give the rice control per season in million đồng/ha and no whole-year total; p. [2] the fallow
+def test_p03_money_is_each_season_as_the_paper_gives_it_never_summed(resp: dict) -> None:
     money = plan(resp, "usual_p03")["money"]
     assert (money["items"], money["total"], money["price_year"]) == ([], None, "2020-21")
     assert money["definition"]["vi"] == "Lợi nhuận = GR - Tổng chi phí vật chất"
-    assert money["text_only"]["vi"].startswith("Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha")
+    unit = {"vi": "triệu đồng/ha", "en": "million VND/ha"}
+    shown = [(v["season"], v["value"], v["page"]) for v in money["season_values"]]
+    assert shown == [
+        ("spring", {"value": "5.36", "unit": unit, "source_ids": ["R-P03"]}, "4-5"),
+        ("summer_autumn", {"value": "1.16", "unit": unit, "source_ids": ["R-P03"]}, "4"),
+        ("autumn_winter", None, "2"),
+    ]
+    assert money["season_values"][0]["words"]["vi"].startswith(
+        "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36"
+    )
+    assert money["season_values"][2]["words"]["vi"] == "Vụ Thu Đông: bỏ hoang."
+
+
+def test_season_values_and_per_crop_money_never_mix(root: Path) -> None:
+    def mix(plans: list[dict]) -> None:
+        p03 = next(p for p in plans if p["id"] == "usual_p03")
+        both = {"usual_p03_spring_rice": "5", "usual_p03_summer_autumn_rice": "1"}
+        unit = {"vi": "x", "en": "x"}
+        p03["reported_economics"].update(
+            profit_per_crop=both, yield_per_crop=both, price_per_crop=both, yield_unit=unit, price_unit=unit
+        )
+
+    edit_yaml(root, "rotations.yaml", mix)
+    with pytest.raises(ValueError, match="usual_p03 season_values need the unit and no per-crop money"):
+        compare(request(), load_compare_data(root))
+
+
+def test_a_season_value_needs_the_unit(root: Path) -> None:
+    def drop_unit(plans: list[dict]) -> None:
+        del next(p for p in plans if p["id"] == "usual_p03")["reported_economics"]["unit"]
+
+    edit_yaml(root, "rotations.yaml", drop_unit)
+    with pytest.raises(ValueError, match="usual_p03 season_values need the unit"):
+        compare(request(), load_compare_data(root))
 
 
 def test_a_cost_the_source_does_not_report_is_null(root: Path) -> None:
@@ -486,11 +520,11 @@ def test_water_facts_come_from_crops_yaml_per_crop(resp: dict) -> None:
         "crop_key": "usual_spring_rice",
         "measure": "to_apply",
         "value": {"value": "6,500-7,500", "unit": {"vi": "m3/ha", "en": "m3/ha"}, "source_ids": ["R-W15"]},
-        "scope": {"vi": "Trung bộ, lúa cấy, vụ xuân", "en": "Trung bộ, transplanted rice, spring season"},
+        "scope": {"vi": "Trung bộ, lúa cấy, vụ xuân", "en": "Trung Bo, transplanted rice, spring season"},
         "note": {
             "vi": "Chỉ nước tưới dưỡng, không kể nước làm đất. Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.",
             "en": "Maintenance irrigation only, land preparation not included. The standard does not say whether "
-            "Nghệ An belongs to Trung bộ or Bắc bộ.",
+            "Nghe An belongs to Trung Bo or Bac Bo.",
         },
     }
     # the TCVN 8641:2011 rows of the crop's own season, every region (UI-UX-SPEC §9, D-68, D-161: the standard does

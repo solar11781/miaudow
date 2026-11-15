@@ -45,9 +45,13 @@ export const en: Messages = {
     back: 'Back',
     next: 'Continue',
     source: 'Source',
+    /** The singular of an API unit after the number 1 (D-192). */
+    unitOfOne: (unit: string) => (unit === 'crops' ? 'crop' : unit),
+    sourceFor: (name: string) => `See the source: ${name}`,
     open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',
+    perKg: 'VND/kg',
     notListed: 'Not listed in the source',
     noData: 'No data yet',
     farmland: 'farmland',
@@ -143,11 +147,11 @@ export const en: Messages = {
       'One trial in Luu Son commune, Do Luong district, from June 2020 to June 2021 (p. 45); one unreplicated plot of 1,000 m² per crop and season.',
     riceSpring: 'profit of spring rice 2021 on the trial plot',
     trialNote: 'One plot, one year (2020–2021), at that year’s prices. Not the profit to expect on your field.',
-    verseTitle: 'The land of Nghệ',
+    verseTitle: 'The land of Nghe',
     verse: ['Đường vô xứ Nghệ quanh quanh,', 'Non xanh nước biếc như tranh họa đồ.'],
     verseBy: 'Folk verse of Nghe An',
     verseNote:
-      '“The road into Nghệ winds round and round, / green hills, clear water, like a painted map.” (our translation)',
+      '“The road into Nghe winds round and round, / green hills, clear water, like a painted map.” (our translation)',
     coresTitle: 'Four AI cores, one source of data',
     coresLead: 'Each core does one job, on real data, and says plainly what it cannot do yet.',
     coreUses: 'Uses',
@@ -226,9 +230,10 @@ export const en: Messages = {
       'The machine-learning model was tested on 2016–2024, years it had never seen, against simple ways of guessing. The result is published as it is.',
     // chosen per season from the run's weather claim and season status (src/domain/rice.ts modelVerdict)
     honestyNoHelp: 'NASA weather did not help predict better than the model without weather.',
-    honestyHelps: 'The model with NASA weather predicts better, by a small margin.',
-    honestyHidden: (season: string) => `No ${season} prediction is shown.`,
-    honestyShown: (season: string) => `Predictions for ${season} are shown next to the real values.`,
+    honestyHelps: 'NASA weather helps predict better than the model without weather, but only slightly.',
+    honestyHidden: (season: string) => `No model estimate is shown for ${season}.`,
+    honestyShown: (season: string) =>
+      `Model estimates for ${season} in the test years are shown next to the real values.`,
     vsBnw: 'vs BNW',
     skillVsBnw: 'skill vs BNW',
     honestySummer: 'Too few provinces have data to test it, so only the real values are shown.',
@@ -295,6 +300,7 @@ export const en: Messages = {
     yearsPicked: (n: number) => `${n} years picked`,
     yearChipLegend: 'Gold line under each year: share of farmland meeting the drought (rain part) condition that year.',
     yearRowLabel: 'Share of Nghe An farmland meeting each condition while crops were in the field',
+    legendTitle: 'Weather conditions in Decision 18/2021',
     limitsTitle: 'Limits of these numbers',
     cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghe An farmland, each about 55 × 66 km.`,
     limits: [
@@ -334,11 +340,13 @@ export const en: Messages = {
     datesAsReported: 'dates as reported',
     overlapNote: 'Two crops sit on separate lanes because the reported dates overlap.',
     rows: {
+      calendar: '12-month calendar',
       money: 'Profit in the trial, not on your own field',
       weather: 'Bad weather while the crop is in the field',
       weatherNote:
         'Share of Nghe An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation',
+      droughtPointer: (row: string) => `Drought: see “${row}” below.`,
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
       soilNote: 'NASA model value, not a field measurement. 100% is soil full of water.',
@@ -346,6 +354,7 @@ export const en: Messages = {
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
       land: 'Care for the land',
       checks: 'Weigh this',
+      checksCount: (n: number) => `Weigh this (${n})`,
       why: 'Why this plan is here',
       rice: 'Province rice against normal',
     },
@@ -365,6 +374,7 @@ export const en: Messages = {
     profit: 'Net profit in the trial',
     profitTable: 'Net profit: Table 13 of the paper (p. 50).',
     paperDefinition: (definition: string) => `How the paper counts it: ${definition}.`,
+    paperPage: (page: string) => `The paper, p. ${page}.`,
     cost: 'Total cost in the trial',
     ourSum: 'our addition of the profit values, not reported as a sequence',
     ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',
@@ -440,6 +450,8 @@ export const en: Messages = {
       yourPrice: 'Your sale price',
       yourCost: 'Your costs',
       invalid: 'Type a whole number, 0 or more, up to 9 digits. This number is not used yet.',
+      invalidCost:
+        'Type the cost in million VND, 0 or more, up to 6 digits before the decimal point, for example 24.7. This number is not used yet.',
       title: 'Your numbers',
       revenue: 'Sales money at your price, before costs',
       margin: 'Left after the costs you typed',
@@ -558,8 +570,6 @@ export const en: Messages = {
     filterAll: 'All',
     costs: 'Cost',
     price: 'Price',
-    perKg: 'VND/kg',
-    thousandPerHa: 'thousand VND/ha',
   },
   science: {
     eyebrow: 'Data room · for researchers',
@@ -765,6 +775,32 @@ export const en: Messages = {
     drySpell: 'Longest dry spell',
     hotDays: 'Days at 35 °C or more',
     gridNote: 'NASA POWER grid values (a model), not measured on a farm.',
+    monthTip: (y: number, m: number, value: string) => `${y}, month ${m}: ${value}`,
+    days: (n: string) => `${n} days`,
+    annualDetail: (base: string, normal: string) =>
+      `Sum of 12 months, farmland-weighted mean of the 5 NASA POWER cells. Normal ${base}: ${normal} mm.`,
+    dryMonthsDetail: (base: string, months: string) =>
+      `Months with less than half the ${base} normal (Decision 18/2021, Art. 48): ${months || 'none'}.`,
+    drySpellDetail:
+      'Longest run of days with under 1 mm of rain (CDD index, Zhang et al. 2011), weighted mean of the cells.',
+    hotDaysDetail:
+      'Days with a maximum of 35 °C or more (lower bound of Decision 18/2021, Art. 47), weighted mean of the cells.',
+    powerDetail:
+      'Sum of 12 months of PRECTOTCORR (reanalysis model), 0.5° × 0.625° cell. Months with a missing day are not summed.',
+    chirpsDetail:
+      'Sum of 12 months of CHIRPS v3 (satellite and station blend, 0.05°), mean of the cell’s Nghe An pixels. Final product, never the preliminary one.',
+  },
+  places: {
+    trialSite: 'former Luu Son · trial site',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIETNAM',
+    hanoi: 'Hanoi',
+    vinh: 'Vinh',
+    ngheAn: 'NGHE AN',
+    formerDoLuong: 'former Do Luong',
+    hoangSa: 'Hoang Sa (Paracel) Archipelago',
+    truongSa: 'Truong Sa (Spratly) Archipelago',
+    phuQuoc: 'Phu Quoc Island',
   },
   media: {
     illustration: 'AI-generated, not a photograph',
@@ -1083,6 +1119,8 @@ export const en: Messages = {
     rainTable: 'Monthly rain table',
     rainNotRun: 'The rain check has not run.',
     notUsed: 'Datasets considered and not used',
+    picsa:
+      'The comparison follows steps B to G of the PICSA field manual (Dorward, Clarkson and Stern 2015): past-year climate, counting years, an options table, and the farmer decides. It is not a full PICSA process: PICSA is run by trained staff with farmer groups, and this tool has not been tested with farmers.',
     noUserTest: 'Usability has not been tested with farmers.',
   },
   refs: {

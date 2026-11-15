@@ -1,6 +1,8 @@
 import { YEARS } from '../../data';
 import { FARMER_RULES, RULES, yearShare } from '../../domain/hazards';
-import { CROPS, PLANS, planProfitMillion, type CropId, type CropInfo } from '../../domain/plans';
+import { CROPS, PLANS, planLabel, planProfitMillion, type CropId, type CropInfo } from '../../domain/plans';
+import { en } from '../../i18n/en';
+import { vi as viText } from '../../i18n/vi';
 import { riceYear } from '../../domain/rice';
 import type { EvidenceKind, SourceRef } from '../../domain/provenance';
 import { SOURCES } from '../../domain/sources';
@@ -51,7 +53,7 @@ function passageLines(p: Passage, lang: Lang): AnswerLine[] {
   const ref = (id: Passage['sources'][number]): SourceRef => ({
     sourceId: id,
     kind: SOURCES[id].kind,
-    value: SOURCES[id].short,
+    value: SOURCES[id].short[lang],
     label: p.title[lang],
   });
   const [first, ...rest] = p.sources;
@@ -87,7 +89,7 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   for (const rule of FARMER_RULES) {
     const v = yearShare(rule, year);
     lines.push({
-      text: `${RULES[rule].name[lang]} (${RULES[rule].article})`,
+      text: `${RULES[rule].name[lang]} (${RULES[rule].article[lang]})`,
       ref: {
         sourceId: 'nasa-power',
         kind: 'derived',
@@ -120,6 +122,7 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
 
 function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
   const vi = lang === 'vi';
+  const t = vi ? viText : en;
   const rows = PLANS.flatMap((p) => p.crops.filter((c) => c.crop === crop).map((c) => ({ p, c })));
   const name = CROPS[crop].name[lang];
   const lines: AnswerLine[] = [
@@ -131,15 +134,14 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
   ];
   for (const { p, c } of rows) {
     lines.push({
-      text: `${p.current ? (vi ? 'Cách làm hiện nay' : 'Current practice') : p.id.toUpperCase()} · ${c.variety} · ${c.sow} → ${c.harvest}`,
+      text: `${planLabel(p, t.farmer)} · ${c.variety} · ${c.sow} → ${c.harvest}`,
       ref: {
         sourceId: 'p02',
         kind: 'study',
-        value: `${f.n(c.profit / 1000, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`,
+        // million dong per ha as farmers read it (D-190); the detail keeps the paper's thousand values
+        value: `${f.n(c.profit / 1000, 1)} ${t.common.millionPerHa}`,
         label: `${name} ${c.variety}`,
-        detail: vi
-          ? `Chi phí ${f.n(c.cost)} nghìn đ/ha; giá ${f.n(c.price)} đ/kg.`
-          : `Cost ${f.n(c.cost)} thousand VND/ha; price ${f.n(c.price)} VND/kg.`,
+        detail: t.refs.cropProfitDetail(f.n(c.profit), f.n(c.cost), f.n(c.price)),
       },
     });
   }
@@ -168,18 +170,19 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
 
 function rankingAnswer(lang: Lang, f: Fmt, intro: string): Answer {
   const vi = lang === 'vi';
+  const t = vi ? viText : en;
   const lines: AnswerLine[] = [{ text: intro }];
   for (const p of PLANS) {
     const total = planProfitMillion(p);
-    const label = p.textOnly ? p.textOnly.sequence[lang] : p.crops.map((c) => CROPS[c.crop].name[lang]).join(' → ');
+    const crops = p.textOnly ? p.textOnly.sequence[lang] : p.crops.map((c) => CROPS[c.crop].name[lang]).join(' → ');
     lines.push({
-      text: label,
+      text: `${planLabel(p, t.farmer)}: ${crops}`,
       ref:
         total !== null
           ? {
               sourceId: 'p02',
               kind: 'derived',
-              value: `${f.n(total, 1)} ${vi ? 'triệu đ/ha' : 'M VND/ha'}`,
+              value: `${f.n(total, 1)} ${t.common.millionPerHa}`,
               label: vi ? 'Lãi cả năm' : 'Yearly profit',
               chain: ['p02'],
             }

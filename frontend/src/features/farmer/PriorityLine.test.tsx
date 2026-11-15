@@ -26,7 +26,7 @@ function response(): CompareResponse {
     const p = res.plans.find((x) => x.id === id);
     if (!p) throw new Error(id);
     p.name = { vi: name, en: name };
-    p.money.total = v(total, unit('nghìn đồng/ha', 'thousand đ/ha'));
+    p.money.total = v(total, unit('nghìn đồng/ha', 'thousand VND/ha'));
     p.land.crops_in_year = { ...p.land.crops_in_year, value: v(crops, unit('loại cây', 'crops')) };
     p.land.living_days = { ...p.land.living_days, value: days ? v(days, unit('ngày', 'days')) : null };
   };
@@ -49,6 +49,9 @@ function card(res: CompareResponse, id: PlanId, priority: Priority) {
   return { rerender: (pr: Priority) => view.rerender(ui(pr)) };
 }
 
+// D-190: the line names the usual plan by its crops, not by the API's variety name
+const usualCrops = () =>
+  (response().plans.find((p) => p.id === 'usual')?.calendar ?? []).map((c) => c.crop.vi).join(' → ');
 const line = (id: PlanId) => document.querySelector(`[data-testid="card-${id}-priority-line"]`);
 const values = (el: Element | null) =>
   [...(el?.querySelectorAll('button[data-value]') ?? [])].map((b) => b.getAttribute('data-value'));
@@ -74,7 +77,10 @@ describe('priority line', () => {
   it("T37 income shows this card's money total and the usual card's, each a source button", () => {
     card(response(), 'cc1', 'income');
     expect(values(line('cc1'))).toEqual(['53.380 nghìn đồng/ha', '30.799 nghìn đồng/ha']);
-    expect(line('cc1')?.textContent).toContain('Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu');
+    expect(line('cc1')?.textContent).toContain(usualCrops());
+    // shown in million dong per ha (D-190); the source buttons keep the exact values above
+    expect(line('cc1')?.textContent).toContain('53,4 triệu đồng/ha');
+    expect(line('cc1')?.textContent).toContain('30,8 triệu đồng/ha');
   });
   it("T37 land shows this card's and the usual card's crops in the year and living days", () => {
     card(response(), 'cc1', 'land');
@@ -94,7 +100,7 @@ describe('priority line', () => {
     for (const pr of ['stability', 'water'] as const) {
       card(response(), 'cc1', pr);
       expect(values(line('cc1'))).toEqual([]);
-      expect(line('cc1')?.textContent).toContain('Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu');
+      expect(line('cc1')?.textContent).toContain(usualCrops());
       cleanup();
     }
   });
@@ -108,7 +114,9 @@ describe('priority line', () => {
         card(response(), 'cc1', pr);
         expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).not.toMatch(BANNED);
         // P-02, not the author line it shares with P-03 (D-52)
-        expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).toContain(SOURCES.p02.short);
+        expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).toContain(
+          SOURCES.p02.short[languages[0] === 'en-GB' ? 'en' : 'vi'],
+        );
         cleanup();
       }
     }

@@ -8,16 +8,16 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'p02',
     registerId: 'R-P02',
     kind: 'study',
-    short: 'Trịnh Đức Toàn và cs. 2023 · VAAS',
+    short: { vi: 'Trịnh Đức Toàn và cs. 2023 · VAAS', en: 'Trịnh Đức Toàn et al. 2023 · VAAS' },
     title: {
       vi: 'Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An',
-      en: 'Testing of some crops on ineffective, frequently drought-affected rice land in Nghệ An province',
+      en: 'Testing of some crops on ineffective, frequently drought-affected rice land in Nghe An province',
     },
     publisher: {
       vi: 'Trịnh Đức Toàn và cộng sự (2023), Tạp chí Khoa học và Công nghệ Nông nghiệp Việt Nam, số 04(146), tr. 43–51',
       en: 'Trịnh Đức Toàn et al. (2023), Vietnam Journal of Agricultural Science and Technology, 04(146), pp. 43–51',
     },
-    where: { vi: 'Xã Lưu Sơn, huyện Đô Lương (cũ), Nghệ An', en: 'Lưu Sơn commune, former Đô Lương district, Nghệ An' },
+    where: { vi: 'Xã Lưu Sơn, huyện Đô Lương (cũ), Nghệ An', en: 'Luu Son commune, former Do Luong district, Nghe An' },
     period: { vi: 'Tháng 6/2020 – tháng 6/2021', en: 'June 2020 – June 2021' },
     method: {
       vi: 'Thử nghiệm đồng ruộng, mỗi cây một ô 1.000 m², không lặp lại; lãi đã trừ công lao động (Bảng 13)',
@@ -37,16 +37,16 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'p03',
     registerId: 'R-P03',
     kind: 'study',
-    short: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An',
+    short: { vi: 'Trịnh Đức Toàn và cs. 2023 · KH&CN Nghệ An', en: 'Trịnh Đức Toàn et al. 2023 · KH&CN Nghệ An' },
     title: {
       vi: 'Thử nghiệm một số công thức luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An',
-      en: 'Testing some rotation formulas on low-return (inefficient), water-short rice land in Nghệ An province',
+      en: 'Testing some rotation formulas on low-return (inefficient), water-short rice land in Nghe An province',
     },
     publisher: {
       vi: 'Trịnh Đức Toàn và cộng sự (2023), Đặc san KH&CN Nghệ An, số 2/2023',
       en: 'Trịnh Đức Toàn et al. (2023), Nghệ An Science & Technology special issue 2/2023',
     },
-    where: { vi: 'Xã Lưu Sơn, Đô Lương, Nghệ An', en: 'Lưu Sơn commune, Đô Lương, Nghệ An' },
+    where: { vi: 'Xã Lưu Sơn, Đô Lương, Nghệ An', en: 'Luu Son commune, Do Luong, Nghe An' },
     period: { vi: 'Tháng 6/2020 – tháng 6/2021', en: 'June 2020 – June 2021' },
     method: {
       vi: 'Mô hình trình diễn, không lặp lại; cách tính lãi khác bài báo thứ nhất của cùng nhóm',
@@ -62,7 +62,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'qd18',
     registerId: 'R-A01',
     kind: 'standard',
-    short: 'QĐ 18/2021/QĐ-TTg',
+    short: { vi: 'QĐ 18/2021/QĐ-TTg', en: 'QĐ 18/2021/QĐ-TTg' },
     title: {
       vi: 'Quyết định 18/2021/QĐ-TTg quy định về dự báo, cảnh báo, truyền tin thiên tai và cấp độ rủi ro thiên tai',
       en: 'Prime Minister’s Decision 18/2021 on disaster forecasting, warning and risk levels',
@@ -91,7 +91,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'tcvn8641',
     registerId: 'R-W15',
     kind: 'standard',
-    short: 'TCVN 8641:2011',
+    short: { vi: 'TCVN 8641:2011', en: 'TCVN 8641:2011' },
     title: {
       vi: 'TCVN 8641:2011 Công trình thủy lợi – Kỹ thuật tưới tiêu nước cho cây lương thực và cây thực phẩm',
       en: 'TCVN 8641:2011 Irrigation techniques for food crops',
@@ -106,14 +106,14 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     howRead: { vi: 'Đọc qua bản đăng trên caselaw.vn', en: 'Read via the caselaw.vn copy' },
     caveat: {
       vi: 'Tiêu chuẩn không nói Nghệ An thuộc Trung bộ hay Bắc bộ.',
-      en: 'The standard does not say whether Nghệ An belongs to the central or northern region.',
+      en: 'The standard does not say whether Nghe An belongs to the central or northern region.',
     },
   },
   'fao-tm3': {
     id: 'fao-tm3',
     registerId: 'R-M02',
     kind: 'standard',
-    short: 'FAO Training Manual 3',
+    short: { vi: 'FAO Training Manual 3', en: 'FAO Training Manual 3' },
     title: {
       vi: 'FAO Irrigation Water Management, Training Manual 3, Bảng 14',
       en: 'FAO Irrigation Water Management, Training Manual 3, Table 14',
@@ -128,14 +128,14 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     howRead: { vi: 'Đã đọc', en: 'Read' },
     caveat: {
       vi: 'Không dành riêng cho Nghệ An; chỉ hiện cho cây có trong bảng.',
-      en: 'Not specific to Nghệ An; shown only for crops the table lists.',
+      en: 'Not specific to Nghe An; shown only for crops the table lists.',
     },
   },
   'nasa-power': {
     id: 'nasa-power',
     registerId: 'R-N01',
     kind: 'data',
-    short: 'NASA POWER',
+    short: { vi: 'NASA POWER', en: 'NASA POWER' },
     title: {
       vi: 'NASA POWER – thời tiết theo ngày (API Daily, cộng đồng AG)',
       en: 'NASA POWER daily weather (Daily API, AG community)',
@@ -143,7 +143,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     publisher: { vi: 'Trung tâm Nghiên cứu Langley của NASA', en: 'NASA Langley Research Center' },
     where: {
       vi: '5 ô lưới phủ đất trồng Nghệ An, mỗi ô 0,5° × 0,625° (khoảng 55 × 66 km)',
-      en: '5 grid cells over Nghệ An farmland, each 0.5° × 0.625° (about 55 × 66 km)',
+      en: '5 grid cells over Nghe An farmland, each 0.5° × 0.625° (about 55 × 66 km)',
     },
     period: { vi: '1990–2024, theo ngày', en: '1990–2024, daily' },
     method: {
@@ -165,7 +165,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'chirps-v3',
     registerId: 'R-D05',
     kind: 'data',
-    short: 'CHIRPS v3',
+    short: { vi: 'CHIRPS v3', en: 'CHIRPS v3' },
     title: {
       vi: 'CHIRPS v3 – lượng mưa tháng (vệ tinh kết hợp trạm đo)',
       en: 'CHIRPS v3 monthly rainfall (satellite and station blend)',
@@ -176,7 +176,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     where: {
       vi: 'Các điểm ảnh 0,05° thuộc Nghệ An trong 5 ô lưới NASA POWER, và điểm ảnh ở Lưu Sơn',
-      en: 'The 0.05° Nghệ An pixels inside the 5 NASA POWER cells, and the Lưu Sơn pixel',
+      en: 'The 0.05° Nghe An pixels inside the 5 NASA POWER cells, and the Luu Son pixel',
     },
     period: {
       vi: '1991–2024, theo tháng, bản cuối (không dùng bản sơ bộ)',
@@ -204,7 +204,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'modis-ndvi',
     registerId: 'R-N11',
     kind: 'data',
-    short: 'NASA MODIS MOD13Q1',
+    short: { vi: 'NASA MODIS MOD13Q1', en: 'NASA MODIS MOD13Q1' },
     title: {
       vi: 'MODIS MOD13Q1 v061 – chỉ số thực vật NDVI 16 ngày, 250 m',
       en: 'MODIS MOD13Q1 v061 – 16-day NDVI, 250 m',
@@ -215,7 +215,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     where: {
       vi: '81 điểm ảnh 250 m quanh xã Lưu Sơn (cũ), Đô Lương',
-      en: '81 pixels of 250 m around former Lưu Sơn commune, Đô Lương',
+      en: '81 pixels of 250 m around former Luu Son commune, Do Luong',
     },
     period: { vi: '2015–2024, 16 ngày một lần', en: '2015–2024, every 16 days' },
     method: {
@@ -235,7 +235,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'sentinel2',
     registerId: 'R-D06',
     kind: 'data',
-    short: 'Copernicus Sentinel-2 L2A',
+    short: { vi: 'Copernicus Sentinel-2 L2A', en: 'Copernicus Sentinel-2 L2A' },
     title: {
       vi: 'ESA Copernicus Sentinel-2 Mức 2A (MSI), qua Element 84 Earth Search v1',
       en: 'ESA Copernicus Sentinel-2 Level-2A (MSI), via Element 84 Earth Search v1',
@@ -244,7 +244,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       vi: 'ESA Copernicus (nơi sản xuất); Element 84 Earth Search v1, lưu trên AWS Open Data',
       en: 'ESA Copernicus (producer); Element 84 Earth Search v1, hosted by AWS Open Data',
     },
-    where: { vi: 'Huyện Đô Lương (cũ), điểm ảnh 20 m', en: 'Former Đô Lương district, 20 m pixels' },
+    where: { vi: 'Huyện Đô Lương (cũ), điểm ảnh 20 m', en: 'Former Do Luong district, 20 m pixels' },
     period: {
       vi: '6/2020–6/2021 và 1/2023–12/2024, các ngày có mây dưới 60%',
       en: 'June 2020 – June 2021 and January 2023 – December 2024, dates with cloud cover below 60%',
@@ -271,7 +271,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'modis',
     registerId: 'R-N02',
     kind: 'data',
-    short: 'NASA MODIS MCD12C1',
+    short: { vi: 'NASA MODIS MCD12C1', en: 'NASA MODIS MCD12C1' },
     title: {
       vi: 'MODIS Land Cover MCD12C1 v061 – trọng số đất trồng',
       en: 'MODIS Land Cover MCD12C1 v061 – farmland weights',
@@ -280,7 +280,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       vi: 'Friedl và Sulla-Menashe (2022), NASA LP DAAC',
       en: 'Friedl and Sulla-Menashe (2022), NASA LP DAAC',
     },
-    where: { vi: 'Các ô lưới NASA POWER trong Nghệ An', en: 'NASA POWER cells in Nghệ An' },
+    where: { vi: 'Các ô lưới NASA POWER trong Nghệ An', en: 'NASA POWER cells in Nghe An' },
     period: { vi: 'Một bản đồ cố định trước năm 2016', en: 'One fixed map before 2016' },
     method: {
       vi: 'Phần đất trồng trong mỗi ô, dùng làm trọng số',
@@ -298,10 +298,10 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'nso',
     registerId: 'R-D01',
     kind: 'data',
-    short: 'Cục Thống kê',
+    short: { vi: 'Cục Thống kê', en: 'National Statistics Office' },
     title: { vi: 'Năng suất lúa theo tỉnh và vụ, 1995–2024', en: 'Rice yield by province and season, 1995–2024' },
     publisher: { vi: 'Cục Thống kê (www.gso.gov.vn)', en: 'National Statistics Office of Vietnam (www.gso.gov.vn)' },
-    where: { vi: 'Toàn tỉnh Nghệ An, trung bình cả tỉnh', en: 'Province average for Nghệ An' },
+    where: { vi: 'Toàn tỉnh Nghệ An, trung bình cả tỉnh', en: 'Province average for Nghe An' },
     period: { vi: '1995–2024', en: '1995–2024' },
     method: {
       vi: 'Mức lệch = năng suất thật ÷ mức bình thường − 1; mức bình thường là trung bình 3 năm trước (E-010)',
@@ -319,13 +319,13 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'geoboundaries',
     registerId: 'R-D04',
     kind: 'data',
-    short: 'geoBoundaries',
+    short: { vi: 'geoBoundaries', en: 'geoBoundaries' },
     title: {
       vi: 'Ranh giới tỉnh Việt Nam (geoBoundaries gbOpen VNM ADM1)',
       en: 'Vietnam province boundaries (geoBoundaries gbOpen VNM ADM1)',
     },
     publisher: { vi: 'Phòng thí nghiệm geoLab, William & Mary', en: 'geoLab, William & Mary' },
-    where: { vi: 'Ranh giới Nghệ An, đã làm đơn giản', en: 'Nghệ An outline, simplified' },
+    where: { vi: 'Ranh giới Nghệ An, đã làm đơn giản', en: 'Nghe An outline, simplified' },
     period: { vi: 'Bản phát hành 9469f09', en: 'Release 9469f09' },
     method: { vi: 'Đường viền tỉnh dùng để vẽ bản đồ', en: 'Province outline used to draw the map' },
     howRead: { vi: 'Tải theo địa chỉ và mã băm đã ghi', en: 'Fetched by recorded URL and checksum' },
@@ -339,13 +339,13 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'e012',
     registerId: 'E-012',
     kind: 'model',
-    short: 'E-012 · bài kiểm tra chính',
+    short: { vi: 'E-012 · bài kiểm tra chính', en: 'E-012 · primary test' },
     title: {
       vi: 'Bài kiểm tra chính E-012: mô hình M1 ridge, kiểm tra trên các năm 2016–2024',
       en: 'Primary test E-012: M1 ridge model, tested on 2016–2024',
     },
     publisher: { vi: 'Nhóm Miaudow, cố định ở commit ea7a60c', en: 'Team Miaudow, frozen at commit ea7a60c' },
-    where: { vi: 'Cả nước; riêng Nghệ An, Hà Tĩnh, Thanh Hóa', en: 'Nationwide; Nghệ An, Hà Tĩnh, Thanh Hóa subset' },
+    where: { vi: 'Cả nước; riêng Nghệ An, Hà Tĩnh, Thanh Hóa', en: 'Nationwide; Nghe An, Ha Tinh, Thanh Hoa subset' },
     period: { vi: 'Năm kiểm tra 2016–2024 (gốc lăn)', en: 'Test years 2016–2024 (rolling origin)' },
     method: {
       vi: 'So với 3 đối thủ: trung bình nhiều năm (B0), giống năm trước (B2), cùng mô hình bỏ thời tiết (BNW); khoảng tin cậy 90% bằng lấy mẫu lại theo năm',
@@ -364,7 +364,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'e010',
     registerId: 'E-010',
     kind: 'derived',
-    short: 'E-010 · mức bình thường',
+    short: { vi: 'E-010 · mức bình thường', en: 'E-010 · normal yield' },
     title: { vi: 'Cách tính năng suất bình thường (E-010)', en: 'How the normal yield is computed (E-010)' },
     publisher: { vi: 'Nhóm Miaudow', en: 'Team Miaudow' },
     where: { vi: 'Mọi tỉnh và vụ', en: 'All provinces and seasons' },
@@ -383,7 +383,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     id: 'zhang2011',
     registerId: 'R-A10',
     kind: 'study',
-    short: 'Zhang et al. 2011',
+    short: { vi: 'Zhang et al. 2011', en: 'Zhang et al. 2011' },
     title: {
       vi: 'Chỉ số cực trị khí hậu trên dữ liệu lưới (Zhang và cộng sự, 2011)',
       en: 'Climate extremes indices on gridded data (Zhang et al., 2011)',

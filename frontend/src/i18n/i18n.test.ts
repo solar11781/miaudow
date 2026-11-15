@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { en } from './en';
 import { vi } from './vi';
 import method from '../../snapshot/method.json';
+import { SOURCES } from '../domain/sources';
 import enSource from './en.ts?raw';
+import sourcesSource from '../domain/sources.ts?raw';
+import plansSource from '../domain/plans.ts?raw';
+import hazardsSource from '../domain/hazards.ts?raw';
+import claimsSource from '../features/evidence/claims.ts?raw';
+import knowledgeSource from '../features/ai/knowledge.ts?raw';
+import missionsSource from '../features/earth/missions.ts?raw';
 
 type Node = unknown;
 
@@ -84,14 +91,44 @@ describe('translations', () => {
       );
     }
   });
+  // D-192: English writes et al. where Vietnamese writes và cs., in the text files and the short source names
+  it('write et al. in English and và cs. in Vietnamese', () => {
+    expect(strings(en).join(' ')).not.toContain('và cs.');
+    for (const src of Object.values(SOURCES)) {
+      expect(src.short.en, src.id).not.toContain('và cs.');
+      if (src.short.vi.includes('và cs.')) expect(src.short.en, src.id).toContain('et al.');
+    }
+  });
 });
 
 // D-186, D-191: English text writes place names without accent marks ("Nghe An", "Vietnam", "Do Luong"); titles,
-// people's names and quotes stay verbatim (the journal "Nghệ An S&T")
+// people's names and quotes stay verbatim (the journal "Nghệ An S&T", the Vietnamese folk verse)
 describe('place names in English', () => {
+  const places =
+    /Nghệ|Lưu Sơn|Đô Lương|Hà Tĩnh|Thanh Hó|Thanh Hoá|Bắc [bB]ộ|Trung [bB]ộ|Nam [bB]ộ|Hà Tây|Việt Nam|Viet Nam|Điều \d|tên bài báo/;
+
   it('drop the accent marks outside verbatim titles', () => {
-    const places = /Nghệ An|Viet Nam|Việt Nam|Lưu Sơn|Đô Lương|Hà Tĩnh|Thanh Hóa/;
-    const lines = enSource.split(/\r?\n/).filter((l) => places.test(l) && !l.includes('S&T'));
+    const lines = enSource.split(/\r?\n/).filter((l) => places.test(l) && !l.includes('S&T') && !l.includes('verse:'));
     expect(lines).toEqual([]);
+  });
+
+  // the inline en: strings of the data files; quoted text and the Vietnamese journal name stay verbatim
+  it('drop the accent marks in the en strings of the data files', () => {
+    const files = { sourcesSource, plansSource, hazardsSource, claimsSource, knowledgeSource, missionsSource };
+    const bad = Object.entries(files).flatMap(([name, text]) =>
+      text
+        .split(/\r?\n/)
+        .filter((l) => /\ben:/.test(l))
+        .map((l) =>
+          l
+            .slice(l.search(/\ben:/))
+            .replace(/"[^"]*"|“[^”]*”/g, '')
+            .replace('Nghệ An Science', '')
+            .replace('KH&CN Nghệ An', ''),
+        )
+        .filter((l) => places.test(l))
+        .map((l) => `${name}: ${l}`),
+    );
+    expect(bad).toEqual([]);
   });
 });

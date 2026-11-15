@@ -2,7 +2,7 @@ import { useId } from 'react';
 import { CLIMATE } from '../../data/climate';
 import type { SourceRef } from '../../domain/provenance';
 import { SourceValue } from '../provenance/SourceValue';
-import { useFormat, useSettings, useT } from '../../app/settings';
+import { useFormat, useT } from '../../app/settings';
 import { useWidth } from './useWidth';
 import s from './charts.module.css';
 
@@ -21,7 +21,6 @@ interface PowerBlock {
 export function TwoSources({ year, cell }: { year: number; cell: string }) {
   const t = useT();
   const f = useFormat();
-  const { lang } = useSettings();
   const id = useId();
   const [ref, W] = useWidth<HTMLDivElement>();
   const raw = CLIMATE as unknown as { chirps: ChirpsBlock | null; series: PowerBlock };
@@ -38,20 +37,12 @@ export function TwoSources({ year, cell }: { year: number; cell: string }) {
     a.length === 12 && a.every((v) => v !== null) ? a.reduce<number>((x, v) => x + (v ?? 0), 0) : null;
   const ps = sum(power),
     cs = sum(chirps);
-  const vi = lang === 'vi';
   const refFor = (src: 'power' | 'chirps', v: number): SourceRef => ({
     sourceId: src === 'power' ? 'nasa-power' : 'chirps-v3',
     kind: 'data',
     value: `${f.n(v)} mm`,
     label: `${src === 'power' ? 'NASA POWER' : 'CHIRPS v3'} · ${year} · ${cell}`,
-    detail:
-      src === 'power'
-        ? vi
-          ? 'Tổng 12 tháng của PRECTOTCORR (mô hình tái phân tích), ô 0,5° × 0,625°. Tháng thiếu ngày thì không cộng.'
-          : 'Sum of 12 months of PRECTOTCORR (reanalysis model), 0.5° × 0.625° cell. Months with a missing day are not summed.'
-        : vi
-          ? 'Tổng 12 tháng của CHIRPS v3 (vệ tinh kết hợp trạm đo, 0,05°), trung bình các điểm ảnh thuộc Nghệ An trong ô. Bản cuối, không dùng bản sơ bộ.'
-          : 'Sum of 12 months of CHIRPS v3 (satellite and station blend, 0.05°), mean of the cell’s Nghệ An pixels. Final product, never the preliminary one.',
+    detail: src === 'power' ? t.climate.powerDetail : t.climate.chirpsDetail,
   });
   if (!chirps.length) return <p className="muted">{t.climate.noChirps}</p>;
   return (

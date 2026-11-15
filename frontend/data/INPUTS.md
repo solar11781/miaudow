@@ -4,17 +4,17 @@
 
 Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62).
 
-- `frontend/data/canonical/catalog.json` c2c27114948d61b89d54588a5e5c3b292636b10cfafd523a78a39a6016bb97ab
+- `frontend/data/canonical/catalog.json` 3ad4d5ccccd058ff277b28bc3f40b2a7aa0405064c34ec990a0b07fc4aabba08
 - `frontend/data/canonical/climate.json` b2e3271f202a92b1b6cc12a5e1560ee43edd59456338aab4db764822ca01be0a
-- `frontend/data/canonical/decision.json` 9c436354fb994e0364d9207be8da711311eabc986698c317ff69ca2bfe74cc50
+- `frontend/data/canonical/decision.json` 872cba9efed7774acddfbb1e4a46b65a467c24b553c6bcf8856a3f35caf80169
 - `frontend/data/canonical/geo.json` e8cc964118c0fa49653a5432ad06d08b667fbf15e02c618fe472ac14ec2e80b1
-- `frontend/data/canonical/geo_do_luong.json` 4b0b42b8e94e258f25c77418a94098b321c100d406d0bb3a33a1c16868258f4f
+- `frontend/data/canonical/geo_do_luong.json` 578fb6dc02b7a99ca247562734ad726d1e9af4218fa92e2dcff8b9788fbe6283
 - `frontend/data/canonical/hazards.json` 482aae5b355d181421e77b1a1e5c91668d4ebcf177d720f49cea2bccb562a51e
 - `frontend/data/canonical/model.json` 2f3c5c35457b97d4c801bfb7a8cdc2ba5fbe98f18d6b31abc1bbb50b734f77d7
 - `frontend/data/canonical/nasa_eyes.json` e69b5f1022d01dae4bb2c3214f96882c039b2d535bc72b9b9aaffe17d1141b45
 - `frontend/data/canonical/ndvi_modis.json` b618233400010fd858685f03c2869fb659ed77d120e528374085638fda3e2ad3
-- `frontend/data/canonical/quality.json` 137748ca6b4a41fdf787b8dd6a294f69958d4714497ad6fda965e50540e07429
-- `frontend/data/canonical/rotations.generated.json` 5e6b5cb0739feb7c7867d59d51d3a9d411529c0be34871cb5e7574024ef69a94
+- `frontend/data/canonical/quality.json` b53495bd762f798a535eb73dfcd49e41d8b3f5afc3be6fe688e4e940ec3c9fba
+- `frontend/data/canonical/rotations.generated.json` 19ae53cfcbe73e67d628794db7142439b51347431d4f5827f30a7f081a3c39c7
 - `frontend/data/canonical/soil.json` 9aac533136379c7df7d54e96810c16481b322be44f29ae817f97a674f94d58ba
 - `frontend/data/canonical/vegetation.json` 8824d80ac93a6a2a4504203965a58ecd0681af1a2de54aa7073061df37096503
 
