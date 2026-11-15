@@ -224,10 +224,11 @@ export const en: Messages = {
     honestyTitle: 'We say so even when the model does not win',
     honestyLead:
       'The machine-learning model was tested on 2016–2024, years it had never seen, against simple ways of guessing. The result is published as it is.',
-    honestySpring:
-      'NASA weather did not help predict better than the model without weather. No spring rice prediction is shown.',
-    honestyWinter:
-      'The model with NASA weather predicts better, by a small margin. Winter rice predictions are shown next to the real values.',
+    // chosen per season from the run's weather claim and season status (src/domain/rice.ts modelVerdict)
+    honestyNoHelp: 'NASA weather did not help predict better than the model without weather.',
+    honestyHelps: 'The model with NASA weather predicts better, by a small margin.',
+    honestyHidden: (season: string) => `No ${season} prediction is shown.`,
+    honestyShown: (season: string) => `Predictions for ${season} are shown next to the real values.`,
     vsBnw: 'vs BNW',
     skillVsBnw: 'skill vs BNW',
     honestySummer: 'Too few provinces have data to test it, so only the real values are shown.',

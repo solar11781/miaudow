@@ -1,4 +1,4 @@
-import { model, yearIndex, type RiceSeason } from '../data';
+import { model, yearIndex, type ModelData, type RiceSeason } from '../data';
 
 export interface RiceYear {
   year: number;
@@ -12,6 +12,28 @@ export interface RiceYear {
 
 export const seasonStatus = (season: RiceSeason) =>
   model.seasons.find((s) => s.season === season)?.model_status ?? 'not_modeled';
+
+export interface ModelVerdict {
+  /** The run may say "NASA weather improves the prediction" (gate G2, artifacts/metrics.json weather_claims). */
+  weatherHelps: boolean;
+  /** The season's test-year estimates are shown (artifacts/risk_table.json seasons). */
+  shown: boolean;
+  /** They come with their 80% range (gate G4). */
+  range: boolean;
+}
+
+/** What may be said about a season's model, read from the run's results so the sentences follow a re-run. */
+export function modelVerdict(
+  season: RiceSeason,
+  data: Pick<ModelData, 'weather_claims' | 'seasons' | 'gates'> = model,
+): ModelVerdict {
+  const shown = data.seasons.find((s) => s.season === season)?.model_status === 'shown';
+  return {
+    weatherHelps: data.weather_claims.find((c) => c.season === season)?.made === true,
+    shown,
+    range: shown && data.gates.find((g) => g.gate === 'G4' && g.season === season)?.passed === true,
+  };
+}
 
 export function riceYear(season: RiceSeason, year: number): RiceYear {
   const h = model.history[season];
