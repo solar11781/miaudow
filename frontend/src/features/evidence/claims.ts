@@ -349,8 +349,8 @@ export function useClaims(): Claim[] {
           en: 'assets/ASSET_MANIFEST.json and assets/photos/PHOTO_MANIFEST.json',
         },
         method: {
-          vi: 'Tranh có nhãn "Tranh do AI tạo" ở mọi chỗ hiện và dòng chữ "Ảnh tạo bằng AI" in trên chính tranh.',
-          en: 'Paintings are labelled “AI-generated illustration” wherever they appear and carry “AI-generated” printed on the picture.',
+          vi: 'Tranh có nhãn "Do AI tạo" ở mọi chỗ hiện và dòng chữ "Ảnh tạo bằng AI" in trên chính tranh.',
+          en: 'Paintings are labelled “AI-generated” wherever they appear and carry “AI-generated” printed on the picture.',
         },
         appliesTo: { vi: 'Trang chủ và các phần kể chuyện.', en: 'The home page and storytelling sections.' },
         notProve: {
