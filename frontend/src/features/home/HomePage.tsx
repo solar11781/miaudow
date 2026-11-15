@@ -84,24 +84,10 @@ function Hero() {
           <br />
           <em>{t.home.titleB}</em>
         </h1>
-        <p className={s.heroLead} data-hero-after>
-          {t.home.lead}
-        </p>
         <div className={s.ctas} data-hero-after>
           <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">
             {t.home.ctaFarmer}
           </ButtonLink>
-          <a
-            className={s.textLink}
-            href="#cores"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('cores')?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth' });
-            }}
-          >
-            {t.home.ctaCores}
-            <Icon name="chevronDown" size={18} />
-          </a>
         </div>
         {/* a farmer on a second phone finds the saved answers on the first screen (walkthrough of PR #53) */}
         {signIn && (
@@ -128,6 +114,50 @@ function Hero() {
             {paused ? t.home.play : t.home.pause}
           </button>
         )}
+      </div>
+    </section>
+  );
+}
+
+const ABOUT_ICONS: IconName[] = ['sprout', 'sun', 'user'];
+
+/** What the app is, in three plain lines, on the first screen (D-187). */
+function About() {
+  const t = useT();
+  return (
+    <div className={`${s.about} surface-paper`}>
+      <div className="container">
+        <section className={s.aboutCard} aria-labelledby="about-title">
+          <h2 id="about-title" className="h3">
+            {t.home.aboutTitle}
+          </h2>
+          <ul className={s.aboutList}>
+            {t.home.about.map((line, i) => (
+              <li key={line}>
+                <span className={s.aboutIcon}>
+                  <Icon name={ABOUT_ICONS[i] ?? 'check'} size={20} />
+                </span>
+                {line}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/** The plain heading over the proof material: the farmer can stop reading here (D-187). */
+function More() {
+  const t = useT();
+  return (
+    <section className={`band-tight surface-forest ${s.more}`} aria-labelledby="more-title">
+      <div className="container stack">
+        <Brocade />
+        <h2 id="more-title" className="h1">
+          {t.home.moreTitle}
+        </h2>
+        <p className="lead">{t.home.moreLead}</p>
       </div>
     </section>
   );
@@ -509,6 +539,11 @@ function Steps() {
             </li>
           ))}
         </ol>
+        <div className={s.ctas}>
+          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">
+            {t.home.ctaFarmer}
+          </ButtonLink>
+        </div>
       </div>
     </section>
   );
@@ -588,13 +623,15 @@ export function HomePage() {
   return (
     <main ref={pageRef} id="main">
       <Hero />
-      <Problem />
-      <Verse />
-      <Cores />
-      <Climate />
-      <Honesty />
+      <About />
       <Steps />
+      <More />
+      <Problem />
+      <Climate />
+      <Cores />
+      <Honesty />
       <Observatory />
+      <Verse />
       <Invite />
     </main>
   );
