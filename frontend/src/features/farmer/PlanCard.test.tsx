@@ -781,4 +781,17 @@ describe('screen check details', () => {
     );
     expect(en.farmer.rows.water).toBe('Irrigation');
   });
+  it('names each risk source button by the word source and its short line, once', () => {
+    const c = card('cc2');
+    c.plan.why.risks = (rulebookPlan('cc2')?.risk_lines ?? []).map((r) => ({
+      text: r.text,
+      source_ids: [r.source_id],
+    }));
+    for (const id of ['R-P03', 'R-C13', 'R-G06', 'R-G27'])
+      c.res.sources = { ...c.res.sources, [id]: { ...c.res.sources['R-P02'], id } } as typeof c.res.sources;
+    const view = show(c);
+    const line = vi.farmer.considerations.market.line;
+    const button = view.getByRole('button', { name: `Nguồn: ${line}` });
+    expect(button.textContent).not.toMatch(/Nguồn.*Nguồn/);
+  });
 });
