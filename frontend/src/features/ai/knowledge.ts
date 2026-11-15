@@ -84,7 +84,7 @@ const STATIC: Passage[] = [
     kind: 'derived',
     sources: ['nasa-power', 'nso'],
     keys: 'du bao mua toi nam sau tuong lai forecast next season',
-    title: { vi: 'Ứng dụng có dự báo mùa tới không?', en: 'Does the app forecast the next season?' },
+    title: { vi: 'Ứng dụng có dự báo vụ tới không?', en: 'Does the app forecast the next season?' },
     text: {
       vi: 'Không. Miaudow chỉ cho xem những năm đã qua (1995–2024) và các cách trồng đã được thử. Năm đã qua không phải dự báo; thời tiết năm tới có thể khác.',
       en: 'No. Miaudow shows past years (1995–2024) and plans that were tested. A past year is not a forecast; next year’s weather may differ.',

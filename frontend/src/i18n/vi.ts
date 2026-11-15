@@ -130,7 +130,7 @@ export const vi = {
     aboutTitle: 'Ứng dụng này làm gì?',
     about: [
       'Ruộng lúa thiếu nước ở Nghệ An: so sánh 6 cách trồng đã thử, kể cả giữ lúa.',
-      'Xem lại các năm đã qua bằng số liệu NASA. Không dự báo mùa tới.',
+      'Xem lại các năm đã qua bằng số liệu NASA. Không dự báo vụ tới.',
       'Không chọn thay gia đình bạn, không chấm điểm.',
     ],
     moreTitle: 'Cho cán bộ khuyến nông',
@@ -161,7 +161,7 @@ export const vi = {
         does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn, nóng, rét, mưa lớn của nhà nước.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Quyết định 18/2021',
         gives: 'Thời tiết từng năm và phần đất trồng gặp từng điều kiện của Quyết định 18/2021',
-        limit: 'Không dự báo mùa tới. Năm đã qua không phải dự báo.',
+        limit: 'Không dự báo vụ tới. Năm đã qua không phải dự báo.',
         to: '/khoa-hoc',
         where: 'trang Khoa học',
       },
@@ -220,10 +220,11 @@ export const vi = {
     honestyLead:
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
     // chọn theo từng vụ từ kết quả của lần chạy (src/domain/rice.ts modelVerdict)
-    honestyNoHelp: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết.',
-    honestyHelps: 'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút.',
-    honestyHidden: (season: string) => `Dự đoán ${season} không được hiện.`,
-    honestyShown: (season: string) => `Dự đoán ${season} được hiện cạnh số liệu thật.`,
+    honestyNoHelp: 'Thời tiết NASA chưa giúp dự đoán tốt hơn mô hình bỏ thời tiết.',
+    honestyHelps: 'Thời tiết NASA giúp dự đoán tốt hơn mô hình bỏ thời tiết, nhưng chỉ hơn một chút.',
+    honestyHidden: (season: string) => `Không hiện ước tính của mô hình cho ${season}.`,
+    honestyShown: (season: string) =>
+      `Ước tính của mô hình cho ${season} trong các năm kiểm tra được hiện cạnh số liệu thật.`,
     vsBnw: 'so với BNW',
     skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
@@ -248,7 +249,7 @@ export const vi = {
     } as Record<string, string>,
     stepOf: (n: number) => `Bước ${n}/4`,
     startEyebrow: 'Đất lúa thiếu nước ở Nghệ An',
-    startTitle: 'Ruộng nhà mình, mùa tới trồng gì?',
+    startTitle: 'Ruộng nhà mình, vụ tới trồng gì?',
     startLead:
       'Bốn bước ngắn. Không phải gõ chữ. Cuối cùng bạn có 6 thẻ so sánh để bàn với gia đình và cán bộ khuyến nông.',
     startCta: 'Bắt đầu',
@@ -259,7 +260,7 @@ export const vi = {
       'Có sẵn câu hỏi để mang tới cán bộ khuyến nông.',
     ],
     notTitle: 'Phần này không làm',
-    nots: ['Không dự báo thời tiết mùa tới.', 'Không chọn thay gia đình bạn, không chấm điểm cách trồng nào.'],
+    nots: ['Không dự báo thời tiết vụ tới.', 'Không chọn thay gia đình bạn, không chấm điểm cách trồng nào.'],
     stepsLabel: 'Bốn bước',
     landTitle: 'Ruộng nhà mình thế nào?',
     landHelp: 'Chọn một ô giống ruộng nhà bạn nhất.',
@@ -286,7 +287,7 @@ export const vi = {
     yearsPicked: (n: number) => `Đã chọn ${n} năm`,
     yearChipLegend: 'Vạch vàng dưới mỗi năm: phần đất trồng gặp điều kiện hạn hán (phần lượng mưa) năm đó.',
     yearRowLabel: 'Phần đất trồng Nghệ An gặp điều kiện, trong thời gian có cây trên ruộng',
-    legendTitle: 'Các điều kiện của Quyết định 18/2021',
+    legendTitle: 'Các điều kiện thời tiết theo Quyết định 18/2021',
     limitsTitle: 'Giới hạn của các con số này',
     cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
