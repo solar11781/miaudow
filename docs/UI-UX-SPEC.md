@@ -976,12 +976,14 @@ item 5):
 - Started only after every section 14 test passes for the farmer routes and the team says go. Cards work
   without it.
 - On a plan card, a button key `plans.yourNumbers` opens a form: for each crop of the plan, the farmer's sale price
-  in đồng per kg (the unit P-02's sums use) and cost in thousand đồng per ha (the unit of the study's numbers on the
-  cards). Entry is per hectare only: no official Nghệ An sào size was found (Nghị định 86/2012 gives only the Trung Bộ
+  in đồng per kg (the unit P-02's sums use) and cost in million đồng per ha, the unit every money number on the cards
+  shows (D-190, D-192); the link and a saved set keep the cost in thousand đồng per ha, as before. Entry is per hectare only: no official Nghệ An sào size was found (Nghị định 86/2012 gives only the Trung Bộ
   sào). The `usual_p03` card has no entry (its money is text only and never compared with P-02 money).
-- Inputs are `<input type="number" inputmode="numeric" min="0" step="1">` (numeric input, allowed by H4 and T4, which
-  forbid only free-text fields): whole numbers of at most 9 digits (up to 999,999,999 đ/kg or thousand đ/ha, far above
-  any real value; a crafted link with a very long number froze the cards); empty fields are allowed. A value that is
+- Inputs are `<input type="number">` (numeric input, allowed by H4 and T4, which forbid only free-text fields): the
+  price a whole number (`inputmode="numeric"`, `step="1"`); the cost in million đồng per ha with one decimal mark
+  (`inputmode="decimal"`), converted once to whole thousand đồng per ha, half up (D-192). Stored values stay whole
+  numbers of at most 9 digits (up to 999,999,999 đ/kg or thousand đ/ha, far above any real value; a crafted link with
+  a very long number froze the cards); empty fields are allowed. A value that is
   not such a number is not used, and the field says so ("tối đa 9 chữ số" / "up to 9 digits" for a longer one). Each
   input has a visible label (crop name, season label, unit) and the font and tap-target rules (H6, H7); the study's
   own yield, price and cost are shown beside it.
