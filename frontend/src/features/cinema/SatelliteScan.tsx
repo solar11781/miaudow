@@ -468,7 +468,12 @@ export function SatelliteScan({ labels, className }: { labels: SatelliteScanLabe
     <figure ref={root} className={className ? `${s.root} ${className}` : s.root}>
       <div ref={stage} className={s.stage}>
         <SceneSvg uid={uid} />
-        <p className={s.place} data-place style={{ top: `${(((SCENE.maxY + 14) / VIEW_H) * 100).toFixed(2)}%` }}>
+        {/* on a short stage (200% zoom, H9) the label moves up so the stage does not cut it; 1.75rem covers its height */}
+        <p
+          className={s.place}
+          data-place
+          style={{ top: `min(${(((SCENE.maxY + 14) / VIEW_H) * 100).toFixed(2)}%, 100% - 1.75rem)` }}
+        >
           <span>{labels.province}</span>
         </p>
         {!calm && (

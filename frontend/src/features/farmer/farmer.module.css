@@ -531,6 +531,12 @@
   border-color: var(--fg-3);
 }
 
+/* the plan in view: a thicker border and bold text, not colour alone (H11) */
+.jump a[aria-current='true'] {
+  border: 2px solid var(--fg);
+  font-weight: 700;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -792,6 +798,13 @@
   }
 }
 
+/* below the 360 px phone (200% zoom, H9) a half-width picture is too small for its "made by AI" tag */
+@media (max-width: 359px) {
+  .startSteps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .startSteps li {
   display: flex;
   flex-direction: column;
@@ -905,5 +918,37 @@
   font: inherit;
   font-weight: 600;
   text-align: left;
+  cursor: pointer;
+}
+
+/* the years step legend: each rule name with its "?" source button (UI-UX-SPEC section 8 item 2) */
+.legend ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+.legendTitle {
+  margin: 0 0 var(--s-2);
+  font-size: var(--t-body);
+}
+.legendRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  font-size: var(--t-small);
+}
+.legendHelp {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--fg);
   cursor: pointer;
 }

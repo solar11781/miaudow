@@ -628,19 +628,12 @@
   border-radius: var(--r-lg);
   overflow: hidden;
   color: #f3f4ee;
-  text-decoration: none;
   isolation: isolate;
 }
 .stepPhoto {
   position: absolute;
   inset: 0;
   z-index: -2;
-}
-.stepPhoto img {
-  transition: transform 1200ms var(--ease-out);
-}
-.step:hover .stepPhoto img {
-  transform: scale(1.04);
 }
 .step::before {
   content: '';

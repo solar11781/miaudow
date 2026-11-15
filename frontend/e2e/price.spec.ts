@@ -11,6 +11,8 @@ const COST_TYPED = '24.689'; // typed in million đ/ha (D-192)
 
 async function typeNumbers(page: Page) {
   const card = page.locator('#the-cc1');
+  // D-187 item 4 (F1): the money row folds behind its heading button
+  await card.getByTestId('card-cc1-row-money').locator('h3 > button').click();
   await card.getByRole('button', { name: 'Tính với giá bán và chi phí của bạn' }).click();
   await card.getByRole('spinbutton', { name: /^Lạc.*Giá bán của bạn/ }).fill(PRICE);
   await card.getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn \(triệu đồng\/ha\)/ }).fill(COST_TYPED);
@@ -191,6 +193,7 @@ test('T31 a link with a 200,000-digit price opens the cards promptly and does no
   await page.goto(`${PLANS_URL}&yp.cc1_spring_peanut=${'9'.repeat(200_000)}`);
   const card = page.locator('#the-cc1');
   await expect(card).toBeVisible({ timeout: 10_000 });
+  await card.getByTestId('card-cc1-row-money').locator('h3 > button').click({ timeout: 5_000 });
   await card.getByRole('button', { name: 'Tính với giá bán và chi phí của bạn' }).click({ timeout: 5_000 });
   await expect(card.getByRole('spinbutton', { name: /^Lạc.*Giá bán của bạn/ })).toHaveValue('');
   await expect(card.getByTestId('card-cc1-own')).toContainText('Nhập giá bán để tính.');

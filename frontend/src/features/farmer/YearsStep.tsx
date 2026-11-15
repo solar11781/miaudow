@@ -10,6 +10,7 @@ import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
+import { useProvenance } from '../provenance/ProvenanceProvider';
 import { useApiRefs } from '../provenance/useApiRefs';
 import { useEffect, useState } from 'react';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
@@ -52,6 +53,37 @@ function YearRow({ row, res }: { row: Row; res: PastYearsResponse }) {
         })}
       </ul>
     </article>
+  );
+}
+
+/** UI-UX-SPEC section 8 item 2: one row per rule with a "?" button that opens the sheet in rule mode (H19). */
+function Legend({ res }: { res: PastYearsResponse }) {
+  const t = useT();
+  const pick = usePick();
+  const open = useProvenance();
+  const refs = useApiRefs(res.sources, res.rules);
+  return (
+    <section className={s.legend} aria-labelledby="legend-title">
+      <h2 id="legend-title" className={s.legendTitle}>
+        {t.farmer.legendTitle}
+      </h2>
+      <ul>
+        {res.rules.map((rule) => (
+          <li key={rule.code} className={s.legendRow}>
+            <span>{pick(rule.label)}</span>
+            <button
+              type="button"
+              className={s.legendHelp}
+              data-testid={`legend-${rule.code}`}
+              aria-label={t.common.sourceFor(pick(rule.label))}
+              onClick={() => open(refs.rule(rule))}
+            >
+              <Icon name="question" size={22} />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -167,6 +199,7 @@ export function YearsStep() {
       {res.status === 'ok' ? (
         <>
           <DataLine sources={res.data.sources} className="muted small" />
+          <Legend res={res.data} />
           <Years res={res.data} />
         </>
       ) : (
