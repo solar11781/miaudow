@@ -210,17 +210,25 @@ test('T18 every condition share on the cards opens the rule text, both NASA sour
 });
 
 // UI-UX-SPEC section 8 item 2 places a legend with one "?" button per rule (`legend-<rule code>`) on /nam
-test.fixme('T18 every legend "?" button on the past-years page opens the rule sheet', async ({ page }) => {
-  // fixme: /nam has no legend and no legend-<rule code> buttons, so this part of T18 cannot run as written
+test('T18 every legend "?" button on the past-years page opens the rule sheet', async ({ page }) => {
+  const loaded = page.waitForResponse((r) => r.url().includes('/api/past-years'));
   await page.goto(YEARS_URL);
+  const res = (await (await loaded).json()) as Pick<Compare, 'rules' | 'sources'>;
   const legend = page.locator('[data-testid^="legend-"]');
-  await expect(legend).toHaveCount(5);
-  for (const button of await legend.all()) {
-    await button.click();
-    const sheet = page.getByTestId('source-sheet');
-    await expect(sheet).toContainText(RULE_TEXT);
-    await expect(sheet).toContainText(COMPUTED_NOTE);
+  await expect(legend).toHaveCount(res.rules.length);
+  const sheet = page.getByTestId('source-sheet');
+  for (const rule of res.rules) {
+    await page.getByTestId(`legend-${rule.code}`).click();
+    await expect(sheet).toBeVisible();
+    for (const part of [
+      RULE_TEXT,
+      rule.rule_text.vi,
+      ...['R-A01', 'R-N01', 'R-N02'].map((id) => res.sources[id]?.citation.vi ?? id),
+      COMPUTED_NOTE,
+    ])
+      await expect(sheet, `${rule.code}: ${part}`).toContainText(part);
     await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
   }
 });
 
