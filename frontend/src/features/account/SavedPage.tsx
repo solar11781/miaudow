@@ -11,7 +11,8 @@ import s from './account.module.css';
 
 const plansLink = (set: SavedSet) => ({
   pathname: '/nong-dan/phuong-an',
-  search: `?${serializeFarmerState({ land: set.land, years: set.years, priority: set.priority, plan: null }).toString()}`,
+  // D-180: the typed prices and costs come back into the fragment with the answers
+  search: `?${serializeFarmerState({ ...set, plan: null, own: { prices: set.prices, costs: set.costs } }).toString()}`,
 });
 
 /** The name of a saved set, from its answers; the server stores no name. */

@@ -16,6 +16,7 @@ import { displayUnit } from '../../domain/format';
 import { moneyStudy } from '../../domain/moneyStudy';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
+import { OwnNumbers, type OwnState } from './OwnNumbers';
 import { SourceValue } from '../provenance/SourceValue';
 import { NumberOr } from './NumberOr';
 import { PriorityLine } from './PriorityLine';
@@ -90,11 +91,14 @@ interface Ctx {
 }
 type Hl = { highlight: boolean; line: ReactNode };
 
-function MoneyRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
+function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: OwnState }) {
   const t = useT();
   const pick = usePick();
   const m = plan.money;
-  const seasonLabel = (code: string) => res.seasons.find((x) => x.code === code);
+  const names = m.items.map((item) => {
+    const season = res.seasons.find((x) => x.code === item.season);
+    return `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
+  });
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
   const study = moneyStudy(plan);
   return (
@@ -111,9 +115,8 @@ function MoneyRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
       )}
       {m.items.length > 0 && (
         <ul className={s.cropMoney}>
-          {m.items.map((item) => {
-            const season = seasonLabel(item.season);
-            const name = `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
+          {m.items.map((item, i) => {
+            const name = names[i] ?? '';
             return (
               <li key={item.crop_key}>
                 <span>{name}</span>
@@ -131,6 +134,7 @@ function MoneyRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
       {/* the source's definition as the API gives it, then the same in plain words for the study it cites (D-170) */}
       <p className={s.rowNote}>{pick(m.definition)}</p>
       {study && <p className={s.rowNote}>{t.farmer.definitionPlain[study]}</p>}
+      <OwnNumbers planId={plan.id} items={m.items} names={names} refs={refs} own={own} />
     </Row>
   );
 }
@@ -629,6 +633,7 @@ export function PlanCard({
   priority,
   focused,
   explain = false,
+  own,
   onShare,
 }: {
   plan: Plan;
@@ -637,6 +642,8 @@ export function PlanCard({
   focused?: boolean;
   /** The server has "explain simply" on (FR-15: off by default). */
   explain?: boolean;
+  /** The farmer's own price and costs (UI-UX-SPEC section 12d). */
+  own: OwnState;
   onShare: (plan: Plan) => Promise<boolean>;
 }) {
   const t = useT();
@@ -663,7 +670,7 @@ export function PlanCard({
             </p>
           )}
         </div>
-        <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} line={line} />
+        <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} line={line} own={own} />
         <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} line={line} />
         <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} line={line} />
         <LandRow plan={plan} refs={refs} highlight={priority === 'land'} line={line} />

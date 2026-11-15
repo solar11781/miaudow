@@ -291,6 +291,10 @@ class Economics(Entry):
     unit: Text | None = None
     profit_per_crop: dict[str, str] = {}
     cost_per_crop: dict[str, str] = {}
+    yield_unit: Text | None = None
+    yield_per_crop: dict[str, str] = {}
+    price_unit: Text | None = None
+    price_per_crop: dict[str, str] = {}
     price_year: str | None
     flags: dict[str, Text] = {}
     text_only: Text | None = None

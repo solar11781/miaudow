@@ -5,6 +5,7 @@ import { Button, ButtonLink } from '../../design-system/Button';
 import { useT } from '../../app/settings';
 import { useLocalTo } from '../../app/paths';
 import { signInLink, useAccount, useSignInAvailable } from './AccountProvider';
+import { isOwnKey } from '../../domain/farmerState';
 import s from './account.module.css';
 
 type Status = 'idle' | 'saving' | 'saved' | 'full' | 'expired' | 'unavailable' | 'failed';
@@ -17,11 +18,13 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
   const t = useT();
   const { pathname, search } = useLocation();
   const [params, setParams] = useSearchParams();
-  const { token, expired, check } = useAccount();
+  const { token, expired, check, hold, release } = useAccount();
   const available = useSignInAvailable();
   const [status, setStatus] = useState<Status>('idle');
   const started = useRef(false);
   const local = useLocalTo();
+  // back on the plan cards, a way back held for an earlier tap is stale: the farmer may change the numbers here
+  useEffect(() => release(), [release]);
 
   const save = async (signedIn: string) => {
     setStatus('saving');
@@ -54,6 +57,11 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
 
   const again = new URLSearchParams(search);
   again.set(PENDING, '1');
+  const full = `${pathname}?${again.toString()}`;
+  // Google's script runs on the sign-in page and can read its address, so the typed price and costs stay out of it
+  // and wait in memory for the way back (D-180)
+  for (const key of [...again.keys()]) if (isOwnKey(key)) again.delete(key);
+  const back = `${pathname}?${again.toString()}`;
   const message = {
     idle: null,
     saving: t.account.saving,
@@ -77,7 +85,7 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
           {status === 'saved' ? t.account.savedDone : t.account.save}
         </Button>
       ) : (
-        <ButtonLink to={signInLink(`${pathname}?${again.toString()}`)} variant="secondary" leadingIcon="check">
+        <ButtonLink to={signInLink(back)} onClick={() => hold(back, full)} variant="secondary" leadingIcon="check">
           {expired ? t.account.signInAgain : t.account.saveSignIn}
         </ButtonLink>
       )}

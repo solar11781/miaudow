@@ -98,7 +98,7 @@ export function SignInPage() {
   const [params] = useSearchParams();
   const back = safeBack(params.get('ve'));
   const navigate = useNavigate();
-  const { token, signIn } = useAccount();
+  const { token, signIn, returnTo } = useAccount();
   const [config, retry] = useSignInConfig();
   const [step, setStep] = useState<Step>('notice');
   useEffect(() => unloadGoogle, []);
@@ -108,7 +108,8 @@ export function SignInPage() {
     try {
       await api.account.signIn(credential);
       signIn(credential);
-      navigate(back);
+      unloadGoogle(); // before the way back puts the typed prices and costs into the address again (D-180)
+      navigate(returnTo(back));
     } catch (err) {
       setStep(err instanceof ApiError && err.status === 503 ? 'unavailable' : 'failed');
     }
