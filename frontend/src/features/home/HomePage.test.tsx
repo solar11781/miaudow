@@ -88,4 +88,15 @@ describe('home page order', () => {
     const start = [...(steps?.querySelectorAll('a') ?? [])].find((a) => a.textContent === 'Tìm hiểu ruộng nhà mình');
     expect(start?.getAttribute('href')).toBe('/nong-dan/ruong');
   });
+
+  it('folds what each AI core uses, gives and cannot do yet, one tap away, so the proof part is shorter', () => {
+    renderHome();
+    const folds = [...document.querySelectorAll('#cores article details')];
+    expect(folds).toHaveLength(4);
+    for (const d of folds) {
+      expect(d.hasAttribute('open')).toBe(false);
+      expect(d.querySelector('summary')?.textContent).toBe('Dùng gì, cho ra gì, chưa làm được gì');
+      expect(d.querySelectorAll('dt')).toHaveLength(3);
+    }
+  });
 });

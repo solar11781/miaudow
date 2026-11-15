@@ -153,6 +153,7 @@ export const en: Messages = {
     coreUses: 'Uses',
     coreGives: 'Gives',
     coreLimit: 'Cannot do yet',
+    coreMore: 'What it uses, what it gives, what it cannot do yet',
     coreOpen: (where: string) => `See it on ${where}`,
     cores: [
       {

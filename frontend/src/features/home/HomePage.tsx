@@ -365,20 +365,26 @@ function Cores() {
                 {c.name}
               </h3>
               <p className={s.coreDoes}>{c.does}</p>
-              <dl className={s.coreFacts}>
-                <div>
-                  <dt>{t.home.coreUses}</dt>
-                  <dd>{c.uses}</dd>
-                </div>
-                <div>
-                  <dt>{t.home.coreGives}</dt>
-                  <dd>{c.gives}</dd>
-                </div>
-                <div className={s.coreLimit}>
-                  <dt>{t.home.coreLimit}</dt>
-                  <dd>{c.limit}</dd>
-                </div>
-              </dl>
+              <details className={s.coreMore}>
+                <summary>
+                  {t.home.coreMore}
+                  <Icon name="chevronDown" size={18} />
+                </summary>
+                <dl className={s.coreFacts}>
+                  <div>
+                    <dt>{t.home.coreUses}</dt>
+                    <dd>{c.uses}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.home.coreGives}</dt>
+                    <dd>{c.gives}</dd>
+                  </div>
+                  <div className={s.coreLimit}>
+                    <dt>{t.home.coreLimit}</dt>
+                    <dd>{c.limit}</dd>
+                  </div>
+                </dl>
+              </details>
               <Link to={local(c.to)} className={s.coreLink}>
                 {t.home.coreOpen(c.where)}
                 <Icon name="arrowRight" size={18} />

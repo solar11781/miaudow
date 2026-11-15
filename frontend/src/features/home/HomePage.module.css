@@ -481,6 +481,25 @@
   color: var(--fg);
   max-width: 32ch;
 }
+.coreMore {
+  max-width: 42rem;
+}
+.coreMore summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--c-gold-300);
+  font-weight: 650;
+}
+.coreMore summary::-webkit-details-marker {
+  display: none;
+}
+.coreMore[open] summary svg {
+  transform: rotate(180deg);
+}
 .coreFacts {
   display: grid;
   gap: 0;

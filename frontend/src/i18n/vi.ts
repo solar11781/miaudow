@@ -151,6 +151,7 @@ export const vi = {
     coreUses: 'Dùng',
     coreGives: 'Cho ra',
     coreLimit: 'Chưa làm được',
+    coreMore: 'Dùng gì, cho ra gì, chưa làm được gì',
     coreOpen: (where: string) => `Xem ở ${where}`,
     cores: [
       {
