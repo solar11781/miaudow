@@ -195,8 +195,10 @@ cd frontend && npm ci && npm run dev
 ```
 
 The computed results are committed in `artifacts/`, so the app runs without the data pipeline. To rebuild every table
-and artifact from the original public downloads, see [docs/SETUP.md section 7](docs/SETUP.md#7-rebuild-the-data-optional);
-every download is recorded in `data/MANIFEST.csv` with its address and sha256.
+and artifact from the original public downloads, see [docs/SETUP.md section 7](docs/SETUP.md#7-rebuild-the-data-optional).
+Every download of that pipeline is recorded in `data/MANIFEST.csv` with its address and sha256. The data and media
+files the web app ships (the CHIRPS and MODIS NDVI series, the Sentinel-2 images, the photographs and illustrations)
+are listed with their origin and sha256 in `frontend/data/INPUTS.md`.
 
 ## 8. Attribution and licences
 

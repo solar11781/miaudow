@@ -238,8 +238,10 @@ What the script does, in order:
 5. Rebuilds the saved answers for the offline demo build (`frontend/snapshot/`).
 6. Runs `pytest -q`.
 
-Downloads go to `data/raw/`, which git ignores. Every download is recorded in `data/MANIFEST.csv` with its address and
-sha256 checksum, so you can check that you got the same files. Files that are already there are reused, so a second
+Downloads go to `data/raw/`, which git ignores. Every download of this script is recorded in `data/MANIFEST.csv` with
+its address and sha256 checksum, so you can check that you got the same files. The data and media files the web app
+ships (the CHIRPS and MODIS NDVI series, the Sentinel-2 images, the photographs and illustrations) are not made by this
+script; `frontend/data/INPUTS.md` lists each one with its origin and sha256. Files that are already there are reused, so a second
 run is much faster. Raw statistics files, journal PDFs and the texts of standards are never committed.
 
 ## 8. Offline demo build
