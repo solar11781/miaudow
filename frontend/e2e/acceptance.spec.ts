@@ -63,10 +63,7 @@ test('T2 no slider on any page', async ({ page }) => {
 });
 
 // pages that fail T9 on main today (2026-11-15); each fixme names what is cut at 180 px
-const PHOTO_STAGE = 'the "Nghệ An" caption is cut by the photo stage box at 180 px';
 const ZOOM_GAPS: Record<string, string> = {
-  '/#/': PHOTO_STAGE,
-  ...Object.fromEntries(SCENES.map((c) => [`/#/dai-quan-sat?canh=${c}`, PHOTO_STAGE])),
   '/#/nong-dan': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
   '/#/nong-dan/ruong': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
   [PLANS_URL]: 'the plan card cuts the "Bạn quan tâm" label and a long question line at 180 px',
