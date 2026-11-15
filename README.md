@@ -10,57 +10,73 @@ Each past year is labelled with Vietnam's official hazard rules computed from NA
 
 ## 1. What Miaudow does
 
-A farmer answers three questions by tapping: what the field is like, which past years the family remembers, and what
-matters most (income, stability, water or land care). Miaudow then shows six crop plans for one year, each as a card
-with the same rows: money as reported in the field trial, irrigation water, how often official drought, heat and
-heavy-rain conditions hit each crop in the chosen years, NASA soil wetness, care for the land, and the months when the
-field is bare. The farmer's priority is highlighted on every card, but the cards are never reordered or ranked. Every
-number opens its source, and every card ends with a reminder to check with local farmers or experts before changing
-anything.
+The home page starts with a short "What does this app do?" box and the four steps; the material for extension officers
+comes below, under its own heading. A farmer answers three questions by tapping: what the field is like, which past
+years the family remembers (or "pick the hardest years for me"), and what matters most (income, stability, water or
+land care). Miaudow then shows six crop plans for one year, one card each, named "Current practice" or "Trial way of
+farming n" with its crops. Every card has the same rows: the trial's money in million VND per hectare, irrigation
+water, how often official drought, heat and heavy-rain conditions hit each crop in the chosen years, NASA soil wetness,
+care for the land, the points to weigh, and the months when the field is bare. The farmer's priority is highlighted on
+every card, but the cards are never reordered or ranked. Every number opens its source sheet, which also holds the
+source's notes and exact values. Every card lists questions about that plan to take to the extension officer, and
+ends with a reminder to check with local farmers or experts before changing anything.
 
 ## 2. Features
 
 **Farmer flow, 4 steps, no typing** (`#/nong-dan`, English `#/farmer`):
 
 1. Field: picture cards in the words farmers use ("high and dry", "end of the canal", "short of water", or "not sure,
-   ask the extension officer"). A field with reliable water gets no comparison: no plan was tested on such land.
-2. Past years: pick up to 10 years from 1995-2024 that the family remembers. Each year shows the share of Nghe An
+   ask the extension officer"). A field with reliable water gets no comparison: no plan was tested on such land. Above
+   them, the province line reads Nghe An and cannot be changed; other provinces are not available yet.
+2. Past years: pick up to 10 years from 1995-2024 that the family remembers, or tap "Don't remember? Pick the hardest
+   years for me": for each official hazard, the most recent year in which it covered the most farmland (2013, 2020,
+   2022 and 2024 with the data in the app); the picked years stay editable. Each year shows the share of Nghe An
    farmland that met each official hazard rule of Decision 18/2021/QĐ-TTg (heavy rain, heat, drought, damaging cold).
    Always labelled as a past year, never a forecast, with its limits ("grid values smooth out extremes").
 3. Priority: one tap (income, stability, water or land care).
-4. Plans: one card per plan, all with the same rows:
+4. Plans: one card per plan, named "Current practice" or "Trial way of farming n" (Vietnamese "Cách làm hiện nay",
+   "Cách trồng thử n") above its crop list, all with the same rows:
    - Money: net profit and total cost per crop as reported in the trial (prices of 2020-21), labelled "Profit in the
-     trial, not on your own field". The whole-year total is our addition, labelled as such.
+     trial, not on your own field", shown in million VND/ha (Vietnamese "triệu đồng/ha"); the source sheet keeps the
+     paper's exact value in thousand VND/ha. The whole-year total is our addition, labelled as such.
    - Water: seasonal irrigation from the national standard TCVN 8641:2011 in m³/ha, shown as a range over the
      standard's regional rows (the standard does not say which region Nghe An belongs to); FAO's rough estimate of
      crop water need where listed.
    - Bad weather: past-year hazard shares per crop, if sown on the trial's 2020-21 dates.
-   - NASA soil wetness: root-zone wetness per crop and year next to its 1991-2020 average, labelled "NASA model value
-     (MERRA-2), not a field measurement".
+   - NASA soil wetness: root-zone wetness per crop and year next to its 1991-2020 average, labelled "NASA model value,
+     not a field measurement" (MERRA-2 is named in the source sheet).
    - Care for the land: three separate checks, no score: different crops in the year, days with a living crop, legume
      grown (with its caveat).
+   - Weigh this: one plain line per quoted risk (costs, local buyers, purchase contracts for fodder maize, Decree
+     112/2024's rules on changing crops on rice land), each with its source in a few words; the full quote opens in
+     the source sheet. Then the officer page's questions for this plan.
    - Province rice against normal (rice plans): the official provincial history for the picked years.
    - Priority line (trial plans): the same measure for this plan and for current practice from the same trial, side by
      side. It never says better, best or recommended.
-   - Tapping any number opens its source and a trust label made of facts about that source only.
+   - Tapping any number opens its source sheet: a trust label made of facts about that source only, and the source's
+     longer notes (table numbers, definitions, the standard's notes).
 
 **Your price and costs** (optional, on the trial plan cards): the farmer can type a sale price per kg and their own
-costs per hectare for each crop. The phone works out revenue (the study yield times the typed price) and, once a cost
-is typed, revenue minus cost. Both are labelled as the farmer's own numbers, and the trial's money row stays as it was.
-Only whole numbers of up to 9 digits are accepted.
+costs for each crop in thousand VND/ha, the trial's unit. The phone works out revenue (the study yield times the typed
+price) and, once a cost is typed, revenue minus cost, shown in million VND/ha. Both are labelled as the farmer's own
+numbers, and the trial's money row stays as it was. Only whole numbers of up to 9 digits are accepted.
+
+**Phone checks**: browser acceptance tests (`frontend/e2e/acceptance.spec.ts`) check 22 pages at 200% zoom of a
+360 x 740 phone (no text cut off, every control reachable), 44 x 44 px tap targets on the plans page, and no sliders.
 
 **Other pages** (Vietnamese path, English path):
 
-| Page           | Path                                               | What it shows                                                                                                                                        |
-| -------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Home           | `#/`, `#/home`                                     | Entry to the farmer flow and the rain history of Nghe An.                                                                                            |
-| Officer        | `#/can-bo`, `#/officer`                            | The evidence behind every card row, with the points where evidence is thin.                                                                          |
-| Science        | `#/khoa-hoc`, `#/science`                          | Nghe An over 30 seasons: the NASA POWER grid, rice yield against normal, two rain sources (NASA POWER and CHIRPS), MODIS NDVI around the trial site. |
-| Method         | `#/phuong-phap`, `#/method`                        | Model test results and pass or fail checks (from `artifacts/`), which data exist for each crop, the terms explained, datasets not used, limitations. |
-| Observatory    | `#/dai-quan-sat`, `#/observatory`                  | From space down to Nghe An: a 3D globe with NASA GIBS layers, six Sentinel-2 greenness images of the former Do Luong district, NASA Eyes in a frame. |
-| Evidence       | `#/bang-chung`, `#/evidence`                       | Every conclusion with its source, where the sources disagree, and the state of each dataset.                                                         |
-| Assistant      | `#/tro-ly`, `#/assistant`                          | The copilot (see below).                                                                                                                             |
-| Sign-in, saved | `#/dang-nhap`, `#/da-luu` (`#/sign-in`, `#/saved`) | Optional Google sign-in to save up to 20 sets of answers and reopen them on another phone.                                                           |
+| Page           | Path                                               | What it shows                                                                                                                                                                                                       |
+| -------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home           | `#/`, `#/home`                                     | A "What does this app do?" box and the four steps with one start button; below, for extension officers, the trial, 30 years of drought, the AI cores and the model test.                                            |
+| Officer        | `#/can-bo`, `#/officer`                            | The evidence behind every card row, with the points where evidence is thin.                                                                                                                                         |
+| Science        | `#/khoa-hoc`, `#/science`                          | Nghe An over 30 seasons: the NASA POWER grid, rice yield against normal, two rain sources (NASA POWER and CHIRPS), MODIS NDVI around the trial site.                                                                |
+| Method         | `#/phuong-phap`, `#/method`                        | Model test results and pass or fail checks (from `artifacts/`), which data exist for each crop, the terms explained, datasets not used, limitations.                                                                |
+| Observatory    | `#/dai-quan-sat`, `#/observatory`                  | From space down to Nghe An: a 3D globe with NASA GIBS layers that labels Hoang Sa, Truong Sa and Phu Quoc (Wikidata points), six Sentinel-2 greenness images of the former Do Luong district, NASA Eyes in a frame. |
+| Evidence       | `#/bang-chung`, `#/evidence`                       | Every conclusion with its source, where the sources disagree, and the state of each dataset.                                                                                                                        |
+| Assistant      | `#/tro-ly`, `#/assistant`                          | The copilot (see below).                                                                                                                                                                                            |
+| Sign-in, saved | `#/dang-nhap`, `#/da-luu` (`#/sign-in`, `#/saved`) | Optional Google sign-in to save up to 20 sets of answers and reopen them on another phone.                                                                                                                          |
+| Privacy        | `/quyen-rieng-tu` (`/privacy` redirects there)     | The privacy notice (see section 5), with no script and no third-party resource.                                                                                                                                     |
 
 **AI features** (on in the deployed app; each needs its server switch, `FIELDSHIFT_EXPLAIN` or `FIELDSHIFT_COPILOT`, and
 the API key, so a local copy without them runs with both off).
@@ -124,13 +140,20 @@ The method page in the app has the full details and every number below.
   made for winter rice only, and that result is **narrow and fragile**: the lower end 0.003 is smaller than the
   largest drop in one sensitivity run (0.057), and in 5 of 7 sensitivity runs the lower end is below 0 (in 1 more it is
   0.000 after rounding). No plan card contains winter rice.
+- **Result sentences follow the run.** The app's sentences about the model are reviewed texts that code picks from the
+  run's own verdicts; no language model writes them. `tests/test_frontend_model_copy.py` fails if the model results
+  bundled in the frontend differ from `artifacts/metrics.json`, `gates.json` or `risk_table.json`, and
+  `tests/test_frontend_rules_copy.py` checks the frontend's copies of crop, plan and source values against `rules/`,
+  naming each allowed difference with its reason (for example a plain crop name for farmers).
 - **Regional only.** Every weather and yield number is a province or grid-cell value (cells of about 55 x 66 km).
-  Nothing is a prediction for one farm or field.
+  Nothing is a prediction for one farm or field. The maps mark the trial site at the Luu Son commune marker (Wikidata
+  Q10788283), labelled "former Luu Son" since the 2025 commune merger; it is not the trial field.
 - **Past years are not forecasts.** The app shows what happened in past years; it never says what next season will
   bring.
 - **Money is the trial's figures.** Net profit per crop as reported for one unreplicated 1,000 m² plot per crop in one
-  year (2020-21) at one site. It is not a profit estimate for the farmer's field. Plans from two studies with
-  different profit definitions are never compared with each other.
+  year (2020-21) at one site, shown rounded to one decimal in million VND/ha with the paper's exact value in the source
+  sheet. It is not a profit estimate for the farmer's field. Plans from two studies with different profit definitions
+  are never compared with each other.
 - Other limits on the method page: gridded values smooth extremes; provincial rice is mostly irrigated, so regional
   sensitivity can understate that of drought-prone land; the check of heavy-rain years against recorded damage does
   not validate them; usability was not tested with farmers (an expert walkthrough is not user testing).
