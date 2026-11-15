@@ -13,6 +13,7 @@ import type {
 } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
+import { consideration } from '../../domain/considerations';
 import { moneyStudy } from '../../domain/moneyStudy';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
@@ -618,14 +619,23 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
       <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
         {why.risks.length ? (
           <ul className={s.risks}>
-            {why.risks.map((r) => (
-              <li key={r.text.en}>
-                <span>{pick(r.text)}</span>
-                {r.source_ids.length > 0 && (
-                  <SourceValue {...refs.sources(r.source_ids, t.common.source, t.farmer.rows.checks)} />
-                )}
-              </li>
-            ))}
+            {why.risks.map((r) => {
+              // one plain line and its source in a few words; the full quote opens in the sheet (D-187)
+              const key = consideration(r);
+              const plain = key ? t.farmer.considerations[key] : null;
+              return (
+                <li key={r.text.en}>
+                  <span>{plain ? plain.line : pick(r.text)}</span>
+                  {plain && <span className="muted small">{plain.source}</span>}
+                  {r.source_ids.length > 0 && (
+                    <SourceValue
+                      {...refs.sources(r.source_ids, t.common.source, plain ? plain.line : t.farmer.rows.checks)}
+                      quote={plain ? pick(r.text) : undefined}
+                    />
+                  )}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className={s.why}>{t.farmer.noneListed}</p>

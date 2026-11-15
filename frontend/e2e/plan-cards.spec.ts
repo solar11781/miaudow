@@ -42,3 +42,18 @@ test('D-187 a note that left the card opens in the source sheet of its number', 
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();
 });
+
+// D-187 (F4): each risk quote is one plain line on the card; the full quote opens with the line's source button
+test('D-187 a consideration is one plain line and its quote opens in the source sheet', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  const checks = page.getByTestId('card-cc1-row-checks');
+  const cost = checks.locator('li', { hasText: vi.farmer.considerations.cost.line });
+  await expect(cost).toBeVisible();
+  await expect(checks).not.toContainText('Thị trường tiêu thụ nhỏ hẹp');
+  await cost.getByRole('button').click();
+  const sheet = page.getByTestId('source-sheet');
+  await expect(sheet).toContainText(vi.sheet.quote);
+  await expect(sheet).toContainText(
+    'Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.',
+  );
+});

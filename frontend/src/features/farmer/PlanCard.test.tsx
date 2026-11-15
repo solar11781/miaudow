@@ -10,6 +10,7 @@ import { NO_OWN } from '../../domain/farmerState';
 import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { SOURCES } from '../../domain/sources';
+import { rulebookPlan } from '../../data/rulebook';
 
 const own = { values: NO_OWN, set: () => undefined };
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
@@ -638,5 +639,60 @@ describe('card head water line', () => {
     expect(document.body.textContent).not.toContain('TCVN 8641:2011');
     fireEvent.click(button);
     expect(document.body.textContent).toContain('TCVN 8641:2011');
+  });
+});
+
+// D-187 (roleplay audit 2026-11-15, F4): each risk quote is one plain line with its source in a few words; the full
+// quote opens in the source sheet. Quotes: the rulebook's risk lines of cc2 (rules/rotations.yaml).
+describe('considerations', () => {
+  afterEach(cleanup);
+  const checks = (risks: { text: { vi: string; en: string }; source_ids: string[] }[]) => {
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === 'cc2');
+    if (!plan) throw new Error('no plan');
+    plan.why.risks = risks;
+    for (const id of ['R-P03', 'R-C13', 'R-G06', 'R-G27'])
+      res.sources = { ...res.sources, [id]: { ...res.sources['R-P02'], id } } as typeof res.sources;
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const row = document.querySelector('[data-testid="card-cc2-row-checks"]');
+    if (!(row instanceof HTMLElement)) throw new Error('no checks row');
+    return row;
+  };
+  const CC2 = (rulebookPlan('cc2')?.risk_lines ?? []).map((r) => ({ text: r.text, source_ids: [r.source_id] }));
+  it('shows one plain line and a short source per quote, not the quote', () => {
+    const row = checks(CC2);
+    const text = row.textContent ?? '';
+    expect(CC2).toHaveLength(6);
+    for (const key of ['cost', 'market', 'fodder', 'riceZone', 'stillRice', 'provincePlan'] as const) {
+      expect(text).toContain(vi.farmer.considerations[key].line);
+      expect(text).toContain(vi.farmer.considerations[key].source);
+    }
+    for (const r of CC2) expect(text).not.toContain(r.text.vi);
+    expect(row.querySelector('h3')?.textContent).toBe(vi.farmer.rows.checks);
+  });
+  it('opens the full quote with the source button of its line', () => {
+    const row = checks(CC2);
+    const quote = CC2.find((r) => r.source_ids.includes('R-P03'));
+    const item = [...row.querySelectorAll('li')].find((li) =>
+      li.textContent?.includes(vi.farmer.considerations.market.line),
+    );
+    const button = item?.querySelector('button');
+    if (!quote || !button) throw new Error('no line');
+    fireEvent.click(button);
+    const sheet = document.querySelector('[data-testid="source-sheet"]')?.textContent ?? '';
+    expect(sheet).toContain(vi.sheet.quote);
+    expect(sheet).toContain(quote.text.vi);
+  });
+  it('shows a quote with no plain line in full', () => {
+    const text = checks([
+      { text: { vi: 'Một câu trích khác', en: 'Another quote' }, source_ids: ['R-P02'] },
+    ]).textContent;
+    expect(text).toContain('Một câu trích khác');
   });
 });
