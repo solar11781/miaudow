@@ -1,9 +1,9 @@
 # Miaudow
 
 Miaudow is a phone-first web app, in Vietnamese and English, for farmers and extension officers on drought-prone,
-low-productivity rice land in Nghệ An, Viet Nam. It puts six one-year crop plans side by side, two descriptions of
+low-productivity rice land in Nghe An, Vietnam. It puts six one-year crop plans side by side, two descriptions of
 current practice (rice) and four alternatives from a published local field trial, in past years that the farmer picks.
-Each past year is labelled with Viet Nam's official hazard rules computed from NASA data.
+Each past year is labelled with Vietnam's official hazard rules computed from NASA data.
 
 - Live app: https://miaudow.solareclipse.observer
 - Built by Team Miau for the NASA Space Apps Challenge 2026, challenge "Field Shift: Adapting Farms with NASA Data".
@@ -24,7 +24,7 @@ anything.
 
 1. Field: picture cards in the words farmers use ("high and dry", "end of the canal", "short of water", or "not sure,
    ask the extension officer"). A field with reliable water gets no comparison: no plan was tested on such land.
-2. Past years: pick up to 10 years from 1995-2024 that the family remembers. Each year shows the share of Nghệ An
+2. Past years: pick up to 10 years from 1995-2024 that the family remembers. Each year shows the share of Nghe An
    farmland that met each official hazard rule of Decision 18/2021/QĐ-TTg (heavy rain, heat, drought, damaging cold).
    Always labelled as a past year, never a forecast, with its limits ("grid values smooth out extremes").
 3. Priority: one tap (income, stability, water or land care).
@@ -32,7 +32,7 @@ anything.
    - Money: net profit and total cost per crop as reported in the trial (prices of 2020-21), labelled "Profit in the
      trial, not on your own field". The whole-year total is our addition, labelled as such.
    - Water: seasonal irrigation from the national standard TCVN 8641:2011 in m³/ha, shown as a range over the
-     standard's regional rows (the standard does not say which region Nghệ An belongs to); FAO's rough estimate of
+     standard's regional rows (the standard does not say which region Nghe An belongs to); FAO's rough estimate of
      crop water need where listed.
    - Bad weather: past-year hazard shares per crop, if sown on the trial's 2020-21 dates.
    - NASA soil wetness: root-zone wetness per crop and year next to its 1991-2020 average, labelled "NASA model value
@@ -53,11 +53,11 @@ Only whole numbers of up to 9 digits are accepted.
 
 | Page           | Path                                               | What it shows                                                                                                                                        |
 | -------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Home           | `#/`, `#/home`                                     | Entry to the farmer flow and the rain history of Nghệ An.                                                                                            |
+| Home           | `#/`, `#/home`                                     | Entry to the farmer flow and the rain history of Nghe An.                                                                                            |
 | Officer        | `#/can-bo`, `#/officer`                            | The evidence behind every card row, with the points where evidence is thin.                                                                          |
-| Science        | `#/khoa-hoc`, `#/science`                          | Nghệ An over 30 seasons: the NASA POWER grid, rice yield against normal, two rain sources (NASA POWER and CHIRPS), MODIS NDVI around the trial site. |
+| Science        | `#/khoa-hoc`, `#/science`                          | Nghe An over 30 seasons: the NASA POWER grid, rice yield against normal, two rain sources (NASA POWER and CHIRPS), MODIS NDVI around the trial site. |
 | Method         | `#/phuong-phap`, `#/method`                        | Model test results and pass or fail checks (from `artifacts/`), which data exist for each crop, the terms explained, datasets not used, limitations. |
-| Observatory    | `#/dai-quan-sat`, `#/observatory`                  | From space down to Nghệ An: a 3D globe with NASA GIBS layers, six Sentinel-2 greenness images of the former Đô Lương district, NASA Eyes in a frame. |
+| Observatory    | `#/dai-quan-sat`, `#/observatory`                  | From space down to Nghe An: a 3D globe with NASA GIBS layers, six Sentinel-2 greenness images of the former Do Luong district, NASA Eyes in a frame. |
 | Evidence       | `#/bang-chung`, `#/evidence`                       | Every conclusion with its source, where the sources disagree, and the state of each dataset.                                                         |
 | Assistant      | `#/tro-ly`, `#/assistant`                          | The copilot (see below).                                                                                                                             |
 | Sign-in, saved | `#/dang-nhap`, `#/da-luu` (`#/sign-in`, `#/saved`) | Optional Google sign-in to save up to 20 sets of answers and reopen them on another phone.                                                           |
@@ -92,10 +92,10 @@ Full citations, links and terms: `rules/sources.yaml` and the app's evidence pag
 | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | National Statistics Office of Viet Nam (Cục Thống kê), PX-Web tables, province rice yields 1995-2024 | Model target and the rice history on the cards. Credit: "Source: website of the National Statistics Office (www.gso.gov.vn)". Raw files are not redistributed. | [PX-Web](https://pxweb.nso.gov.vn/pxweb/en/)                                                                                                                                                    |
 | geoBoundaries (province and district outlines)                                                       | Province outline for the farmland weights and maps                                                                                                             | [geoboundaries.org](https://www.geoboundaries.org/)                                                                                                                                             |
-| Decision 18/2021/QĐ-TTg (Prime Minister of Viet Nam)                                                 | The official hazard rules and their definitions                                                                                                                | [text (.doc, Vietnamese)](https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc)                                                                                                                |
+| Decision 18/2021/QĐ-TTg (Prime Minister of Vietnam)                                                  | The official hazard rules and their definitions                                                                                                                | [text (.doc, Vietnamese)](https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc)                                                                                                                |
 | TCVN 8641:2011 (national irrigation standard)                                                        | Irrigation amounts on the cards (values quoted with source; text not redistributed)                                                                            | [text (Vietnamese)](https://caselaw.vn/van-ban-phap-luat/252217-tieu-chuan-quoc-gia-tcvn-8641-2011-ve-cong-trinh-thuy-loi-ky-thuat-tuoi-tieu-nuoc-cho-cay-luong-thuc-va-cay-thuc-pham-nam-2011) |
 | FAO Training Manual 3; FAO Conservation Agriculture; FAO-56                                          | Rough crop water need; the crop-diversity check; the evapotranspiration term (no number uses FAO-56)                                                           | [Manual 3](https://www.fao.org/4/s2022e/s2022e00.htm); [Conservation Agriculture](https://www.fao.org/conservation-agriculture/en/); [FAO-56](https://www.fao.org/4/x0490e/x0490e00.htm)        |
-| Trịnh Đức Toàn et al. (2023), field trial on drought-prone rice land, Lưu Sơn, Đô Lương, 2020-21     | The four trial plans and the farmers' usual plan: crops, dates, money, risks                                                                                   | [paper (PDF, Vietnamese)](https://vjol.info.vn/vaas/vi/article/download/167049/143292/289735)                                                                                                   |
+| Trịnh Đức Toàn et al. (2023), field trial on drought-prone rice land, Luu Son, Do Luong, 2020-21     | The four trial plans and the farmers' usual plan: crops, dates, money, risks                                                                                   | [paper (PDF, Vietnamese)](https://vjol.info.vn/vaas/vi/article/download/167049/143292/289735)                                                                                                   |
 | Trịnh Đức Toàn et al. (2023), crop rotation trial at the same site                                   | The second description of local practice                                                                                                                       | [journal issue (Vietnamese)](https://ngheandost.gov.vn/tap-chi-chuyen-san/tap-chi-kh-cn-nghe-an/dac-san-kh-cn-nghe-an-so-2-2023-112.html)                                                       |
 | CHIRPS v3.0 monthly (Climate Hazards Center, UC Santa Barbara)                                       | Second rain source on the science page (a comparison, not a validation)                                                                                        | [chc.ucsb.edu](https://www.chc.ucsb.edu/data/chirps3)                                                                                                                                           |
 | Copernicus Sentinel-2 L2A via Element 84 Earth Search (AWS Open Data)                                | Six greenness images on the observatory page. Contains modified Copernicus Sentinel data 2020-2024.                                                            | [AWS Open Data](https://registry.opendata.aws/sentinel-2-l2a-cogs/)                                                                                                                             |
@@ -106,7 +106,7 @@ Full citations, links and terms: `rules/sources.yaml` and the app's evidence pag
 
 The method page in the app has the full details and every number below.
 
-- **Model.** One pooled ridge regression over Viet Nam's provinces predicts the province rice yield anomaly (yield
+- **Model.** One pooled ridge regression over Vietnam's provinces predicts the province rice yield anomaly (yield
   against a past-only normal, the mean of the 3 previous years) from NASA POWER weather features weighted by farmland.
   It is tested rolling-origin on the years 2016-2024; each test year is fitted only on earlier years. It is compared
   with three references: the multi-year average, last year's value, and the same model without weather. LightGBM and
@@ -264,8 +264,10 @@ CC BY 4.0 (with a public-domain waiver stated by the Climate Hazards Center). Co
 open access (Regulation (EU) No 377/2014), "Contains modified Copernicus Sentinel data 2020-2024". DesInventar: no
 licence is stated, so its records are only counted, never shown or committed. Trial papers: journal copyright, values
 quoted with citation, PDFs not redistributed. TCVN 8641:2011: values quoted with source, text not redistributed. FAO:
-FAO copyright, values quoted with acknowledgement. Full citations and links: the evidence page of the app and
-`rules/sources.yaml`.
+FAO copyright, values quoted with acknowledgement. Vietnamese legal texts (Decision 18/2021/QĐ-TTg, Decree
+112/2024/NĐ-CP): quoted with their article, the text not redistributed. Wikidata: the Luu Son commune marker
+(Q10788283) that places the trial site on the maps, CC0. Full citations and links: the evidence page of the app,
+`rules/sources.yaml` and `docs/REFERENCES.md`.
 
 **Photographs** (37 photos from Wikimedia Commons, credited in the app; a credit says when a photo was lightly
 colour-adjusted, and adjusted CC BY-SA photos are shared under the same licence)
@@ -311,7 +313,7 @@ colour-adjusted, and adjusted CC BY-SA photos are shared under the same licence)
 | [Several farmers in conical hats working a green paddy](<https://commons.wikimedia.org/wiki/File:Paddy_field_(8586596737).jpg>)                                                                      | Vietnam (place not given by the source)                                             | Jean-Marc Astesana from Voisins le Bretonneux, France | CC BY-SA 2.0  |
 
 Source pages: `frontend/src/data/generated/media.json` (field `source_url`).
-Satellite images: 6 Sentinel-2 greenness (NDVI) images of the former Đô Lương district (spring, summer-autumn and
+Satellite images: 6 Sentinel-2 greenness (NDVI) images of the former Do Luong district (spring, summer-autumn and
 autumn-winter, 2020-2021 and 2024). Contains modified Copernicus Sentinel data 2020-2024.
 Illustrations: 16 AI-generated illustrations (64 image files) on the home page and 5 on the farmer's field step. The
 app shows the label "Do AI tạo, không phải ảnh thật" / "AI-generated, not a photograph" on every one of them.
