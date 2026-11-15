@@ -225,18 +225,18 @@ found no simple rainfall-yield relation for Nghệ An summer-autumn rice.
 The official text is the Field Shift challenge page (R-C03; the team pasted its text on 2026-11-10). We read the
 Resources tab (R-H16) on 2026-11-13, and it did not change the core.
 
-| Official ask | Our answer | Status |
+| Official ask | Our answer | Status (Hanoi version, 15 Nov 2026) |
 |---|---|---|
-| Decision-support tool: NASA EO + local soil info + crop characteristics + farmer priorities | NASA POWER (official-condition shares per past year; model features), P-02 crop values, one tap-button priority question; no local soil values (SoilGrids producer advises against local use, R-K13) | planned |
-| "Compare at least three rotation strategies, including the existing rotation" | four P-02 structures + farmers' usual structure CC5, plus the P-03 control | planned (FR-06) |
-| For each strategy: why suggested, evidence, benefits, information gaps, risks needing local review | per-strategy explanation block (FR-17) | planned |
-| Highlight times when fields are typically bare | bare periods shaded on the timeline (FR-18) | planned |
-| Seasons when current crops appear more vulnerable | regional rice-season history per past year; official-condition shares per crop in its trial months; out-of-sample model next to the history only for 2016-2024 and only for a season whose own test passes | planned |
-| Priorities: water use, forage value, nitrogen-fixing, erosion, organic matter, market suitability | water row of sourced facts; forage: biomass maize is grown as green fodder for cattle and the province requires purchase contracts for it (vietnamnet.vn, R-C13), shown for biomass maize only; land-care checks; erosion not scored (Slaets et al. 2016); market shown as an information gap, not scored | planned |
-| Explain terms (evapotranspiration, NDVI, water balance) and satellite vs ground data | explain-the-terms section on the method page (UI-UX-SPEC §11b item 3) | planned |
-| Explain how the model handles uncertainty and where local expertise is needed | the model's 80% range only where G4 passes, trust labels of source facts, "needs local review" list | planned |
-| Optional: maps, overlays, scenario sliders | bonus: optional 2D map page of the Nghệ An POWER cells by year and rule, then SRTM relief; 3D only on pages outside the farmer routes; no water-stress map or slider | bonus |
-| Supportive tool, does not replace farmer judgment | core principle | planned |
+| Decision-support tool: NASA EO + local soil info + crop characteristics + farmer priorities | NASA POWER (official-condition shares per past year; model features), P-02 crop values, one tap-button priority question; no local soil values (SoilGrids producer advises against local use, R-K13) | built |
+| "Compare at least three rotation strategies, including the existing rotation" | four P-02 structures + farmers' usual structure CC5, plus the P-03 control | built (FR-06) |
+| For each strategy: why suggested, evidence, benefits, information gaps, risks needing local review | per-strategy explanation block (FR-17) | built |
+| Highlight times when fields are typically bare | bare periods shaded on the timeline (FR-18) | built |
+| Seasons when current crops appear more vulnerable | regional rice-season history per past year; official-condition shares per crop in its trial months; out-of-sample model next to the history only for 2016-2024 and only for a season whose own test passes | built |
+| Priorities: water use, forage value, nitrogen-fixing, erosion, organic matter, market suitability | water row of sourced facts; forage: biomass maize is grown as green fodder for cattle and the province requires purchase contracts for it (vietnamnet.vn, R-C13), shown for biomass maize only; land-care checks; erosion not scored (Slaets et al. 2016); market shown as an information gap, not scored | built |
+| Explain terms (evapotranspiration, NDVI, water balance) and satellite vs ground data | explain-the-terms section on the method page (UI-UX-SPEC §11b item 3) | built |
+| Explain how the model handles uncertainty and where local expertise is needed | the model's 80% range only where G4 passes, trust labels of source facts, "needs local review" list | built |
+| Optional: maps, overlays, scenario sliders | bonus: optional 2D map page of the Nghệ An POWER cells by year and rule, then SRTM relief; 3D only on pages outside the farmer routes; no water-stress map or slider | partly built: 3D globe on the observatory page and 3D grid on the science page; no 2D map page, no SRTM relief |
+| Supportive tool, does not replace farmer judgment | core principle | built |
 
 The Hanoi rules summarize Field Shift as adjusting farming "based on satellite data and climate forecasts". The official
 NASA text does not require forecasts; we use past years and explain why in the pitch.
