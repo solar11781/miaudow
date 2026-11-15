@@ -25,7 +25,6 @@ export interface MediaAsset {
 }
 
 export const MEDIA = mediaJson as unknown as Record<string, MediaAsset>;
-export type MediaSlug = keyof typeof MEDIA & string;
 
 export function media(slug: string): MediaAsset {
   const m = MEDIA[slug];

@@ -1,6 +1,7 @@
-// The governed plan text: risk lines, "why" lines and limitations come only from api/rules/rotations.yaml
-// (scripts/sync_rotations.py → data/canonical/rotations.generated.json); applicability and the questions for the
-// extension officer come from the API's decision core (data/canonical/decision.json). The web app never writes its own.
+// The governed plan text: risk lines, "why" lines and limitations come only from lamgiang/api/rules/rotations.yaml
+// (lamgiang/scripts/sync_rotations.py on branch feat/lamgiang-2 → data/canonical/rotations.generated.json);
+// applicability and the questions for the extension officer come from the API's decision core
+// (data/canonical/decision.json). The web app never writes its own.
 import rotationsJson from '@data/rotations.generated.json';
 import decisionJson from '@data/decision.json';
 import type { Bilingual } from '../domain/provenance';
