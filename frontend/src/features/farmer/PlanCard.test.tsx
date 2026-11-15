@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, within } from '@testing-library/react';
 import { SettingsProvider, useSettings } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
-import { body, compare } from '../../tests/fixtures';
+import { body, compare, moneyItem } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
 import { NO_OWN } from '../../domain/farmerState';
 import { vi } from '../../i18n/vi';
@@ -69,6 +69,28 @@ describe('card warnings', () => {
     for (const line of [vi.farmer.trialNote, vi.common.notForecast, vi.common.support]) expect(card).toContain(line);
     expect(card).toContain(vi.farmer.priceYearNotStated); // the fixture plan states no price year
   });
+  // D-187: these stay on the card when the source notes move to the sheets (UI-UX-SPEC 12b, section 9 water row)
+  it('keep the statistics office credit in the rice block and the model label of soil wetness', () => {
+    const id = renderCard();
+    const rice = document.querySelector(`[data-testid="card-${id}-row-weather"]`)?.textContent ?? '';
+    expect(rice).toContain(vi.farmer.rice.nsoCredit);
+    const water = document.querySelector(`[data-testid="card-${id}-row-water"]`)?.textContent ?? '';
+    expect(water).toContain(vi.farmer.rows.soilNote);
+    expect(vi.farmer.rows.soilNote).toContain('Giá trị mô hình NASA');
+    expect(vi.farmer.rows.soilNote).toContain('không phải số đo tại ruộng');
+    expect(en.farmer.rows.soilNote).toContain('not a field measurement');
+  });
+  it('open the long soil note with each soil wetness value', () => {
+    const id = renderCard();
+    const water = document.querySelector(`[data-testid="card-${id}-row-water"]`);
+    expect(water?.textContent).not.toContain('MERRA-2');
+    const soil = [...(water?.querySelectorAll('p') ?? [])].find((p) => p.textContent === vi.farmer.rows.soil);
+    const button = soil?.parentElement?.querySelector('button[data-value]');
+    if (!(button instanceof HTMLElement)) throw new Error('no soil value');
+    fireEvent.click(button);
+    expect(document.querySelector('[data-testid="source-sheet"]')?.textContent).toContain(vi.farmer.rows.soilSheetNote);
+    expect(vi.farmer.rows.soilSheetNote).toContain('MERRA-2');
+  });
 });
 
 // D-64, D-68 and UI-UX-SPEC section 9 water row: the card shows TCVN 8641 (m³/ha) and FAO (mm) values as separate
@@ -78,7 +100,10 @@ describe('water units', () => {
   it('carry no conversion between the two sources, on the card or in the TCVN source sheet', () => {
     const id = renderCard();
     const card = document.querySelector(`[data-testid="card-${id}"]`)?.textContent ?? '';
-    expect(card).toContain(vi.farmer.rows.waterNote);
+    // D-187: the TCVN note opens with the TCVN values instead of closing the row
+    expect(card).not.toContain(vi.farmer.rows.waterNote);
+    const row = document.querySelector(`[data-testid="card-${id}-row-water"]`) ?? document;
+    expect(sheetOf('6.500-7.500 m³/ha', row)).toContain(vi.farmer.rows.waterNote);
     for (const text of [card, vi.farmer.rows.waterNote, en.farmer.rows.waterNote])
       expect(text).not.toMatch(/0[,.]1 mm/);
     for (const text of Object.values(SOURCES.tcvn8641.caveat)) expect(text).not.toMatch(/0[,.]1 mm/);
@@ -119,35 +144,85 @@ describe('check and why rows', () => {
   });
 });
 
-// UI-UX-SPEC section 9: P-02 "lợi nhuận thuần (RVAC) = GR - TVC", labour included; P-03 "Lợi nhuận = GR - Tổng chi phí
-// vật chất", material costs only. The API's definition stays; one plain sentence follows it, chosen by the study
-// the money cites (D-170), not by the text_only field.
-describe('money definition', () => {
+/** Taps the source button showing `value` and returns the text of the sheet it opens. */
+function sheetOf(value: string, root: ParentNode = document): string {
+  const button = [...root.querySelectorAll('button[data-value]')].find((e) => e.getAttribute('data-value') === value);
+  if (!(button instanceof HTMLElement)) throw new Error(`no button ${value}`);
+  fireEvent.click(button);
+  return document.querySelector('[data-testid="source-sheet"]')?.textContent ?? '';
+}
+
+// D-187 (roleplay audit 2026-11-15, F2): the money row keeps one short label per number; the paper's definition
+// (UI-UX-SPEC section 9: P-02 "lợi nhuận thuần (RVAC) = GR - TVC", labour included; P-03 "Lợi nhuận = GR - Tổng chi phí
+// vật chất", material costs only), its plain sentence chosen by the study the money cites (D-170), the table number,
+// the "our addition" wording and the paper's Table 4 remark open with the number they belong to. Values from
+// rules/rotations.yaml (cc1).
+describe('money notes', () => {
   afterEach(cleanup);
-  const moneyText = (planIndex: number, study: string) => {
+  const P02_DEF = {
+    vi: 'lợi nhuận thuần (RVAC) = GR - TVC; TVC gồm vật tư, công lao động, năng lượng và lãi vay',
+    en: 'net profit (RVAC) = GR - TVC (gross return minus total variable cost); TVC counts materials, labour, energy and interest',
+  };
+  const P03_DEF = { vi: 'Lợi nhuận = GR - Tổng chi phí vật chất', en: 'Profit = GR - total material costs' };
+  const FLAG = {
+    vi: 'Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau ở mọi cột; bài báo không giải thích điều này.',
+    en: 'In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the paper does not explain this.',
+  };
+  const P03_TEXT = { vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha.', en: 'x' };
+  const money = (planIndex: number, study: 'R-P02' | 'R-P03') => {
     const res = validateCompare(compare(), body);
     const plan = res.plans[planIndex];
     if (!plan) throw new Error('no plan');
-    plan.money.definition = { vi: 'định nghĩa của bài', en: 'the paper definition' };
     plan.calendar = plan.calendar.map((c) => ({ ...c, source_ids: [study] }));
+    if (study === 'R-P02') {
+      plan.money.definition = P02_DEF;
+      plan.money.items = [
+        { ...moneyItem('cc1_summer_autumn_mung_bean', '1.03', '40,000', '16,200', '25,000'), flag: FLAG },
+      ];
+      plan.money.total = { value: '53,380', unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' }, source_ids: ['R-P02'] };
+    } else {
+      plan.money = { ...plan.money, definition: P03_DEF, items: [], total: null, text_only: P03_TEXT };
+      res.sources = { ...res.sources, 'R-P03': { ...res.sources['R-P02'], id: 'R-P03' } } as typeof res.sources;
+    }
     render(
       <SettingsProvider>
         <ProvenanceProvider>
-          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
+          {/* not the income priority: its priority line labels the totals for screen readers in its own words */}
+          <PlanCard plan={plan} res={res} priority="water" own={own} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
     );
     return document.querySelector(`[data-testid="card-${plan.id}-row-money"]`)?.textContent ?? '';
   };
-  it('explains the P-02 definition in plain words', () => {
-    const text = moneyText(2, 'R-P02');
-    expect(text).toContain('định nghĩa của bài');
-    expect(text).toContain(vi.farmer.definitionPlain.p02);
+  it('labels each P-02 number in a few words and keeps the notes off the card', () => {
+    const text = money(2, 'R-P02');
+    for (const label of [vi.farmer.rows.money, vi.farmer.profit, vi.farmer.cost, vi.farmer.own.yearSum])
+      expect(text).toContain(label);
+    for (const note of ['Bảng', 'RVAC', vi.farmer.ourSum, vi.farmer.definitionPlain.p02])
+      expect(text).not.toContain(note);
   });
-  it('explains the P-03 definition in plain words', () => {
-    const text = moneyText(1, 'R-P03');
+  it('opens the definition, the table and the Table 4 remark with the profit of the crop', () => {
+    money(2, 'R-P02');
+    const sheet = sheetOf('16.200 nghìn đồng/ha');
+    for (const note of [vi.farmer.profitTable, P02_DEF.vi, vi.farmer.definitionPlain.p02, FLAG.vi])
+      expect(sheet).toContain(note);
+  });
+  it('opens the Table 4 remark with the cost of the crop', () => {
+    money(2, 'R-P02');
+    expect(sheetOf('25.000 nghìn đồng/ha')).toContain(FLAG.vi);
+  });
+  it('opens the "our addition" wording and the definition with the whole-year total', () => {
+    money(2, 'R-P02');
+    const sheet = sheetOf('53.380 nghìn đồng/ha');
+    for (const note of [vi.farmer.ourSumNote, P02_DEF.vi]) expect(sheet).toContain(note);
+  });
+  // never compare P-03 money with P-02 money (UI-UX-SPEC section 9): the P-03 card keeps saying, in one plain line,
+  // that its profit takes off material costs only
+  it('keeps the plain P-03 definition on the card and its paper definition in the sheet', () => {
+    const text = money(1, 'R-P03');
     expect(text).toContain(vi.farmer.definitionPlain.p03);
-    expect(text).not.toContain(vi.farmer.definitionPlain.p02);
+    expect(text).not.toContain(P03_DEF.vi);
+    expect(sheetOf(P03_TEXT.vi)).toContain(P03_DEF.vi);
   });
 });
 
@@ -194,7 +269,7 @@ const PEANUT = [
   fact('crop_uses', '500-700', 'mm', ['R-M02'], 'Cả thời gian sinh trưởng', faoNote),
 ];
 
-function waterText(facts: typeof RICE): string {
+function waterRow(facts: typeof RICE): Element {
   const res = validateCompare(compare(), body);
   const plan = res.plans[2];
   const key = plan?.calendar[0]?.crop_key;
@@ -212,22 +287,33 @@ function waterText(facts: typeof RICE): string {
       </ProvenanceProvider>
     </SettingsProvider>,
   );
-  return document.querySelector(`[data-testid="card-${plan.id}-row-water"]`)?.textContent ?? '';
+  const row = document.querySelector(`[data-testid="card-${plan.id}-row-water"]`);
+  if (!row) throw new Error('no water row');
+  return row;
 }
 
+// D-187 (F2): the water row keeps the lead, the value and the scope of each fact; each note opens with its own
+// source's values, so the TCVN and FAO caveats still never mix
 describe('water notes', () => {
   afterEach(cleanup);
-  it('say the TCVN region note once above the TCVN rows and keep the FAO note on the FAO row', () => {
-    const text = waterText(RICE);
-    expect(text.split(tcvnNote.vi)).toHaveLength(2);
-    expect(text.indexOf(tcvnNote.vi)).toBeLessThan(text.indexOf('Trung bộ, lúa cấy, vụ xuân'));
-    expect(text.split(faoNote.vi)).toHaveLength(2);
-    expect(text.indexOf(faoNote.vi)).toBeGreaterThan(text.indexOf('Lúa nước, cả thời gian sinh trưởng'));
+  it('keep the scopes on the row and the notes off it', () => {
+    const text = waterRow(RICE).textContent ?? '';
+    for (const scope of ['Trung bộ, lúa cấy, vụ xuân', 'Bắc bộ, vụ xuân', 'Lúa nước, cả thời gian sinh trưởng'])
+      expect(text).toContain(scope);
+    for (const note of [tcvnNote.vi, faoNote.vi]) expect(text).not.toContain(note);
   });
-  it('never puts the FAO caveat above a TCVN row', () => {
-    const text = waterText(PEANUT);
-    expect(text.indexOf(faoNote.vi)).toBeGreaterThan(text.indexOf('Cả thời gian sinh trưởng'));
-    expect(text.indexOf(faoNote.vi)).toBeGreaterThan(text.indexOf('Trung bình'));
+  it('open the TCVN note with each TCVN value and the FAO note with the FAO value only', () => {
+    const tcvn = sheetOf('6.000-7.000 m³/ha', waterRow(RICE));
+    expect(tcvn).toContain(tcvnNote.vi);
+    expect(tcvn).not.toContain(faoNote.vi);
+    cleanup();
+    const fao = sheetOf('450-700 mm', waterRow(RICE));
+    expect(fao).toContain(faoNote.vi);
+    expect(fao).not.toContain(tcvnNote.vi);
+    expect(fao).not.toContain(vi.farmer.rows.waterNote);
+  });
+  it('never put the FAO caveat in the sheet of a TCVN value', () => {
+    expect(sheetOf('2.000 m³/ha', waterRow(PEANUT))).not.toContain(faoNote.vi);
   });
 });
 
@@ -242,6 +328,8 @@ describe('per-year tables', () => {
       expect(button?.getAttribute('aria-expanded'), row).toBe('false');
       const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
       expect(panel?.querySelector('table'), row).not.toBeNull();
+      // D-187: the line that says what the weather shares are sits with the tables it explains
+      if (row === 'weather') expect(panel?.textContent).toContain(vi.farmer.rows.weatherNote);
       expect(panel?.hasAttribute('hidden'), row).toBe(false); // hidden by screen-only CSS, so print shows it (T35)
       button?.click();
       await Promise.resolve();
@@ -287,7 +375,8 @@ describe('card summary', () => {
     const { box } = head(0);
     const text = box.textContent ?? '';
     expect(text).toContain(vi.farmer.rows.money);
-    expect(text).toContain(vi.farmer.ourSum);
+    expect(text).toContain(vi.farmer.own.yearSum);
+    expect(text).not.toContain(vi.farmer.ourSum); // D-187: the long wording opens with the total
     const button = box.querySelector('[data-value="30.799 nghìn đồng/ha"]');
     expect(button?.tagName).toBe('BUTTON');
   });
@@ -295,7 +384,7 @@ describe('card summary', () => {
     const { box } = head(1);
     const button = [...box.querySelectorAll('[data-value]')].find((e) => e.getAttribute('data-value') === P03_TEXT.vi);
     expect(button?.tagName).toBe('BUTTON');
-    expect(box.textContent).not.toContain(vi.farmer.ourSum);
+    expect(box.textContent).not.toContain(vi.farmer.own.yearSum);
     expect(box.textContent).not.toContain('30.799');
   });
   it('keeps a link to the water row', () => {
@@ -507,7 +596,8 @@ describe('card head water line', () => {
   };
   it('spans the TCVN rows of each crop, says no figure without one and leaves FAO out (usual plan)', () => {
     const { text, values } = line('usual');
-    expect(text.startsWith('Nước phải tưới (TCVN 8641, tùy vùng và cách gieo cấy)')).toBe(true);
+    expect(text.startsWith(`${vi.farmer.summaryWaterLabel}:`)).toBe(true);
+    expect(text).not.toContain('TCVN'); // D-187: the standard's name and the range note open with the range
     expect(values).toEqual(['6.000-7.500 m³/ha', '1.200-1.400 m³/ha']);
     expect(text.indexOf('Lúa')).toBeLessThan(text.indexOf('Đậu đen xanh lòng'));
     expect(text.indexOf('Đậu đen xanh lòng')).toBeLessThan(text.indexOf('Khoai lang'));
@@ -527,11 +617,17 @@ describe('card head water line', () => {
   it('shows the one TCVN value of peanut (cc1), in English as given', () => {
     expect(line('cc1').values).toEqual(['2.000 m³/ha']);
     cleanup();
-    const en = line('cc1', ['en-GB', 'en']);
-    expect(en.values).toEqual(['2,000 m³/ha']);
-    expect(en.text).toContain('Đậu xanh: no figure in the source');
-    expect(en.text.startsWith('Water to apply (TCVN 8641, by region and planting method)')).toBe(true);
+    const english = line('cc1', ['en-GB', 'en']);
+    expect(english.values).toEqual(['2,000 m³/ha']);
+    expect(english.text).toContain('Đậu xanh: no figure in the source');
+    expect(english.text.startsWith(`${en.farmer.summaryWaterLabel}:`)).toBe(true);
     Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+  });
+  it('opens the range note and the whole rice note with the range', () => {
+    line('usual');
+    const sheet = sheetOf('6.000-7.500 m³/ha');
+    for (const note of [vi.farmer.summaryWaterNote, RICE_NOTE.vi, vi.farmer.rows.waterNote])
+      expect(sheet).toContain(note);
   });
   it('opens the TCVN source of the rows it spans', () => {
     line('usual');

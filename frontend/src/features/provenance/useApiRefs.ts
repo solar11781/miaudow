@@ -18,9 +18,9 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
     return {
       number,
       unit,
-      /** A Value as a source button's props. */
-      value(v: Value, label: string): ApiSourceRef {
-        return { facts: facts(v.source_ids), value: shown(v), label };
+      /** A Value as a source button's props; `note` closes its sheet (the source notes kept off the card, D-187). */
+      value(v: Value, label: string, note?: string): ApiSourceRef {
+        return { facts: facts(v.source_ids), value: shown(v), label, ...(note ? { note } : {}) };
       },
       /** An official-condition share: the rule text and the "our computation" line go with it (H19). */
       share(rule: RuleCode, v: Value, label: string): ApiSourceRef {

@@ -319,7 +319,8 @@ export const vi = {
       water: 'Nước tưới',
       waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha).',
       soil: 'Độ ẩm đất NASA',
-      soilNote:
+      soilNote: 'Giá trị mô hình NASA, không phải số đo tại ruộng. 100% là đất no nước.',
+      soilSheetNote:
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
       land: 'Chăm sóc đất',
       checks: 'Cần cân nhắc (trích nguồn)',
@@ -340,10 +341,15 @@ export const vi = {
       'Bài báo thứ hai không ghi ngày gieo, nên không có lịch 12 tháng và không tính được thời tiết theo cây.',
     soilNormal: 'trung bình 1991–2020',
     waterLead: { to_apply: 'Nước phải tưới vào ruộng', crop_uses: 'Nước cây dùng (ước lượng thô)' },
-    profit: 'Lãi thuần trong thử nghiệm (Bảng 13)',
+    profit: 'Lãi thuần trong thử nghiệm',
+    profitTable: 'Lãi thuần: Bảng 13 của bài báo (tr. 50).',
+    paperDefinition: (definition: string) => `Cách bài báo tính: ${definition}.`,
     cost: 'Tổng chi trong thử nghiệm',
     ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
-    summaryWaterLabel: 'Nước phải tưới (TCVN 8641, tùy vùng và cách gieo cấy)',
+    ourSumNote: 'Chúng tôi cộng tiền lãi của các vụ; bài báo không báo cáo tiền lãi cho cả chuỗi.',
+    summaryWaterLabel: 'Nước phải tưới, tùy vùng',
+    summaryWaterNote:
+      'Từ thấp nhất đến cao nhất trong các dòng của TCVN 8641 cho cây và vụ này; các dòng khác nhau theo vùng và cách gieo cấy.',
     noFigure: 'nguồn không có số',
     summaryWater: (row: string) => `Xem hàng ${row} bên dưới`,
     priceYear: (y: string) => `Giá bán năm ${y}.`,

@@ -330,7 +330,8 @@ export const en: Messages = {
       water: 'Irrigation',
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
-      soilNote:
+      soilNote: 'NASA model value, not a field measurement. 100% is soil full of water.',
+      soilSheetNote:
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
       land: 'Care for the land',
       checks: 'Weigh this (quoted from sources)',
@@ -350,10 +351,15 @@ export const en: Messages = {
     p03NoCalendar: 'The second paper gives no sowing dates, so there is no 12-month calendar and no weather per crop.',
     soilNormal: '1991–2020 average',
     waterLead: { to_apply: 'Water to apply to the field', crop_uses: 'Water the crop uses (rough estimate)' },
-    profit: 'Net profit in the trial (Table 13)',
+    profit: 'Net profit in the trial',
+    profitTable: 'Net profit: Table 13 of the paper (p. 50).',
+    paperDefinition: (definition: string) => `How the paper counts it: ${definition}.`,
     cost: 'Total cost in the trial',
     ourSum: 'our addition of the profit values, not reported as a sequence',
-    summaryWaterLabel: 'Water to apply (TCVN 8641, by region and planting method)',
+    ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',
+    summaryWaterLabel: 'Water to apply, by region',
+    summaryWaterNote:
+      'From the lowest to the highest of the TCVN 8641 rows for this crop and season; the rows differ by region and planting method.',
     noFigure: 'no figure in the source',
     summaryWater: (row: string) => `See the ${row} row below`,
     priceYear: (y: string) => `Prices of ${y}.`,
