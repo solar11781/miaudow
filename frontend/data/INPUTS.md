@@ -6,7 +6,7 @@ Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py`
 
 - `frontend/data/canonical/catalog.json` c2c27114948d61b89d54588a5e5c3b292636b10cfafd523a78a39a6016bb97ab
 - `frontend/data/canonical/climate.json` b2e3271f202a92b1b6cc12a5e1560ee43edd59456338aab4db764822ca01be0a
-- `frontend/data/canonical/decision.json` de8ab75d92b15e65d303738ac20db06bfad59211266d2ffd851a01d11f863b15
+- `frontend/data/canonical/decision.json` 9c436354fb994e0364d9207be8da711311eabc986698c317ff69ca2bfe74cc50
 - `frontend/data/canonical/geo.json` e8cc964118c0fa49653a5432ad06d08b667fbf15e02c618fe472ac14ec2e80b1
 - `frontend/data/canonical/geo_do_luong.json` 4b0b42b8e94e258f25c77418a94098b321c100d406d0bb3a33a1c16868258f4f
 - `frontend/data/canonical/hazards.json` 482aae5b355d181421e77b1a1e5c91668d4ebcf177d720f49cea2bccb562a51e

@@ -67,6 +67,8 @@ export interface ApiSourceRef {
   label: string;
   /** Quoted rule text of an official-condition share (UI-UX-SPEC section 10). */
   ruleText?: string;
+  /** The full quote a plain card line stands for (D-187), shown first. */
+  quote?: string;
   /** Closing line, e.g. that a share is our computation, not an official record (H19). */
   note?: string;
 }

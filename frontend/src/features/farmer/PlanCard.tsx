@@ -13,6 +13,8 @@ import type {
 } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
+import { consideration } from '../../domain/considerations';
+import { officerQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
@@ -91,6 +93,22 @@ interface Ctx {
 }
 type Hl = { highlight: boolean; line: ReactNode };
 
+/** The parts given, as one closing note of a source sheet. */
+const sentences = (...parts: (string | null | false | undefined)[]) => parts.filter(Boolean).join(' ');
+
+/** The source notes of a plan's money, kept off the card and closing the sheet of each money value (D-187): the
+ * paper's definition as the API gives it, then the same in plain words for the study the money cites (D-170). */
+function useMoneyNotes(plan: Plan) {
+  const t = useT();
+  const pick = usePick();
+  const study = moneyStudy(plan);
+  const definition = sentences(
+    t.farmer.paperDefinition(pick(plan.money.definition)),
+    study && t.farmer.definitionPlain[study],
+  );
+  return { study, definition, total: sentences(t.farmer.ourSumNote, definition) };
+}
+
 function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: OwnState }) {
   const t = useT();
   const pick = usePick();
@@ -100,16 +118,16 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
     return `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
   });
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
-  const study = moneyStudy(plan);
+  const notes = useMoneyNotes(plan);
   return (
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
         <div className={s.money}>
-          <SourceValue size="xl" {...refs.value(m.total, t.farmer.ourSum)}>
+          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>
             {refs.number(m.total)}
           </SourceValue>
           <span className={s.unit}>
-            {refs.unit(m.total)} · {t.farmer.ourSum}
+            {refs.unit(m.total)} · {t.farmer.own.yearSum}
           </span>
         </div>
       )}
@@ -117,31 +135,38 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
         <ul className={s.cropMoney}>
           {m.items.map((item, i) => {
             const name = names[i] ?? '';
+            // the paper's Table 4 remark on this crop's row goes with its profit and its cost
+            const flag = item.flag ? pick(item.flag) : undefined;
             return (
               <li key={item.crop_key}>
                 <span>{name}</span>
                 <span>{t.farmer.profit}</span>
-                <SourceValue {...refs.value(item.profit, `${t.farmer.profit} · ${name}`)} />
+                <SourceValue
+                  {...refs.value(
+                    item.profit,
+                    `${t.farmer.profit} · ${name}`,
+                    sentences(t.farmer.profitTable, flag, notes.definition),
+                  )}
+                />
                 <span>{t.farmer.cost}</span>
-                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} />
-                {item.flag && <span>{pick(item.flag)}</span>}
+                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} note={flag} />
               </li>
             );
           })}
         </ul>
       )}
-      {m.text_only && <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} />}
-      {/* the source's definition as the API gives it, then the same in plain words for the study it cites (D-170) */}
-      <p className={s.rowNote}>{pick(m.definition)}</p>
-      {study && <p className={s.rowNote}>{t.farmer.definitionPlain[study]}</p>}
+      {m.text_only && (
+        <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} note={notes.definition} />
+      )}
+      {/* P-03 money takes off material costs only, so its card keeps saying so: never compared with P-02 (section 9) */}
+      {notes.study === 'p03' && <p className={s.rowNote}>{t.farmer.definitionPlain.p03}</p>}
       <OwnNumbers planId={plan.id} items={m.items} names={names} refs={refs} own={own} />
     </Row>
   );
 }
 
-/** The note every TCVN row of a crop carries (the region note, D-68), said once above those rows; null when the crop
- * has fewer than two TCVN rows or their notes differ. Other notes stay on their own row, so the TCVN and FAO caveats
- * never mix (D-64). */
+/** The note every TCVN row of a crop carries (the region note, D-68), for the card head's range; null when the crop
+ * has fewer than two TCVN rows or their notes differ. FAO notes never join it, so the two caveats never mix (D-64). */
 function tcvnSharedNote(facts: WaterFact[]): WaterFact['note'] {
   const tcvn = facts.filter((w) => w.measure === 'to_apply');
   const first = tcvn[0]?.note;
@@ -285,12 +310,13 @@ function WeatherRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
       hook={`card-${plan.id}-row-weather`}
       icon="sun"
       title={t.farmer.rows.weather}
-      note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined}
       highlight={highlight}
       line={line}
     >
       {plan.exposure.length > 0 && (
         <YearsFold id={`card-${plan.id}-weather-years`}>
+          {/* what the shares are, next to the tables it explains (D-187) */}
+          <p className={s.rowNote}>{t.farmer.rows.weatherNote}</p>
           <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
         </YearsFold>
       )}
@@ -330,16 +356,10 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
         </YearsFold>
       )}
       <ul className={s.kv}>
-        {plan.calendar.map((c) => {
-          const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
-          const lifted = tcvnSharedNote(facts);
-          return [
-            lifted && (
-              <li key={`${c.crop_key}-note`} className={s.waterNote}>
-                {pick(c.crop)}: {pick(lifted)}
-              </li>
-            ),
-            ...facts.map((w, i) => (
+        {plan.calendar.flatMap((c) =>
+          plan.water
+            .filter((w) => w.crop_key === c.crop_key)
+            .map((w, i) => (
               <li key={`${c.crop_key}-${i}`}>
                 <span>
                   {pick(c.crop)} · {w.measure === 'not_listed' ? t.common.notListed : t.farmer.waterLead[w.measure]}
@@ -350,18 +370,18 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
                       {...refs.value(
                         w.value,
                         `${t.farmer.waterLead[w.measure === 'not_listed' ? 'to_apply' : w.measure]} · ${pick(c.crop)}`,
+                        // each fact's note opens with its own value, so the TCVN and FAO caveats never mix (D-64)
+                        sentences(w.measure === 'to_apply' && t.farmer.rows.waterNote, w.note && pick(w.note)),
                       )}
                     />
                   )}
                   {w.scope && <span className="muted small">{pick(w.scope)}</span>}
-                  {w.note && !(lifted && w.measure === 'to_apply') && (
-                    <span className="muted small">{pick(w.note)}</span>
-                  )}
+                  {/* a note with no value to open it from stays on the card */}
+                  {!w.value && w.note && <span className="muted small">{pick(w.note)}</span>}
                 </span>
               </li>
             )),
-          ];
-        })}
+        )}
       </ul>
       {plan.exposure.length > 0 && (
         <div className={s.sub}>
@@ -378,12 +398,14 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
                       v={y.soil_wetness.value}
                       label={`${t.farmer.rows.soil} · ${pick(c.crop)} · ${y.year}`}
                       refs={refs}
+                      note={t.farmer.rows.soilSheetNote}
                     />
                     <span className="muted small">{t.farmer.soilNormal}</span>
                     <NumberOr
                       v={y.soil_wetness.normal}
                       label={`${t.farmer.soilNormal} · ${pick(c.crop)}`}
                       refs={refs}
+                      note={t.farmer.rows.soilSheetNote}
                     />
                   </span>
                 </li>
@@ -393,7 +415,6 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
           <p className={s.rowNote}>{t.farmer.rows.soilNote}</p>
         </div>
       )}
-      <p className={s.rowNote}>{t.farmer.rows.waterNote}</p>
     </Row>
   );
 }
@@ -447,18 +468,20 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   const m = plan.money;
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
   const water = `card-${plan.id}-row-water`;
+  const notes = useMoneyNotes(plan);
   return (
     <div className={s.summary}>
       {m.total ? (
         <p>
           {t.farmer.rows.money}:{' '}
-          <SourceValue {...refs.value(m.total, t.farmer.ourSum)}>{refs.number(m.total)}</SourceValue>{' '}
-          {refs.unit(m.total)} · {t.farmer.ourSum}
+          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>{refs.number(m.total)}</SourceValue>{' '}
+          {refs.unit(m.total)} · {t.farmer.own.yearSum}
         </p>
       ) : (
         m.text_only && (
           <p>
-            {t.farmer.rows.money}: <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} />
+            {t.farmer.rows.money}:{' '}
+            <SourceValue {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)} note={notes.definition} />
           </p>
         )
       )}
@@ -467,14 +490,20 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
         {plan.calendar.map((c, i) => {
           const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
           const range = tcvnRange(facts);
-          // the note's first sentence (rice: maintenance irrigation only); its region sentence is in the label
+          // the note's first sentence stays (rice: maintenance irrigation only); the whole note opens with the range
           const note = range && tcvnSharedNote(facts);
           return (
             <span key={c.crop_key}>
               {i > 0 && ' · '}
               {pick(c.crop)}:{' '}
               {range ? (
-                <SourceValue {...refs.value(range, `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`)} />
+                <SourceValue
+                  {...refs.value(
+                    range,
+                    `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`,
+                    sentences(t.farmer.rows.waterNote, t.farmer.summaryWaterNote, note && pick(note)),
+                  )}
+                />
               ) : (
                 t.farmer.noFigure
               )}
@@ -586,24 +615,45 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
   const t = useT();
   const pick = usePick();
   const { why } = plan;
+  const questions = officerQuestions(plan.id);
   return (
     <>
       <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
         {why.risks.length ? (
           <ul className={s.risks}>
-            {why.risks.map((r) => (
-              <li key={r.text.en}>
-                <span>{pick(r.text)}</span>
-                {r.source_ids.length > 0 && (
-                  <SourceValue {...refs.sources(r.source_ids, t.common.source, t.farmer.rows.checks)} />
-                )}
-              </li>
-            ))}
+            {why.risks.map((r) => {
+              // one plain line and its source in a few words; the full quote opens in the sheet (D-187)
+              const key = consideration(r);
+              const plain = key ? t.farmer.considerations[key] : null;
+              return (
+                <li key={r.text.en}>
+                  <span>{plain ? plain.line : pick(r.text)}</span>
+                  {plain && <span className="muted small">{plain.source}</span>}
+                  {r.source_ids.length > 0 && (
+                    <SourceValue
+                      {...refs.sources(r.source_ids, t.common.source, plain ? plain.line : t.farmer.rows.checks)}
+                      quote={plain ? pick(r.text) : undefined}
+                    />
+                  )}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className={s.why}>{t.farmer.noneListed}</p>
         )}
         <p className={s.why}>{t.farmer.localReview}</p>
+        {/* the officer page's questions for this plan, so the farmer knows what to ask (D-187) */}
+        {questions.length > 0 && (
+          <div className={s.sub}>
+            <p className={s.subHead}>{t.farmer.askOfficer}</p>
+            <ol className={s.questions}>
+              {questions.map((q) => (
+                <li key={q.vi}>{pick(q)}</li>
+              ))}
+            </ol>
+          </div>
+        )}
       </Row>
       <details className={s.more}>
         <summary>

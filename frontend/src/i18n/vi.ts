@@ -115,6 +115,7 @@ export const vi = {
     yes: 'Có',
     no: 'Không',
     ruleText: 'Lời văn của quy định',
+    quote: 'Trích nguyên văn',
     registerId: 'Mã trong sổ nguồn',
   },
   home: {
@@ -329,10 +330,11 @@ export const vi = {
       water: 'Nước tưới',
       waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha).',
       soil: 'Độ ẩm đất NASA',
-      soilNote:
+      soilNote: 'Giá trị mô hình NASA, không phải số đo tại ruộng. 100% là đất no nước.',
+      soilSheetNote:
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
       land: 'Chăm sóc đất',
-      checks: 'Cần cân nhắc (trích nguồn)',
+      checks: 'Cần cân nhắc',
       why: 'Vì sao có cách trồng này',
       rice: 'Lúa cả tỉnh so với bình thường',
     },
@@ -350,10 +352,15 @@ export const vi = {
       'Bài báo thứ hai không ghi ngày gieo, nên không có lịch 12 tháng và không tính được thời tiết theo cây.',
     soilNormal: 'trung bình 1991–2020',
     waterLead: { to_apply: 'Nước phải tưới vào ruộng', crop_uses: 'Nước cây dùng (ước lượng thô)' },
-    profit: 'Lãi thuần trong thử nghiệm (Bảng 13)',
+    profit: 'Lãi thuần trong thử nghiệm',
+    profitTable: 'Lãi thuần: Bảng 13 của bài báo (tr. 50).',
+    paperDefinition: (definition: string) => `Cách bài báo tính: ${definition}.`,
     cost: 'Tổng chi trong thử nghiệm',
     ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
-    summaryWaterLabel: 'Nước phải tưới (TCVN 8641, tùy vùng và cách gieo cấy)',
+    ourSumNote: 'Chúng tôi cộng tiền lãi của các vụ; bài báo không báo cáo tiền lãi cho cả chuỗi.',
+    summaryWaterLabel: 'Nước phải tưới, tùy vùng',
+    summaryWaterNote:
+      'Từ thấp nhất đến cao nhất trong các dòng của TCVN 8641 cho cây và vụ này; các dòng khác nhau theo vùng và cách gieo cấy.',
     noFigure: 'nguồn không có số',
     summaryWater: (row: string) => `Xem hàng ${row} bên dưới`,
     priceYear: (y: string) => `Giá bán năm ${y}.`,
@@ -373,6 +380,33 @@ export const vi = {
       nsoCredit: 'Năng suất lúa: số liệu của Cục Thống kê.',
     },
     noneListed: 'Nguồn không nêu điều cần cân nhắc.',
+    // D-187: one plain line per risk quote (rules/rotations.yaml), never more than the quote says; the quote is in the sheet
+    considerations: {
+      cost: {
+        line: 'Tổng chi phí trồng lạc và ớt chỉ thiên thường gấp 2-3 lần trồng lúa.',
+        source: 'Trịnh Đức Toàn và cs. (2023), tr. 48',
+      },
+      market: {
+        line: 'Đậu tương, vừng khó bán ở địa phương; ngô hiệu quả kinh tế thấp hơn nhưng dễ bán.',
+        source: 'thử nghiệm khác của cùng nhóm tác giả, vụ Hè Thu 2020',
+      },
+      fodder: {
+        line: 'Lãnh đạo tỉnh nói vùng trồng ngô sinh khối làm thức ăn cho bò phải có hợp đồng thu mua.',
+        source: 'VietNamNet, 31/08/2020',
+      },
+      riceZone: {
+        line: 'Không được chuyển đổi cây trồng trên đất lúa ở vùng quy hoạch lúa năng suất, chất lượng cao; việc chuyển đổi phải theo kế hoạch của cấp có thẩm quyền.',
+        source: 'Nghị định 112/2024, Điều 6.1',
+      },
+      stillRice: {
+        line: 'Ruộng lúa đã chuyển đổi cây trồng vẫn được tính là đất trồng lúa.',
+        source: 'Nghị định 112/2024, Điều 6.4',
+      },
+      provincePlan: {
+        line: 'Tỉnh ban hành kế hoạch chuyển đổi cây trồng trên đất lúa trước ngày 30 tháng 11 của năm trước năm kế hoạch.',
+        source: 'Nghị định 112/2024, Điều 7.1',
+      },
+    },
     localReview: 'Hãy hỏi nông dân hoặc chuyên gia nông nghiệp nơi bạn sống về những điều này trước khi thay đổi.',
     whyParts: { why: 'Vì sao', evidence: 'Bằng chứng', benefits: 'Lợi ích', gaps: 'Điều chưa biết' },
     explain: {
@@ -524,7 +558,7 @@ export const vi = {
     thousandPerHa: 'nghìn đ/ha',
   },
   science: {
-    eyebrow: 'Phòng dữ liệu · dành cho giám khảo và nhà nghiên cứu',
+    eyebrow: 'Phòng dữ liệu · dành cho nhà nghiên cứu',
     title: 'Nghệ An qua 30 mùa vụ',
     lead: 'Mọi con số trên trang này tính từ dữ liệu thật: NASA POWER cho 5 ô lưới có đất trồng, trọng số đất trồng NASA MODIS, ranh giới tỉnh geoBoundaries và năng suất lúa của Cục Thống kê.',
     globeCta: 'Xem trên quả địa cầu 3D, từ vũ trụ xuống đồng ruộng',
@@ -975,7 +1009,7 @@ export const vi = {
   },
   method: {
     title: 'Phương pháp, số liệu và giới hạn',
-    lead: 'Cho cán bộ và ban giám khảo: mô hình trả lời câu hỏi gì, kết quả kiểm tra, số liệu nào có cho từng cây, và các giới hạn.',
+    lead: 'Cho cán bộ khuyến nông: mô hình trả lời câu hỏi gì, kết quả kiểm tra, số liệu nào có cho từng cây, và các giới hạn.',
     question: (first: number, last: number) =>
       `Thời tiết NASA dự đoán được bao nhiêu phần dao động năng suất lúa giữa các năm (năng suất cả vùng, không phải từng ruộng)? Kiểm tra trên các năm ${first}–${last}, mô hình chưa thấy những năm này.`,
     metricsTitle: 'Kết quả kiểm tra mô hình',
