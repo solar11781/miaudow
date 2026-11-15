@@ -216,10 +216,11 @@ export const vi = {
     honestyTitle: 'Chúng tôi nói rõ cả khi mô hình không thắng',
     honestyLead:
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
-    honestySpring:
-      'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
-    honestyWinter:
-      'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
+    // chọn theo từng vụ từ kết quả của lần chạy (src/domain/rice.ts modelVerdict)
+    honestyNoHelp: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết.',
+    honestyHelps: 'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút.',
+    honestyHidden: (season: string) => `Dự đoán ${season} không được hiện.`,
+    honestyShown: (season: string) => `Dự đoán ${season} được hiện cạnh số liệu thật.`,
     vsBnw: 'so với BNW',
     skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
