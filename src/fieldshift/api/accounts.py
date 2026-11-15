@@ -23,17 +23,17 @@ import urllib.request
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from http import HTTPStatus
+from pathlib import Path
 from typing import Annotated, Literal
 
 import psycopg
 from google.auth import exceptions, transport
 from google.oauth2 import id_token
 from psycopg.types.json import Jsonb
-from pydantic import Field, ValidationError, ValidatorFunctionWrapHandler, WrapValidator
+from pydantic import Field, ValidationError, ValidationInfo, ValidatorFunctionWrapHandler, WrapValidator
 
 from fieldshift.engine.rules import load_plans
 from fieldshift.engine.schemas import Contract, Priority, Years
-from fieldshift.paths import project_root
 
 LOG = logging.getLogger(__name__)
 SCHEMA = (
@@ -63,9 +63,6 @@ KEYS_RETRY_SECONDS = 30  # D-164: a short pause after a failed download, so repe
 FieldAnswer = Literal["high_field", "canal_end", "water_short", "ask"]
 # rows of the first API (PR #48) kept the compare request's land; they read as the answers the page reopened them as
 LEGACY_LAND = {"dry": "water_short", "unsure": "ask"}
-# D-180: the typed prices and costs are checked as the page checks them: crop keys of rules/rotations.yaml only, so at
-# most one entry per crop key, and ASCII digits, at most 9 (D-179)
-CROP_KEYS = frozenset(season.crop_key for plan in load_plans(project_root()) for season in plan.seasons)
 WHOLE = re.compile(r"[0-9]{1,9}")
 MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
 NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
@@ -87,15 +84,19 @@ class GoogleUnreachableError(Exception):
     """Google's public keys could not be downloaded, so no token can be checked."""
 
 
-def _own_numbers(value: object, handler: ValidatorFunctionWrapHandler) -> dict[str, str]:
-    """A map of crop key to digits as the page keeps it (D-180), refused as a whole with a fixed message, so a 422
-    never echoes a key or a number the client sent."""
+def _own_numbers(value: object, handler: ValidatorFunctionWrapHandler, info: ValidationInfo) -> dict[str, str]:
+    """A map of crop key to digits as the page keeps it (D-180): crop keys of rules/rotations.yaml only (the
+    validation context, Accounts.crop_keys), so at most one entry per crop key, and ASCII digits, at most 9 (D-179).
+    Refused as a whole with a fixed message, so a 422 never echoes a key or a number the client sent."""
+    crop_keys = info.context
+    if not isinstance(crop_keys, frozenset):
+        raise TypeError("saved answers are checked with the crop keys of rules/rotations.yaml as validation context")
     message = "must map crop keys of rules/rotations.yaml to 1 to 9 digits"
     try:
         own: dict[str, str] = handler(value)
     except ValidationError as err:
         raise ValueError(message) from err
-    if not all(key in CROP_KEYS and WHOLE.fullmatch(digits) for key, digits in own.items()):
+    if not all(key in crop_keys and WHOLE.fullmatch(digits) for key, digits in own.items()):
         raise ValueError(message)
     return own
 
@@ -213,8 +214,9 @@ class HttpsRequest(transport.Request):
 
 
 class Accounts:
-    def __init__(self, client_id: str, database_url: str) -> None:
+    def __init__(self, client_id: str, database_url: str, crop_keys: frozenset[str]) -> None:
         self.client_id = client_id
+        self.crop_keys = crop_keys  # the validation context of SavedAnswers
         self._url = database_url
         self._google = HttpsRequest()
         with self._connect() as conn:
@@ -276,10 +278,25 @@ class Accounts:
             ).fetchall()
         return SavedList(
             saved=[
-                SavedSet(id=i, land=LEGACY_LAND.get(land, land), years=y, priority=p, prices=prices, costs=costs)
+                self._set(
+                    id=i,
+                    land=LEGACY_LAND.get(land, land),
+                    years=y,
+                    priority=p,
+                    prices=self._known(prices),
+                    costs=self._known(costs),
+                )
                 for i, land, y, p, prices, costs in found
             ]
         )
+
+    def _known(self, stored: dict[str, str]) -> dict[str, str]:
+        """A stored map without the crop keys that rules/rotations.yaml no longer names, so a renamed key drops only
+        its own entry and the saved list still reads (D-180)."""
+        return {key: digits for key, digits in stored.items() if key in self.crop_keys}
+
+    def _set(self, **fields: object) -> SavedSet:
+        return SavedSet.model_validate(fields, context=self.crop_keys)
 
     def save(self, sub: str, answers: SavedAnswers) -> SavedSet:
         """Save a set for the account of `sub` in one transaction that first locks the account row, so parallel saves
@@ -311,7 +328,7 @@ class Accounts:
             raise NotSignedInError from err
         if row is None:
             raise SavedSetsFullError
-        return SavedSet(id=row[0], **answers.model_dump())
+        return self._set(id=row[0], **answers.model_dump())
 
     def delete(self, account: int, set_id: int) -> bool:
         """Delete one of the account's sets; False when the account has no set with that id."""
@@ -325,17 +342,19 @@ class Accounts:
             conn.execute("DELETE FROM account WHERE id = %s", (account,))
 
 
-def accounts_from(environ: Mapping[str, str]) -> Accounts | None:
+def accounts_from(environ: Mapping[str, str], root: Path) -> Accounts | None:
     """Sign-in on when both settings are set and the database answers at start, otherwise off (None).
 
     A database that is down never stops the start, because every farmer route must work without sign-in (UI-UX-SPEC
     §12c). The log line names no address and carries no traceback, since the connection error text holds the host.
+    The crop keys the typed prices and costs may use are those of `root`'s rules/rotations.yaml.
     """
     client_id, database_url = environ.get("GOOGLE_CLIENT_ID"), environ.get("DATABASE_URL")
     if not (client_id and database_url):
         return None
+    crop_keys = frozenset(season.crop_key for plan in load_plans(root) for season in plan.seasons)
     try:
-        return Accounts(client_id, database_url)
+        return Accounts(client_id, database_url, crop_keys)
     except psycopg.Error:
         LOG.warning("sign-in is off: the database did not answer at start")
         return None
