@@ -561,6 +561,7 @@ def test_privacy_notice_states_what_is_stored_where_how_long_and_who_hosts(clien
     text = r.text
     for fact in ("Google account id", "no name, email or picture", "Railway", "Singapore", "until you delete"):
         assert fact in text, fact
+    assert "the sale prices and costs you typed" in text  # D-180: a saved set keeps them
     assert '<html lang="vi">' in text
     assert 'lang="en"' in text  # both languages on the one page Google links (H15)
     assert "http" not in text  # no third-party resource on this page (H14)

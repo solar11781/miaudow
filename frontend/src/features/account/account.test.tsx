@@ -7,6 +7,7 @@ import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-do
 import { api, ApiError, type SavedAnswers, type SavedSet } from '../../api';
 import { SettingsProvider } from '../../app/settings';
 import { vi as text } from '../../i18n/vi';
+import { en } from '../../i18n/en';
 import { AccountProvider, safeBack, useAccount } from './AccountProvider';
 import { SaveAnswers } from './SaveAnswers';
 import { SavedPage } from './SavedPage';
@@ -347,6 +348,20 @@ describe('save these answers', () => {
     await userEvent.click(await screen.findByRole('button', { name: t.save }));
     expect(await screen.findByText(t.expired)).toBeTruthy();
     expect(screen.getByRole('link', { name: t.signInAgain })).toBeTruthy();
+  });
+});
+
+// D-180: the typed numbers stay on this phone unless the farmer saves the answers while signed in
+describe('privacy texts', () => {
+  it('say the typed prices and costs are saved only with a signed-in save, and deleted with the account', () => {
+    expect(text.farmer.own.private('Gửi thẻ này')).toBe(
+      'Các số bạn nhập chỉ nằm trong địa chỉ trang trên máy này, trừ khi bạn đăng nhập và lưu các câu trả lời: khi đó các số này được lưu cùng, và bị xóa khi bạn xóa tài khoản. Nút "Gửi thẻ này" không kèm các số này.',
+    );
+    expect(en.farmer.own.private('Share this card')).toBe(
+      'The numbers you type stay only in this page\'s address on this phone, unless you sign in and save your answers: then they are saved with them, and deleted when you delete your account. The "Share this card" button leaves them out.',
+    );
+    expect(t.notice[0]).toContain('giá bán và chi phí bạn tự nhập, nếu có');
+    expect(en.account.notice[0]).toContain('the sale prices and costs you typed, if any');
   });
 });
 
