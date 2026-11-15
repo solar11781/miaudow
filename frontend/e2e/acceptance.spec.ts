@@ -239,3 +239,25 @@ test('T26 every stability block shows its years count and its scope', async ({ p
     await expect(lines.first()).toBeVisible();
   }
 });
+
+test.fixme('T7 tap-targets every button and link on the plans page is at least 44 x 44 px', async ({ page }) => {
+  // fixme: number buttons with a one-digit value ("0 %", "4 %") in the share tables and rice rows are about 37 px wide
+  await openPlans(page);
+  await openFolds(page);
+  const small = async () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('a[href], button')]
+        .filter((e) => e.getClientRects().length > 0 && !e.closest('.visually-hidden'))
+        .map((e) => ({
+          name: (e.getAttribute('aria-label') ?? e.textContent ?? '').trim(),
+          box: e.getBoundingClientRect(),
+        }))
+        .filter(({ box }) => box.width < 44 || box.height < 44)
+        .map(({ name, box }) => `${name.slice(0, 40)}: ${box.width} x ${box.height}`),
+    );
+  expect(await small()).toEqual([]);
+  // the open source sheet included (T7)
+  await page.locator('main [data-value]').first().click();
+  await expect(page.getByTestId('source-sheet')).toBeVisible();
+  expect(await small()).toEqual([]);
+});
