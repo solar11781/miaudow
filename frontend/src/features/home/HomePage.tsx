@@ -241,6 +241,7 @@ const CORE_ICONS: IconName[] = ['sun', 'book', 'sprout', 'mic'];
 
 function Cores() {
   const t = useT();
+  const local = useLocalTo();
   const { calm } = useSettings();
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -348,7 +349,7 @@ function Cores() {
                   <dd>{c.limit}</dd>
                 </div>
               </dl>
-              <Link to={c.to} className={s.coreLink}>
+              <Link to={local(c.to)} className={s.coreLink}>
                 {t.home.coreOpen(c.where)}
                 <Icon name="arrowRight" size={18} />
               </Link>
