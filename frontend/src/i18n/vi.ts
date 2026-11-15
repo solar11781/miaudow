@@ -344,6 +344,7 @@ export const vi = {
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
       land: 'Chăm sóc đất',
       checks: 'Cần cân nhắc',
+      checksCount: (n: number) => `Cần cân nhắc (${n})`,
       why: 'Vì sao có cách trồng này',
       rice: 'Lúa cả tỉnh so với bình thường',
     },

@@ -651,7 +651,12 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
   const questions = cardQuestions(plan.id);
   return (
     <>
-      <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
+      <Row
+        hook={`card-${plan.id}-row-checks`}
+        icon="alert"
+        // the folded row says on its face how many things it holds, so the risks are not missed
+        title={why.risks.length ? t.farmer.rows.checksCount(why.risks.length) : t.farmer.rows.checks}
+      >
         {why.risks.length ? (
           <ul className={s.risks}>
             {why.risks.map((r) => {

@@ -354,6 +354,7 @@ export const en: Messages = {
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
       land: 'Care for the land',
       checks: 'Weigh this',
+      checksCount: (n: number) => `Weigh this (${n})`,
       why: 'Why this plan is here',
       rice: 'Province rice against normal',
     },
