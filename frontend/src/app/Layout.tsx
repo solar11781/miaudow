@@ -1,5 +1,5 @@
-import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
-import { Suspense, useEffect, useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { pathFor } from './paths';
@@ -52,6 +52,16 @@ function SnapshotNotice() {
 /** The home hero runs under a see-through header; other dark-topped areas get a dark header. */
 const tone = (path: string) => (path === '/' ? 'overlay' : path.startsWith('/khoa-hoc') ? 'forest' : 'paper');
 
+/** H14: no storage, so no scroll restoration (React Router's keeps positions in sessionStorage); a new page opens at the top. */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  // a layout effect runs before a page's own scroll-into-view effect, which then wins
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export function Layout() {
   const t = useT();
   const { pathname } = useLocation();
@@ -72,7 +82,7 @@ export function Layout() {
         <Outlet />
       </Suspense>
       <Footer />
-      <ScrollRestoration />
+      <ScrollToTop />
     </>
   );
 }

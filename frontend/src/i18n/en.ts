@@ -302,6 +302,16 @@ export const en: Messages = {
     plansLead:
       'Cards are in a fixed order, not ranked. The first two are current practice, as two different studies describe it.',
     yourPriority: 'Your priority',
+    priorityLine: {
+      income: (usual: string, source: string) =>
+        `Profit added over the year (our addition) for this plan and for current practice (${usual}), in the same trial (${source}):`,
+      land: (usual: string, source: string) =>
+        `Care for the land for this plan and for current practice (${usual}), in the same trial (${source}):`,
+      perYear: (usual: string, source: string) =>
+        `The values in this row are per crop and per past year. Compare this row with the same row on the current practice card (${usual}) from the same trial (${source}).`,
+      thisPlan: 'this plan',
+      usualPlan: 'current practice',
+    },
     jumpTo: 'Go to card',
     current: 'Current practice',
     trialPlan: (n: string, code: string) => `Trial way of farming ${n} (${code}), from the Lưu Sơn trial`,
@@ -603,9 +613,6 @@ export const en: Messages = {
       'Miaudow does not choose a plan for you. The evidence covers one year and one plot per crop, which is not enough to rank. This is what each plan shows:',
     evidenceFrom: 'Evidence',
     matchScore: 'match',
-    llmStatus: 'Language model: not connected',
-    llmHelp:
-      'If a language model is connected on a server (never with an API key in the browser), it may only rephrase these evidence passages.',
     you: 'You',
     bot: 'Assistant',
     clear: 'Clear the conversation',
@@ -717,7 +724,7 @@ export const en: Messages = {
     serverOn: 'The copilot server is running',
     serverOff: 'Running in offline mode',
     claudeOn:
-      'Claude is connected on the server: it orchestrates the tools and words the answer, but may not add new numbers.',
+      'Claude is connected on the server: it only picks which passages from Miaudow’s data answer the question. They are shown word for word with their sources; Claude writes no part of the answer.',
     claudeOff:
       'Claude is not connected. Answers are assembled from tool results with fixed sentences; no language model is used.',
     browserHelp:
@@ -756,6 +763,8 @@ export const en: Messages = {
     missing: 'What the app does not know about your field:',
     readAloud: 'Read aloud',
     stopReading: 'Stop reading',
+    noVoice:
+      'This device has no English reading voice. On Android: Settings → Text-to-speech → install English. On Windows: Settings → Time & language → Speech.',
     howFound: 'How the copilot found this',
     numbersChecked: (n: number, bad: number) =>
       bad

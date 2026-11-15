@@ -293,6 +293,17 @@ export const vi = {
     plansLead:
       'Thẻ xếp theo thứ tự cố định, không xếp hạng. Hai thẻ đầu là cách làm hiện nay, theo hai nghiên cứu khác nhau.',
     yourPriority: 'Bạn quan tâm',
+    // the priority line of cards cc1..cc4 (UI-UX-SPEC section 9, D-136): values side by side, never a verdict
+    priorityLine: {
+      income: (usual: string, source: string) =>
+        `Tiền lãi cộng cả năm (phép cộng của chúng tôi) của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm (${source}):`,
+      land: (usual: string, source: string) =>
+        `Chăm sóc đất của cách này và của cách làm hiện nay (${usual}), cùng thử nghiệm (${source}):`,
+      perYear: (usual: string, source: string) =>
+        `Số liệu ở hàng này tính theo từng cây và từng năm đã qua. Hãy so hàng này với cùng hàng trên thẻ cách làm hiện nay (${usual}) của cùng thử nghiệm (${source}).`,
+      thisPlan: 'cách này',
+      usualPlan: 'cách làm hiện nay',
+    },
     jumpTo: 'Đến thẻ',
     current: 'Cách làm hiện nay',
     trialPlan: (n: string, code: string) => `Cách trồng thử ${n} (${code}), theo thử nghiệm ở Lưu Sơn`,
@@ -600,9 +611,6 @@ export const vi = {
       'Miaudow không chọn cách trồng thay bạn. Bằng chứng chỉ có một năm, một ô cho mỗi cây, nên không đủ để xếp hạng. Đây là điều mỗi cách trồng cho thấy:',
     evidenceFrom: 'Bằng chứng',
     matchScore: 'độ khớp',
-    llmStatus: 'Mô hình ngôn ngữ: chưa kết nối',
-    llmHelp:
-      'Khi nối một mô hình ngôn ngữ ở máy chủ (không đặt khóa API trong trình duyệt), nó chỉ được diễn đạt lại các đoạn bằng chứng này.',
     you: 'Bạn',
     bot: 'Trợ lý',
     clear: 'Xóa cuộc trò chuyện',
@@ -714,7 +722,7 @@ export const vi = {
     serverOn: 'Máy chủ trợ lý đang chạy',
     serverOff: 'Đang dùng chế độ ngoại tuyến',
     claudeOn:
-      'Claude đã kết nối ở máy chủ: nó điều phối công cụ và diễn đạt câu trả lời, nhưng không được thêm số mới.',
+      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời.',
     claudeOff:
       'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu cố định, không dùng mô hình ngôn ngữ.',
     browserHelp:
@@ -752,6 +760,8 @@ export const vi = {
     missing: 'Ứng dụng chưa biết những điều này về ruộng của bạn:',
     readAloud: 'Đọc to',
     stopReading: 'Dừng đọc',
+    noVoice:
+      'Máy này chưa có giọng đọc tiếng Việt. Trên Android: Cài đặt → Chuyển văn bản thành giọng nói → cài tiếng Việt. Trên Windows: Cài đặt → Thời gian và ngôn ngữ → Giọng nói.',
     howFound: 'Trợ lý đã tìm câu trả lời thế nào',
     numbersChecked: (n: number, bad: number) =>
       bad

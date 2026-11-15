@@ -491,7 +491,7 @@ function Steps() {
         <ol className={s.strip} data-stagger>
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
-              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step} viewTransition>
+              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step}>
                 <span className={s.stepPhoto}>
                   <Media
                     slug={ART.steps[i]?.slug ?? ART.steps[0].slug}

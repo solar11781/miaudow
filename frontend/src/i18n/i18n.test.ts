@@ -46,4 +46,9 @@ describe('translations', () => {
     expect(vi.common.winterFragile).toBe(report?.title.vi);
     expect(en.common.winterFragile).toBe(report?.title.en);
   });
+  it('say the copilot model only picks passages, shown word for word, and never words the answer (D-172)', () => {
+    expect(en.copilot.claudeOn).toMatch(/word for word/);
+    expect(vi.copilot.claudeOn).toMatch(/nguyên văn/);
+    for (const s of [en.copilot.claudeOn, vi.copilot.claudeOn]) expect(s).not.toMatch(/words the answer|diễn đạt/);
+  });
 });

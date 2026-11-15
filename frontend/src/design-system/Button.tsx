@@ -60,7 +60,7 @@ export function ButtonLink({
 }: Common & LinkProps) {
   const local = useLocalTo();
   return (
-    <Link className={cls(variant, size, block, className)} viewTransition to={local(to)} {...rest}>
+    <Link className={cls(variant, size, block, className)} to={local(to)} {...rest}>
       <Inner icon={icon} leadingIcon={leadingIcon}>
         {children}
       </Inner>
