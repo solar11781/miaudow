@@ -385,3 +385,39 @@ describe('snapshot mode (npm run build:snapshot only)', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+// frontend rules "Validation in src/api.ts": every response is checked before a screen uses it (final audit 2026-11-15)
+describe('copilot response check', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  const valid = {
+    status: 'grounded',
+    engine: 'deterministic',
+    model: null,
+    answer: 'Các nguồn liên quan:',
+    citations: [
+      { passage_id: 'p1', source_id: 'R-P02', title: { vi: 'Bài báo', en: 'Paper' }, location: null, url: null },
+    ],
+    cards: [{ kind: 'plan', ref_id: 'cc1', title: { vi: 'CC1', en: 'CC1' } }],
+    tool_trace: [{ tool: 'past_years', input: { year: 2010 }, ok: true }],
+    numbers: { checked: 0, unverified: [] },
+    missing_information: [],
+  };
+  const ask = async (json: unknown) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify(json), { status: 200 })),
+    );
+    return (await freshApi()).copilot({ question: 'x', mode: 'simple', lang: 'vi' });
+  };
+
+  it('accepts a reply that matches the contract', async () => {
+    await expect(ask(valid)).resolves.toEqual(valid);
+  });
+  it('rejects a reply with a missing answer or a malformed citation', async () => {
+    const noAnswer: Record<string, unknown> = { ...valid };
+    delete noAnswer.answer;
+    await expect(ask(noAnswer)).rejects.toThrow(/copilot\.answer: missing/);
+    await expect(ask({ ...valid, citations: [{ passage_id: 'p1' }] })).rejects.toThrow(/copilot\.citations\[0\]/);
+    await expect(ask({ ...valid, status: 'made_up' })).rejects.toThrow(/copilot\.status: not one of/);
+  });
+});
