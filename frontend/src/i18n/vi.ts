@@ -220,7 +220,7 @@ export const vi = {
       },
       {
         q: 'Ảnh trên trang là ảnh thật không?',
-        a: 'Ảnh có ghi tên tác giả và giấy phép là ảnh thật, chụp ở nơi được ghi. Tranh có nhãn “Tranh minh họa” do máy tạo, không phải ảnh Nghệ An.',
+        a: 'Ảnh có ghi tên tác giả và giấy phép là ảnh thật, chụp ở nơi được ghi. Tranh có nhãn “Do AI tạo” (và dòng chữ “Ảnh tạo bằng AI” in trên tranh) không phải ảnh Nghệ An.',
       },
       {
         q: 'Điện thoại cũ có dùng được không?',
@@ -700,7 +700,7 @@ export const vi = {
     gridNote: 'Số theo ô lưới NASA POWER (mô hình), không đo tại ruộng.',
   },
   media: {
-    illustration: 'Tranh minh họa, không phải ảnh thật',
+    illustration: 'Do AI tạo, không phải ảnh thật',
     photo: 'Ảnh thật',
     pause: 'Dừng chuyển động ảnh',
     play: 'Cho ảnh chuyển động',
@@ -1028,7 +1028,7 @@ export const vi = {
     team: 'Nhóm Miaudow · NASA Space Apps Challenge 2026, Hà Nội · thử thách Field Shift',
     photos: 'Ảnh và giấy phép',
     photosLead:
-      'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Tranh minh họa” do máy tạo, không phải ảnh chụp Nghệ An.',
+      'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Do AI tạo” (và dòng chữ “Ảnh tạo bằng AI” in trên tranh) không phải ảnh chụp Nghệ An.',
     licence: 'Giấy phép',
     source: 'Trang ảnh gốc',
     built: 'Dữ liệu tạo lúc',
