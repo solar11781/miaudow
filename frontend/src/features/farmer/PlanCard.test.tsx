@@ -6,10 +6,12 @@ import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
 import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
+import { NO_OWN } from '../../domain/farmerState';
 import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { SOURCES } from '../../domain/sources';
 
+const own = { values: NO_OWN, set: () => undefined };
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
 
 function renderCard(languages: string[] = ['vi-VN', 'vi']) {
@@ -25,7 +27,7 @@ function renderCard(languages: string[] = ['vi-VN', 'vi']) {
   render(
     <SettingsProvider>
       <ProvenanceProvider>
-        <PlanCard plan={plan} res={res} priority="water" onShare={async () => true} />
+        <PlanCard plan={plan} res={res} priority="water" own={own} onShare={async () => true} />
       </ProvenanceProvider>
     </SettingsProvider>,
   );
@@ -94,7 +96,7 @@ describe('rule names', () => {
     render(
       <SettingsProvider>
         <ProvenanceProvider>
-          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
     );
@@ -131,7 +133,7 @@ describe('money definition', () => {
     render(
       <SettingsProvider>
         <ProvenanceProvider>
-          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
     );
@@ -206,7 +208,7 @@ function waterText(facts: typeof RICE): string {
   render(
     <SettingsProvider>
       <ProvenanceProvider>
-        <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+        <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
       </ProvenanceProvider>
     </SettingsProvider>,
   );
@@ -273,7 +275,7 @@ describe('card summary', () => {
     render(
       <SettingsProvider>
         <ProvenanceProvider>
-          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
     );
@@ -347,7 +349,7 @@ describe('explain simply', () => {
       <SettingsProvider>
         <ProvenanceProvider>
           <ToEnglish />
-          <PlanCard plan={plan} res={res} priority="income" explain={explain} onShare={async () => true} />
+          <PlanCard plan={plan} res={res} priority="income" explain={explain} own={own} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
     );
@@ -494,7 +496,7 @@ describe('card head water line', () => {
     render(
       <SettingsProvider>
         <ProvenanceProvider>
-          <PlanCard plan={plan} res={res} priority="income" onShare={async () => true} />
+          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
         </ProvenanceProvider>
       </SettingsProvider>,
     );

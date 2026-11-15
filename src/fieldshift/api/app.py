@@ -78,10 +78,13 @@ from fieldshift.paths import project_root
 
 ROOT = project_root()
 # No spec sets a limit. The largest valid CompareRequest (all 30 years, the longest land and priority values) is 257
-# bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. A saved set of
-# answers is the same body without the province, so the same limit holds it; an explain request is that body with a
-# plan, a part and a language, 752 bytes at most indented by 4 spaces (tests/test_explain.py).
+# bytes as json.dumps writes it and 521 bytes indented by 4 spaces; 1024 bytes leaves about twice that. An explain
+# request is that body with a plan, a part and a language, 752 bytes at most indented by 4 spaces
+# (tests/test_explain.py).
 MAX_BODY_BYTES = 1024
+# A saved set may also carry a 9-digit price and cost (D-179) for each of the 17 crop keys of rules/rotations.yaml
+# (D-180): 2262 bytes at most indented by 4 spaces (tests/test_accounts.py); 4096 bytes leaves about twice that.
+SAVE_MAX_BODY_BYTES = 4096
 BODY_TIMEOUT_SECONDS = 60  # nginx client_body_timeout default: https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
 NO_STORE = {"cache-control": "no-store"}
 # the built web app: vite's content-hashed chunks in assets/, and the public folders copied as they are (D-166)
@@ -153,16 +156,16 @@ def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
     return RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in errors])
 
 
-async def _body(request: Request, model: type[M]) -> M:
-    """The body as a `model`; reading stops past MAX_BODY_BYTES, whatever content-length says, after
+async def _body(request: Request, model: type[M], limit: int = MAX_BODY_BYTES) -> M:
+    """The body as a `model`; reading stops past `limit` bytes, whatever content-length says, after
     BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422, and nothing logs a traceback)."""
     body = b""
     try:
         async with asyncio.timeout(BODY_TIMEOUT_SECONDS):
             async for chunk in request.stream():
                 body += chunk
-                if len(body) > MAX_BODY_BYTES:
-                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {MAX_BODY_BYTES} bytes"}])
+                if len(body) > limit:
+                    raise _invalid([{"type": "too_long", "loc": (), "msg": f"body over {limit} bytes"}])
     except TimeoutError as err:
         raise _invalid([{"type": "timeout", "loc": (), "msg": f"body not sent in {BODY_TIMEOUT_SECONDS} s"}]) from err
     except ClientDisconnect as err:
@@ -293,7 +296,7 @@ async def saved_route(request: Request, service: Service, account: AccountId) ->
 
 @accounts_router.post("/saved")
 async def save_route(request: Request, service: Service, sub: GoogleId) -> Response:
-    answers = await _body(request, SavedAnswers)
+    answers = await _body(request, SavedAnswers, SAVE_MAX_BODY_BYTES)
     return _private(await _account_work(request, service.save, sub, answers), 201)
 
 

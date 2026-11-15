@@ -162,6 +162,8 @@ class MoneyItem(Contract):
     season: SeasonCode
     profit: Value
     cost: Value | None
+    yield_: Value = Field(alias="yield")  # the study's yield per crop (UI-UX-SPEC §12d, D-163)
+    price: Value
     flag: Text | None
 
 

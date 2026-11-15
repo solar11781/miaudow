@@ -6,10 +6,12 @@ import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { validateCompare } from '../../api';
 import { body, compare } from '../../tests/fixtures';
 import { PlanCard } from './PlanCard';
+import { NO_OWN } from '../../domain/farmerState';
 import { vi } from '../../i18n/vi';
 import { SOURCES } from '../../domain/sources';
 import type { CompareResponse, Plan, PlanId, Priority } from '../../types';
 
+const own = { values: NO_OWN, set: () => undefined };
 const PRIORITIES: Priority[] = ['income', 'stability', 'water', 'land'];
 // UI-UX-SPEC T37 and D-136: never better, best, should or recommended, nor their Vietnamese equivalents (glossary)
 const BANNED =
@@ -39,7 +41,7 @@ function card(res: CompareResponse, id: PlanId, priority: Priority) {
   const ui = (pr: Priority, p: Plan = plan) => (
     <SettingsProvider>
       <ProvenanceProvider>
-        <PlanCard plan={p} res={res} priority={pr} onShare={async () => true} />
+        <PlanCard plan={p} res={res} priority={pr} own={own} onShare={async () => true} />
       </ProvenanceProvider>
     </SettingsProvider>
   );

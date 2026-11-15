@@ -6,8 +6,8 @@ any server instance can answer. Each request is checked on the server by google-
 id, issuer = Google, expiry with CLOCK_SKEW_SECONDS of allowance); only the token's `sub` (Google's account id) is
 kept. Downloading Google's public keys for that check is the one outbound call, the sign-in exception that NFR-01
 allows; the keys are kept as long as Google's Cache-Control header says. The database holds two tables: account
-(Google's account id) and saved_answers (land, years, priority of one saved set), at most SAVED_SETS_MAX sets per
-account. SQL is parameterised; nothing personal is logged.
+(Google's account id) and saved_answers (land, years, priority and the typed prices and costs of one saved set,
+D-180), at most SAVED_SETS_MAX sets per account. SQL is parameterised; nothing personal is logged.
 """
 
 from __future__ import annotations
@@ -23,13 +23,17 @@ import urllib.request
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from http import HTTPStatus
-from typing import Literal
+from typing import Annotated, Literal
 
 import psycopg
 from google.auth import exceptions, transport
 from google.oauth2 import id_token
+from psycopg.types.json import Jsonb
+from pydantic import Field, ValidationError, ValidatorFunctionWrapHandler, WrapValidator
 
+from fieldshift.engine.rules import load_plans
 from fieldshift.engine.schemas import Contract, Priority, Years
+from fieldshift.paths import project_root
 
 LOG = logging.getLogger(__name__)
 SCHEMA = (
@@ -39,6 +43,9 @@ SCHEMA = (
     " id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,"
     " account_id bigint NOT NULL REFERENCES account (id) ON DELETE CASCADE,"
     " land text NOT NULL, years integer[] NOT NULL, priority text NOT NULL)",
+    # D-180: added to a table that already holds rows on Railway, so its older rows read back with empty maps
+    "ALTER TABLE saved_answers ADD COLUMN IF NOT EXISTS prices jsonb NOT NULL DEFAULT '{}'",
+    "ALTER TABLE saved_answers ADD COLUMN IF NOT EXISTS costs jsonb NOT NULL DEFAULT '{}'",
 )
 BIGINT_MAX = 2**63 - 1  # largest PostgreSQL bigint, the type of every id (PostgreSQL 18 docs, numeric types)
 GOOGLE_TIMEOUT_SECONDS = 10  # D-164: an account request must not hang for minutes on Google's keys
@@ -56,6 +63,10 @@ KEYS_RETRY_SECONDS = 30  # D-164: a short pause after a failed download, so repe
 FieldAnswer = Literal["high_field", "canal_end", "water_short", "ask"]
 # rows of the first API (PR #48) kept the compare request's land; they read as the answers the page reopened them as
 LEGACY_LAND = {"dry": "water_short", "unsure": "ask"}
+# D-180: the typed prices and costs are checked as the page checks them: crop keys of rules/rotations.yaml only, so at
+# most one entry per crop key, and ASCII digits, at most 9 (D-179)
+CROP_KEYS = frozenset(season.crop_key for plan in load_plans(project_root()) for season in plan.seasons)
+WHOLE = re.compile(r"[0-9]{1,9}")
 MAX_AGE = re.compile(r"(?:^|,)\s*max-age=(\d+)\s*(?:,|$)")
 NO_CACHE = re.compile(r"(?:^|,)\s*(?:no-store|no-cache)\s*(?:,|$)")
 
@@ -76,12 +87,31 @@ class GoogleUnreachableError(Exception):
     """Google's public keys could not be downloaded, so no token can be checked."""
 
 
+def _own_numbers(value: object, handler: ValidatorFunctionWrapHandler) -> dict[str, str]:
+    """A map of crop key to digits as the page keeps it (D-180), refused as a whole with a fixed message, so a 422
+    never echoes a key or a number the client sent."""
+    message = "must map crop keys of rules/rotations.yaml to 1 to 9 digits"
+    try:
+        own: dict[str, str] = handler(value)
+    except ValidationError as err:
+        raise ValueError(message) from err
+    if not all(key in CROP_KEYS and WHOLE.fullmatch(digits) for key, digits in own.items()):
+        raise ValueError(message)
+    return own
+
+
+OwnNumbers = Annotated[dict[str, str], WrapValidator(_own_numbers)]
+
+
 class SavedAnswers(Contract):
-    """One saved set: the answers of steps 1-3 (UI-UX-SPEC §6b), years and priority checked like the compare request."""
+    """One saved set: the answers of steps 1-3 (UI-UX-SPEC §6b), years and priority checked like the compare request,
+    and the typed prices (đ/kg) and costs (thousand đ/ha) by crop key, empty when none were typed (D-180)."""
 
     land: FieldAnswer
     years: Years
     priority: Priority
+    prices: OwnNumbers = Field(default_factory=dict)
+    costs: OwnNumbers = Field(default_factory=dict)
 
 
 class SavedSet(SavedAnswers):
@@ -241,10 +271,14 @@ class Accounts:
     def saved(self, account: int) -> SavedList:
         with self._db() as conn:
             found = conn.execute(
-                "SELECT id, land, years, priority FROM saved_answers WHERE account_id = %s ORDER BY id", (account,)
+                "SELECT id, land, years, priority, prices, costs FROM saved_answers WHERE account_id = %s ORDER BY id",
+                (account,),
             ).fetchall()
         return SavedList(
-            saved=[SavedSet(id=i, land=LEGACY_LAND.get(land, land), years=y, priority=p) for i, land, y, p in found]
+            saved=[
+                SavedSet(id=i, land=LEGACY_LAND.get(land, land), years=y, priority=p, prices=prices, costs=costs)
+                for i, land, y, p, prices, costs in found
+            ]
         )
 
     def save(self, sub: str, answers: SavedAnswers) -> SavedSet:
@@ -259,9 +293,19 @@ class Accounts:
                     raise NotSignedInError
                 # a second statement, so under READ COMMITTED it counts the sets a save committed while this one waited
                 row = conn.execute(
-                    "INSERT INTO saved_answers (account_id, land, years, priority) SELECT %s, %s, %s, %s"
+                    "INSERT INTO saved_answers (account_id, land, years, priority, prices, costs)"
+                    " SELECT %s, %s, %s, %s, %s, %s"
                     " WHERE (SELECT count(*) FROM saved_answers WHERE account_id = %s) < %s RETURNING id",
-                    (owner[0], answers.land, answers.years, answers.priority, owner[0], SAVED_SETS_MAX),
+                    (
+                        owner[0],
+                        answers.land,
+                        answers.years,
+                        answers.priority,
+                        Jsonb(answers.prices),
+                        Jsonb(answers.costs),
+                        owner[0],
+                        SAVED_SETS_MAX,
+                    ),
                 ).fetchone()
         except psycopg.errors.ForeignKeyViolation as err:  # the account went before the insert's foreign key check
             raise NotSignedInError from err
