@@ -389,8 +389,13 @@ are equal. The engine derives `bare_periods` (UI-UX-SPEC §11 `Period`) as the d
 `sow_from` to `harvest_to`. A bare period that runs over 31 December is one `Period` with `from` later than `to`.
 
 The P-03 entry (`usual_p03`) has `sow_from` .. `harvest_to` = null (P-03 reports durations only, "Thời vụ ... được điều
-chỉnh tùy vào điều kiện thực tế") and `reported_economics.text_only` {vi, en} with the P-03 profit definition ("Lợi
-nhuận = GR - Tổng chi phí vật chất"); it has no per-crop money list. Its `price_year` is "2020-21" (P-03 p.3: GR =
+chỉnh tùy vào điều kiện thực tế") and the P-03 profit definition ("Lợi nhuận = GR - Tổng chi phí vật chất"); it has no
+per-crop money list. Its `reported_economics.unit` is the paper's {vi: "triệu đồng/ha", en: "million VND/ha"} and
+`reported_economics.season_values` lists each season as the paper gives it (D-191), never summed and with no whole-year
+total: `season`, `value` (the paper's number as written, or null where the paper gives none), `page` and `words`
+{vi, en} (the paper's words; quoted where verbatim). The rice control: spring 2021 "5.36" (pp. [4]-[5]), summer-autumn
+2020 "1.16" (p. [4], "gần như không có lợi nhuận"), autumn-winter null, "bỏ hoang" (p. [2]). The engine refuses a plan
+that has both `season_values` and a per-crop money list, or `season_values` without the unit. Its `price_year` is "2020-21" (P-03 p.3: GR =
 yield x price at harvest; trial June 2020 - June 2021).
 
 The catalog holds P-02 CC1-CC4, the farmers' usual structure CC5 (rice - black bean - sweet potato), and the P-03 local

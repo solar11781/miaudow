@@ -329,8 +329,8 @@ def load_corpus(root: Path) -> Corpus:
             )
             for lang in ("vi", "en")
         }
-        if money.text_only is not None:
-            text: Text = money.text_only
+        if money.season_values:
+            text: Text = {lang: " ".join(v.words[lang] for v in money.season_values) for lang in ("vi", "en")}
         else:
             unit = money.unit or _both("")
             text = {
