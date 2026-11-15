@@ -72,6 +72,13 @@ describe('hazard data', () => {
     }
     expect(() => yearShare('heat', 1990)).toThrow();
   });
+  // D-186, D-191: the Decision 18/2021 article label reads "Art." in English and "Điều" in Vietnamese
+  it('names each rule article in both languages', () => {
+    for (const r of Object.values(RULES)) {
+      expect(r.article.vi).toMatch(/^Điều \d+$/);
+      expect(r.article.en).toBe(r.article.vi.replace('Điều', 'Art.'));
+    }
+  });
   it('summarises a crop over picked years as lowest and highest', () => {
     const years = [2005, 2010, 2020];
     const r = cropShareRange('cc1_peanut', 'heat', years);
