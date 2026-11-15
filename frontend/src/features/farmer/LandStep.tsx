@@ -41,6 +41,24 @@ export function LandStep() {
         </ButtonLink>
       }
     >
+      {/* UI-UX-SPEC section 7: locked, but aria-disabled so screen readers still reach it; a change is ignored */}
+      <div className={s.province}>
+        <label htmlFor="province" className={s.provinceLabel}>
+          {t.farmer.province}
+        </label>
+        <select
+          id="province"
+          value="nghe_an"
+          aria-disabled="true"
+          aria-describedby="province-note"
+          onChange={() => undefined}
+        >
+          <option value="nghe_an">{t.farmer.provinceName}</option>
+        </select>
+        <span id="province-note" className="muted">
+          {t.farmer.provinceNote}
+        </span>
+      </div>
       {/* read before choosing (walkthrough 2026-11-14): high_field, canal_end and water_short all map to land "dry" */}
       <p className="muted">{t.farmer.landSameDry}</p>
       <div className={s.landGrid} role="radiogroup" aria-label={t.farmer.landTitle}>

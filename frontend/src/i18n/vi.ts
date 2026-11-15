@@ -221,6 +221,9 @@ export const vi = {
     inviteLead: 'Không cần tài khoản, không lưu gì trên máy của bạn.',
   },
   farmer: {
+    province: 'Tỉnh',
+    provinceName: 'Nghệ An',
+    provinceNote: 'Hiện chỉ có Nghệ An; các tỉnh khác chưa có.',
     dataLine: (names: string) => `Dữ liệu: ${names}`,
     dataSources: {
       'R-N01': 'NASA POWER',

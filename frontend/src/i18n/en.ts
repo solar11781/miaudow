@@ -227,6 +227,9 @@ export const en: Messages = {
     honestyCta: 'See the test',
   },
   farmer: {
+    province: 'Province',
+    provinceName: 'Nghe An',
+    provinceNote: 'Only Nghe An for now; other provinces are not available yet.',
     dataLine: (names: string) => `Data: ${names}`,
     dataSources: {
       'R-N01': 'NASA POWER',

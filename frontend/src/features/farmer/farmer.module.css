@@ -874,3 +874,23 @@
   flex-direction: column;
   gap: var(--s-2);
 }
+
+/* the locked province line of the field step (UI-UX-SPEC section 7) */
+.province {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+.provinceLabel {
+  font-weight: 600;
+}
+.province select {
+  min-height: 44px;
+  padding-inline: var(--s-3);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line-2);
+  background: var(--bg-sunk);
+  color: var(--fg);
+  font: inherit;
+}
