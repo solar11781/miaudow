@@ -368,7 +368,7 @@ class PrivacyTexts(Entry):
     """The privacy notice of the optional sign-in in rules/privacy.yaml (UI-UX-SPEC §12c)."""
 
     title: Text
-    draft_note: Text
+    back: Text
     paragraphs: list[Text] = Field(min_length=1)
 
 

@@ -576,6 +576,24 @@ def test_privacy_notice_says_the_typed_question_goes_to_anthropic(client: TestCl
     assert "the explain button sends only the app" in text  # the page escapes the apostrophe that follows
 
 
+def test_privacy_notice_has_the_app_look_a_way_home_and_no_draft_line(client: TestClient) -> None:
+    # member A, 2026-11-15: the text is accepted, so the draft line goes; the page gets the app's colours (dark by
+    # default, light when the phone asks for it, tokens.css) and the app's "go home" link in each language
+    text = client.get("/quyen-rieng-tu").text
+    assert "Bản nháp" not in text
+    assert "Draft" not in text
+    assert '<a href="/" lang="vi">Về trang chủ</a>' in text
+    assert '<a href="/#/home" lang="en">Go home</a>' in text
+    assert "<style>" in text
+    assert "font:17px/" in text  # H6: no text smaller than 17 px
+    assert "min-height:44px" in text  # H7: 44 px taps
+    assert "#0b1a12" in text  # --bg, night over the field
+    assert "prefers-color-scheme: light" in text
+    assert "#f1f3ee" in text  # --c-paper-100, the light theme's --bg
+    assert "<script" not in text
+    assert "<link" not in text
+
+
 def test_privacy_notice_is_served_with_sign_in_off(tmp_path: Path) -> None:
     # the link is registered with Google, so it answers whatever the server's sign-in settings are
     assert TestClient(create_app(root=copy_root(tmp_path))).get("/quyen-rieng-tu").status_code == 200
