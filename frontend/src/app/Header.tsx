@@ -104,7 +104,6 @@ export function Header({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
 function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
   const t = useT();
   const local = useLocalTo();
-  const { pathname } = useLocation();
   const menu = useRef<HTMLDialogElement>(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -114,9 +113,6 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
     window.addEventListener('scroll', on, { passive: true });
     return () => window.removeEventListener('scroll', on);
   }, []);
-  useEffect(() => {
-    menu.current?.close();
-  }, [pathname]);
 
   const links = useAreas();
 
@@ -163,7 +159,8 @@ function SiteHeader({ tone }: { tone: 'forest' | 'paper' | 'overlay' }) {
         className={`${s.menu} surface-forest`}
         aria-label={t.nav.main}
         onClick={(e) => {
-          if (e.target === e.currentTarget) menu.current?.close();
+          // on the tap, not on the path change: the next page's code may still be loading on a slow phone
+          if (e.target === e.currentTarget || (e.target as Element).closest('a')) menu.current?.close();
         }}
       >
         <div className={s.menuInner}>
