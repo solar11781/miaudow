@@ -57,6 +57,28 @@ const gibs = (layer: string, matrix: string, ext: 'jpeg' | 'png', time?: string)
 /** Reference places for orientation (city centres, rounded; the district label sits inside the geoBoundaries outline). */
 const PLACES = [
   { vi: vi.places.vietnam, en: en.places.vietnam, lat: 14.2, lon: 108.2, big: true, dot: false, near: 1.5e6, far: 6e6 },
+  // Vietnam's islands, shown wherever the country is (member A); points from Wikidata Q274388, Q215664, Q146695
+  {
+    vi: vi.places.hoangSa,
+    en: en.places.hoangSa,
+    lat: 16.654612,
+    lon: 112.747192,
+    big: false,
+    dot: true,
+    near: 1e5,
+    far: 9e6,
+  },
+  { vi: vi.places.truongSa, en: en.places.truongSa, lat: 10, lon: 114, big: false, dot: true, near: 1e5, far: 9e6 },
+  {
+    vi: vi.places.phuQuoc,
+    en: en.places.phuQuoc,
+    lat: 10.228889,
+    lon: 103.957222,
+    big: false,
+    dot: true,
+    near: 1e5,
+    far: 9e6,
+  },
   { vi: vi.places.hanoi, en: en.places.hanoi, lat: 21.03, lon: 105.85, big: false, dot: true, near: 4e5, far: 9e6 },
   { vi: vi.places.vinh, en: en.places.vinh, lat: 18.68, lon: 105.69, big: false, dot: true, near: 5e4, far: 1.5e6 },
   { vi: vi.places.ngheAn, en: en.places.ngheAn, lat: 19.25, lon: 104.75, big: true, dot: false, near: 1e5, far: 1.6e6 },

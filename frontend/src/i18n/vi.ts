@@ -786,6 +786,9 @@ export const vi = {
     vinh: 'Vinh',
     ngheAn: 'NGHỆ AN',
     formerDoLuong: 'Đô Lương (cũ)',
+    hoangSa: 'QĐ. Hoàng Sa (Việt Nam)',
+    truongSa: 'QĐ. Trường Sa (Việt Nam)',
+    phuQuoc: 'Đảo Phú Quốc',
   },
   media: {
     illustration: 'Do AI tạo, không phải ảnh thật',

@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
 import { SettingsProvider } from '../../app/settings';
 import { vi } from '../../i18n/vi';
+import { en } from '../../i18n/en';
 import { Grid3D } from './Grid3D';
 import { MAP_PLACES } from '../../data/places';
 import grid3dSource from './Grid3D.tsx?raw';
@@ -43,5 +44,22 @@ describe('trial site on the maps', () => {
       expect(src).not.toMatch(/lang === 'vi' \? ['`]/);
       expect(src).not.toMatch(/\bvi: '/);
     }
+  });
+});
+
+// member A, 2026-11-15: the globe that shows Vietnam marks Hoang Sa, Truong Sa and Phu Quoc, at their Wikidata points
+// (Q274388, Q215664, Q146695), with the Vietnamese and English names member A chose
+describe('islands on the globe', () => {
+  it('label Hoang Sa, Truong Sa and Phu Quoc at their sourced points', () => {
+    expect(vi.places.hoangSa).toBe('QĐ. Hoàng Sa (Việt Nam)');
+    expect(vi.places.truongSa).toBe('QĐ. Trường Sa (Việt Nam)');
+    expect(vi.places.phuQuoc).toBe('Đảo Phú Quốc');
+    expect(en.places.hoangSa).toBe('Hoang Sa (Paracel) Archipelago, Vietnam');
+    expect(en.places.truongSa).toBe('Truong Sa (Spratly) Archipelago, Vietnam');
+    expect(en.places.phuQuoc).toBe('Phu Quoc Island');
+    const flat = globeSource.replace(/\s+/g, '');
+    expect(flat).toContain('vi:vi.places.hoangSa,en:en.places.hoangSa,lat:16.654612,lon:112.747192');
+    expect(flat).toContain('vi:vi.places.truongSa,en:en.places.truongSa,lat:10,lon:114');
+    expect(flat).toContain('vi:vi.places.phuQuoc,en:en.places.phuQuoc,lat:10.228889,lon:103.957222');
   });
 });
