@@ -34,7 +34,7 @@ function YearCard({ year }: { year: number }) {
   const row = climateYear(year);
   if (!row) return null;
   return (
-    <Link to={local(`/khoa-hoc?nam=${year}`)} className={s.card} viewTransition>
+    <Link to={local(`/khoa-hoc?nam=${year}`)} className={s.card}>
       <span className={s.cardKind}>
         <Icon name="rain" size={18} />
         {t.copilot.cardYear}
@@ -98,7 +98,6 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
             <Link
               key={c.ref_id}
               className={s.card}
-              viewTransition
               to={local(
                 `/nong-dan/phuong-an?${new URLSearchParams({ ...(water ? { ruong: water } : {}), the: c.ref_id }).toString()}`,
               )}
@@ -163,6 +162,7 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
             {speech.speaking ? t.copilot.stopReading : t.copilot.readAloud}
           </button>
         )}
+        {speech.noVoice && <p className={s.small}>{t.copilot.noVoice}</p>}
         <details className={s.trace}>
           <summary>{t.copilot.howFound}</summary>
           <ol>

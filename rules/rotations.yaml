@@ -4,7 +4,10 @@
 # the table gives one date; a harvest range ("30/8 - 3/9") gives harvest_from and harvest_to. Seasons in Table 13
 # order. Money: P-02 Table 13 "Lãi thuần" (profit) and Tables 4, 8, 12 "Tổng chi" (cost), thousand VND per ha, nominal,
 # written with the digit grouping of 05-DATA-CONTRACTS §6 and UI-UX-SPEC §8 ("16,200 thousand đ/ha"). The whole-year
-# total is computed by the engine, never stored here (§7). Water facts come from rules/crops.yaml per crop id (D-64).
+# total is computed by the engine, never stored here (§7). Yield and price per crop (UI-UX-SPEC §12d, D-163): Tables
+# 4, 8, 12 "Năng suất (tấn/ha)" as printed, with a decimal point (D-95), and "Giá bán" in đồng per kg, the unit the
+# tables' own sums fit although the header says per tonne (research/price-entry-notes.md section 2).
+# Water facts come from rules/crops.yaml per crop id (D-64).
 # Names, flags, definitions, risks and translations are drafts for the copy review. `why` holds short lines from the
 # studies with their page, and states the gap where a study says nothing (team, 2026-11-14; D-156).
 - id: usual
@@ -33,6 +36,12 @@
                       usual_autumn_winter_sweet_potato: "9,450"}
     cost_per_crop: {usual_spring_rice: "32,426", usual_summer_autumn_black_bean: "25,000",
                     usual_autumn_winter_sweet_potato: "40,800"}
+    yield_unit: &p02_yield_unit {vi: "tấn/ha", en: "t/ha"}
+    yield_per_crop: {usual_spring_rice: "5.01", usual_summer_autumn_black_bean: "1.03",
+                     usual_autumn_winter_sweet_potato: "10.05"}
+    price_unit: &p02_price_unit {vi: "đồng/kg", en: "đ/kg"}
+    price_per_crop: {usual_spring_rice: "7,500", usual_summer_autumn_black_bean: "40,000",
+                     usual_autumn_winter_sweet_potato: "5,000"}
     price_year: "2020-21"  # P-02: "Giá bán theo giá thị trường tại thời điểm thu hoạch", trial 2020-21
     flags:
       usual_summer_autumn_black_bean: &table4_flag
@@ -148,6 +157,12 @@
                       cc1_autumn_winter_maize_grain: "11,200"}
     cost_per_crop: {cc1_spring_peanut: "83,500", cc1_summer_autumn_mung_bean: "25,000",
                     cc1_autumn_winter_maize_grain: "29,900"}
+    yield_unit: *p02_yield_unit
+    yield_per_crop: {cc1_spring_peanut: "3.91", cc1_summer_autumn_mung_bean: "1.03",
+                     cc1_autumn_winter_maize_grain: "6.85"}
+    price_unit: *p02_price_unit
+    price_per_crop: {cc1_spring_peanut: "28,000", cc1_summer_autumn_mung_bean: "40,000",
+                     cc1_autumn_winter_maize_grain: "6,000"}
     price_year: "2020-21"
     flags:
       cc1_summer_autumn_mung_bean: *table4_flag
@@ -228,6 +243,12 @@
                       cc2_autumn_winter_maize_biomass: "15,865"}
     cost_per_crop: {cc2_spring_chili: "113,100", cc2_summer_autumn_soybean: "26,500",
                     cc2_autumn_winter_maize_biomass: "27,400"}
+    yield_unit: *p02_yield_unit
+    yield_per_crop: {cc2_spring_chili: "12.2", cc2_summer_autumn_soybean: "1.08",
+                     cc2_autumn_winter_maize_biomass: "50.9"}
+    price_unit: *p02_price_unit
+    price_per_crop: {cc2_spring_chili: "11,000", cc2_summer_autumn_soybean: "40,000",
+                     cc2_autumn_winter_maize_biomass: "850"}
     price_year: "2020-21"
     flags: {}
   risks:
@@ -279,6 +300,12 @@
                       cc3_autumn_winter_pumpkin: "30,440"}
     cost_per_crop: {cc3_spring_maize_grain: "29,100", cc3_summer_autumn_black_sesame: "23,500",
                     cc3_autumn_winter_pumpkin: "48,200"}
+    yield_unit: *p02_yield_unit
+    yield_per_crop: {cc3_spring_maize_grain: "6.92", cc3_summer_autumn_black_sesame: "0.72",
+                     cc3_autumn_winter_pumpkin: "9.83"}
+    price_unit: *p02_price_unit
+    price_per_crop: {cc3_spring_maize_grain: "6,000", cc3_summer_autumn_black_sesame: "50,000",
+                     cc3_autumn_winter_pumpkin: "8,000"}
     price_year: "2020-21"
     flags: {}
   risks:
@@ -321,6 +348,12 @@
                       cc4_autumn_winter_sweet_potato: "20,390"}
     cost_per_crop: {cc4_spring_maize_biomass: "27,400", cc4_summer_autumn_maize_biomass: "27,300",
                     cc4_autumn_winter_sweet_potato: "63,200"}
+    yield_unit: *p02_yield_unit
+    yield_per_crop: {cc4_spring_maize_biomass: "54.5", cc4_summer_autumn_maize_biomass: "55.00",
+                     cc4_autumn_winter_sweet_potato: "12.86"}
+    price_unit: *p02_price_unit
+    price_per_crop: {cc4_spring_maize_biomass: "850", cc4_summer_autumn_maize_biomass: "850",
+                     cc4_autumn_winter_sweet_potato: "6,500"}
     price_year: "2020-21"
     flags: {}
   risks:

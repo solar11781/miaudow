@@ -2,11 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
+import type { OwnState } from './OwnNumbers';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { api, explainOn, SnapshotMissError, type SavedAnswers, type SnapshotEntry } from '../../api';
 import type { CompareRequest, CompareResponse, Plan } from '../../types';
-import { compareRequest, serializeFarmerState, type Land } from '../../domain/farmerState';
+import {
+  compareRequest,
+  NO_OWN,
+  ownOf,
+  serializeFarmerState,
+  setOwn,
+  type Land,
+  type OwnNumbers,
+} from '../../domain/farmerState';
 import { useApi } from '../../hooks/useApi';
 import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
@@ -29,6 +38,19 @@ function Cards({ res }: { res: CompareResponse }) {
   const { state, update } = useFarmer();
   const [focused, setFocused] = useState(state.plan);
   const [explain] = useApi(explainOn, 'explain-on'); // asked once per screen; hidden unless the server says on
+  // the numbers are held here and the fragment follows them: the router applies a URL change in a React transition, so
+  // a second quick entry built from the URL could still miss the first (review of PR #66). Section 6b rule 2: keys of
+  // crops this response does not have are dropped.
+  const [values, setValues] = useState(() =>
+    ownOf(
+      state.own,
+      res.plans.flatMap((p) => p.money.items.map((i) => i.crop_key)),
+    ),
+  );
+  const own: OwnState = { values, set: (field, crop, digits) => setValues((v) => setOwn(v, field, crop, digits)) };
+  useEffect(() => {
+    if (JSON.stringify(values) !== JSON.stringify(state.own)) update({ own: values });
+  }, [values, state.own, update]);
 
   useEffect(() => {
     if (!state.plan) return;
@@ -42,7 +64,8 @@ function Cards({ res }: { res: CompareResponse }) {
 
   const share = useCallback(
     async (plan: Plan) => {
-      const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id }), lang);
+      // the farmer's own price and costs never go into a shared link (D-163, D-180)
+      const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id, own: NO_OWN }), lang);
       try {
         if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
           await navigator.share({ title: `Miaudow · ${pick(plan.name)}`, text: t.farmer.shareHelp, url });
@@ -86,6 +109,7 @@ function Cards({ res }: { res: CompareResponse }) {
             priority={res.request.priority}
             focused={focused === p.id}
             explain={explain.status === 'ok' && explain.data}
+            own={own}
             onShare={share}
           />
         ))}
@@ -125,9 +149,10 @@ function Compare({ body }: { body: CompareRequest }) {
   return <LoadState state={res} retry={retry} />;
 }
 
-/** The answers a farmer can save: only with plans to see, so never an irrigated field. */
-const savable = (land: Land | null, body: CompareRequest | null): SavedAnswers | null =>
-  body && land && land !== 'reliable' ? { land, years: body.years, priority: body.priority } : null;
+/** The answers a farmer can save, with the typed prices and costs (D-180): only with plans to see, so never an
+ * irrigated field. */
+const savable = (land: Land | null, body: CompareRequest | null, own: OwnNumbers): SavedAnswers | null =>
+  body && land && land !== 'reliable' ? { land, years: body.years, priority: body.priority, ...own } : null;
 
 export function PlansStep() {
   const t = useT();
@@ -138,7 +163,7 @@ export function PlansStep() {
   const offered = years.status === 'ok' ? years.data.years.map((y) => y.year) : [];
   const body =
     years.status === 'ok' ? compareRequest({ ...state, years: state.years.filter((y) => offered.includes(y)) }) : null;
-  const saved = savable(state.land, body);
+  const saved = savable(state.land, body, state.own);
   return (
     <StepShell step={4} title={t.farmer.plansTitle} help={t.farmer.plansLead} wide>
       <div className={s.plansMeta}>
@@ -148,7 +173,7 @@ export function PlansStep() {
               {y}
             </span>
           ))}
-          <Link to={local({ pathname: '/nong-dan/nam', search })} className={s.editLink} viewTransition>
+          <Link to={local({ pathname: '/nong-dan/nam', search })} className={s.editLink}>
             {t.farmer.yearsTitle}
           </Link>
         </div>

@@ -32,7 +32,7 @@ export function Footer() {
         </div>
         <nav className={s.links} aria-label={t.nav.main}>
           {areas.map((a) => (
-            <Link key={a.to} to={a.to} viewTransition>
+            <Link key={a.to} to={a.to}>
               {a.label}
             </Link>
           ))}

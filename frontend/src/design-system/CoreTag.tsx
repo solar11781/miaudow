@@ -9,7 +9,7 @@ export type Core = 'climate' | 'evidence' | 'crop' | 'copilot';
 export function CoreTag({ core }: { core: Core }) {
   const t = useT();
   return (
-    <Link to="/" state={{ to: 'cores' }} className={s.tag} data-core={core} viewTransition>
+    <Link to="/" state={{ to: 'cores' }} className={s.tag} data-core={core}>
       <Icon name="spark" size={16} />
       {t.common.coreTag[core]}
     </Link>

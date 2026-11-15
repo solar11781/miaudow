@@ -9,7 +9,6 @@ import type {
   Rule,
   RuleCode,
   Stability,
-  Value,
   WaterFact,
 } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
@@ -17,7 +16,10 @@ import { displayUnit } from '../../domain/format';
 import { moneyStudy } from '../../domain/moneyStudy';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
+import { OwnNumbers, type OwnState } from './OwnNumbers';
 import { SourceValue } from '../provenance/SourceValue';
+import { NumberOr } from './NumberOr';
+import { PriorityLine } from './PriorityLine';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
 import { ApiError, explainSimply, type WhyPart } from '../../api';
 import { usePick, useSettings, useT } from '../../app/settings';
@@ -41,6 +43,7 @@ function Row({
   title,
   note,
   highlight,
+  line,
   target,
   children,
 }: {
@@ -49,6 +52,8 @@ function Row({
   title: string;
   note?: string;
   highlight?: boolean;
+  /** The priority line, shown right after the label of the highlighted row. */
+  line?: ReactNode;
   /** A link elsewhere on the card moves the focus here. */
   target?: boolean;
   children: ReactNode;
@@ -72,6 +77,7 @@ function Row({
           </span>
         )}
       </h3>
+      {highlight && line}
       {children}
       {note && <p className={s.rowNote}>{note}</p>}
     </section>
@@ -83,21 +89,20 @@ interface Ctx {
   res: CompareResponse;
   refs: ApiRefs;
 }
+type Hl = { highlight: boolean; line: ReactNode };
 
-function NumberOr({ v, label, refs }: { v: Value | null; label: string; refs: ApiRefs }) {
-  const t = useT();
-  return v ? <SourceValue {...refs.value(v, label)} /> : <span className="muted">{t.common.notAvailable}</span>;
-}
-
-function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) {
+function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: OwnState }) {
   const t = useT();
   const pick = usePick();
   const m = plan.money;
-  const seasonLabel = (code: string) => res.seasons.find((x) => x.code === code);
+  const names = m.items.map((item) => {
+    const season = res.seasons.find((x) => x.code === item.season);
+    return `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
+  });
   const textIds = plan.calendar.flatMap((c) => c.source_ids);
   const study = moneyStudy(plan);
   return (
-    <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight}>
+    <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
         <div className={s.money}>
           <SourceValue size="xl" {...refs.value(m.total, t.farmer.ourSum)}>
@@ -110,9 +115,8 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
       )}
       {m.items.length > 0 && (
         <ul className={s.cropMoney}>
-          {m.items.map((item) => {
-            const season = seasonLabel(item.season);
-            const name = `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
+          {m.items.map((item, i) => {
+            const name = names[i] ?? '';
             return (
               <li key={item.crop_key}>
                 <span>{name}</span>
@@ -130,6 +134,7 @@ function MoneyRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
       {/* the source's definition as the API gives it, then the same in plain words for the study it cites (D-170) */}
       <p className={s.rowNote}>{pick(m.definition)}</p>
       {study && <p className={s.rowNote}>{t.farmer.definitionPlain[study]}</p>}
+      <OwnNumbers planId={plan.id} items={m.items} names={names} refs={refs} own={own} />
     </Row>
   );
 }
@@ -270,7 +275,7 @@ function RiceBlock({ st, refs }: { st: Stability; refs: ApiRefs }) {
   );
 }
 
-function WeatherRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) {
+function WeatherRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
   const t = useT();
   const pick = usePick();
   const rice = plan.stability ?? [];
@@ -282,6 +287,7 @@ function WeatherRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }
       title={t.farmer.rows.weather}
       note={plan.exposure.length ? t.farmer.rows.weatherNote : undefined}
       highlight={highlight}
+      line={line}
     >
       {plan.exposure.length > 0 && (
         <YearsFold id={`card-${plan.id}-weather-years`}>
@@ -306,11 +312,18 @@ function WeatherRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }
   );
 }
 
-function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) {
+function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
   const t = useT();
   const pick = usePick();
   return (
-    <Row hook={`card-${plan.id}-row-water`} icon="drop" title={t.farmer.rows.water} highlight={highlight} target>
+    <Row
+      hook={`card-${plan.id}-row-water`}
+      icon="drop"
+      title={t.farmer.rows.water}
+      highlight={highlight}
+      line={line}
+      target
+    >
       {plan.exposure.length > 0 && (
         <YearsFold id={`card-${plan.id}-water-years`}>
           <ShareTable plan={plan} codes={DROUGHT_RULES} rules={res.rules} refs={refs} />
@@ -385,7 +398,7 @@ function WaterRow({ plan, res, refs, highlight }: Ctx & { highlight: boolean }) 
   );
 }
 
-function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: boolean }) {
+function LandRow({ plan, refs, highlight, line }: Omit<Ctx, 'res'> & Hl) {
   const t = useT();
   const pick = usePick();
   const { crops_in_year: crops, living_days: days, legume } = plan.land;
@@ -397,6 +410,7 @@ function LandRow({ plan, refs, highlight }: Omit<Ctx, 'res'> & { highlight: bool
       title={t.farmer.rows.land}
       note={legume.present ? t.farmer.legumeNote : undefined}
       highlight={highlight}
+      line={line}
     >
       <ul className={s.checks}>
         <li>
@@ -619,6 +633,7 @@ export function PlanCard({
   priority,
   focused,
   explain = false,
+  own,
   onShare,
 }: {
   plan: Plan;
@@ -627,12 +642,15 @@ export function PlanCard({
   focused?: boolean;
   /** The server has "explain simply" on (FR-15: off by default). */
   explain?: boolean;
+  /** The farmer's own price and costs (UI-UX-SPEC section 12d). */
+  own: OwnState;
   onShare: (plan: Plan) => Promise<boolean>;
 }) {
   const t = useT();
   const refs = useApiRefs(res.sources, res.rules);
   const [shareMsg, setShareMsg] = useState('');
   const hasDates = plan.calendar.some((c) => c.sow_from !== null);
+  const line = <PriorityLine plan={plan} res={res} priority={priority} refs={refs} />;
   return (
     <article
       id={`the-${plan.id}`}
@@ -652,10 +670,10 @@ export function PlanCard({
             </p>
           )}
         </div>
-        <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} />
-        <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} />
-        <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} />
-        <LandRow plan={plan} refs={refs} highlight={priority === 'land'} />
+        <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} line={line} own={own} />
+        <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} line={line} />
+        <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} line={line} />
+        <LandRow plan={plan} refs={refs} highlight={priority === 'land'} line={line} />
         <WhyRows plan={plan} refs={refs} answers={res.request} explain={explain} />
       </div>
       <footer className={s.foot}>

@@ -251,27 +251,6 @@ p {
 .reveal {
 }
 
-/* route transitions (View Transitions API) */
-/* route change: the old page settles back, the new one lifts in */
-@keyframes vt-out {
-  to {
-    opacity: 0;
-    transform: scale(0.985);
-  }
-}
-@keyframes vt-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-}
-::view-transition-old(root) {
-  animation: 240ms var(--ease-in-out) both vt-out;
-}
-::view-transition-new(root) {
-  animation: 560ms var(--ease-out) 40ms both vt-in;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -280,15 +259,6 @@ p {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none !important;
-  }
-  /* pseudo-elements of the view transition are not matched by the universal selector above (H1, D-155) */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
   }
 }
 :root[data-lite='true'] *,

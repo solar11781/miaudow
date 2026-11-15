@@ -87,6 +87,9 @@ export interface MoneyItem {
   season: SeasonCode;
   profit: Value;
   cost: Value | null;
+  /** The study's yield and sale price of the crop (UI-UX-SPEC section 12d, D-163). */
+  yield: Value;
+  price: Value;
   flag: Text | null;
 }
 export interface Money {
