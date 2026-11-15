@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { geo, hazards, type RuleCode } from '../../data';
+import { MAP_PLACES } from '../../data/places';
 import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
@@ -8,11 +9,6 @@ import s from './Grid3D.module.css';
 const PX_PER_DEG = 168;
 const K_LON = Math.cos((19.3 * Math.PI) / 180);
 const HMAX = 115;
-// Places for orientation only; both positions are approximate town centres.
-const PLACES = [
-  { id: 'vinh', lat: 18.68, lon: 105.68, vi: '≈ TP Vinh', en: '≈ Vinh city' },
-  { id: 'doluong', lat: 18.9, lon: 105.3, vi: '≈ Đô Lương · nơi thử nghiệm', en: '≈ Do Luong · trial site' },
-];
 const DEFAULT_VIEW = { rx: 55, rz: -24 };
 
 export function Grid3D({
@@ -183,13 +179,13 @@ export function Grid3D({
                   />
                 );
               })}
-              {PLACES.map((p) => {
+              {MAP_PLACES.map((p) => {
                 const [x, y] = box.px(p.lon, p.lat);
                 return (
                   <g key={p.id} className={s.place}>
                     <circle cx={x} cy={y} r={3.2} />
                     <text x={x + 7} y={y + 4}>
-                      {lang === 'vi' ? p.vi : p.en}
+                      {p.approx ? t.places.approx(t.places[p.name]) : t.places[p.name]}
                     </text>
                   </g>
                 );

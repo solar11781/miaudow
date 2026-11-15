@@ -764,6 +764,32 @@ export const en: Messages = {
     drySpell: 'Longest dry spell',
     hotDays: 'Days at 35 °C or more',
     gridNote: 'NASA POWER grid values (a model), not measured on a farm.',
+    monthTip: (y: number, m: number, value: string) => `${y}, month ${m}: ${value}`,
+    days: (n: string) => `${n} days`,
+    annualDetail: (base: string, normal: string) =>
+      `Sum of 12 months, farmland-weighted mean of the 5 NASA POWER cells. Normal ${base}: ${normal} mm.`,
+    dryMonthsDetail: (base: string, months: string) =>
+      `Months with less than half the ${base} normal (Decision 18/2021, Art. 48): ${months || 'none'}.`,
+    drySpellDetail:
+      'Longest run of days with under 1 mm of rain (CDD index, Zhang et al. 2011), weighted mean of the cells.',
+    hotDaysDetail:
+      'Days with a maximum of 35 °C or more (lower bound of Decision 18/2021, Art. 47), weighted mean of the cells.',
+    powerDetail:
+      'Sum of 12 months of PRECTOTCORR (reanalysis model), 0.5° × 0.625° cell. Months with a missing day are not summed.',
+    chirpsDetail:
+      'Sum of 12 months of CHIRPS v3 (satellite and station blend, 0.05°), mean of the cell’s Nghe An pixels. Final product, never the preliminary one.',
+  },
+  places: {
+    trialSite: 'former Luu Son · trial site',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIETNAM',
+    hanoi: 'Hanoi',
+    vinh: 'Vinh',
+    ngheAn: 'NGHE AN',
+    formerDoLuong: 'former Do Luong',
+    hoangSa: 'Hoang Sa (Paracel) Archipelago, Vietnam',
+    truongSa: 'Truong Sa (Spratly) Archipelago, Vietnam',
+    phuQuoc: 'Phu Quoc Island',
   },
   media: {
     illustration: 'AI-generated, not a photograph',
