@@ -17,3 +17,16 @@ test('the start button keeps its arrow clear of its words on a wide screen', asy
   });
   expect(gap).toBeGreaterThanOrEqual(4);
 });
+
+// at 360 px the wordmark hides and the logo link shrank to the 36 px mark; spec hard rule: targets at least 44 x 44
+for (const route of ['/', '/#/nong-dan']) {
+  test(`the logo link is at least 44 x 44 px on a 360 px phone (${route})`, async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto(route);
+    const brand = page.locator('header a[class*="brand"]');
+    await expect(brand).toBeVisible();
+    const box = await brand.boundingBox();
+    expect(box?.width).toBeGreaterThanOrEqual(44);
+    expect(box?.height).toBeGreaterThanOrEqual(44);
+  });
+}
