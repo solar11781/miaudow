@@ -1,7 +1,7 @@
 // The API sends Value strings in English notation (UI-UX-SPEC section 11: the backend rounds, the frontend shows the
 // value as given); on screen Vietnamese uses a dot for thousands and a comma for decimals (review 2026-11-14).
 import { describe, expect, it } from 'vitest';
-import { displayUnit, displayValue } from './format';
+import { displayUnit, displayValue, lowerFirst, upperFirst } from './format';
 
 describe('value display', () => {
   it('groups thousands with a dot and decimals with a comma in Vietnamese', () => {
@@ -25,5 +25,14 @@ describe('value display', () => {
     expect(displayUnit('m2')).toBe('m²');
     expect(displayUnit('one 1000 m2 plot per crop; 6,500 m3/ha')).toBe('one 1000 m² plot per crop; 6,500 m³/ha');
     expect(displayUnit('R-M2 and mm2x stay')).toBe('R-M2 and mm2x stay');
+  });
+});
+
+describe('first letter case', () => {
+  it('changes only the first letter, Vietnamese letters included', () => {
+    expect(lowerFirst('Lúa vụ Đông Xuân')).toBe('lúa vụ Đông Xuân');
+    expect(lowerFirst('Spring rice')).toBe('spring rice');
+    expect(upperFirst('đất lúa')).toBe('Đất lúa');
+    expect(upperFirst('')).toBe('');
   });
 });

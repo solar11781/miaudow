@@ -46,10 +46,22 @@ ID_SINGLE_KEYS = ("source_id", "threshold_source_id", "computed_by")
 LAND_CARE_PRINCIPLES = {"R-E13", "R-E12", "R-E06"}  # 05-DATA-CONTRACTS §7: principle sources of the land-care checks
 SOURCE_ID = re.compile(r"^(R-[A-Z]+\d+[a-z]?|E-\d{3}[a-z]?)$")  # UI-UX-SPEC §11 canonical source ids
 NOT_FULL_TEXT = re.compile(r"abstract|title|summary|metadata|secondary", re.IGNORECASE)  # 05-DATA-CONTRACTS §8
+DONG_UNIT = re.compile(r"(?<![^\W\d_])đ(?![^\W\d_])")  # D-190: "đ" standing alone as the currency, as in "đ/kg"
 
 
 def read(name: str) -> object:
     return yaml.safe_load((RULES / name).read_text(encoding="utf-8"))
+
+
+def dong_units(node: object, path: str = "") -> list[str]:
+    """The path and text of every English text that writes the currency as "đ" (D-190: English writes "VND")."""
+    if isinstance(node, list):
+        return [hit for i, item in enumerate(node) for hit in dong_units(item, f"{path}[{i}]")]
+    if not isinstance(node, dict):
+        return []
+    en = node.get("en")
+    hits = [f"{path}.en: {en}"] if isinstance(en, str) and DONG_UNIT.search(en) else []
+    return hits + [hit for key, value in node.items() for hit in dong_units(value, f"{path}.{key}")]
 
 
 def ids_in(node: object) -> set[str]:
@@ -570,3 +582,12 @@ def test_read_status_matches_the_references() -> None:
         assert sid in known, sid
         if sid.startswith("R-"):
             assert item.read_status == status[sid], sid
+
+
+# ---- every rules file
+
+
+def test_english_texts_write_the_currency_as_vnd() -> None:
+    # D-190 (member A, 2026-11-15): English text writes the currency as "VND", not "đ"
+    hits = [hit for f in sorted(RULES.glob("*.yaml")) for hit in dong_units(read(f.name), f.name)]
+    assert hits == []

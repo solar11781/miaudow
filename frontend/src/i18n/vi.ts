@@ -45,7 +45,8 @@ export const vi = {
     source: 'Nguồn',
     open: 'Mở',
     close: 'Đóng',
-    millionPerHa: 'triệu đ/ha',
+    millionPerHa: 'triệu đồng/ha',
+    perKg: 'đồng/kg',
     notListed: 'Không có trong nguồn',
     noData: 'Chưa có số liệu',
     farmland: 'đất trồng',
@@ -217,10 +218,11 @@ export const vi = {
     honestyTitle: 'Chúng tôi nói rõ cả khi mô hình không thắng',
     honestyLead:
       'Mô hình học máy được kiểm tra trên các năm 2016–2024 mà nó chưa từng thấy, so với các cách đoán đơn giản. Kết quả được công bố như nó là.',
-    honestySpring:
-      'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết. Dự đoán lúa vụ Đông Xuân không được hiện.',
-    honestyWinter:
-      'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút. Dự đoán lúa vụ Mùa được hiện cạnh số liệu thật.',
+    // chọn theo từng vụ từ kết quả của lần chạy (src/domain/rice.ts modelVerdict)
+    honestyNoHelp: 'Thời tiết NASA chưa giúp đoán tốt hơn mô hình bỏ thời tiết.',
+    honestyHelps: 'Mô hình có thời tiết NASA đoán tốt hơn, nhưng chỉ hơn một chút.',
+    honestyHidden: (season: string) => `Dự đoán ${season} không được hiện.`,
+    honestyShown: (season: string) => `Dự đoán ${season} được hiện cạnh số liệu thật.`,
     vsBnw: 'so với BNW',
     skillVsBnw: 'điểm hơn kém so với BNW',
     honestySummer: 'Không đủ tỉnh có số liệu để kiểm tra, nên chỉ hiện số liệu thật.',
@@ -554,8 +556,6 @@ export const vi = {
     filterAll: 'Tất cả',
     costs: 'Chi phí',
     price: 'Giá bán',
-    perKg: 'đ/kg',
-    thousandPerHa: 'nghìn đ/ha',
   },
   science: {
     eyebrow: 'Phòng dữ liệu · dành cho nhà nghiên cứu',
@@ -761,6 +761,32 @@ export const vi = {
     drySpell: 'Đợt khô dài nhất',
     hotDays: 'Ngày từ 35 °C',
     gridNote: 'Số theo ô lưới NASA POWER (mô hình), không đo tại ruộng.',
+    monthTip: (y: number, m: number, value: string) => `${y}, tháng ${m}: ${value}`,
+    days: (n: string) => `${n} ngày`,
+    annualDetail: (base: string, normal: string) =>
+      `Tổng mưa 12 tháng, trung bình theo trọng số đất trồng của 5 ô NASA POWER. Bình thường ${base}: ${normal} mm.`,
+    dryMonthsDetail: (base: string, months: string) =>
+      `Tháng có mưa thấp hơn một nửa mức bình thường ${base} (QĐ 18/2021, Điều 48): ${months || 'không có'}.`,
+    drySpellDetail:
+      'Số ngày liền mưa dưới 1 mm dài nhất trong năm (chỉ số CDD, Zhang và cs. 2011), trung bình theo trọng số các ô.',
+    hotDaysDetail:
+      'Ngày có nhiệt độ cao nhất từ 35 °C (ngưỡng dưới của QĐ 18/2021, Điều 47), trung bình theo trọng số các ô.',
+    powerDetail:
+      'Tổng 12 tháng của PRECTOTCORR (mô hình tái phân tích), ô 0,5° × 0,625°. Tháng thiếu ngày thì không cộng.',
+    chirpsDetail:
+      'Tổng 12 tháng của CHIRPS v3 (vệ tinh kết hợp trạm đo, 0,05°), trung bình các điểm ảnh thuộc Nghệ An trong ô. Bản cuối, không dùng bản sơ bộ.',
+  },
+  places: {
+    trialSite: 'Lưu Sơn (cũ) · nơi thử nghiệm',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIỆT NAM',
+    hanoi: 'Hà Nội',
+    vinh: 'Vinh',
+    ngheAn: 'NGHỆ AN',
+    formerDoLuong: 'Đô Lương (cũ)',
+    hoangSa: 'QĐ. Hoàng Sa (Việt Nam)',
+    truongSa: 'QĐ. Trường Sa (Việt Nam)',
+    phuQuoc: 'Đảo Phú Quốc',
   },
   media: {
     illustration: 'Do AI tạo, không phải ảnh thật',
@@ -1100,7 +1126,7 @@ export const vi = {
       'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
     cropProfitLabel: (crop: string) => `Lãi ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
-      `Bảng 13: ${profit} nghìn đ/ha, đã trừ công. Chi phí ${cost} nghìn đ/ha; giá bán ${price} đ/kg lúc thu hoạch.`,
+      `Bảng 13: ${profit} nghìn đồng/ha, đã trừ công. Chi phí ${cost} nghìn đồng/ha; giá bán ${price} đồng/kg lúc thu hoạch.`,
     planProfitLabel: 'Lãi cả năm trong thử nghiệm, ba vụ cộng lại',
     planProfitSum: 'Bảng 13, phép cộng của Miaudow',
     tcvnLabel: (crop: string) => `Mức tưới ${crop}`,
