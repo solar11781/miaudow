@@ -13,6 +13,7 @@ import type { CompareResponse, Plan } from '../../types';
 import { PlanCard } from './PlanCard';
 import type { OwnState } from './OwnNumbers';
 import { vi } from '../../i18n/vi';
+import { en } from '../../i18n/en';
 
 let latest: OwnNumbers = NO_OWN;
 const seen = (v: OwnNumbers) => {
@@ -32,6 +33,11 @@ function renderForm(initial: OwnNumbers = NO_OWN, items = true) {
   const p02 = res.sources['R-P02'];
   if (!plan || !p02) throw new Error('no plan');
   p02.citation = { vi: 'bài P-02', en: 'paper P-02' };
+  // the engine's arithmetic id (D-158), as the server sends it with every computed total
+  res.sources = {
+    ...res.sources,
+    'E-022': { ...p02, id: 'E-022', citation: { vi: 'phép tính E-022', en: 'calculation E-022' } },
+  } as typeof res.sources;
   if (items) {
     plan.money.items = [
       { ...moneyItem('cc1_spring_peanut', '3.91', '28,000', '25,980', '83,500'), crop: { vi: 'Lạc', en: 'Peanut' } },
@@ -127,6 +133,17 @@ describe('your price and costs', () => {
     expect(result(id)).not.toContain(vi.farmer.own.revenue);
   });
 
+  it('does not use a number longer than 9 digits and says so (D-179)', () => {
+    const id = renderForm();
+    open();
+    type(/^Đậu xanh.*Giá bán/, '1234567890');
+    expect(screen.getByText(vi.farmer.own.invalid)).toBeTruthy();
+    expect(vi.farmer.own.invalid).toContain('9 chữ số');
+    expect(en.farmer.own.invalid).toContain('9 digits');
+    expect(latest.prices).toEqual({});
+    expect(result(id)).not.toContain(vi.farmer.own.revenue);
+  });
+
   it('keeps the study money row as it was', () => {
     const id = renderForm();
     open();
@@ -143,6 +160,7 @@ describe('your price and costs', () => {
     fireEvent.click(within(ownBox(id)).getByRole('button', { name: /^117\.300/ }));
     const sheet = screen.getByTestId('source-sheet').textContent;
     expect(sheet).toContain('bài P-02'); // the study yield's source
+    expect(sheet).toContain('phép tính E-022'); // a number we compute cites its inputs and E-022 (D-158)
     expect(sheet).toContain(vi.farmer.own.sheetNote);
   });
 
