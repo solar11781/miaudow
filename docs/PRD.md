@@ -1,8 +1,9 @@
 # Product Requirements (PRD)
 
-This document describes the current design only. It is PROVISIONAL v0.4 of 2026-11-13, updated with the team's
-later decisions up to 2026-11-15. We read the official Resources tab on 2026-11-13, and it did not change the core
-(R-H16).
+This document describes the current design only. It is the specification the submitted app was built from: the
+provisional v0.4 of 2026-11-13, updated with the team's later decisions up to 2026-11-15. The app was submitted for
+Hanoi judging on 15 Nov 2026 (tag `submitted-hanoi`). We read the official Resources tab on 2026-11-13, and it did
+not change the core (R-H16).
 The app is called Miaudow in both Vietnamese and English. The project name is Field Shift Nghệ An.
 The evidence is listed in REFERENCES.md and DATA-SOURCES.md, and the screens and data contract are in UI-UX-SPEC.md.
 
