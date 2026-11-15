@@ -19,7 +19,8 @@ describe('Media label for AI illustrations', () => {
   });
   it('starts every illustration alt text with the AI words in both languages', () => {
     const art = Object.values(MEDIA).filter((m) => m.kind === 'illustration');
-    expect(art).toHaveLength(16);
+    // 16 home illustrations and the 5 field-step ones (lamgiang/assets/field-conditions/manifest.json)
+    expect(art).toHaveLength(21);
     for (const m of art) {
       expect(m.alt.vi).toMatch(/^Tranh do AI tạo: /);
       expect(m.alt.en).toMatch(/^AI-generated illustration: /);

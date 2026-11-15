@@ -34,7 +34,8 @@ describe('photo sizes', () => {
         </MemoryRouter>
       </SettingsProvider>,
     );
-    expect(widths(container)).toEqual(['(max-width: 700px) 320px, 600px']);
+    // then the four step pictures, field illustrations that exist in one 474 px width only
+    expect(widths(container)).toEqual(['(max-width: 700px) 320px, 600px', '474px', '474px', '474px', '474px']);
   });
 
   it('lets a phone load the 640w home photos below the fold', () => {
@@ -50,7 +51,7 @@ describe('photo sizes', () => {
     const sizes = widths(container).filter((x): x is string => x !== null);
     expect(sizes.length).toBeGreaterThan(3);
     expect(sizes.filter((x) => x.includes('92vw'))).toEqual([]);
-    expect(sizes).toContain('(max-width: 480px) 320px, (max-width: 860px) 640px, 640px');
-    expect(sizes).toContain('(max-width: 480px) 320px, (max-width: 860px) 640px, 420px');
+    // the redesigned home (hero, problem, verse, AI cores, steps, invitation): every photo keeps the phone rule
+    expect(sizes.filter((x) => !x.startsWith('(max-width: 480px) 320px, '))).toEqual([]);
   });
 });

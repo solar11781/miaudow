@@ -7,29 +7,29 @@
     box-shadow var(--d-med) var(--ease-out),
     background-color var(--d-med) var(--ease-out);
 }
-/* opaque, so no scrolled text reads through the sticky header */
+
 .paper {
   background: var(--bg);
+  box-shadow: 0 1px 0 var(--line);
 }
+
 .overlay:not(.scrolled) {
-  background-color: transparent;
+  background: linear-gradient(180deg, rgba(6, 10, 7, 0.55), rgba(6, 10, 7, 0));
 }
-.overlay:not(.scrolled) .nav {
-  background: rgba(8, 20, 11, 0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
+
 .scrolled {
   box-shadow:
     0 1px 0 var(--line),
     0 12px 30px -24px rgba(8, 20, 11, 0.45);
 }
+
 .bar {
   display: flex;
   align-items: center;
   gap: var(--s-4);
   min-height: 72px;
 }
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -39,64 +39,155 @@
   margin-right: auto;
   min-height: 48px;
 }
+
 .word {
   display: flex;
   flex-direction: column;
   line-height: 1.05;
 }
+
 .name {
-  font: 500 1.35rem/1 var(--font-display);
-  letter-spacing: -0.01em;
+  font: 800 1.6rem/1 var(--font-display);
 }
+
+.wordmark {
+  margin-bottom: 4px;
+}
+
+:global(:root[data-theme='light']) .wordmark {
+  filter: brightness(0.12);
+}
+
+/* the simple-mode switch: a real on/off control, not an icon */
+.switch {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0 0.75rem 0 0.55rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--fg-2);
+  font-size: var(--t-small);
+  font-weight: 550;
+}
+
+.switch:hover {
+  color: var(--fg);
+  border-color: var(--fg-3);
+}
+
+.track {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--fg) 22%, transparent);
+  transition: background-color var(--d-med) var(--ease-out);
+  flex: none;
+}
+
+.thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--fg);
+  transition: transform var(--d-med) var(--ease-out);
+}
+
+.switch[aria-checked='true'] {
+  color: var(--fg);
+  border-color: var(--c-gold-500);
+}
+
+.switch[aria-checked='true'] .track {
+  background: var(--c-gold-500);
+}
+
+.switch[aria-checked='true'] .thumb {
+  transform: translateX(16px);
+  background: var(--on-accent);
+}
+
+.switch > span:last-child {
+  white-space: nowrap;
+}
+
 .tag {
   font-size: var(--t-micro);
   color: var(--fg-3);
   margin-top: 3px;
-  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
+
 .nav {
   display: none;
-  gap: 2px;
-  padding: 4px;
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
-  border: 1px solid var(--line);
+  gap: 0.25rem;
 }
+
 .link {
-  min-height: 40px;
-  padding: 0 0.95rem;
+  position: relative;
+  min-height: 44px;
+  padding: 0 0.8rem;
   display: inline-flex;
   align-items: center;
-  border-radius: var(--r-pill);
   color: var(--fg-2);
   text-decoration: none;
   font-size: var(--t-small);
-  font-weight: 500;
+  font-weight: 550;
   white-space: nowrap;
-  transition:
-    background-color var(--d-fast) var(--ease-out),
-    color var(--d-fast) var(--ease-out);
+  transition: color var(--d-fast) var(--ease-out);
 }
+
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0.8rem;
+  right: 0.8rem;
+  bottom: 6px;
+  height: 2px;
+  background: var(--c-gold-500);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-med) var(--ease-out);
+}
+
 .link:hover {
   color: var(--fg);
-  background: color-mix(in srgb, var(--fg) 7%, transparent);
 }
+
+.link:hover::after {
+  transform: scaleX(0.4);
+}
+
 .active,
 .active:hover {
-  background: var(--c-gold-500);
-  color: var(--on-accent);
+  color: var(--fg);
 }
+
+.active::after,
+.active:hover::after {
+  transform: scaleX(1);
+}
+
 .settings {
   display: none;
   gap: 6px;
 }
+
 .settingsFarmer {
   display: flex;
   gap: 6px;
 }
+
 .settingsFarmer .chip span {
   display: inline;
 }
+
 .chip {
   min-height: 44px;
   min-width: 44px;
@@ -105,29 +196,34 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-sm);
   border: 1px solid var(--line-2);
   background: transparent;
   color: var(--fg-2);
   font-size: var(--t-small);
-  font-weight: 500;
+  font-weight: 550;
 }
+
 .chip:hover {
   color: var(--fg);
   background: color-mix(in srgb, var(--fg) 6%, transparent);
 }
+
 .chip[aria-pressed='true'] {
   background: var(--fg);
   color: var(--bg);
   border-color: var(--fg);
 }
+
 .cta {
   display: none !important;
   white-space: nowrap;
 }
+
 .chip span {
   white-space: nowrap;
 }
+
 /* between 1260 and 1500 px the six links need the room: the setting chips keep their names for screen readers only */
 @media (min-width: 1260px) and (max-width: 1500px) {
   .settings .chip span {
@@ -139,16 +235,18 @@
     white-space: nowrap;
   }
 }
+
 .menuBtn {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: var(--r-sm);
   border: 1px solid var(--line-2);
   background: transparent;
   color: var(--fg);
   display: grid;
   place-items: center;
 }
+
 @media (min-width: 760px) {
   .settings {
     display: flex;
@@ -157,6 +255,7 @@
     display: inline-flex !important;
   }
 }
+
 @media (min-width: 1260px) {
   .nav {
     display: flex;
@@ -165,6 +264,7 @@
     display: none;
   }
 }
+
 @media (min-width: 1260px) and (max-width: 1380px) {
   .link {
     padding: 0 0.7rem;
@@ -173,6 +273,7 @@
     display: none;
   }
 }
+
 @media (max-width: 420px) {
   .tag {
     display: none;
@@ -189,12 +290,15 @@
   max-height: 100dvh;
   inset: 0;
 }
+
 .menu[open] {
   animation: menuIn var(--d-med) var(--ease-out);
 }
+
 .menu::backdrop {
   background: rgba(8, 20, 11, 0.5);
 }
+
 @keyframes menuIn {
   from {
     opacity: 0;
@@ -205,6 +309,7 @@
     transform: none;
   }
 }
+
 .menuInner {
   min-height: 100%;
   display: flex;
@@ -213,43 +318,108 @@
   padding: calc(env(safe-area-inset-top, 0px) + var(--s-4)) var(--gutter-r)
     calc(env(safe-area-inset-bottom, 0px) + var(--s-8)) var(--gutter-l);
 }
+
 .menuHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .menuClose {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: var(--r-sm);
   border: 1px solid var(--line-2);
   background: transparent;
   color: var(--fg);
   display: grid;
   place-items: center;
 }
+
 .menuNav {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--line);
 }
+
 .menuLink {
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 64px;
   border-bottom: 1px solid var(--line);
-  font: 400 1.65rem/1.2 var(--font-display);
+  font: 700 2.1rem/1.1 var(--font-display);
   color: var(--fg);
   text-decoration: none;
   padding-inline: 0.25rem;
 }
+
 .menuLink.active {
   color: var(--c-gold-500);
   background: transparent;
 }
+
 .settingsMenu {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* the wordmark never shrinks; on narrow phones the simple-mode switch keeps its name for screen readers only */
+.wordmark {
+  flex-shrink: 0;
+  min-width: max-content;
+}
+
+.brand {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .switch {
+    padding-inline: 0.55rem;
+  }
+  .switch > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* very narrow phones: the icon alone carries the brand, the controls tighten */
+@media (max-width: 374px) {
+  .word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .settingsFarmer {
+    gap: 4px;
+  }
+  .chip {
+    padding: 0 0.5rem;
+  }
+}
+
+/* wide but not wide enough for every label: the switch and the tagline keep their names for screen readers only */
+@media (min-width: 1260px) and (max-width: 1599.98px) {
+  .settings .switch > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .tag {
+    display: none;
+  }
+  .link {
+    padding: 0 0.65rem;
+  }
 }

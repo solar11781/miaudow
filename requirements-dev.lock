@@ -5,4 +5,4 @@ scipy==1.18.1
 pytest==9.2.0
 httpx==0.28.1
 lightgbm==4.7.0
-pillow==13.0.0  # dev-only (member a, 2026-11-15): scripts/watermark_ai_images.py; avif and webp built in; never shipped
+pillow==13.0.0  # dev-only (member a, 2026-11-15): encoded the field-step avif copies (frontend/data/INPUTS.md); never shipped

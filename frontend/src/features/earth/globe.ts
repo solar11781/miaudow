@@ -6,6 +6,7 @@ import {
   Cartesian3,
   CallbackProperty,
   Color,
+  ColorMaterialProperty,
   EllipsoidTerrainProvider,
   HorizontalOrigin,
   ImageryLayer,
@@ -24,6 +25,7 @@ import {
 } from 'cesium';
 import { geo } from '../../data';
 import { cellYear } from './cellClimate';
+import { FLAGSHIPS, satelliteImage, trackFrame, trackPoint, wrap } from './flagships';
 import { MISSIONS } from './missions';
 import { SCENES, type SceneId } from './scenes';
 import doLuongJson from '@data/geo_do_luong.json';
@@ -98,6 +100,8 @@ export interface Globe {
   setOverlay: (overlay: Overlay, year: number, composite: string) => void;
   setSelected: (cell: string) => void;
   setOrbits: (on: boolean, moving: boolean) => void;
+  /** The two flagship satellites over Nghệ An (illustrative orbits, scan beams over the province). */
+  setFlagships: (on: boolean, moving: boolean) => void;
   stopFlight: () => void;
   dispose: () => void;
 }
@@ -149,7 +153,7 @@ export function createGlobe(
         : undefined,
       label: {
         text: lang === 'vi' ? p.vi : p.en,
-        font: p.big ? '600 22px "Noto Serif Display", serif' : '600 17px "Be Vietnam Pro", sans-serif',
+        font: p.big ? '800 24px "Alegreya Variable", Georgia, serif' : '600 17px "Be Vietnam Pro", sans-serif',
         fillColor: Color.fromCssColorString(p.big ? '#f2d590' : '#f4f0e5'),
         outlineColor: Color.BLACK,
         outlineWidth: 3,
@@ -224,7 +228,7 @@ export function createGlobe(
       position: Cartesian3.fromDegrees(c.lon, c.lat, 1),
       label: {
         text: '',
-        font: '600 17px "JetBrains Mono", monospace',
+        font: '600 17px "Be Vietnam Pro", sans-serif',
         fillColor: Color.fromCssColorString('#0b160d'),
         showBackground: true,
         backgroundColor: Color.fromCssColorString('#f4f0e5').withAlpha(0.92),
@@ -272,11 +276,63 @@ export function createGlobe(
     );
   });
 
+  // ---- two flagship satellites, Viet Nam and NASA Terra, on drawn orbits that pass over Nghệ An ----
+  let flagPhase = -0.55;
+  const flagEntities: Entity[] = [];
+  for (const f of FLAGSHIPS) {
+    const frame = trackFrame(f.heading);
+    const theta = () => flagPhase * (f.id === 'vn' ? 1 : 1.12) + f.offset;
+    const near = () => Math.abs(wrap(theta())) < 0.2;
+    const color = Color.fromCssColorString(f.color);
+    flagEntities.push(
+      viewer.entities.add({
+        show: false,
+        polyline: {
+          positions: Array.from({ length: 241 }, (_, i) => trackPoint(frame, f.altKm, (i / 240) * Math.PI * 2)),
+          width: 1.6,
+          material: color.withAlpha(0.45),
+        },
+      }),
+    );
+    flagEntities.push(
+      viewer.entities.add({
+        show: false,
+        position: new CallbackProperty(() => trackPoint(frame, f.altKm, theta()), false) as never,
+        billboard: { image: satelliteImage(f.flag), width: 108, height: 65, verticalOrigin: VerticalOrigin.CENTER },
+        label: {
+          text: lang === 'vi' ? f.label.vi : f.label.en,
+          font: '600 17px "Be Vietnam Pro", sans-serif',
+          fillColor: color,
+          outlineColor: Color.BLACK,
+          outlineWidth: 3,
+          style: LabelStyle.FILL_AND_OUTLINE,
+          pixelOffset: new Cartesian2(0, 46),
+          verticalOrigin: VerticalOrigin.TOP,
+        },
+      }),
+    );
+    // the scan beam: a cone from the satellite down to the ground, lit while the satellite is over the province
+    flagEntities.push(
+      viewer.entities.add({
+        show: false,
+        position: new CallbackProperty(() => trackPoint(frame, f.altKm / 2, theta()), false) as never,
+        cylinder: {
+          length: f.altKm * 1000,
+          topRadius: 1500,
+          bottomRadius: 85_000,
+          material: new ColorMaterialProperty(color.withAlpha(0.2)),
+          show: new CallbackProperty(near, false) as never,
+        },
+      }),
+    );
+  }
+
   let overlayLayer: ImageryLayer | null = null;
   let year = 2020;
   let selected = '';
   let raf = 0;
   let orbitsMoving = false;
+  let flagsMoving = false;
 
   const requestRender = () => scene.requestRender();
   const paintCells = () => {
@@ -304,9 +360,15 @@ export function createGlobe(
   };
 
   const tick = () => {
-    phase += 0.0025;
+    if (orbitsMoving) phase += 0.0025;
+    if (flagsMoving) flagPhase += 0.0018;
     scene.requestRender();
-    raf = orbitsMoving ? requestAnimationFrame(tick) : 0;
+    raf = orbitsMoving || flagsMoving ? requestAnimationFrame(tick) : 0;
+  };
+  const restartTick = () => {
+    cancelAnimationFrame(raf);
+    raf = orbitsMoving || flagsMoving ? requestAnimationFrame(tick) : 0;
+    requestRender();
   };
 
   const handler = new ScreenSpaceEventHandler(scene.canvas);
@@ -385,9 +447,12 @@ export function createGlobe(
     setOrbits: (on, moving) => {
       for (const e of orbitEntities) e.show = on;
       orbitsMoving = on && moving;
-      cancelAnimationFrame(raf);
-      raf = orbitsMoving ? requestAnimationFrame(tick) : 0;
-      requestRender();
+      restartTick();
+    },
+    setFlagships: (on, moving) => {
+      for (const e of flagEntities) e.show = on;
+      flagsMoving = on && moving;
+      restartTick();
     },
     stopFlight: () => viewer.camera.cancelFlight(),
     dispose: () => {

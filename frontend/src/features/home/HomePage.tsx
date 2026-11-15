@@ -1,73 +1,131 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { geo, hazards, model, YEARS } from '../../data';
-import { CLIMATE_YEARS } from '../../data/climate';
-import { media } from '../../data/media';
+import { useEffect, useRef, useState } from 'react';
+import { Brocade } from '../../design-system/Brocade';
+import { Accent } from '../../design-system/Accent';
+import { SatelliteScan } from '../cinema/SatelliteScan';
+import { usePageReveals } from '../../motion/cinema';
+import { Link, useLocation } from 'react-router-dom';
+import { hazards, model, YEARS } from '../../data';
+import { ART } from '../../data/art';
 import { RULES } from '../../domain/hazards';
 import { PLANS } from '../../domain/plans';
 import { ButtonLink } from '../../design-system/Button';
-import { useSignInAvailable } from '../account/AccountProvider';
-import { Icon } from '../../design-system/Icon';
+import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
-import { Reveal } from '../../design-system/Reveal';
+import { EASE, gsap, riseLines, useCinema } from '../../motion/cinema';
 import { YearBars } from '../charts/YearBars';
-import { RainStrip } from '../charts/RainStrip';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
+import { useSignInAvailable } from '../account/AccountProvider';
 import { useLocalTo } from '../../app/paths';
 import s from './HomePage.module.css';
 
-const HERO = 'nam-dan-ql46-rice-plain';
-const HERITAGE = ['do-luong-nam-son-road-rice', 'lam-river-hong-linh-view', 'do-luong-lam-son-communal-house'];
-const STEP_ART = ['c2-fields', 'b1-horizon', 'a3-rice', 'd2-fields'];
 const STEP_LINKS = ['/nong-dan/ruong', '/nong-dan/nam', '/nong-dan/uu-tien', '/nong-dan/phuong-an'];
+const SLIDE_MS = 7000;
 
+/** Opening: photographs that change by themselves (pausable, H1), the title rising out of its mask. */
 function Hero() {
   const t = useT();
-  const pick = usePick();
-  const { calm } = useSettings();
-  const [paused, setPaused] = useState(false);
   const signIn = useSignInAvailable();
+  const { calm } = useSettings();
+  const root = useRef<HTMLElement>(null);
+  const [shown, setShown] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [later, setLater] = useState(false);
+  const slides = later ? ART.hero : ART.hero.slice(0, 1);
+  const playing = !calm && !paused;
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setLater(true), 2500);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || slides.length < 2) return;
+    const id = window.setInterval(() => setShown((n) => (n + 1) % slides.length), SLIDE_MS);
+    return () => window.clearInterval(id);
+  }, [playing, slides.length]);
+
+  useCinema(root, () => {
+    const title = root.current?.querySelector('[data-rise]');
+    if (title) riseLines(title, 0.45);
+    gsap.from('[data-letterbox]', { scaleY: 1, duration: 1.7, ease: EASE.calm, delay: 0.15 });
+    gsap.from('[data-hero-stage]', { scale: 1.16, duration: 2.8, ease: EASE.heavy });
+    gsap.to('[data-hero-stage]', {
+      yPercent: 14,
+      ease: 'none',
+      scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true },
+    });
+    gsap.from('[data-hero-after]', { opacity: 0, y: 16, duration: 1.1, ease: EASE.heavy, delay: 0.85, stagger: 0.1 });
+  }, [t.home.titleA]);
+
   return (
-    <section className={`${s.hero} surface-forest`} aria-labelledby="hero-title">
-      <div className={s.heroMedia}>
-        <Media slug={HERO} priority sizes="(max-width: 700px) 320px, 100vw" label="none" drift={!calm && !paused} />
+    <section ref={root} className={`${s.hero} surface-forest`} aria-labelledby="hero-title">
+      <div className={s.heroStage} data-hero-stage>
+        {slides.map((shot, n) => (
+          <div key={shot.slug} className={[s.slide, n === shown ? s.slideOn : ''].join(' ')}>
+            <Media
+              slug={shot.slug}
+              narrow={shot.narrow}
+              priority={n === 0}
+              sizes="(max-width: 480px) 320px, 100vw"
+              decorative
+              drift={playing && n === shown}
+            />
+          </div>
+        ))}
       </div>
       <div className={s.heroScrim} aria-hidden="true" />
+      <span className={`${s.letterbox} ${s.letterTop}`} data-letterbox aria-hidden="true" />
+      <span className={`${s.letterbox} ${s.letterBottom}`} data-letterbox aria-hidden="true" />
       <div className={`container ${s.heroInner}`}>
-        <p className="eyebrow">{t.home.eyebrow}</p>
-        <h1 id="hero-title" className={`display ${s.heroTitle}`}>
+        <h1 key={t.home.titleA} id="hero-title" className={`display ${s.heroTitle}`} data-rise>
           {t.home.titleA}
           <br />
           <em>{t.home.titleB}</em>
         </h1>
-        <p className={s.heroLead}>{t.home.lead}</p>
-        <div className={s.ctas}>
-          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowUpRight">
+        <p className={s.heroLead} data-hero-after>
+          {t.home.lead}
+        </p>
+        <div className={s.ctas} data-hero-after>
+          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">
             {t.home.ctaFarmer}
           </ButtonLink>
-          <ButtonLink to="/khoa-hoc" size="lg" variant="secondary" icon="layers">
-            {t.home.ctaScience}
-          </ButtonLink>
+          <a
+            className={s.textLink}
+            href="#cores"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('cores')?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth' });
+            }}
+          >
+            {t.home.ctaCores}
+            <Icon name="chevronDown" size={18} />
+          </a>
         </div>
         {/* a farmer on a second phone finds the saved answers on the first screen (walkthrough of PR #53) */}
         {signIn && (
-          <div className={s.ctas}>
-            <ButtonLink to="/da-luu" variant="secondary" icon="book">
+          <div className={s.ctas} data-hero-after>
+            <ButtonLink to="/da-luu" size="lg" variant="secondary" icon="book">
               {t.account.savedTitle}
             </ButtonLink>
           </div>
         )}
       </div>
-      <div className={s.heroFoot}>
-        <p className={s.heroCredit}>
-          {pick(media(HERO).caption)} · {pick(media(HERO).credit ?? { vi: '', en: '' })}
-        </p>
+      <div className={`container ${s.heroFoot}`} data-hero-after>
+        <ol className={s.progress} aria-hidden="true">
+          {slides.map((shot, n) => (
+            <li
+              key={shot.slug}
+              className={n === shown ? s.progressOn : ''}
+              style={{ animationDuration: `${SLIDE_MS}ms`, animationPlayState: playing ? 'running' : 'paused' }}
+            />
+          ))}
+        </ol>
         {!calm && (
-          <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)} aria-pressed={paused}>
+          <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)}>
             <Icon name={paused ? 'play' : 'pause'} size={16} />
-            {paused ? t.media.play : t.media.pause}
+            {paused ? t.home.play : t.home.pause}
           </button>
         )}
       </div>
@@ -75,126 +133,236 @@ function Hero() {
   );
 }
 
-function ChapterNav() {
-  const t = useT();
-  return (
-    <nav className={s.chapters} aria-label={t.home.chaptersLabel}>
-      <ol className="container">
-        {t.home.chapters.map((c, i) => (
-          <li key={c}>
-            <a
-              href={`#ch-${i + 1}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(`ch-${i + 1}`)?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              <span>{String(i + 1).padStart(2, '0')}</span>
-              {c}
-            </a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
-function Heritage() {
-  const t = useT();
-  const pick = usePick();
-  return (
-    <section id="ch-1" className="band surface-paper" aria-labelledby="heritage-title">
-      <div className={`container ${s.heritage}`}>
-        <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.home.heritageEyebrow}</p>
-          <h2 id="heritage-title" className="h1">
-            {t.home.heritageTitle}
-          </h2>
-          <p className="lead">{t.home.heritageLead}</p>
-        </Reveal>
-        <div className={s.mosaic}>
-          {HERITAGE.map((slug, i) => (
-            <Reveal as="figure" key={slug} className={s[`m${i}`]} delay={i * 90}>
-              <span className={s.mosaicPhoto}>
-                <Media
-                  slug={slug}
-                  sizes={`(max-width: 480px) 320px, (max-width: 860px) 640px, ${i === 0 ? 640 : 420}px`}
-                />
-              </span>
-              <figcaption>
-                <span className={s.place}>{pick(media(slug).geography).split(';')[0]}</span>
-                <span>{pick(media(slug).caption)}</span>
-              </figcaption>
-            </Reveal>
-          ))}
-        </div>
-        <ul className={s.regions}>
-          {t.home.regions.map((r, i) => (
-            <Reveal as="li" key={r.name} delay={i * 70} className={i === 2 ? s.regionOut : undefined}>
-              <span className={s.regionName}>{r.name}</span>
-              <span className={s.regionBody}>{r.body}</span>
-            </Reveal>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
+/** The trial land in the paper's own words, one photograph, one study's money with its own definition (D-52, D-160). */
 export function Problem() {
   const t = useT();
+  const f = useFormat();
   const refs = useRefs();
+  const root = useRef<HTMLElement>(null);
   const rice = PLANS.find((p) => p.id === 'cc5')?.crops[0];
+
+  useCinema(root, () => {
+    gsap.fromTo(
+      '[data-clip]',
+      { clipPath: 'inset(14% 10% 14% 10%)' },
+      {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top 85%', end: 'center 55%', scrub: true },
+      },
+    );
+  });
+
   return (
-    <section id="ch-2" className={`band surface-forest grain ${s.problemBand}`} aria-labelledby="problem-title">
-      <div className={`container ${s.problem}`}>
-        <Reveal className={s.problemText}>
-          <p className="eyebrow">{t.home.problemEyebrow}</p>
-          <h2 id="problem-title" className="h1">
-            {t.home.problemTitle}
-          </h2>
-          <p className={s.studyLand}>
-            <small>{t.home.studyLandBy}</small>
-          </p>
-          <p className="lead">{t.home.problemLead}</p>
-        </Reveal>
+    <section ref={root} id="ch-2" className={`${s.problem} surface-forest grain`} aria-labelledby="problem-title">
+      <div className={s.problemPhoto} data-clip>
+        <Media
+          slug={ART.problem.slug}
+          narrow={ART.problem.narrow}
+          sizes="(max-width: 480px) 320px, (min-width: 900px) 50vw, 100vw"
+        />
+      </div>
+      <div className={s.problemText}>
+        <h2 id="problem-title" className="h1">
+          {t.home.problemTitle}
+        </h2>
+        <p className="lead">{t.home.problemLead}</p>
         {/* one study's money only: the second paper defines profit differently (D-52) */}
-        <Reveal className={s.problemSide} delay={100}>
-          {rice && (
-            <div className={s.stat}>
-              <SourceValue size="lg" {...refs.cropProfit(rice)} />
-              <span>{t.home.riceSpring}</span>
-              <span>{t.farmer.definitionPlain.p02}</span>
-            </div>
-          )}
-          <p className={s.trialNote}>{t.home.trialNote}</p>
-        </Reveal>
+        {rice && (
+          <div className={s.money}>
+            <SourceValue size="xl" {...refs.cropProfit(rice)}>
+              {f.million(rice.profit)}
+              <span className={s.unit}>{t.common.millionPerHa}</span>
+            </SourceValue>
+            <span className={s.moneyLabel}>{t.home.riceSpring}</span>
+            <span className={s.moneyDefinition}>{t.farmer.definitionPlain.p02}</span>
+          </div>
+        )}
+        <p className={s.note}>{t.home.trialNote}</p>
       </div>
     </section>
   );
 }
 
-function Climate() {
+/** The folk verse of xứ Nghệ, in brush lettering between two brocade bands, over the winding road. */
+function Verse() {
   const t = useT();
+  const root = useRef<HTMLElement>(null);
+  useCinema(root, () => {
+    const st = { trigger: root.current, start: 'top 72%', once: true };
+    root.current?.querySelectorAll('[data-verse-line]').forEach((line, i) => {
+      gsap.from(line, {
+        clipPath: 'inset(0% 100% 0% 0%)',
+        duration: 1.6,
+        ease: EASE.calm,
+        delay: 0.3 + i * 0.55,
+        scrollTrigger: st,
+        clearProps: 'clipPath',
+      });
+    });
+    gsap.from('[data-brocade]', { scaleX: 0, duration: 1.4, ease: EASE.heavy, stagger: 0.2, scrollTrigger: st });
+    gsap.fromTo(
+      '[data-verse-photo]',
+      { yPercent: -10 },
+      {
+        yPercent: 10,
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true },
+      },
+    );
+  });
   return (
-    <section id="ch-3" className={`band surface-paper ${s.climateBand}`} aria-labelledby="climate-title">
-      <div className="container stack" style={{ ['--gap' as string]: 'var(--s-8)' }}>
-        <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.home.climateEyebrow}</p>
-          <h2 id="climate-title" className="h1">
-            {t.home.climateTitle}
-          </h2>
-          <p className="lead">{t.home.climateLead}</p>
-        </Reveal>
-        <Reveal className={s.card}>
-          <RainStrip />
-        </Reveal>
+    <section ref={root} className={`${s.verse} surface-forest`} aria-labelledby="verse-title">
+      <div className={s.versePhoto} data-verse-photo>
+        <Media slug={ART.verse.slug} narrow={ART.verse.narrow} sizes="(max-width: 480px) 320px, 100vw" decorative />
+      </div>
+      <div className={`container ${s.verseInner}`}>
+        <h2 id="verse-title" className="visually-hidden">
+          {t.home.verseTitle}
+        </h2>
+        <Brocade className={s.verseBand} data-brocade />
+        <blockquote className={s.verseText} lang="vi">
+          {t.home.verse.map((line) => (
+            <span key={line} className={s.verseLine} data-verse-line>
+              {line}
+            </span>
+          ))}
+        </blockquote>
+        <p className={s.verseBy}>{t.home.verseBy}</p>
+        <p className={s.verseNote}>{t.home.verseNote}</p>
+        <Brocade className={s.verseBand} data-brocade />
       </div>
     </section>
   );
 }
 
-function Evidence() {
+/** The four AI cores: the photograph holds while each core's text passes (sticky, so it works without motion too). */
+const CORE_ICONS: IconName[] = ['sun', 'book', 'sprout', 'mic'];
+
+function Cores() {
+  const t = useT();
+  const local = useLocalTo();
+  const { calm } = useSettings();
+  const root = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const cores = t.home.cores;
+
+  useEffect(() => {
+    const items = root.current?.querySelectorAll<HTMLElement>('[data-core]');
+    if (!items?.length || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.core));
+        }),
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  useCinema(root, ({ wide }) => {
+    if (!wide) return;
+    gsap.fromTo(
+      '[data-core-stage]',
+      { scale: 1.08 },
+      {
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true },
+      },
+    );
+  });
+
+  return (
+    <section ref={root} id="cores" className={`${s.cores} surface-forest`} aria-labelledby="cores-title">
+      <div className={`container ${s.coresHead}`}>
+        <div className={s.coresIntro}>
+          <h2 id="cores-title" className="h1">
+            <Accent text={t.home.coresTitle} />
+          </h2>
+          <p className="lead">{t.home.coresLead}</p>
+        </div>
+        <ol className={s.coreIndex}>
+          {cores.map((c, n) => (
+            <li key={c.name} className={n === active ? s.coreIndexOn : undefined}>
+              <a
+                href={`#core-${n}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById(`core-${n}`)
+                    ?.closest('article')
+                    ?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' });
+                }}
+              >
+                <span className={s.coreIcon}>
+                  <Icon name={CORE_ICONS[n] ?? 'spark'} size={24} />
+                </span>
+                <span className={s.coreIndexText}>
+                  <strong>{c.name}</strong>
+                  <span>{c.gives}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <Brocade className={s.coresBand} />
+      <div className={s.coresBody}>
+        <div className={s.coresStage} aria-hidden="true">
+          <div className={s.coresStageInner} data-core-stage>
+            {ART.cores.map((shot, n) => (
+              <div key={shot.slug} className={[s.coreShot, n === active ? s.coreShotOn : ''].join(' ')}>
+                <Media slug={shot.slug} sizes="(max-width: 480px) 320px, 50vw" decorative />
+              </div>
+            ))}
+          </div>
+          <p className={s.coreStageName}>{cores[active]?.name}</p>
+          <ol className={s.coreTicks}>
+            {cores.map((c, n) => (
+              <li key={c.name} className={n === active ? s.coreTickOn : undefined} />
+            ))}
+          </ol>
+        </div>
+        <div className={s.coreList}>
+          {cores.map((c, n) => (
+            <article key={c.name} className={s.core} data-core={n} aria-labelledby={`core-${n}`}>
+              <span className={s.corePhoto}>
+                <Media slug={(ART.cores[n] ?? ART.cores[0]).slug} sizes="(max-width: 480px) 320px, 100vw" decorative />
+              </span>
+              <h3 id={`core-${n}`} className={s.coreName}>
+                {c.name}
+              </h3>
+              <p className={s.coreDoes}>{c.does}</p>
+              <dl className={s.coreFacts}>
+                <div>
+                  <dt>{t.home.coreUses}</dt>
+                  <dd>{c.uses}</dd>
+                </div>
+                <div>
+                  <dt>{t.home.coreGives}</dt>
+                  <dd>{c.gives}</dd>
+                </div>
+                <div className={s.coreLimit}>
+                  <dt>{t.home.coreLimit}</dt>
+                  <dd>{c.limit}</dd>
+                </div>
+              </dl>
+              <Link to={local(c.to)} className={s.coreLink}>
+                {t.home.coreOpen(c.where)}
+                <Icon name="arrowRight" size={18} />
+              </Link>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Thirty years in one plain sentence and one bar per year. */
+function Climate() {
   const t = useT();
   const pick = usePick();
   const refs = useRefs();
@@ -202,144 +370,34 @@ function Evidence() {
   const values = hazards.year_level[rule];
   const dryYears = values.filter((v) => v > 0.5).length;
   return (
-    <section id="ch-4" className="band surface-paper" aria-labelledby="evidence-title" style={{ paddingTop: 0 }}>
-      <div className={`container ${s.evidence}`}>
-        <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.home.evidenceEyebrow}</p>
-          <h2 id="evidence-title" className="h1">
-            {t.home.evidenceTitle}
+    <section className={`band surface-paper ${s.climate}`} aria-labelledby="climate-title">
+      <div className={`container ${s.climateGrid}`}>
+        <div className={s.climateText}>
+          <h2 id="climate-title" className="h1">
+            {t.home.climateTitle(dryYears)}
           </h2>
-          <p className="lead">{t.home.droughtCaption(dryYears)}</p>
+          <p className="lead">{t.home.climateLead}</p>
           <ButtonLink to="/bang-chung" variant="secondary" icon="arrowRight">
             {t.home.evidenceCta}
           </ButtonLink>
-        </Reveal>
-        <Reveal className={s.card} delay={90}>
-          <div className={s.chartHead}>
-            <h3 className="h3">
+        </div>
+        <figure className={s.chart}>
+          <figcaption className={s.chartHead}>
+            <span className={s.chartRule}>
               {pick(RULES[rule].name)} · {RULES[rule].article}
-            </h3>
+            </span>
             <span className="muted">{t.home.droughtAxis}</span>
-          </div>
-          <YearBars years={YEARS} values={values} color="var(--data-drought)" label={t.home.evidenceTitle} />
+          </figcaption>
+          <YearBars years={YEARS} values={values} color="var(--data-drought)" label={t.home.climateTitle(dryYears)} />
           <SourceValue {...refs.shareSeries(rule)} />
           <p className="muted">{t.common.notForecast}</p>
-        </Reveal>
+        </figure>
       </div>
     </section>
   );
 }
 
-function Steps() {
-  const t = useT();
-  const local = useLocalTo();
-  return (
-    <section id="ch-5" className={`band surface-forest grain ${s.stepsBand}`} aria-labelledby="steps-title">
-      <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
-        <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.home.stepsEyebrow}</p>
-          <h2 id="steps-title" className="h1">
-            {t.home.stepsTitle}
-          </h2>
-        </Reveal>
-        <ol className={s.steps}>
-          {t.home.steps.map((step, i) => (
-            <Reveal as="li" key={step.title} delay={i * 70}>
-              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step}>
-                <span className={s.stepArt}>
-                  <Media slug={STEP_ART[i] ?? 'a3-rice'} decorative sizes="(min-width: 1000px) 300px, 90vw" />
-                  <span className={s.stepNum}>{String(i + 1).padStart(2, '0')}</span>
-                </span>
-                <span className={s.stepTitle}>{step.title}</span>
-                <span className={s.stepBody}>{step.body}</span>
-              </Link>
-            </Reveal>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
-
-/** The signature transition: the river photograph dims and the real province border and NASA grid draw over it. */
-function Observatory() {
-  const t = useT();
-  const pick = usePick();
-  const shape = useMemo(() => {
-    const [minLon, minLat, maxLon, maxLat] = geo.bounds;
-    const k = Math.cos((19.3 * Math.PI) / 180);
-    const W = (maxLon - minLon) * k * 100 + 20,
-      H = (maxLat - minLat) * 100 + 20;
-    const x = (lon: number) => (lon - minLon) * k * 100 + 10;
-    const y = (lat: number) => (maxLat - lat) * 100 + 10;
-    const outline = geo.outline.map((r) => r.map(([lo, la]) => `${x(lo).toFixed(1)},${y(la).toFixed(1)}`).join(' '));
-    const cells = geo.grid.map((c) => ({
-      id: c.id,
-      w: c.weight,
-      x: x(c.lon - 0.3125),
-      y: y(c.lat + 0.25),
-      cw: 0.625 * k * 100,
-      ch: 50,
-    }));
-    return { W, H, outline, cells };
-  }, []);
-  return (
-    <section id="ch-6" className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
-      <Reveal className={s.obsStage}>
-        <span className={s.obsPhoto}>
-          <Media slug="lam-river-vinh-ben-thuy" sizes="100vw" label="none" decorative />
-        </span>
-        <svg
-          className={s.obsSvg}
-          viewBox={`0 0 ${shape.W} ${shape.H}`}
-          aria-hidden="true"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          {shape.cells.map((c, i) => (
-            <rect
-              key={c.id}
-              x={c.x}
-              y={c.y}
-              width={c.cw}
-              height={c.ch}
-              className={s.drawCell}
-              pathLength={1}
-              style={{ transitionDelay: `${300 + i * 90}ms`, fillOpacity: c.w > 0 ? 0.08 + c.w * 0.5 : 0 }}
-            />
-          ))}
-          {shape.outline.map((pts, i) => (
-            <polygon key={i} points={pts} className={s.drawLine} pathLength={1} />
-          ))}
-        </svg>
-      </Reveal>
-      <div className={`container ${s.obsText}`}>
-        <p className="eyebrow">{t.home.obsEyebrow}</p>
-        <h2 id="obs-title" className="h1">
-          {t.home.obsTitle}
-        </h2>
-        <p className="lead">{t.home.obsLead}</p>
-        <dl className={s.obsFacts}>
-          <div>
-            <dt className="num">{hazards.cells.length}</dt>
-            <dd>{t.home.obsCells}</dd>
-          </div>
-          <div>
-            <dt className="num">{CLIMATE_YEARS.length}</dt>
-            <dd>{t.home.obsYears}</dd>
-          </div>
-        </dl>
-        <ButtonLink to="/dai-quan-sat" size="lg" icon="globe">
-          {t.home.obsCta}
-        </ButtonLink>
-        <p className={s.obsCredit}>
-          {pick(media('lam-river-vinh-ben-thuy').caption)} ·{' '}
-          {pick(media('lam-river-vinh-ben-thuy').credit ?? { vi: '', en: '' })}
-        </p>
-      </div>
-    </section>
-  );
-}
-
+/** What the models could and could not show, as the method page reports it (D-165 wording kept). */
 function Honesty() {
   const t = useT();
   const pick = usePick();
@@ -359,32 +417,25 @@ function Honesty() {
     skill: number | undefined;
   }[] = [
     {
-      key: 'spring' as const,
+      key: 'spring',
       title: t.science.seasons.spring,
       body: t.home.honestySpring,
       ok: status('spring') === 'shown',
       skill: m1('spring')?.skill_vs_bnw?.value,
     },
     {
-      key: 'winter' as const,
+      key: 'winter',
       title: t.science.seasons.winter,
       body: t.home.honestyWinter,
       ok: status('winter') === 'shown',
       skill: m1('winter')?.skill_vs_bnw?.value,
     },
-    {
-      key: 'summer' as const,
-      title: t.science.seasons.summer_autumn,
-      body: t.home.honestySummer,
-      ok: false,
-      skill: undefined as number | undefined,
-    },
+    { key: 'summer', title: t.science.seasons.summer_autumn, body: t.home.honestySummer, ok: false, skill: undefined },
   ];
   return (
-    <section id="ch-7" className="band surface-paper" aria-labelledby="honesty-title">
-      <div className={`container ${s.honesty}`}>
-        <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.home.honestyEyebrow}</p>
+    <section className={`band surface-paper ${s.honesty}`} aria-labelledby="honesty-title">
+      <div className={`container ${s.honestyGrid}`}>
+        <div className={s.honestyHead}>
           <h2 id="honesty-title" className="h1">
             {t.home.honestyTitle}
           </h2>
@@ -392,10 +443,10 @@ function Honesty() {
           <ButtonLink to="/khoa-hoc" variant="secondary" icon="arrowRight">
             {t.home.honestyCta}
           </ButtonLink>
-        </Reveal>
-        <div className={s.seasonCards}>
-          {cards.map((c, i) => (
-            <Reveal key={c.key} className={s.seasonCard} delay={i * 80}>
+        </div>
+        <div className={s.seasonCards} data-stagger>
+          {cards.map((c) => (
+            <article key={c.key} className={s.seasonCard}>
               <span className={[s.verdict, c.ok ? s.verdictOk : s.verdictNo].join(' ')}>
                 <Icon name={c.ok ? 'check' : 'close'} size={16} strokeWidth={2.4} />
                 {c.ok ? t.science.claimMade : t.science.claimNotMade}
@@ -407,7 +458,7 @@ function Honesty() {
                   <strong>{t.common.winterFragile}</strong>
                 </p>
               )}
-              {c.skill !== undefined && c.key !== 'summer' && (
+              {c.skill !== undefined && (
                 <p className={s.skillLine}>
                   <span className="muted">
                     {t.science.models.m1_ridge} {t.home.vsBnw}
@@ -421,7 +472,7 @@ function Honesty() {
                   />
                 </p>
               )}
-            </Reveal>
+            </article>
           ))}
         </div>
       </div>
@@ -429,31 +480,56 @@ function Honesty() {
   );
 }
 
-function Faq() {
+function Steps() {
+  const t = useT();
+  const local = useLocalTo();
+  return (
+    <section className={`band surface-forest grain ${s.steps}`} aria-labelledby="steps-title">
+      <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
+        <h2 id="steps-title" className="h1">
+          <Accent text={t.home.stepsTitle} />
+        </h2>
+        <ol className={s.strip} data-stagger>
+          {t.home.steps.map((step, i) => (
+            <li key={step.title}>
+              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step}>
+                <span className={s.stepPhoto}>
+                  <Media
+                    slug={ART.steps[i]?.slug ?? ART.steps[0].slug}
+                    decorative
+                    sizes="(max-width: 480px) 320px, (min-width: 1000px) 320px, 80vw"
+                  />
+                </span>
+                <span className={s.stepText}>
+                  <span className={s.stepLabel}>{t.home.stepLabel(i + 1)}</span>
+                  <span className={s.stepTitle}>{step.title}</span>
+                  <span className={s.stepBody}>{step.body}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+/** The two satellites scanning the real province and its NASA grid (drawn, light, pausable), then the way in. */
+function Observatory() {
   const t = useT();
   return (
-    <section className="band surface-paper" aria-labelledby="faq-title" style={{ paddingTop: 0 }}>
-      <div className={`container ${s.faqGrid}`}>
-        <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.home.faqEyebrow}</p>
-          <h2 id="faq-title" className="h1">
-            {t.home.faqTitle}
-          </h2>
-          <p className="muted">{t.common.support}</p>
-        </Reveal>
-        <Reveal className={s.faq}>
-          {t.home.faq.map((item, i) => (
-            <details key={item.q} open={i === 0}>
-              <summary>
-                {item.q}
-                <span className={s.faqIcon} aria-hidden="true">
-                  <Icon name="chevronDown" size={18} />
-                </span>
-              </summary>
-              <p>{item.a}</p>
-            </details>
-          ))}
-        </Reveal>
+    <section className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
+      <div className={s.obsStage}>
+        <SatelliteScan labels={t.earth.scan} />
+      </div>
+      <div className={`container ${s.obsText}`}>
+        <h2 id="obs-title" className="h1">
+          <Accent text={t.home.obsTitle} />
+        </h2>
+        <p className="lead">{t.home.obsLead}</p>
+        <ButtonLink to="/dai-quan-sat" size="lg" icon="arrowRight">
+          {t.home.obsCta}
+        </ButtonLink>
       </div>
     </section>
   );
@@ -461,18 +537,30 @@ function Faq() {
 
 function Invite() {
   const t = useT();
+  const root = useRef<HTMLElement>(null);
+  useCinema(root, () => {
+    gsap.fromTo(
+      '[data-invite-art]',
+      { scale: 1.18 },
+      {
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom bottom', scrub: true },
+      },
+    );
+  });
   return (
-    <section id="ch-8" className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
-      <span className={s.inviteArt}>
-        <Media slug="d1-horizon" sizes="100vw" />
+    <section ref={root} className={`${s.invite} surface-forest`} aria-labelledby="invite-title">
+      <span className={s.inviteArt} data-invite-art>
+        <Media slug={ART.invite.slug} sizes="(max-width: 480px) 320px, 100vw" decorative />
       </span>
       <div className={`container ${s.inviteInner}`}>
         <h2 id="invite-title" className={`display ${s.inviteTitle}`}>
-          {t.home.inviteTitle}
+          <Accent text={t.home.inviteTitle} />
         </h2>
         <p className="lead">{t.home.inviteLead}</p>
         <div className={s.ctas}>
-          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowUpRight">
+          <ButtonLink to="/nong-dan/ruong" size="lg" icon="arrowRight">
             {t.home.ctaFarmer}
           </ButtonLink>
           <ButtonLink to="/tro-ly" size="lg" variant="secondary" icon="spark">
@@ -485,18 +573,28 @@ function Invite() {
 }
 
 export function HomePage() {
+  const pageRef = useRef<HTMLElement>(null);
+  usePageReveals(pageRef);
+  const { state } = useLocation();
+  const { calm } = useSettings();
+  // A core tag elsewhere links here with { to: 'cores' }: land on the four cores once the page has laid out.
+  useEffect(() => {
+    if ((state as { to?: string } | null)?.to !== 'cores') return;
+    const id = window.requestAnimationFrame(() =>
+      document.getElementById('cores')?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth' }),
+    );
+    return () => window.cancelAnimationFrame(id);
+  }, [state, calm]);
   return (
-    <main id="main">
+    <main ref={pageRef} id="main">
       <Hero />
-      <ChapterNav />
-      <Heritage />
       <Problem />
+      <Verse />
+      <Cores />
       <Climate />
-      <Evidence />
+      <Honesty />
       <Steps />
       <Observatory />
-      <Honesty />
-      <Faq />
       <Invite />
     </main>
   );

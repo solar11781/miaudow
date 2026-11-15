@@ -1,7 +1,7 @@
 // The image library (web/pipeline/build_media.mjs → generated/media.json; full rights record in
 // assets/photos/PHOTO_MANIFEST.json and assets/ASSET_MANIFEST.json). Two kinds never mix:
 // - photo: a real photograph with creator, licence and place as the source states them;
-// - illustration: AI-generated concept art, always labelled as such, never captioned as Nghệ An.
+// - illustration: AI-generated concept art, never captioned as Nghệ An.
 import mediaJson from './generated/media.json';
 import type { Bilingual } from '../domain/provenance';
 

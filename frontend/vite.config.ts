@@ -30,8 +30,8 @@ function snapshotFiles(): Plugin {
 const FILE_PACKAGES = [
   { name: 'cesium', licenseFile: 'LICENSE.md' },
   { name: 'react-router-dom', licenseFile: 'LICENSE.md' },
-  ...['be-vietnam-pro', 'jetbrains-mono', 'noto-serif-display'].map((n) => ({
-    name: `@fontsource/${n}`,
+  ...['@fontsource/be-vietnam-pro', '@fontsource/charm', '@fontsource-variable/alegreya'].map((n) => ({
+    name: n,
     licenseFile: 'LICENSE',
   })),
 ];

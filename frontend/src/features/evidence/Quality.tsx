@@ -39,7 +39,6 @@ export function Quality() {
     <section className="band surface-paper" aria-labelledby="ev-quality" style={{ paddingTop: 0 }}>
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-6)' }}>
         <Reveal className={s.sectionHead}>
-          <p className="eyebrow">{t.quality.eyebrow}</p>
           <h2 id="ev-quality" className="h1">
             {t.quality.title}
           </h2>

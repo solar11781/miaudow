@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { planLabel } from '../../domain/plans';
 import { CROPS, PLANS, planProfitMillion, type Plan } from '../../domain/plans';
 import { LANDS, type Land } from '../../domain/farmerState';
 import { decisionPlan, rulebookPlan } from '../../data/rulebook';
@@ -34,7 +35,7 @@ export function EvidenceDesk() {
             className={s.deskTab}
             onClick={() => setPlanId(p.id)}
           >
-            <span className={s.deskTabId}>{p.current ? t.farmer.current : p.id.toUpperCase()}</span>
+            <span className={s.deskTabId}>{planLabel(p, t.farmer)}</span>
             <span>
               {p.textOnly ? pick(p.textOnly.sequence) : p.crops.map((c) => pick(CROPS[c.crop].name)).join(' · ')}
             </span>

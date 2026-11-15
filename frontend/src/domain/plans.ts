@@ -1,5 +1,13 @@
 import type { Bilingual } from './provenance';
 
+/** Plain name of a plan: "current practice" or "trial way of farming n", in the reader's language. */
+export function planLabel(
+  p: { id: string; current?: boolean },
+  text: { current: string; trialShort: (n: string) => string },
+): string {
+  return p.current ? text.current : text.trialShort(p.id.replace(/\D/g, ''));
+}
+
 // Crop facts as published. Money in thousand VND per hectare (P-02 Table 13, net of labour; costs from Tables 4, 8, 12).
 export type CropFamily = 'rice' | 'legume' | 'maize' | 'root' | 'other';
 export type Season = 'spring' | 'summer' | 'autumn';

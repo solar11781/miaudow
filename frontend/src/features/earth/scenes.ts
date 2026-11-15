@@ -13,6 +13,8 @@ export interface Scene {
   orbits: boolean;
   /** Place names (drawn by the app). */
   labels: boolean;
+  /** The two flagship satellites (Viet Nam, NASA Terra) and their scan beams over Nghệ An. */
+  flagships: boolean;
   panel: Panel;
 }
 
@@ -23,6 +25,7 @@ export const SCENES: Scene[] = [
     cells: false,
     orbits: false,
     labels: false,
+    flagships: false,
     panel: 'story',
   },
   {
@@ -31,6 +34,7 @@ export const SCENES: Scene[] = [
     cells: false,
     orbits: false,
     labels: false,
+    flagships: true,
     panel: 'story',
   },
   {
@@ -39,6 +43,7 @@ export const SCENES: Scene[] = [
     cells: false,
     orbits: true,
     labels: false,
+    flagships: true,
     panel: 'missions',
   },
   {
@@ -47,6 +52,7 @@ export const SCENES: Scene[] = [
     cells: false,
     orbits: false,
     labels: true,
+    flagships: true,
     panel: 'story',
   },
   {
@@ -55,6 +61,7 @@ export const SCENES: Scene[] = [
     cells: false,
     orbits: false,
     labels: true,
+    flagships: false,
     panel: 'layers',
   },
   {
@@ -63,6 +70,7 @@ export const SCENES: Scene[] = [
     cells: false,
     orbits: false,
     labels: true,
+    flagships: false,
     panel: 'layers',
   },
   {
@@ -71,6 +79,7 @@ export const SCENES: Scene[] = [
     cells: true,
     orbits: false,
     labels: false,
+    flagships: false,
     panel: 'metric',
   },
   {
@@ -79,6 +88,7 @@ export const SCENES: Scene[] = [
     cells: true,
     orbits: false,
     labels: false,
+    flagships: false,
     panel: 'insight',
   },
 ];
