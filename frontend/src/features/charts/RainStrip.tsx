@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { CLIMATE, CLIMATE_YEARS, climateYear } from '../../data/climate';
 import type { SourceRef } from '../../domain/provenance';
 import { SourceValue } from '../provenance/SourceValue';
-import { useFormat, useSettings, useT } from '../../app/settings';
+import { useFormat, useT } from '../../app/settings';
 import { useWidth } from './useWidth';
 import s from './charts.module.css';
 
@@ -32,7 +32,6 @@ export function RainStrip({
 }) {
   const t = useT();
   const f = useFormat();
-  const { lang } = useSettings();
   const id = useId();
   const [ref, W] = useWidth<HTMLDivElement>();
   const [own, setOwn] = useState(initialYear);
@@ -47,7 +46,6 @@ export function RainStrip({
     gap = 2;
   const cw = (W - padL) / 12;
   const H = padT + CLIMATE_YEARS.length * rowH;
-  const vi = lang === 'vi';
   const base = `${CLIMATE.baseline_years[0]}–${CLIMATE.baseline_years[1]}`;
 
   return (
@@ -85,7 +83,15 @@ export function RainStrip({
                     style={{ fill: fill(p) }}
                     stroke={p === null ? 'var(--line-2)' : 'none'}
                   >
-                    <title>{`${y}, ${vi ? 'tháng' : 'month'} ${m + 1}: ${p === null ? t.common.noData : `${f.n(row.monthly_rain_mm[m] ?? 0)} mm (${p > 0 ? '+' : ''}${f.n(p)}%)`}`}</title>
+                    <title>
+                      {t.climate.monthTip(
+                        y,
+                        m + 1,
+                        p === null
+                          ? t.common.noData
+                          : `${f.n(row.monthly_rain_mm[m] ?? 0)} mm (${p > 0 ? '+' : ''}${f.n(p)}%)`,
+                      )}
+                    </title>
                   </rect>
                 ))}
                 {isSel && (
@@ -131,7 +137,7 @@ export function RainStrip({
             ))}
           </select>
         </label>
-        <YearFacts year={year} lang={lang} />
+        <YearFacts year={year} />
         <p className={s.stripNote}>
           {t.common.notForecast}. {t.climate.gridNote}
         </p>
@@ -142,12 +148,11 @@ export function RainStrip({
 }
 
 /** The selected year's numbers, each a sourced value (one tap to its source sheet, UI-UX-SPEC H5). */
-function YearFacts({ year, lang }: { year: number; lang: 'vi' | 'en' }) {
+function YearFacts({ year }: { year: number }) {
   const t = useT();
   const f = useFormat();
   const sel = climateYear(year);
   if (!sel) return null;
-  const vi = lang === 'vi';
   const base = `${CLIMATE.baseline_years[0]}–${CLIMATE.baseline_years[1]}`;
   const normalYear = CLIMATE.normal_mm.farmland_weighted.reduce((a, b) => a + b, 0);
   const derived = (value: string, label: string, detail: string): SourceRef => ({
@@ -167,9 +172,7 @@ function YearFacts({ year, lang }: { year: number; lang: 'vi' | 'en' }) {
           {...derived(
             `${f.n(sel.annual_rain_mm ?? 0)} mm`,
             `${t.climate.annual} · ${year}`,
-            vi
-              ? `Tổng mưa 12 tháng, trung bình theo trọng số đất trồng của 5 ô NASA POWER. Bình thường ${base}: ${f.n(normalYear)} mm.`
-              : `Sum of 12 months, farmland-weighted mean of the 5 NASA POWER cells. Normal ${base}: ${f.n(normalYear)} mm.`,
+            t.climate.annualDetail(base, f.n(normalYear)),
           )}
         />
       </dd>
@@ -180,9 +183,7 @@ function YearFacts({ year, lang }: { year: number; lang: 'vi' | 'en' }) {
           {...derived(
             String(sel.drought_rain_months.length),
             `${t.climate.dryMonths} · ${year}`,
-            vi
-              ? `Tháng có mưa thấp hơn một nửa mức bình thường ${base} (QĐ 18/2021, Điều 48): ${sel.drought_rain_months.join(', ') || 'không có'}.`
-              : `Months with less than half the ${base} normal (Decision 18/2021, Art. 48): ${sel.drought_rain_months.join(', ') || 'none'}.`,
+            t.climate.dryMonthsDetail(base, sel.drought_rain_months.join(', ')),
           )}
         />
       </dd>
@@ -191,11 +192,9 @@ function YearFacts({ year, lang }: { year: number; lang: 'vi' | 'en' }) {
         <SourceValue
           size="lg"
           {...derived(
-            `${f.n(sel.longest_dry_spell_days ?? 0, 0)} ${vi ? 'ngày' : 'days'}`,
+            t.climate.days(f.n(sel.longest_dry_spell_days ?? 0, 0)),
             `${t.climate.drySpell} · ${year}`,
-            vi
-              ? 'Số ngày liền mưa dưới 1 mm dài nhất trong năm (chỉ số CDD, Zhang và cs. 2011), trung bình theo trọng số các ô.'
-              : 'Longest run of days with under 1 mm of rain (CDD index, Zhang et al. 2011), weighted mean of the cells.',
+            t.climate.drySpellDetail,
           )}
         />
       </dd>
@@ -204,11 +203,9 @@ function YearFacts({ year, lang }: { year: number; lang: 'vi' | 'en' }) {
         <SourceValue
           size="lg"
           {...derived(
-            `${f.n(sel.hot_days ?? 0, 0)} ${vi ? 'ngày' : 'days'}`,
+            t.climate.days(f.n(sel.hot_days ?? 0, 0)),
             `${t.climate.hotDays} · ${year}`,
-            vi
-              ? 'Ngày có nhiệt độ cao nhất từ 35 °C (ngưỡng dưới của QĐ 18/2021, Điều 47), trung bình theo trọng số các ô.'
-              : 'Days with a maximum of 35 °C or more (lower bound of Decision 18/2021, Art. 47), weighted mean of the cells.',
+            t.climate.hotDaysDetail,
           )}
         />
       </dd>

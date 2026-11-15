@@ -89,10 +89,15 @@ export function OwnNumbers({
     items.map((i) => ({ price: prices[i.crop_key] ?? null, cost: costs[i.crop_key] ?? null })),
   );
   // a computed number cites the study yield it multiplies and the engine's arithmetic E-022 (D-158); the sheet says
-  // the price and costs are the farmer's own
+  // the price and costs are the farmer's own; shown in million dong per ha like the study's money (D-190)
   const computed = (value: string, ids: SourceId[], label: string) => {
     const v: Value = { value, unit: first.profit.unit, source_ids: [...ids, 'E-022'] };
-    return { ...refs.value(v, label), note: t.farmer.own.sheetNote };
+    const m = refs.money(v);
+    return (
+      <SourceValue {...refs.value(v, label)} note={t.farmer.own.sheetNote}>
+        {`${m.number} ${m.unit}`}
+      </SourceValue>
+    );
   };
   const yieldIds = items.flatMap((i) => i.yield.source_ids);
   const total = result.total;
@@ -152,9 +157,7 @@ export function OwnNumbers({
                     {r?.revenue ? (
                       <span>
                         {t.farmer.own.revenue}:{' '}
-                        <SourceValue
-                          {...computed(r.revenue, item.yield.source_ids, `${t.farmer.own.revenue} · ${name}`)}
-                        />
+                        {computed(r.revenue, item.yield.source_ids, `${t.farmer.own.revenue} · ${name}`)}
                       </span>
                     ) : (
                       <span className="muted">{t.farmer.own.needPrice}</span>
@@ -162,9 +165,7 @@ export function OwnNumbers({
                     {r?.margin && (
                       <span>
                         {t.farmer.own.margin}:{' '}
-                        <SourceValue
-                          {...computed(r.margin, item.yield.source_ids, `${t.farmer.own.margin} · ${name}`)}
-                        />
+                        {computed(r.margin, item.yield.source_ids, `${t.farmer.own.margin} · ${name}`)}
                       </span>
                     )}
                   </span>
@@ -177,16 +178,12 @@ export function OwnNumbers({
                 <span className={s.kvVals}>
                   <span>
                     {t.farmer.own.revenue}:{' '}
-                    <SourceValue
-                      {...computed(total.revenue, yieldIds, `${t.farmer.own.revenue} · ${t.farmer.own.yearSum}`)}
-                    />
+                    {computed(total.revenue, yieldIds, `${t.farmer.own.revenue} · ${t.farmer.own.yearSum}`)}
                   </span>
                   {total.margin && (
                     <span>
                       {t.farmer.own.margin}:{' '}
-                      <SourceValue
-                        {...computed(total.margin, yieldIds, `${t.farmer.own.margin} · ${t.farmer.own.yearSum}`)}
-                      />
+                      {computed(total.margin, yieldIds, `${t.farmer.own.margin} · ${t.farmer.own.yearSum}`)}
                     </span>
                   )}
                 </span>

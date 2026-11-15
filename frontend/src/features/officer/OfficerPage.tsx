@@ -81,7 +81,7 @@ export function Matrix() {
                               {pick(CROPS[c.crop].name)} {c.variety}
                             </span>
                             <span className="mono">
-                              {f.n(c.cost)} {t.officer.thousandPerHa} · {f.n(c.price)} {t.officer.perKg}
+                              {f.million(c.cost)} {t.common.millionPerHa} · {f.n(c.price)} {t.common.perKg}
                             </span>
                           </li>
                         ))}
