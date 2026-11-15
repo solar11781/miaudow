@@ -28,3 +28,10 @@ describe('H14 no browser storage in the app code', () => {
     expect(hits).toEqual([]);
   });
 });
+
+// D-167: only pictures with a recorded licence ship; the team's unlicensed mood photographs have no code path
+describe('no unlicensed picture path', () => {
+  it('no file reads the mood photographs', () => {
+    expect(Object.entries(sources).filter(([, code]) => /media\.mood|HAS_MOOD|'mood'/.test(code))).toEqual([]);
+  });
+});
