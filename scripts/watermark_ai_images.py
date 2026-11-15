@@ -1,8 +1,8 @@
 """Burn a visible "made by AI" mark into every AI-generated illustration listed in the media library.
 
 The 2026 Space Apps submission guide says AI-generated images "must include a visible watermark". The mark sits
-bottom-centre because the app crops images with object-fit cover around a focal point, which mostly trims the sides.
-A marked file carries an XMP packet (IPTC digital source type "trainedAlgorithmicMedia"); files that already have it
+in the lower centre, above the app's own image label: the app crops images with object-fit cover around a focal
+point, which mostly trims the sides. A marked file carries an XMP packet (IPTC digital source type "trainedAlgorithmicMedia"); files that already have it
 are skipped, so running the script again never draws a second mark.
 
 Usage: python scripts/watermark_ai_images.py   (needs Pillow from requirements-dev.lock and `npm ci` in frontend/)
@@ -23,6 +23,8 @@ FONT_FILES = ("be-vietnam-pro-vietnamese-600-normal.woff2", "be-vietnam-pro-lati
 
 MARK_TEXT = "Ảnh tạo bằng AI · AI-generated"
 TEXT_SIZE_SHARE = 0.032  # font size as a share of image width: about 12 CSS px when a 640 px file fills a phone
+# the app's own label covers the bottom 42 of 246 CSS px of a home step card (Media.module.css .tag): keep above it
+LABEL_SHARE = 0.2
 # the app's image label colours (frontend/src/design-system/Media.module.css .tag)
 BOX_RGBA = (8, 20, 11, 168)
 TEXT_RGB = (244, 240, 229)
@@ -76,7 +78,7 @@ def draw_mark(image: Image.Image, fonts_for_size: FontsForSize) -> Image.Image:
     ascent, descent = runs[0][1].getmetrics()
     pad_x, pad_y = round(size * 0.7), round(size * 0.3)
     box_w, box_h = round(text_width) + 2 * pad_x, ascent + descent + 2 * pad_y
-    left, top = (width - box_w) // 2, height - box_h - round(size * 0.6)
+    left, top = (width - box_w) // 2, height - box_h - round(height * LABEL_SHARE)
 
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)

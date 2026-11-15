@@ -31,7 +31,7 @@ def mean_change(a: Image.Image, b: Image.Image, box: tuple[int, int, int, int]) 
 
 @pytest.mark.parametrize("fmt", ["WEBP", "AVIF"])
 @pytest.mark.usefixtures("latin_text")
-def test_mark_is_drawn_bottom_centre_and_keeps_size_and_format(tmp_path: Path, fmt: str) -> None:
+def test_mark_is_drawn_lower_centre_and_keeps_size_and_format(tmp_path: Path, fmt: str) -> None:
     path = tmp_path / f"art-640.{fmt.lower()}"
     Image.new("RGB", (640, 426), (150, 170, 90)).save(path, fmt)
     before = Image.open(path).convert("RGB")
@@ -41,9 +41,11 @@ def test_mark_is_drawn_bottom_centre_and_keeps_size_and_format(tmp_path: Path, f
     after = Image.open(path)
     assert (after.format, after.size) == (fmt, (640, 426))
     after = after.convert("RGB")
-    # bottom centre (where object-fit cover keeps it) changes; the top corners stay as they were
-    assert mean_change(before, after, (260, 380, 380, 415)) > 30
+    # lower centre (object-fit cover keeps it) changes; the top corners stay as they were
+    assert mean_change(before, after, (260, 315, 380, 335)) > 30
     assert mean_change(before, after, (0, 0, 100, 100)) < 3
+    # the app's own label covers the bottom 42 of 246 CSS px on a home step card (Media.module.css .tag): 17 %
+    assert mean_change(before, after, (0, 354, 640, 426)) < 3
     assert mean_change(before, after, (540, 0, 640, 100)) < 3
 
 
