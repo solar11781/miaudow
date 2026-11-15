@@ -1,7 +1,7 @@
 import { model } from '../../data';
 import { lowerFirst, upperFirst } from '../../domain/format';
 import { RULES } from '../../domain/hazards';
-import { CROPS, PLANS, planProfitMillion } from '../../domain/plans';
+import { CROPS, PLANS, planLabel, planProfitMillion } from '../../domain/plans';
 import type { Bilingual, EvidenceKind, SourceId } from '../../domain/provenance';
 import { modelVerdict, type ModelVerdict } from '../../domain/rice';
 import { en } from '../../i18n/en';
@@ -155,8 +155,8 @@ function planPassages(): Passage[] {
       sources: ['p02'],
       keys: `${p.id} ${p.crops.map((c) => `${CROPS[c.crop].name.vi} ${CROPS[c.crop].name.en} ${c.variety}`).join(' ')} lai co cau`,
       title: {
-        vi: `${p.current ? 'Cách làm hiện nay' : `Cơ cấu ${p.id.toUpperCase()}`}: ${seq('vi')}`,
-        en: `${p.current ? 'Current practice' : `Plan ${p.id.toUpperCase()}`}: ${seq('en')}`,
+        vi: `${planLabel(p, vi.farmer)}: ${seq('vi')}`,
+        en: `${planLabel(p, en.farmer)}: ${seq('en')}`,
       },
       text: {
         vi: `Trong thử nghiệm 2020–21 của Trịnh Đức Toàn và cs. (2023), lãi đã trừ công của từng vụ (triệu đồng/ha): ${parts('vi')}; cộng lại ${n1(total, 'vi')} triệu đồng/ha (phép cộng của Miaudow). Một ô thử, một năm; giá bán năm nay có thể khác.`,
