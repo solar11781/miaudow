@@ -218,6 +218,7 @@
 .cta {
   display: none !important;
   white-space: nowrap;
+  flex-shrink: 0; /* a squeezed button pushed its words under the arrow on wide screens */
 }
 
 .chip span {
