@@ -179,9 +179,9 @@ export const en: Messages = {
       },
       {
         name: 'Vietnamese copilot core',
-        does: 'Hears a question by voice or text, calls the three cores above, and checks every number before it answers.',
-        uses: 'The three cores above; Claude (Anthropic’s AI) when the server has a key, otherwise a fixed answer engine',
-        gives: 'A short answer with its source, read aloud on request',
+        does: 'Hears a question by voice or text, then picks the passages in Miaudow’s data that answer it.',
+        uses: 'The three cores above; Claude (Anthropic’s AI) only to pick the passages, when the server has a key',
+        gives: 'The picked passages, shown word for word with their sources, read aloud on request',
         limit: 'Not tested yet with the local Nghệ An accent.',
         to: '/tro-ly',
         where: 'the Copilot',

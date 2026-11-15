@@ -56,4 +56,14 @@ describe('translations', () => {
       expect(Object.values(core).join(' ')).not.toMatch(/alike|unusual|similar|giống nhau|bất thường/i);
     }
   });
+  it('describe the copilot core as extractive: picked passages shown word for word with sources (D-177)', () => {
+    const [enCore, viCore] = [en.home.cores[3], vi.home.cores[3]];
+    expect(Object.values(enCore ?? {}).join(' ')).toMatch(/word for word/);
+    expect(Object.values(viCore ?? {}).join(' ')).toMatch(/nguyên văn/);
+    for (const text of [enCore, viCore].map((c) => Object.values(c ?? {}).join(' '))) {
+      expect(text).not.toMatch(
+        /checks every number|short answer|answer engine|kiểm từng con số|câu trả lời ngắn|bộ trả lời/i,
+      );
+    }
+  });
 });

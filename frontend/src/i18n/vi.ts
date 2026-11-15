@@ -176,9 +176,9 @@ export const vi = {
       },
       {
         name: 'Lõi trợ lý tiếng Việt',
-        does: 'Nghe câu hỏi bằng giọng nói hoặc chữ, gọi ba lõi trên, rồi kiểm từng con số trước khi trả lời.',
-        uses: 'Ba lõi trên; Claude (AI của Anthropic) khi máy chủ có khóa, nếu không thì bộ trả lời cố định',
-        gives: 'Câu trả lời ngắn, có nguồn, đọc to được',
+        does: 'Nghe câu hỏi bằng giọng nói hoặc chữ, rồi chọn trong dữ liệu của Miaudow những đoạn trả lời câu hỏi đó.',
+        uses: 'Ba lõi trên; Claude (AI của Anthropic) chỉ để chọn đoạn, khi máy chủ có khóa',
+        gives: 'Các đoạn được chọn, hiện nguyên văn kèm nguồn, đọc to được',
         limit: 'Chưa thử với giọng nói địa phương Nghệ An.',
         to: '/tro-ly',
         where: 'Trợ lý',
