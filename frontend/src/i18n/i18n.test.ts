@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { en } from './en';
 import { vi } from './vi';
 import method from '../../snapshot/method.json';
+import enSource from './en.ts?raw';
 
 type Node = unknown;
 
@@ -82,5 +83,15 @@ describe('translations', () => {
         /checks every number|short answer|answer engine|kiểm từng con số|câu trả lời ngắn|bộ trả lời/i,
       );
     }
+  });
+});
+
+// D-186, D-191: English text writes place names without accent marks ("Nghe An", "Vietnam", "Do Luong"); titles,
+// people's names and quotes stay verbatim (the journal "Nghệ An S&T")
+describe('place names in English', () => {
+  it('drop the accent marks outside verbatim titles', () => {
+    const places = /Nghệ An|Viet Nam|Việt Nam|Lưu Sơn|Đô Lương|Hà Tĩnh|Thanh Hóa/;
+    const lines = enSource.split(/\r?\n/).filter((l) => places.test(l) && !l.includes('S&T'));
+    expect(lines).toEqual([]);
   });
 });

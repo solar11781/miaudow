@@ -792,6 +792,13 @@
   }
 }
 
+/* below the 360 px phone (200% zoom, H9) a half-width picture is too small for its "made by AI" tag */
+@media (max-width: 359px) {
+  .startSteps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .startSteps li {
   display: flex;
   flex-direction: column;

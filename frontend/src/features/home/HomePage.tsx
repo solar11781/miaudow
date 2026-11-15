@@ -7,7 +7,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { hazards, model, YEARS } from '../../data';
 import { ART } from '../../data/art';
 import { RULES } from '../../domain/hazards';
+import { lowerFirst } from '../../domain/format';
 import { PLANS } from '../../domain/plans';
+import { modelVerdict } from '../../domain/rice';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
@@ -20,7 +22,6 @@ import { useSignInAvailable } from '../account/AccountProvider';
 import { useLocalTo } from '../../app/paths';
 import s from './HomePage.module.css';
 
-const STEP_LINKS = ['/nong-dan/ruong', '/nong-dan/nam', '/nong-dan/uu-tien', '/nong-dan/phuong-an'];
 const SLIDE_MS = 7000;
 
 /** Opening: photographs that change by themselves (pausable, H1), the title rising out of its mask. */
@@ -438,7 +439,6 @@ function Honesty() {
   const t = useT();
   const pick = usePick();
   const f = useFormat();
-  const status = (season: 'spring' | 'winter') => model.seasons.find((x) => x.season === season)?.model_status;
   const m1 = (season: 'spring' | 'winter') =>
     model.metrics.find(
       (m) =>
@@ -452,20 +452,17 @@ function Honesty() {
     ok: boolean;
     skill: number | undefined;
   }[] = [
-    {
-      key: 'spring',
-      title: t.science.seasons.spring,
-      body: t.home.honestySpring,
-      ok: status('spring') === 'shown',
-      skill: m1('spring')?.skill_vs_bnw?.value,
-    },
-    {
-      key: 'winter',
-      title: t.science.seasons.winter,
-      body: t.home.honestyWinter,
-      ok: status('winter') === 'shown',
-      skill: m1('winter')?.skill_vs_bnw?.value,
-    },
+    ...(['spring', 'winter'] as const).map((season) => {
+      const v = modelVerdict(season);
+      const name = lowerFirst(t.science.seasons[season]);
+      return {
+        key: season,
+        title: t.science.seasons[season],
+        body: `${v.weatherHelps ? t.home.honestyHelps : t.home.honestyNoHelp} ${v.shown ? t.home.honestyShown(name) : t.home.honestyHidden(name)}`,
+        ok: v.weatherHelps,
+        skill: m1(season)?.skill_vs_bnw?.value,
+      };
+    }),
     { key: 'summer', title: t.science.seasons.summer_autumn, body: t.home.honestySummer, ok: false, skill: undefined },
   ];
   return (
@@ -489,7 +486,7 @@ function Honesty() {
               </span>
               <h3 className="h3">{c.title}</h3>
               <p>{c.body}</p>
-              {c.key === 'winter' && (
+              {c.key === 'winter' && c.ok && (
                 <p>
                   <strong>{t.common.winterFragile}</strong>
                 </p>
@@ -518,17 +515,17 @@ function Honesty() {
 
 function Steps() {
   const t = useT();
-  const local = useLocalTo();
   return (
     <section className={`band surface-forest grain ${s.steps}`} aria-labelledby="steps-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
         <h2 id="steps-title" className="h1">
           <Accent text={t.home.stepsTitle} />
         </h2>
-        <ol className={s.strip} data-stagger>
+        {/* the strip scrolls sideways on a phone: focusable so a keyboard can scroll it (axe scrollable-region-focusable) */}
+        <ol className={s.strip} data-stagger tabIndex={0} aria-labelledby="steps-title">
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
-              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step}>
+              <div className={s.step}>
                 <span className={s.stepPhoto}>
                   <Media
                     slug={ART.steps[i]?.slug ?? ART.steps[0].slug}
@@ -541,7 +538,7 @@ function Steps() {
                   <span className={s.stepTitle}>{step.title}</span>
                   <span className={s.stepBody}>{step.body}</span>
                 </span>
-              </Link>
+              </div>
             </li>
           ))}
         </ol>

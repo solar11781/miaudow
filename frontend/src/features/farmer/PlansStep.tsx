@@ -21,6 +21,7 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SaveAnswers } from '../account/SaveAnswers';
 import { usePick, useSettings, useT, type Lang } from '../../app/settings';
+import { planLabel } from '../../domain/plans';
 import { pathFor, useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
@@ -68,7 +69,11 @@ function Cards({ res }: { res: CompareResponse }) {
       const url = cardUrl(serializeFarmerState({ ...state, plan: plan.id, own: NO_OWN }), lang);
       try {
         if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
-          await navigator.share({ title: `Miaudow · ${pick(plan.name)}`, text: t.farmer.shareHelp, url });
+          await navigator.share({
+            title: `Miaudow · ${planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}`,
+            text: t.farmer.shareHelp,
+            url,
+          });
           return true;
         }
         await navigator.clipboard.writeText(url);
@@ -77,7 +82,7 @@ function Cards({ res }: { res: CompareResponse }) {
         return false;
       }
     },
-    [state, pick, t, lang],
+    [state, t, lang],
   );
 
   return (
@@ -94,7 +99,7 @@ function Cards({ res }: { res: CompareResponse }) {
               update({ plan: p.id });
             }}
           >
-            {p.is_usual ? t.farmer.current : p.id.toUpperCase()}
+            {planLabel({ id: p.id, current: p.is_usual }, t.farmer)}
             <span className="muted"> · {p.calendar.map((c) => pick(c.crop)).join(' → ')}</span>
           </a>
         ))}
