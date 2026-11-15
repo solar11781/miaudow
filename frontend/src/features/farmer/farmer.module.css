@@ -887,3 +887,23 @@
   color: var(--fg);
   font: inherit;
 }
+
+/* "I don't remember" on the years step (D-185) */
+.hardYears {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.hardYearsButton {
+  min-height: 44px;
+  align-self: flex-start;
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-2);
+  background: var(--bg-sunk);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}

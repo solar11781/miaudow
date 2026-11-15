@@ -226,6 +226,8 @@ export const en: Messages = {
     honestyCta: 'See the test',
   },
   farmer: {
+    hardYears: 'Don’t remember? Pick the hardest years for me',
+    hardYearsNote: 'For each hazard, the most recent year it covered the most farmland. You can still change them.',
     province: 'Province',
     provinceName: 'Nghe An',
     provinceNote: 'Only Nghe An for now; other provinces are not available yet.',
