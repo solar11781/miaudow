@@ -22,7 +22,7 @@ Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py`
 
 Built by `web/pipeline/build_media.mjs` in member B's `lamgiang/` folder on branch feat/lamgiang-2; rights in its `assets/photos/PHOTO_MANIFEST.json` and `assets/ASSET_MANIFEST.json`. The five field-step entries were added by hand from its `assets/field-conditions/manifest.json` (PR #63).
 
-- `frontend/src/data/generated/media.json` 4b16e5f8a0adef9d3efb24f9acce4ebdb3e11946acfc2be683536314ebf8de0c
+- `frontend/src/data/generated/media.json` 37927d395ceef7f1f247531dbad7b2ded5a9691544ae16d9a58768d0151afef3
 
 ## frontend/public/media/photo
 
@@ -115,87 +115,87 @@ Wikimedia Commons photographs (credit and licence of each in media.json), resize
 
 ## frontend/public/media/art
 
-AI-generated illustrations (OpenAI image generation, `assets/ASSET_MANIFEST.json` in member B's `lamgiang/` folder on branch feat/lamgiang-2).
+AI-generated illustrations (OpenAI image generation, `assets/ASSET_MANIFEST.json` in member B's `lamgiang/` folder on branch feat/lamgiang-2); visible AI mark burned in by `scripts/watermark_ai_images.py` (PR #70).
 
-- `frontend/public/media/art/a1-horizon-640.avif` 57fb5141e7696fbfc659e2c316bbc1f9188b4a417fb88905de008d1a4da8e8e7
-- `frontend/public/media/art/a1-horizon-640.webp` af903180c6dcd274d8fafa23b33769c14a150931d224d0142ce9d2fb7b3e3284
-- `frontend/public/media/art/a1-horizon-765.avif` 55042ebfb45f96cd38d68527a74b34ef33446bb82d0a1c1e778a138a18e75f39
-- `frontend/public/media/art/a1-horizon-765.webp` 8bf54a89ebbcf422c952feb106efb9ddcb8430a74812b5c7e696c54e052bfeed
-- `frontend/public/media/art/a2-fields-640.avif` 063b553cd1b0933bde4ebc78d9455d4eabb6d14bc902b37aada58e5c8ae59906
-- `frontend/public/media/art/a2-fields-640.webp` 0a316e7bbf2c5cacd75965b466b262cec914706da9a1baa8d5b5191bfedd081c
-- `frontend/public/media/art/a2-fields-765.avif` 3d9b3fd7d8dd6c4d964ca006f718920b710ff21afc405691fc085e3fed321425
-- `frontend/public/media/art/a2-fields-765.webp` 4c198c0d08efe41e40d108d02c945678165573cdbc9d567e4d2f72eb35b2389c
-- `frontend/public/media/art/a3-rice-640.avif` 7612310698242948be82131b3e99f7e65877956c65120c04ffcca7c03b14c9ba
-- `frontend/public/media/art/a3-rice-640.webp` 9c6d462cd2fc403899777041a550057fc164680a63d1bbb0c198406a7a980971
-- `frontend/public/media/art/a3-rice-765.avif` e497b633b61ace4cfd5c6a46f37327e5cbc9d8b8695b0713d65df1954d169702
-- `frontend/public/media/art/a3-rice-765.webp` 66443c28d9a5dfd358e58fac0bb5fe980c4a1aba0517a09075cc9de1d53c5fc5
-- `frontend/public/media/art/a4-river-640.avif` d2d0bb9a77437d1ec55ff31dfbeb6fad5943b05f7d434e06e2f32ac4ffbfd233
-- `frontend/public/media/art/a4-river-640.webp` b7e512a76f454d18f5cfdcae557ca813fe3a1901bed6ad84715de484f94e0a26
-- `frontend/public/media/art/a4-river-765.avif` 2981ac2fe6ecd1f10311f5e11ff8683b9e172854f6d184a1113721b0129ef678
-- `frontend/public/media/art/a4-river-765.webp` e1f60afdaabb343c65fe8f512f46fa690d9a63c9b4f2ef176fb4b5a9b71d0dbd
-- `frontend/public/media/art/b1-horizon-640.avif` 5a405df0d6723bee070982c91da85f19590081ac3c3ada77222f3187b8afb20c
-- `frontend/public/media/art/b1-horizon-640.webp` d194254a7488dd2c927a6fc2bf8099d8711d193c406516fe6e04b7267b1ca1dd
-- `frontend/public/media/art/b1-horizon-765.avif` 74d86fc384e2d5174940a4a41a91496caa09a33c949775ab3ae6a41060757dbf
-- `frontend/public/media/art/b1-horizon-765.webp` 7ff0fd57d6323fdfcade978e49a1a86ea6007e4775c9a324ac73f480c77273c3
-- `frontend/public/media/art/b2-fields-640.avif` edee1037d845748a075d40d3b17b55f1b437e762f8d34f73a52fb28c33a1cc5b
-- `frontend/public/media/art/b2-fields-640.webp` dc1174109b513826f313296446805546ef0a0f37b00146d77619ba3fce37d593
-- `frontend/public/media/art/b2-fields-765.avif` d05de835760c958f5ce47579b275212166b057ecb277a3f35fdfdc2e9ef0eb74
-- `frontend/public/media/art/b2-fields-765.webp` 5e411ff768bae8822d936b34cc076cd4e234e36d9b25f759d0dca2b71af2d72b
-- `frontend/public/media/art/b3-rice-640.avif` addaff600ca3bc25c8f8b8982046d2d46b184561e3f956c952fa5eec1410e66a
-- `frontend/public/media/art/b3-rice-640.webp` bbd98cd807919449ac93617b5dae6156ee3899bb96bafb330113a1c826017733
-- `frontend/public/media/art/b3-rice-765.avif` eb623152fcde587f7c1393b9581e42f2500b944802b7df46f7770ee18b20f6c3
-- `frontend/public/media/art/b3-rice-765.webp` a6c40443050a1450ae3af300cddc52d7f00bc8b83b25434a35d9dd121a690dc4
-- `frontend/public/media/art/b4-river-640.avif` 1f826ca76e1cb906a11106ced22a44848097c7029a67139f978dc7d9ed3be2a6
-- `frontend/public/media/art/b4-river-640.webp` 93d1f3800ef6986d315bf7629498f8275618efe2c5183fb1599d7f7ced31094c
-- `frontend/public/media/art/b4-river-765.avif` ca8c707a5f85f5914b6f7275ecd6766db8a1b702986835f8b6a3599a6bb42ab8
-- `frontend/public/media/art/b4-river-765.webp` 579ea12c7dd327ebe5b0fa0f89c8b70eaa8bbe57f7c9e639d4d12febd8e15960
-- `frontend/public/media/art/c1-horizon-640.avif` 8acbbf447ef1e2a779ac8e770221a5d96156fbc462775bd96f5f13b3a85e8495
-- `frontend/public/media/art/c1-horizon-640.webp` 946e64e5d8689ba39b95f2bd69dce2584a14b2e8a21df5e7f25e44e9b07efd5f
-- `frontend/public/media/art/c1-horizon-765.avif` 58fe397cdd4756c60481ed549e078bffc7dba12d0bdd185d4e501cc9f05bfe99
-- `frontend/public/media/art/c1-horizon-765.webp` 13e3a1b7a63ed962a14f2b0146fa92df61266284baa8c68d0f0ae0b0f738577a
-- `frontend/public/media/art/c2-fields-640.avif` afcb7d9cc00d447ed6014ff77b6b073f72c454c95cd1d04e045928f55608175e
-- `frontend/public/media/art/c2-fields-640.webp` c44f3cf7a65fa7ed4b016d54a9c6ff7121283685b14ed3e25f74e41b17c099e3
-- `frontend/public/media/art/c2-fields-765.avif` 4282905f4bac9f2ea813a8e8753eb718cea310b85b2ca4325c7baae508b40602
-- `frontend/public/media/art/c2-fields-765.webp` bfa83559a4aaac066322399b9b5d803bceb2a829328b69408ac58da51b126af0
-- `frontend/public/media/art/c3-rice-640.avif` 66256e8fb80e5e0275c060dcf56ed9906338ffef98c8bf3d9d64c5118fc18de4
-- `frontend/public/media/art/c3-rice-640.webp` fea92d5ace1d7a20c37a50792f77dce20843d44ba977fd36dd97cc1ac7f6312f
-- `frontend/public/media/art/c3-rice-765.avif` 623b0e13693d6b89dc67c33d051ac1fcc0bf2c68769df083d6f9d16ea7c58190
-- `frontend/public/media/art/c3-rice-765.webp` 161dd38ae9cb417f6363278ea4cc1b0079b260bff399f99e51a7e94220c7c72f
-- `frontend/public/media/art/c4-river-640.avif` 76831bf5f7122705f37ef67c2065a2d92f9efe60ec9996e5274c81a6ce1e6d0d
-- `frontend/public/media/art/c4-river-640.webp` ed6a56924a874fd0b061d353c22fa342b85c51707e4b3eb51e50c03186689286
-- `frontend/public/media/art/c4-river-765.avif` 5f2ac25ae3010f435b9842f42df92dfa8969eb6dcdad241bf65d9c58dc808a1a
-- `frontend/public/media/art/c4-river-765.webp` 05298282927b3a0dcb5f43c5ba84a55133229e22598fe29be114ea8d2e28d442
-- `frontend/public/media/art/d1-horizon-640.avif` bc27fb38ed473b973feb0d677aa7efdd7f8f95fd7b353b18e168a347494919e2
-- `frontend/public/media/art/d1-horizon-640.webp` f145499c2d8cfc3059a3692af6a75510cc20e615e550acb9ff00d298cb581b9a
-- `frontend/public/media/art/d1-horizon-765.avif` 4cfe199d95468613534a8c565b14efccff1fc170516ea5568d44fbb39fcd2ca9
-- `frontend/public/media/art/d1-horizon-765.webp` d6912405328785183f5a949cf45de34f089b58bfc55318c214b493d9baa487bc
-- `frontend/public/media/art/d2-fields-640.avif` 9819301b9324537275959f0e3db79c1694f6a38f70da66776d7d9da42af9cd32
-- `frontend/public/media/art/d2-fields-640.webp` b1370564b4c944b104263fb4c2e56a6441db33d8e2f2c98313615f238a89c38e
-- `frontend/public/media/art/d2-fields-765.avif` 650ea81df911b2fdfa7e8b36b50d218f85b3079ffbef78b2fa264127e532cc1d
-- `frontend/public/media/art/d2-fields-765.webp` 5d50ec70ed39f2fdacff537b6aed2ce56b9b163a59368d2eb804d32b8872a508
-- `frontend/public/media/art/d3-rice-640.avif` 64d16a2e4bb611c9f21c9a3f75f24e173f63149cd1d8623a0e37c9227273870c
-- `frontend/public/media/art/d3-rice-640.webp` 7526897249afcc71a9bedd43d8d36f48ceac1842ef0b8c1893af0d96159bc309
-- `frontend/public/media/art/d3-rice-765.avif` 38f4f66bf6fd0c84d60c42b52c349cecab8ef8977a632da1c81811b3a10514c8
-- `frontend/public/media/art/d3-rice-765.webp` b60b3383278e697a9e04570a986c8c04d888a9dfecabe6ea812daecc4c710876
-- `frontend/public/media/art/d4-river-640.avif` fb4d22e0271aed9a97a5413972ec3608cd595e2d67553ce9132842673fdf32a7
-- `frontend/public/media/art/d4-river-640.webp` d9756a79547f85ac97b8220fe1d0b8df714409c18c101e0208c0c55735c3501b
-- `frontend/public/media/art/d4-river-765.avif` 66e826939d2df86eff74c4c35891f8573a64dfa7ad648f9641e09e270c9fe425
-- `frontend/public/media/art/d4-river-765.webp` 231a59fb9e48c69e6eba5b9a4aee892a502f4fc9f786e1b69c4d9e7d66a8498f
+- `frontend/public/media/art/a1-horizon-640.avif` 5fa7c0c51e6a59a699e2dfe7d66c0f186259e9a23c72b56e0ea4fb098141a2cb
+- `frontend/public/media/art/a1-horizon-640.webp` 913113bdc026037c93263a7800a8c57e6258ab5cd17a315971b4afb962b3915d
+- `frontend/public/media/art/a1-horizon-765.avif` 1a0f4f75dbc020fc26210297221a1eb0521c14848c50755742d1f71e0ae8fc85
+- `frontend/public/media/art/a1-horizon-765.webp` 115359f912751abbb6348050dafde34601905eadd0b0da51f97e424da7c8e305
+- `frontend/public/media/art/a2-fields-640.avif` b03822290f0bea639ab63989959ccbe07d46e9ba6a916432afe8eb47ecf73258
+- `frontend/public/media/art/a2-fields-640.webp` e66e18bda54bb2b6bd596f1d315bf6ac5d61a82904b13655cbc93fb00214de1a
+- `frontend/public/media/art/a2-fields-765.avif` 6e07a01eded75bf4576ff16708a7d44058bad20a68cf7be180bcc6769eff76f8
+- `frontend/public/media/art/a2-fields-765.webp` 5f53c9726cce8c60da08f9d8beffa472a8e95335c462c491ae16fbd4d4ad8857
+- `frontend/public/media/art/a3-rice-640.avif` dbde3496ba9e61ae2c70122d112c4c4b0f7e7fcdff43f7b2bde63ad55c77ab02
+- `frontend/public/media/art/a3-rice-640.webp` 7f256023d19f7382b41fae1f3d43bc7c511d552df65fe6fdb2277215fd0e3240
+- `frontend/public/media/art/a3-rice-765.avif` c3a02e10f7fa3c42d77ba00b2a271525622f58adf9584949064af12c06a2f266
+- `frontend/public/media/art/a3-rice-765.webp` dbb96021539e21cc0a08c137f71e2414b56bd73a26555cbed32a38604a312a9e
+- `frontend/public/media/art/a4-river-640.avif` 8aa2fa4df6df3c2451c229e8acbd6265edddbb83f7dce3e537be08002b4291bf
+- `frontend/public/media/art/a4-river-640.webp` ab6ead5b04edacb9562f014808a786a3942314fb6ef561ff1a6f37ee4e2dab27
+- `frontend/public/media/art/a4-river-765.avif` ed2f166dfe423dbae031495b83b46b7897dea4845d50f91c7f11304748db2c29
+- `frontend/public/media/art/a4-river-765.webp` 9010fab9e82edaaf061395f111135a2213b723388e6f40a0514cc2bc05521dff
+- `frontend/public/media/art/b1-horizon-640.avif` 3d21492830f79a0535e8058199369acbdbe1c2f0723164e2c4167487e7a6ebed
+- `frontend/public/media/art/b1-horizon-640.webp` 65bca48f43edfcfbdc719361f0e28b997e5ce9637d8d2117d66fcd57477c080e
+- `frontend/public/media/art/b1-horizon-765.avif` 0f5d6d3fe09b3208d335fe64ee8ab97edcc40b7795c78e3f21a0b2c1df1dc0fe
+- `frontend/public/media/art/b1-horizon-765.webp` d5eccc92c5ee4a5295e8263ae6de9af4691cb557a892570e96073c27b6665aba
+- `frontend/public/media/art/b2-fields-640.avif` dffd81d74087a545e587bac7a581fd96a1680aee01403e00c3f5c0c09ab8b1bc
+- `frontend/public/media/art/b2-fields-640.webp` 734f07bee68299581216106302f2b72965543a8bdb443514ff4c453f48e17b67
+- `frontend/public/media/art/b2-fields-765.avif` 7fb329f1194ef99ca4ee992afdccd19760b3571a658b09da89d97abd2f25185e
+- `frontend/public/media/art/b2-fields-765.webp` 9a96e1a6c3b77367e678fdd067e7b2ddae529366ebd5bdc383b8c8ba6bc5b484
+- `frontend/public/media/art/b3-rice-640.avif` caad50eedfd7ad2907d2c6d775bc6d8822db23208f6664f4f41fe36fcb52b3c4
+- `frontend/public/media/art/b3-rice-640.webp` e18103f244634b75d8daf9a0009ba50dee9114f08721c551a16b635bb15f52c0
+- `frontend/public/media/art/b3-rice-765.avif` 940570ed11a2fd8ae52c85e9da4290aa0a598927314241055d1765311356a790
+- `frontend/public/media/art/b3-rice-765.webp` 7842a221a5bf8436d6bc92372e60324b0d2db1f5a4c4e3a18481714f833c1da2
+- `frontend/public/media/art/b4-river-640.avif` cbaea6dda1a7423d733552fd01375f7f6524b07b396f360e796a6754ed8a645b
+- `frontend/public/media/art/b4-river-640.webp` c6ef1f7bae9e85a11251756b6844998fc9c338ab59cee448b14753bd9dfbb040
+- `frontend/public/media/art/b4-river-765.avif` f906a51fbf8796e86970c2bb7baaa1db735100e12d6291505f8f26b7f9b3bc9f
+- `frontend/public/media/art/b4-river-765.webp` 880033541278d941b4143e2c058c8aff89a5dbb4e292e0e2240f10331355fa46
+- `frontend/public/media/art/c1-horizon-640.avif` 5280a35c51ec88d54fe44e87020dcd12e34bb5acb861056a2706400073715f67
+- `frontend/public/media/art/c1-horizon-640.webp` d8e97cf0e18ef12f68c137309114682301b79911ab1cdaebfce84de35e6cdc53
+- `frontend/public/media/art/c1-horizon-765.avif` ab4fa5a1c9a1d8ba187ad757edb57667bd8936ff697d02819c0f66cde7b92d46
+- `frontend/public/media/art/c1-horizon-765.webp` a64db66e8bbc1442cbc2972c7985683bd515f592b2914e176a987f3de81993a8
+- `frontend/public/media/art/c2-fields-640.avif` 092e6af9130c35af62fecfdaf0048d344ab6fdeff3f97a43e85807e111e87191
+- `frontend/public/media/art/c2-fields-640.webp` f57caed7bed90611861d618428edbda08b25d1832cfc5e08b6381567ad2ddfbd
+- `frontend/public/media/art/c2-fields-765.avif` 3131ce3c1aafc11adf676cf319c92c09863a2e32a4c784afcc4fbd13010211c6
+- `frontend/public/media/art/c2-fields-765.webp` 04838578b4ddb73a6e92bd05e1d0bba64e34339b61011df978ca78364d8749ab
+- `frontend/public/media/art/c3-rice-640.avif` 37f0aa6c30585c2d4bd93fcd145cd550a0e4910a0851d6fba011bfcc26cd01df
+- `frontend/public/media/art/c3-rice-640.webp` 8aea47b151e3ab0c508dcef75f32d0cae82a013c76b547b7d9540781d7c88f0f
+- `frontend/public/media/art/c3-rice-765.avif` 0de10fa8417a554c778177fec2fcd218c5b4ffc728c0043eb327367969fec0ee
+- `frontend/public/media/art/c3-rice-765.webp` 92d9629b0bd9b4dcc8f39a16c226175dd9beb514f24b55e977f4aa971185a187
+- `frontend/public/media/art/c4-river-640.avif` e86c8f07b88c485b94859ee52f08aa197c07449b16dd3639a12ca4d76ddafffd
+- `frontend/public/media/art/c4-river-640.webp` 388c6555b96fd287f49d410270456f2cff9498cf97281b3ebe957c17139cd1a6
+- `frontend/public/media/art/c4-river-765.avif` 00e217a127df9c38b27234123fe68301b16f43bd17a14e166b1d095c972e4040
+- `frontend/public/media/art/c4-river-765.webp` 240791c0dd7ed74136e68056c94d4728e66d3651cf89bf344478a8d60ff1bf2a
+- `frontend/public/media/art/d1-horizon-640.avif` fd5bbee5a0a9da4516eaa424f684dd2a07456e0d0d1b852edc4e2a32485efc80
+- `frontend/public/media/art/d1-horizon-640.webp` 75a634783a41a2230457aed92d148fbfe416d0088dc8db69b1e6cfe281532b3a
+- `frontend/public/media/art/d1-horizon-765.avif` 826eb99de9c729f10e4c7302f11f1ad5a800da16fa7aa99c86722eb8bc0b4183
+- `frontend/public/media/art/d1-horizon-765.webp` 62cc8257c7f4cbbd96be6b954cbdcab943e2cf09916b442377fd665276b08aff
+- `frontend/public/media/art/d2-fields-640.avif` 9c1f908cc9223beaaaf9c69e54c5ecf99114c550a8a0049d4645fb2ecc9f8808
+- `frontend/public/media/art/d2-fields-640.webp` cf8cefcb63a7f727b47b05a04d64705ba7aaa0bcf6f93345820ca5c5e38abbaa
+- `frontend/public/media/art/d2-fields-765.avif` 2c7c32c971db40f5e58efb7ec1b4a85610cf82306f97d47e478808b3be1f47c1
+- `frontend/public/media/art/d2-fields-765.webp` 7c0353c184f7f1a01f973de7cab1b2ea9faabd523e8cd0e4390ddd99bbd853ac
+- `frontend/public/media/art/d3-rice-640.avif` 90a6c361b227aab9f57303734e2b57d04e9ee42993bb94f433f04a17dd6fa84e
+- `frontend/public/media/art/d3-rice-640.webp` 8a9fe1a655fad39ee224d7ae1cdc4f20306359d14f19fac35ad4aacf6f7ddea3
+- `frontend/public/media/art/d3-rice-765.avif` 254f9d1e0ae1d0961f272f5cc49d61d879b3918460a4e1dc329c00b89efdd3d3
+- `frontend/public/media/art/d3-rice-765.webp` 7c63969340018a479eefb2d2aae01ad605f68d828258eb6d835b1fc32cdaa2fa
+- `frontend/public/media/art/d4-river-640.avif` 4e84d5295fd213f08ab3da8140ff38a8fdf0594d82138d750862cce89814bad2
+- `frontend/public/media/art/d4-river-640.webp` 79318db9ed19f19fa5816fa884f9b323243e6d2d8f4b5d6a28014e8b2ec9b9d8
+- `frontend/public/media/art/d4-river-765.avif` f31d4575a889caef825c772edeca6de4e123b4182d9e3b9d427c43e9e2a78167
+- `frontend/public/media/art/d4-river-765.webp` c9e053ec98e7ef4dc838d9f5b409efd20eff8b6a51b853d31108d1ceb233356a
 
 ## frontend/public/media/field
 
-AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in member B's `lamgiang/` folder on branch feat/lamgiang-2); the AVIF copies were encoded from these WebP files with Pillow 13.0.0 at quality 60 (PR #63).
+AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in member B's `lamgiang/` folder on branch feat/lamgiang-2); the AVIF copies were encoded from these WebP files with Pillow 13.0.0 at quality 60, then the visible AI mark was burned in by `scripts/watermark_ai_images.py` (PR #63).
 
-- `frontend/public/media/field/ask-extension-officer.avif` 2a82afbff064ab31e766e5221b65e221022a3167ba75ff7c75d3e4e3b86765ea
-- `frontend/public/media/field/ask-extension-officer.webp` 1e300e0c19409ba593e9c033b44b0553213dd291099ad53344fcd8f68cfd1861
-- `frontend/public/media/field/field-at-end-of-canal.avif` 8a3f9ed26703aecb06bbc4b97397ff75030f51df413105f63313d615ed8fffed
-- `frontend/public/media/field/field-at-end-of-canal.webp` 1059b67c1eac5496b1d2e3b249ff8c3672a5bb04049eee361262d094238e742b
-- `frontend/public/media/field/field-often-short-of-water.avif` cc6bf65b41fb8013c400de7a5ef4a9eb1b34a0bfd2fe5f8ab9470e34e640b23c
-- `frontend/public/media/field/field-often-short-of-water.webp` 68277cd64ab2cb987a293c5251f8e3cdbeea274c84097e426122b1c9fd131558
-- `frontend/public/media/field/high-field-hard-to-water.avif` 0f40dce14b51669fec9d2c8bfad551085fc35b404895286ee06ee04756807c9a
-- `frontend/public/media/field/high-field-hard-to-water.webp` 843287a721d74e93d553288434b4d5a7dd2d71c9efdf0fb3cf6ba2b9c0bef1b3
-- `frontend/public/media/field/water-under-control.avif` a54c7f2b12c981ef3c6099f7b084cd3f36d0114efe06b742c24e653eee46722a
-- `frontend/public/media/field/water-under-control.webp` 60d237b7edf4ffca7bde6b90c7b84ecfce513a4e7299ace1d95f58c7a8da955e
+- `frontend/public/media/field/ask-extension-officer.avif` acb44eef64a5034fd5ba611f2b6af5068d0dc0b12b826311dbbf19eb1c1e169f
+- `frontend/public/media/field/ask-extension-officer.webp` 2fcd538ff3d8b02967ca2365bd05729ac89ae5b29f7976005c655af31218132b
+- `frontend/public/media/field/field-at-end-of-canal.avif` 0e023bdac09810fb75c91cc787ae81aa1a6ad83e3511b8036999f22b2482652d
+- `frontend/public/media/field/field-at-end-of-canal.webp` 033830af8c1bf4a17e4dd29ee4ac1660b8bc789c4c33600d76bd32d185f150b1
+- `frontend/public/media/field/field-often-short-of-water.avif` 00943a11eb7e0575b442093b1d116037f9f7d6d09e96442b737ddbdd8038505a
+- `frontend/public/media/field/field-often-short-of-water.webp` 52c83edc868b98bf894fc2478db3a9bcf487a32b6705c1ce839cdec281cf9f19
+- `frontend/public/media/field/high-field-hard-to-water.avif` 085c6a669519b4e185c1a8e84d5dbccf50d32ca3568a84b9b92da88f9f26b8e2
+- `frontend/public/media/field/high-field-hard-to-water.webp` f442450a6a5131b323cfdcb2a684f3fe920be8b01c75b4b6c46fadb942f3da65
+- `frontend/public/media/field/water-under-control.avif` 657e859dc59bcd3e1b7042dc721ff9ef14599f7e71e027ff81407b1e3d142470
+- `frontend/public/media/field/water-under-control.webp` 021167731f4514759393406b4a55411ad4b9a5ca270a1922951910f95579e785
 
 ## frontend/public/media/sat
 

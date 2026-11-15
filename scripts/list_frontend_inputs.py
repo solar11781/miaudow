@@ -37,13 +37,15 @@ GROUPS: list[tuple[str, str, str]] = [
     (
         "frontend/public/media/art",
         "*",
-        f"AI-generated illustrations (OpenAI image generation, `assets/ASSET_MANIFEST.json` in {LAMGIANG}).",
+        f"AI-generated illustrations (OpenAI image generation, `assets/ASSET_MANIFEST.json` in {LAMGIANG}); "
+        "visible AI mark burned in by `scripts/watermark_ai_images.py` (PR #70).",
     ),
     (
         "frontend/public/media/field",
         "*",
         f"AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in {LAMGIANG}); "
-        "the AVIF copies were encoded from these WebP files with Pillow 13.0.0 at quality 60 (PR #63).",
+        "the AVIF copies were encoded from these WebP files with Pillow 13.0.0 at quality 60, then the visible AI mark "
+        "was burned in by `scripts/watermark_ai_images.py` (PR #63).",
     ),
     (
         "frontend/public/media/sat",
