@@ -253,6 +253,7 @@ const methodShape = obj({
   explain_terms: arr(obj({ key: oneOf(EXPLAIN_KEYS), title: text, text, source_ids: ids })),
   limitations: arr(text),
   datasets_not_used: arr(obj({ dataset: str, reason: text, source_ids: ids })),
+  picsa: obj({ source_ids: ids }),
   rain_check: nullable(
     obj({
       months: arr(obj({ month: str, imerg: value, power: value })),

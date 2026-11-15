@@ -101,6 +101,12 @@ describe('method check', () => {
     r.datasets_not_used = [{ dataset: 'x', reason: text, source_ids: ['R-X99'] }];
     expect(() => validateMethod(r)).toThrow(/R-X99/);
   });
+  // D-63: the PICSA sentence's source is checked like every other id (H5)
+  it('rejects a PICSA source id that is not in sources', () => {
+    const r = method();
+    r.picsa = { source_ids: ['R-X99'] };
+    expect(() => validateMethod(r)).toThrow(/R-X99/);
+  });
   it('rejects a coverage cell listed twice', () => {
     const r = method();
     r.coverage.push({ ...r.coverage[0] } as (typeof r.coverage)[0]);

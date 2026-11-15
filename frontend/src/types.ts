@@ -270,6 +270,8 @@ export interface MethodResponse {
   explain_terms: ExplainTerm[];
   limitations: Text[];
   datasets_not_used: NotUsedDataset[];
+  /** The sources of the PICSA sentence, whose text is the key method.picsa (UI-UX-SPEC section 11b item 5). */
+  picsa: { source_ids: SourceId[] };
   rain_check: RainCheck | null;
   sources: Record<SourceId, SourceFacts>;
 }
