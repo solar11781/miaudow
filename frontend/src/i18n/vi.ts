@@ -516,7 +516,7 @@ export const vi = {
     thousandPerHa: 'nghìn đ/ha',
   },
   science: {
-    eyebrow: 'Phòng dữ liệu · dành cho giám khảo và nhà nghiên cứu',
+    eyebrow: 'Phòng dữ liệu · dành cho nhà nghiên cứu',
     title: 'Nghệ An qua 30 mùa vụ',
     lead: 'Mọi con số trên trang này tính từ dữ liệu thật: NASA POWER cho 5 ô lưới có đất trồng, trọng số đất trồng NASA MODIS, ranh giới tỉnh geoBoundaries và năng suất lúa của Cục Thống kê.',
     globeCta: 'Xem trên quả địa cầu 3D, từ vũ trụ xuống đồng ruộng',
@@ -967,7 +967,7 @@ export const vi = {
   },
   method: {
     title: 'Phương pháp, số liệu và giới hạn',
-    lead: 'Cho cán bộ và ban giám khảo: mô hình trả lời câu hỏi gì, kết quả kiểm tra, số liệu nào có cho từng cây, và các giới hạn.',
+    lead: 'Cho cán bộ khuyến nông: mô hình trả lời câu hỏi gì, kết quả kiểm tra, số liệu nào có cho từng cây, và các giới hạn.',
     question: (first: number, last: number) =>
       `Thời tiết NASA dự đoán được bao nhiêu phần dao động năng suất lúa giữa các năm (năng suất cả vùng, không phải từng ruộng)? Kiểm tra trên các năm ${first}–${last}, mô hình chưa thấy những năm này.`,
     metricsTitle: 'Kết quả kiểm tra mô hình',
