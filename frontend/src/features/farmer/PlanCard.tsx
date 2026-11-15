@@ -16,6 +16,7 @@ import { displayUnit } from '../../domain/format';
 import { consideration } from '../../domain/considerations';
 import { officerQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
+import { planLabel } from '../../domain/plans';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { OwnNumbers, type OwnState } from './OwnNumbers';
@@ -535,9 +536,11 @@ function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   const pick = usePick();
   return (
     <header className={`${s.head} surface-forest`} data-testid={`card-${plan.id}-row-header`}>
+      {/* one name per plan, its crops under it (D-190) */}
       <p className={s.kicker}>
-        {plan.is_usual && <span className={s.currentTag}>{t.farmer.current}</span>}
-        <span>{pick(plan.name)}</span>
+        <span className={plan.is_usual ? s.currentTag : undefined}>
+          {planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}
+        </span>
       </p>
       <h2 id={`title-${plan.id}`} className={s.chain}>
         {plan.calendar.map((c, i) => (

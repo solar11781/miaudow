@@ -26,7 +26,8 @@ export function PriorityLine({
   const pick = usePick();
   if (!LINE_PLANS.includes(plan.id)) return null;
   const usual = res.plans.find((p) => p.id === 'usual');
-  const usualName = usual ? pick(usual.name) : t.common.notAvailable;
+  // the usual plan by its crops: the line already calls it the current practice (D-190, one name per plan)
+  const usualName = usual ? usual.calendar.map((c) => pick(c.crop)).join(' → ') : t.common.notAvailable;
   const l = t.farmer.priorityLine;
   // `name` labels the values in the source sheet; it is shown on the line only when the lead does not say it
   const pair = (name: string, mine: Value | null, theirs: Value | null, shown = true, money = false) => (
