@@ -98,6 +98,7 @@ The `task` skill runs this loop for every task; follow it by hand only for work 
 
 ## Working rules after the Hanoi submission (team, 2026-11-15)
 
+- Member B left the project on 2026-11-15; member A is the only person. Mentions of member B elsewhere are history.
 - `production` stays at the submitted commit (tag `submitted-hanoi`) until member A says the local event is over.
   New work merges into `main` through the gate and is not deployed.
 - No rushing: the global submission is far off. Work one task at a time; at most one helper agent runs alongside
