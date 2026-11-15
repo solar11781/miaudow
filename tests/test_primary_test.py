@@ -147,13 +147,28 @@ def test_season_codes_are_the_app_codes():
         app_season("dry")
 
 
-def test_gate_text_shows_three_decimals_and_vietnamese_decimal_commas():
-    # Source: review 2026-11-14: a CI low of 0.0011 must not read as 0.00 next to a pass; Vietnamese writes 0,001
+def test_gate_text_uses_two_decimals_and_three_only_where_two_would_read_as_zero():
+    # Source: D-160 (metrics to 2 decimals) and member A, 2026-11-15: keep a third decimal only where 2 would show a
+    # non-zero value as 0.00 (review 2026-11-14: a CI low of 0.0011 must not read as 0.00 next to a pass);
+    # Vietnamese writes a decimal comma
     skill = {"value": 0.0681, "ci90_low": 0.0011, "ci90_high": 0.1372}
     text = gate_detail("G2", {"skill_vs_b0": skill, "skill_vs_bnw": skill, "coverage_80": 0.76}, {})
-    assert "0.001" in text["en"]
-    assert "0,001" in text["vi"]
+    assert "skill 0.07 (90% CI 0.001 to 0.14)" in text["en"]
+    assert "0,07" in text["vi"] and "0,001" in text["vi"] and "0,14" in text["vi"]
     assert "0.001" not in text["vi"]
+
+
+def test_gate_text_never_calls_a_reference_a_forecast():
+    # Source: CLAUDE.md scientific boundaries (past years are never forecasts); final audit 2026-11-15
+    skill = {"value": 0.05, "ci90_low": -0.02, "ci90_high": 0.12}
+    cases = (
+        gate_detail("G2", {"skill_vs_b0": skill, "skill_vs_bnw": skill, "coverage_80": 0.8}, {}),
+        gate_detail("G3", {"coverage_80": 0.8}, {"skill_vs_b2": skill}),
+        gate_detail("G4", {"coverage_80": 0.8}, {}),
+    )
+    for text in cases:
+        assert "dự báo" not in text["vi"]
+        assert "forecast" not in text["en"]
 
 
 def test_penalty_report_gives_the_share_of_test_years_at_a_grid_end():
