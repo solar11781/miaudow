@@ -58,15 +58,20 @@ test('D-187 a consideration is one plain line and its quote opens in the source 
   );
 });
 
-// D-187 (F5): each card lists the officer page's questions for its plan
+// D-187 (F5): each card lists the officer page's questions for its plan; D-191: the trial-field question every plan
+// shares is asked once, in the closing box
 test('D-187 each card lists the questions for the officer of its plan', async ({ page }) => {
   await page.goto(PLANS_URL);
   for (const id of IDS) {
     const checks = page.getByTestId(`card-${id}-row-checks`);
     await expect(checks.getByText(vi.farmer.askOfficer, { exact: true }), id).toBeVisible();
-    expect(await checks.locator('ol li').count(), id).toBeGreaterThan(1);
+    expect(await checks.locator('ol li').count(), id).toBeGreaterThan(0);
+    await expect(checks, id).not.toContainText('ruộng thử ở Lưu Sơn');
   }
   await expect(page.getByTestId('card-cc4-row-checks')).toContainText('hợp đồng thu mua ngô sinh khối');
+  await expect(page.locator('section[aria-labelledby="ask-officer"]')).toContainText(
+    vi.farmer.officerQuestions[0] ?? '',
+  );
 });
 
 // D-190 (roleplay audit 2026-11-15, F9): one name per plan with its crops under it, and money in million dong per ha;

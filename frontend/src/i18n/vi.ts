@@ -43,6 +43,8 @@ export const vi = {
     back: 'Quay lại',
     next: 'Tiếp tục',
     source: 'Nguồn',
+    /** The singular of an API unit after the number 1: Vietnamese nouns have no plural (D-192). */
+    unitOfOne: (unit: string) => unit,
     sourceFor: (name: string) => `Xem nguồn: ${name}`,
     open: 'Mở',
     close: 'Đóng',
@@ -333,6 +335,7 @@ export const vi = {
       weatherNote:
         'Phần đất trồng Nghệ An gặp điều kiện trong thời gian cây trên ruộng, nếu gieo đúng ngày của thử nghiệm 2020–21, từng năm bạn chọn.',
       water: 'Nước tưới',
+      droughtPointer: (row: string) => `Hạn hán: xem mục “${row}” bên dưới.`,
       waterNote: 'Mức tưới cả vụ theo TCVN 8641 (m³/ha).',
       soil: 'Độ ẩm đất NASA',
       soilNote: 'Giá trị mô hình NASA, không phải số đo tại ruộng. 100% là đất no nước.',

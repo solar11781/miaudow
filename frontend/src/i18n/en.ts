@@ -45,6 +45,8 @@ export const en: Messages = {
     back: 'Back',
     next: 'Continue',
     source: 'Source',
+    /** The singular of an API unit after the number 1 (D-192). */
+    unitOfOne: (unit: string) => (unit === 'crops' ? 'crop' : unit),
     sourceFor: (name: string) => `See the source: ${name}`,
     open: 'Open',
     close: 'Close',
@@ -343,6 +345,7 @@ export const en: Messages = {
       weatherNote:
         'Share of Nghe An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation',
+      droughtPointer: (row: string) => `Drought: see “${row}” below.`,
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
       soilNote: 'NASA model value, not a field measurement. 100% is soil full of water.',
