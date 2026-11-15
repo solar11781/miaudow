@@ -171,9 +171,12 @@ function rulePassages(): Passage[] {
     id: `rule-${r.code}`,
     kind: 'standard' as const,
     sources: ['qd18', 'nasa-power'] as SourceId[],
-    keys: `${r.name.vi} ${r.name.en} ${r.article} nguong`,
+    keys: `${r.name.vi} ${r.name.en} ${r.article.vi} ${r.article.en} nguong`,
     title: { vi: `Luật “${r.name.vi}” tính thế nào?`, en: `How is the “${r.name.en}” rule computed?` },
-    text: { vi: `${r.article}: “${r.quote}”. ${r.computed.vi}`, en: `${r.article}: “${r.quote}”. ${r.computed.en}` },
+    text: {
+      vi: `${r.article.vi}: “${r.quote}”. ${r.computed.vi}`,
+      en: `${r.article.en}: “${r.quote}”. ${r.computed.en}`,
+    },
   }));
 }
 

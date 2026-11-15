@@ -5,7 +5,7 @@ export interface RuleInfo {
   code: RuleCode;
   name: Bilingual;
   short: Bilingual;
-  article: string;
+  article: Bilingual;
   quote: string;
   computed: Bilingual;
   magnitude: Magnitude;
@@ -20,7 +20,7 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     code: 'heavy_rain',
     name: { vi: 'Mưa lớn', en: 'Heavy rain' },
     short: { vi: 'Mưa lớn', en: 'Rain' },
-    article: 'Điều 44',
+    article: { vi: 'Điều 44', en: 'Art. 44' },
     quote:
       'lượng mưa từ 100 mm đến 200 mm trong 24 giờ hoặc từ 50 mm đến 100 mm trong 12 giờ, kéo dài từ 1 ngày đến 2 ngày',
     computed: {
@@ -35,7 +35,7 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     code: 'heat',
     name: { vi: 'Nắng nóng', en: 'Heat' },
     short: { vi: 'Nắng nóng', en: 'Heat' },
-    article: 'Điều 47',
+    article: { vi: 'Điều 47', en: 'Art. 47' },
     quote: 'đợt nắng nóng với nhiệt độ cao nhất trong ngày từ 35°c đến 37°c, kéo dài từ 3 ngày trở lên',
     computed: {
       vi: 'Từ 3 ngày liền trở lên có nhiệt độ cao nhất nằm trong cùng một bậc nhiệt của Điều 47.',
@@ -49,7 +49,7 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     code: 'drought_rain_any2',
     name: { vi: 'Hạn hán (phần lượng mưa)', en: 'Drought (rain part)' },
     short: { vi: 'Hạn hán', en: 'Drought' },
-    article: 'Điều 48',
+    article: { vi: 'Điều 48', en: 'Art. 48' },
     quote: 'thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến 3 tháng',
     computed: {
       vi: 'Có ít nhất 2 tháng mưa thiếu hơn 50% so với trung bình 1991–2020 của cùng tháng (cách đọc “2 tháng bất kỳ”).',
@@ -63,7 +63,7 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     code: 'drought_rain_consecutive',
     name: { vi: 'Hạn hán (2 tháng liền)', en: 'Drought (2 months in a row)' },
     short: { vi: 'Hạn hán liền', en: 'Drought+' },
-    article: 'Điều 48',
+    article: { vi: 'Điều 48', en: 'Art. 48' },
     quote: 'thiếu hụt tổng lượng mưa tháng trên 50% so với trung bình nhiều năm, kéo dài từ 2 tháng đến 3 tháng',
     computed: {
       vi: 'Có 2 tháng liền nhau mưa thiếu hơn 50% so với trung bình 1991–2020 (cách đọc “liên tiếp”).',
@@ -77,7 +77,7 @@ export const RULES: Record<RuleCode, RuleInfo> = {
     code: 'cold',
     name: { vi: 'Rét hại', en: 'Damaging cold' },
     short: { vi: 'Rét', en: 'Cold' },
-    article: 'Điều 53',
+    article: { vi: 'Điều 53', en: 'Art. 53' },
     quote:
       'nhiệt độ không khí trung bình ngày từ trên 8°c đến 13°c, kéo dài từ trên 5 ngày đến 10 ngày ở vùng đồng bằng Bắc Bộ, Bắc Trung Bộ, Trung Trung Bộ',
     computed: {

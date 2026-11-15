@@ -89,7 +89,7 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   for (const rule of FARMER_RULES) {
     const v = yearShare(rule, year);
     lines.push({
-      text: `${RULES[rule].name[lang]} (${RULES[rule].article})`,
+      text: `${RULES[rule].name[lang]} (${RULES[rule].article[lang]})`,
       ref: {
         sourceId: 'nasa-power',
         kind: 'derived',
