@@ -62,6 +62,102 @@ test('T2 no slider on any page', async ({ page }) => {
   }
 });
 
+// pages that fail T9 on main today (2026-11-15); each fixme names what is cut at 180 px
+const PHOTO_STAGE = 'the "Nghệ An" caption is cut by the photo stage box at 180 px';
+const ZOOM_GAPS: Record<string, string> = {
+  '/#/': PHOTO_STAGE,
+  ...Object.fromEntries(SCENES.map((c) => [`/#/dai-quan-sat?canh=${c}`, PHOTO_STAGE])),
+  '/#/nong-dan': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
+  '/#/nong-dan/ruong': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
+  [PLANS_URL]: 'the plan card cuts the "Bạn quan tâm" label and the land-care rule lines at 180 px',
+  '/#/tro-ly': 'the copilot page header cuts its title and lead at 180 px',
+};
+
+// H9: 200% zoom of a 360 x 740 phone is a 180 x 370 CSS px viewport
+for (const url of PAGES) {
+  test(`T9 zoom at 200% nothing is clipped and every control is reachable (${url})`, async ({ page }) => {
+    test.fixme(url in ZOOM_GAPS, ZOOM_GAPS[url]);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 180, height: 370 });
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
+    if (url === PLANS_URL) await openFolds(page);
+    expect(await page.evaluate(clippedTexts)).toEqual([]);
+    expect(await page.evaluate(unreachableControls)).toEqual([]);
+  });
+}
+
+// T9 "no content is clipped": visible text that sticks out of a box that hides its overflow instead of wrapping or
+// scrolling it; runs in the page
+function clippedTexts(): string[] {
+  const hides = (o: string) => o === 'hidden' || o === 'clip';
+  const scrolls = (o: string) => o === 'auto' || o === 'scroll';
+  const textBox = (n: Node) => {
+    const el = n.parentElement;
+    if (!el || !n.textContent?.trim() || !el.checkVisibility()) return null;
+    if (el.closest('[aria-hidden="true"], svg, .visually-hidden')) return null;
+    const range = document.createRange();
+    range.selectNodeContents(n);
+    const t = range.getBoundingClientRect();
+    return t.width && t.height ? { el, r: { left: t.left, right: t.right, top: t.top, bottom: t.bottom } } : null;
+  };
+  const clipper = (el: HTMLElement, r: { left: number; right: number; top: number; bottom: number }) => {
+    // a 1 px box is text for screen readers only, clipped on purpose
+    for (
+      let box: HTMLElement | null = el;
+      box && box.clientWidth > 1 && box.clientHeight > 1;
+      box = box.parentElement
+    ) {
+      const cs = getComputedStyle(box);
+      const b = box.getBoundingClientRect();
+      const outX = hides(cs.overflowX) && (r.left < b.left - 1 || r.right > b.right + 1);
+      const outY = hides(cs.overflowY) && (r.top < b.top - 1 || r.bottom > b.bottom + 1);
+      if (outX || outY) return box;
+      // text a box scrolls to is reachable; from there on only the box's own frame can be cut
+      if (scrolls(cs.overflowX)) [r.left, r.right] = [Math.max(r.left, b.left), Math.min(r.right, b.right)];
+      if (scrolls(cs.overflowY)) [r.top, r.bottom] = [Math.max(r.top, b.top), Math.min(r.bottom, b.bottom)];
+    }
+    return null;
+  };
+  const out: string[] = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const text = textBox(n);
+    const box = text && clipper(text.el, text.r);
+    if (box)
+      out.push(`clipped: ${n.textContent?.trim().slice(0, 40)} (by ${box.tagName.toLowerCase()}.${box.className})`);
+  }
+  return out;
+}
+
+// T9 "all buttons are reachable": scrolled to the top, middle or bottom of the screen, a tap on the control lands on
+// it, not on a sticky bar over it; runs in the page
+function unreachableControls(): string[] {
+  const hits = (e: HTMLElement) => {
+    const r = e.getBoundingClientRect();
+    const x = Math.min(Math.max(r.left + r.width / 2, 0), innerWidth - 1);
+    const top = Math.max(r.top, 0);
+    const bottom = Math.min(r.bottom, innerHeight);
+    return [top + 2, (top + bottom) / 2, bottom - 2].some((y) => {
+      const hit = document.elementFromPoint(x, y);
+      return !!hit && e.contains(hit);
+    });
+  };
+  const reached = (e: HTMLElement) =>
+    (['start', 'center', 'end'] as const).some((block) => {
+      e.scrollIntoView({ block, inline: 'center', behavior: 'instant' });
+      return hits(e);
+    });
+  return (
+    [...document.querySelectorAll('a[href], button, [role="button"], [role="radio"], [role="switch"]')]
+      .filter((e): e is HTMLElement => e instanceof HTMLElement && e.checkVisibility())
+      // the skip link to #main shows only on keyboard focus, above the page
+      .filter((e) => !e.matches('a[href="#main"]') && !reached(e))
+      .map((e) => `unreachable: ${(e.getAttribute('aria-label') ?? e.textContent ?? '').trim().slice(0, 40)}`)
+  );
+}
+
 test('T13 the not-a-forecast label is visible on the past-years and plans pages', async ({ page }) => {
   await page.goto(YEARS_URL);
   await expect(page.getByRole('main').getByText(NOT_FORECAST).first()).toBeVisible();
