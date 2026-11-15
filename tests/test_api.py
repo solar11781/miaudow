@@ -567,6 +567,15 @@ def test_privacy_notice_states_what_is_stored_where_how_long_and_who_hosts(clien
     assert "http" not in text  # no third-party resource on this page (H14)
 
 
+def test_privacy_notice_says_the_typed_question_goes_to_anthropic(client: TestClient) -> None:
+    # Final audit 2026-11-15: the copilot sends the typed question to Claude (Anthropic) when the server has a key
+    # (src/fieldshift/api/copilot.py); "explain simply" sends only the app's own text (src/fieldshift/api/explain.py)
+    text = client.get("/quyen-rieng-tu").text
+    assert "Anthropic" in text
+    assert "the question you type" in text
+    assert "the explain button sends only the app" in text  # the page escapes the apostrophe that follows
+
+
 def test_privacy_notice_is_served_with_sign_in_off(tmp_path: Path) -> None:
     # the link is registered with Google, so it answers whatever the server's sign-in settings are
     assert TestClient(create_app(root=copy_root(tmp_path))).get("/quyen-rieng-tu").status_code == 200
