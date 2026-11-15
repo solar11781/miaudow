@@ -48,6 +48,8 @@ export const en: Messages = {
     open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',
+    thousandPerHa: 'thousand đ/ha',
+    perKg: 'đ/kg',
     notListed: 'Not listed in the source',
     noData: 'No data yet',
     farmland: 'farmland',
@@ -523,8 +525,6 @@ export const en: Messages = {
     filterAll: 'All',
     costs: 'Cost',
     price: 'Price',
-    perKg: 'VND/kg',
-    thousandPerHa: 'thousand VND/ha',
   },
   science: {
     eyebrow: 'Data room · for judges and researchers',
@@ -1069,7 +1069,7 @@ export const en: Messages = {
       'Median and middle half (25th–75th percentile) of the reliable 250 m pixels on each 16-day date; a date without a reliable pixel is left empty.',
     cropProfitLabel: (crop: string) => `Profit, ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
-      `Table 13: ${profit} thousand VND/ha, net of labour. Cost ${cost} thousand VND/ha; price ${price} VND/kg at harvest.`,
+      `Table 13: ${profit} thousand đ/ha, net of labour. Cost ${cost} thousand đ/ha; price ${price} đ/kg at harvest.`,
     planProfitLabel: 'Yearly profit in the trial, three seasons added',
     planProfitSum: 'Table 13, Miaudow’s sum',
     tcvnLabel: (crop: string) => `Irrigation, ${crop}`,
