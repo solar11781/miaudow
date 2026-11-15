@@ -709,6 +709,27 @@ def test_rows_saved_before_prices_and_costs_read_back_with_empty_maps(on: str, k
     ]
 
 
+def test_a_stored_crop_key_no_longer_in_the_rules_is_dropped_on_read(on: str, keys: dict, fetched: list) -> None:
+    # D-180: a crop key renamed later in rules/rotations.yaml drops only that typed entry; the list never answers 500
+    c = TestClient(create_app(root=REPO))
+    me = sign_in(c, keys)
+    kept = c.post("/api/account/saved", headers=me, json={**ANSWERS, **OWN})
+    with psycopg.connect(on) as conn:
+        conn.execute(
+            "INSERT INTO saved_answers (account_id, land, years, priority, prices, costs)"
+            " SELECT id, 'canal_end', ARRAY[2010], 'income',"
+            ' \'{"renamed_crop": "31357", "cc1_spring_peanut": "24689"}\', \'{"renamed_crop": "12"}\' FROM account'
+        )
+    listed = c.get("/api/account/saved", headers=me)
+    assert listed.status_code == 200, listed.text
+    old = {"land": "canal_end", "years": [2010], "priority": "income"}
+    assert [{k: v for k, v in s.items() if k != "id"} for s in listed.json()["saved"]] == [
+        {**ANSWERS, **OWN},
+        {**old, "prices": {"cc1_spring_peanut": "24689"}, "costs": {}},
+    ]
+    assert listed.json()["saved"][0]["id"] == kept.json()["id"]
+
+
 def test_another_account_can_neither_read_nor_delete_my_sets(on: str, keys: dict, fetched: list) -> None:
     c = TestClient(create_app(root=REPO))
     me = sign_in(c, keys)

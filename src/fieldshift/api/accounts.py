@@ -100,6 +100,12 @@ def _own_numbers(value: object, handler: ValidatorFunctionWrapHandler) -> dict[s
     return own
 
 
+def _known(stored: dict[str, str]) -> dict[str, str]:
+    """A stored map without the crop keys that rules/rotations.yaml no longer names, so a renamed key drops only its
+    own entry and the saved list still reads (D-180)."""
+    return {key: digits for key, digits in stored.items() if key in CROP_KEYS}
+
+
 OwnNumbers = Annotated[dict[str, str], WrapValidator(_own_numbers)]
 
 
@@ -276,7 +282,14 @@ class Accounts:
             ).fetchall()
         return SavedList(
             saved=[
-                SavedSet(id=i, land=LEGACY_LAND.get(land, land), years=y, priority=p, prices=prices, costs=costs)
+                SavedSet(
+                    id=i,
+                    land=LEGACY_LAND.get(land, land),
+                    years=y,
+                    priority=p,
+                    prices=_known(prices),
+                    costs=_known(costs),
+                )
                 for i, land, y, p, prices, costs in found
             ]
         )
