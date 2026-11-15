@@ -51,4 +51,9 @@ describe('translations', () => {
     expect(vi.copilot.claudeOn).toMatch(/nguyên văn/);
     for (const s of [en.copilot.claudeOn, vi.copilot.claudeOn]) expect(s).not.toMatch(/words the answer|diễn đạt/);
   });
+  it('never offer the climate ML section the D-169 audit hid (closest years, unusual years)', () => {
+    for (const core of [...en.home.cores, ...vi.home.cores]) {
+      expect(Object.values(core).join(' ')).not.toMatch(/alike|unusual|similar|giống nhau|bất thường/i);
+    }
+  });
 });

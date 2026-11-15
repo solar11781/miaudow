@@ -151,7 +151,7 @@ export const vi = {
         name: 'Lõi khí hậu',
         does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn, nóng, rét, mưa lớn của nhà nước.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Quyết định 18/2021',
-        gives: 'Thời tiết từng năm, những năm giống nhau, những năm bất thường',
+        gives: 'Thời tiết từng năm và phần đất trồng gặp từng điều kiện của Quyết định 18/2021',
         limit: 'Không dự báo mùa tới. Năm đã qua không phải dự báo.',
         to: '/khoa-hoc',
         where: 'trang Khoa học',

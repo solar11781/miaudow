@@ -154,7 +154,7 @@ export const en: Messages = {
         name: 'Climate core',
         does: 'Reads more than 30 years of NASA weather over Nghệ An farmland, with the state’s own thresholds for drought, heat, cold and heavy rain.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Decision 18/2021',
-        gives: 'Weather of each year, the years that were alike, the unusual years',
+        gives: 'Weather of each year and the share of farmland meeting each condition of Decision 18/2021',
         limit: 'No forecast of next season. Past years are not a forecast.',
         to: '/khoa-hoc',
         where: 'the Science page',
