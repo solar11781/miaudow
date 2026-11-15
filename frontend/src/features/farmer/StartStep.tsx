@@ -7,15 +7,11 @@ import { Media } from '../../design-system/Media';
 import { useT } from '../../app/settings';
 import { ART } from '../../data/art';
 import { useSignInAvailable } from '../account/AccountProvider';
+import { LAND_ART } from './LandStep';
 import s from './farmer.module.css';
 
 const HELP_ICONS: IconName[] = ['sun', 'sprout', 'user'];
-const STEP_ART = [
-  'media/field/field-at-end-of-canal.webp',
-  'media/field/field-often-short-of-water.webp',
-  'media/field/water-under-control.webp',
-  'media/field/ask-extension-officer.webp',
-];
+const STEP_ART = [LAND_ART.canal_end, LAND_ART.water_short, LAND_ART.reliable, LAND_ART.ask];
 
 /** What the farmer part does and does not do, in plain words, before the first tap. */
 export function StartStep() {
@@ -79,7 +75,9 @@ export function StartStep() {
       <ol className={s.startSteps} aria-label={t.farmer.stepsLabel}>
         {t.home.steps.map((st, i) => (
           <li key={st.title}>
-            <img src={STEP_ART[i]} alt="" width={474} height={356} loading="lazy" decoding="async" />
+            <span className={s.startStepArt}>
+              <Media slug={STEP_ART[i] ?? LAND_ART.ask} sizes="474px" decorative />
+            </span>
             <span className={s.startStepNum}>{t.home.stepLabel(i + 1)}</span>
             <span className={s.startStepTitle}>{st.title}</span>
           </li>

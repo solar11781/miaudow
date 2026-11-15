@@ -34,7 +34,8 @@ describe('photo sizes', () => {
         </MemoryRouter>
       </SettingsProvider>,
     );
-    expect(widths(container)).toEqual(['(max-width: 700px) 320px, 600px']);
+    // then the four step pictures, field illustrations that exist in one 474 px width only
+    expect(widths(container)).toEqual(['(max-width: 700px) 320px, 600px', '474px', '474px', '474px', '474px']);
   });
 
   it('lets a phone load the 640w home photos below the fold', () => {

@@ -722,10 +722,9 @@
 }
 
 .landArt img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 900ms var(--ease-out);
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 900ms var(--ease-out);
 }
 
 .landCard:hover .landArt img {
@@ -904,10 +903,12 @@
   gap: 0.35rem;
 }
 
-.startSteps img {
+.startStepArt {
+  position: relative;
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  overflow: hidden;
   border-radius: var(--r-md);
 }
 

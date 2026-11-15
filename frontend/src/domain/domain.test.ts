@@ -12,7 +12,7 @@ import {
   toggleYear,
   MAX_YEARS,
 } from './farmerState';
-import { planById, planProfitMillion, PLANS } from './plans';
+import { planById, planLabel, planProfitMillion, PLANS } from './plans';
 import { riceSummary, riceYear, seasonStatus } from './rice';
 import { SOURCES } from './sources';
 import { en as enText } from '../i18n/en';
@@ -227,5 +227,14 @@ describe('E-012 source sheet', () => {
   it('says the winter result is narrow and fragile', () => {
     expect(SOURCES.e012.caveat.vi).toContain(viText.common.winterFragile);
     expect(SOURCES.e012.caveat.en).toContain(enText.common.winterFragile);
+  });
+});
+
+describe('planLabel', () => {
+  // H15: the plain plan names come from the vi and en text files (UI-UX-SPEC §6d)
+  it('names current practice and each trial way from the text files', () => {
+    expect(planLabel({ id: 'usual', current: true }, viText.farmer)).toBe(viText.farmer.current);
+    expect(planLabel({ id: 'cc2' }, viText.farmer)).toBe(viText.farmer.trialShort('2'));
+    expect(planLabel({ id: 'cc2' }, enText.farmer)).toBe('Trial way of farming 2');
   });
 });

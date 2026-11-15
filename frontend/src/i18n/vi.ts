@@ -151,7 +151,7 @@ export const vi = {
         name: 'Lõi khí hậu',
         does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn, nóng, rét, mưa lớn của nhà nước.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Quyết định 18/2021',
-        gives: 'Thời tiết từng năm, những năm giống nhau, những năm bất thường',
+        gives: 'Thời tiết từng năm và phần đất trồng gặp từng điều kiện của Quyết định 18/2021',
         limit: 'Không dự báo mùa tới. Năm đã qua không phải dự báo.',
         to: '/khoa-hoc',
         where: 'trang Khoa học',
@@ -260,7 +260,7 @@ export const vi = {
       ask: { title: 'Không chắc, hỏi cán bộ khuyến nông', body: 'Cán bộ sẽ giúp bạn chọn.' },
     },
     pickFirst: 'Chọn một loại ruộng để đi tiếp',
-    artNote: 'Ảnh minh họa giúp bạn nhận ra loại ruộng, không phải ảnh chụp ở Đô Lương.',
+    artNote: 'Tranh minh họa do AI tạo, giúp bạn nhận ra loại ruộng, không phải ảnh chụp ở Đô Lương.',
     wetNote:
       'Các cách trồng trong ứng dụng được thử trên ruộng thiếu nước. Chưa có cách nào được thử cho ruộng chủ động nước, nên ứng dụng không đưa ra so sánh cho loại ruộng này.',
     dryNote:
@@ -307,6 +307,7 @@ export const vi = {
     jumpTo: 'Đến thẻ',
     current: 'Cách làm hiện nay',
     trialPlan: (n: string, code: string) => `Cách trồng thử ${n} (${code}), theo thử nghiệm ở Lưu Sơn`,
+    trialShort: (n: string) => `Cách trồng thử ${n}`,
     describedByP02: 'Thử nghiệm ở Lưu Sơn, Đô Lương (2020–21)',
     describedByP03: 'Bài báo thứ hai của cùng nhóm, cùng xã',
     fallow: 'bỏ trống',

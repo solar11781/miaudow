@@ -154,7 +154,7 @@ export const en: Messages = {
         name: 'Climate core',
         does: 'Reads more than 30 years of NASA weather over Nghệ An farmland, with the state’s own thresholds for drought, heat, cold and heavy rain.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Decision 18/2021',
-        gives: 'Weather of each year, the years that were alike, the unusual years',
+        gives: 'Weather of each year and the share of farmland meeting each condition of Decision 18/2021',
         limit: 'No forecast of next season. Past years are not a forecast.',
         to: '/khoa-hoc',
         where: 'the Science page',
@@ -269,7 +269,7 @@ export const en: Messages = {
       ask: { title: 'Not sure, ask the extension officer', body: 'The officer helps you choose.' },
     },
     pickFirst: 'Pick a type of field to go on',
-    artNote: 'The pictures are illustrations to help you recognise the field, not photographs of Đô Lương.',
+    artNote: 'The pictures are AI-made illustrations to help you recognise the field, not photographs of Đô Lương.',
     wetNote:
       'The plans in this app were tested on water-short fields. None was tested for fields with reliable water, so the app offers no comparison for this kind of field.',
     dryNote:
@@ -315,6 +315,7 @@ export const en: Messages = {
     jumpTo: 'Go to card',
     current: 'Current practice',
     trialPlan: (n: string, code: string) => `Trial way of farming ${n} (${code}), from the Lưu Sơn trial`,
+    trialShort: (n: string) => `Trial way of farming ${n}`,
     describedByP02: 'Trial in Lưu Sơn, Đô Lương (2020–21)',
     describedByP03: 'The same team’s second paper, same commune',
     fallow: 'fallow',
