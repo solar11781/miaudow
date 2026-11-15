@@ -37,9 +37,6 @@
   background: rgba(244, 240, 229, 0.9);
   color: #16201a;
   font: 500 17px/1.3 var(--font-ui);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .drift.on {
   animation: drift 26s var(--ease-in-out) infinite alternate;
