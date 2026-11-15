@@ -175,6 +175,12 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
           <Icon name="close" />
         </button>
       </header>
+      {value.quote && (
+        <section className={s.arith}>
+          <h3>{t.sheet.quote}</h3>
+          <p>{value.quote}</p>
+        </section>
+      )}
       {value.ruleText && (
         <section className={s.arith}>
           <h3>{t.sheet.ruleText}</h3>

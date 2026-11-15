@@ -5,6 +5,7 @@ import rotationsJson from '@data/rotations.generated.json';
 import decisionJson from '@data/decision.json';
 import type { Bilingual } from '../domain/provenance';
 import type { PlanId } from '../domain/plans';
+import type { PlanId as ApiPlanId } from '../types';
 
 export interface RiskLine {
   text: Bilingual;
@@ -27,8 +28,8 @@ interface DecisionPlan {
 const ROTATIONS = rotationsJson as unknown as { plans: RulebookPlan[] };
 const DECISION = decisionJson as unknown as { plans: Record<string, DecisionPlan>; missing_information: Bilingual[] };
 
-/** The farmer page's plan ids next to the rulebook's ids. */
-export const RULEBOOK_ID: Record<PlanId, string> = {
+/** The farmer page's plan ids next to the rulebook's ids, which are the API's plan ids. */
+export const RULEBOOK_ID: Record<PlanId, ApiPlanId> = {
   cc5: 'usual',
   p03: 'usual_p03',
   cc1: 'cc1',
@@ -43,6 +44,11 @@ export function rulebookPlan(id: PlanId): RulebookPlan | undefined {
 
 export function decisionPlan(id: PlanId): DecisionPlan | undefined {
   return DECISION.plans[RULEBOOK_ID[id]];
+}
+
+/** The questions for the extension officer of a plan by its API id, as the officer page lists them (the plan cards). */
+export function officerQuestions(id: ApiPlanId): Bilingual[] {
+  return DECISION.plans[id]?.questions_for_officer ?? [];
 }
 
 export const MISSING_INFORMATION = DECISION.missing_information;
