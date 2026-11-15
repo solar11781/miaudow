@@ -685,6 +685,1133 @@
   "is_study_area": false,
   "use": "card"
  },
+ "terrace-sunset-reflection": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2555,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/terrace-sunset-reflection-640.avif",
+    "webp": "media/photo/terrace-sunset-reflection-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/terrace-sunset-reflection-1280.avif",
+    "webp": "media/photo/terrace-sunset-reflection-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/terrace-sunset-reflection-1920.avif",
+    "webp": "media/photo/terrace-sunset-reflection-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JQBYdhDw6z/UsJaXMXf5jAAD+7M5MeHSgZHlS48N7O/XhGmFVeNEeV9aT/TftbE1dU7dYgatFHxLe4H5KgAAA",
+  "dominant": "#180808",
+  "focal": {
+   "x": 40,
+   "y": 55
+  },
+  "alt": {
+   "vi": "Ruộng bậc thang ngập nước phản chiếu bầu trời hoàng hôn, núi sẫm màu phía sau",
+   "en": "Flooded rice terraces reflecting a sunset sky, dark mountains behind"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Vietnam Photo Tours | An Bui, CC BY 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Vietnam Photo Tours | An Bui, CC BY 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Vietnam_rice_terrace_with_water_reflection.jpg",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "hero"
+ },
+ "ninh-hai-sunset": {
+  "kind": "photo",
+  "width": 2870,
+  "height": 4314,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/ninh-hai-sunset-640.avif",
+    "webp": "media/photo/ninh-hai-sunset-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/ninh-hai-sunset-1280.avif",
+    "webp": "media/photo/ninh-hai-sunset-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/ninh-hai-sunset-1920.avif",
+    "webp": "media/photo/ninh-hai-sunset-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABwBgCdASoYACQAPtVcok2oJaMiOrZoAQAaiWMAtvtHSSgX6QDm6lzehVpM+2curoE7D5KWifkU+JHZikAA/EzK57xpkmpgvMyLdEpHHInzoDtum2Et3rKoizpnYeveXNUEUd+ksWaxNM4HG8arX5o/NBohQqIH/azH7UyN421OXINmAhbSnlrfqCAAAA==",
+  "dominant": "#a89888",
+  "focal": {
+   "x": 50,
+   "y": 62
+  },
+  "alt": {
+   "vi": "Hoàng hôn trên làng quê Ninh Hải: mây vàng cam phía trên hàng dừa và núi đá vôi",
+   "en": "Sunset over Ninh Hải village: orange clouds above palm trees and limestone hills"
+  },
+  "caption": {
+   "vi": "Xã Ninh Hải, tỉnh Ninh Bình. Ảnh không chụp ở Nghệ An.",
+   "en": "Ninh Hải commune, Ninh Bình province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Jakub Hałun, CC BY 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Jakub Hałun, CC BY 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Sunset_in_Ninh_H%E1%BA%A3i,_Ninh_Binh_province,_Vietnam,_20240202_1724_5415.jpg",
+  "geography": {
+   "vi": "Xã Ninh Hải, tỉnh Ninh Bình",
+   "en": "Ninh Hải commune, Ninh Bình province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "hoang-su-phi-nam-khoa-terraces": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2560,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/hoang-su-phi-nam-khoa-terraces-640.avif",
+    "webp": "media/photo/hoang-su-phi-nam-khoa-terraces-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/hoang-su-phi-nam-khoa-terraces-1280.avif",
+    "webp": "media/photo/hoang-su-phi-nam-khoa-terraces-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/hoang-su-phi-nam-khoa-terraces-1920.avif",
+    "webp": "media/photo/hoang-su-phi-nam-khoa-terraces-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAwBACdASoYABAAPu1kqU2ppaQiMAgBMB2JbACdMoAJqLJ+GcYuM9vZbEAA/nRYLQnc6xrATVhqegBe5Rrn26F4wH8budfehsD3txS1Ced9npkKDEkM+AAA",
+  "dominant": "#b89848",
+  "focal": {
+   "x": 45,
+   "y": 55
+  },
+  "alt": {
+   "vi": "Ruộng bậc thang lúa chín vàng uốn lượn theo sườn đồi, một chòi nhỏ giữa ruộng",
+   "en": "Golden ripe rice terraces curving around a hillside, a small hut among the fields"
+  },
+  "caption": {
+   "vi": "Nậm Khòa, huyện Hoàng Su Phì, tỉnh Hà Giang. Ảnh không chụp ở Nghệ An.",
+   "en": "Nậm Khòa, Hoàng Su Phì district, Hà Giang province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: NKSTTSSHNVN, CC BY-SA 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: NKSTTSSHNVN, CC BY-SA 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:NKS07164.jpg",
+  "geography": {
+   "vi": "Nậm Khòa, huyện Hoàng Su Phì, tỉnh Hà Giang",
+   "en": "Nậm Khòa, Hoàng Su Phì district, Hà Giang province"
+  },
+  "is_study_area": false,
+  "use": "hero"
+ },
+ "ninh-hai-karst-fields": {
+  "kind": "photo",
+  "width": 3680,
+  "height": 5512,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/ninh-hai-karst-fields-640.avif",
+    "webp": "media/photo/ninh-hai-karst-fields-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/ninh-hai-karst-fields-1280.avif",
+    "webp": "media/photo/ninh-hai-karst-fields-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/ninh-hai-karst-fields-1920.avif",
+    "webp": "media/photo/ninh-hai-karst-fields-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAADwBACdASoYACQAPtFYo02oJaMiNUwBABoJZwDImCzar6+/dGp2wDw5GqbW29rX4wAA/vYHPgt6AsRBmRSSNxo3XN2fFK1Ln4C/6yKQfI5u9FcMpdkfv8DIAphTKR+rBw9sX9PAbY89CLOUHDI9YI+CSGAAAA==",
+  "dominant": "#f8f8f8",
+  "focal": {
+   "x": 50,
+   "y": 70
+  },
+  "alt": {
+   "vi": "Vách núi đá vôi cao trong sương, dưới chân là cánh đồng phẳng có vài người đang làm",
+   "en": "Tall limestone cliffs in mist above a flat field where a few people are working"
+  },
+  "caption": {
+   "vi": "Xã Ninh Hải, gần thành phố Ninh Bình. Ảnh không chụp ở Nghệ An.",
+   "en": "Ninh Hải commune, near Ninh Bình city. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Jakub Hałun, CC BY 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Jakub Hałun, CC BY 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Fields_in_Ninh_H%E1%BA%A3i,_near_Ninh_B%C3%ACnh,_Vietnam,_20240203_1150_5660.jpg",
+  "geography": {
+   "vi": "Xã Ninh Hải, gần thành phố Ninh Bình",
+   "en": "Ninh Hải commune, near Ninh Bình city"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "mai-chau-buffalo-ploughing": {
+  "kind": "photo",
+  "width": 2468,
+  "height": 1987,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/mai-chau-buffalo-ploughing-640.avif",
+    "webp": "media/photo/mai-chau-buffalo-ploughing-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/mai-chau-buffalo-ploughing-1280.avif",
+    "webp": "media/photo/mai-chau-buffalo-ploughing-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/mai-chau-buffalo-ploughing-1920.avif",
+    "webp": "media/photo/mai-chau-buffalo-ploughing-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAACQAwCdASoYABMAPu1kq0+ppSOmsBgIATAdiUAABckxdt4dao+AAPdpDwDJO3PVr3/A1eNdBF1flffdAMea0g8l32xM7+WF23u6l0Z1Do4UQiAAAAA=",
+  "dominant": "#787858",
+  "focal": {
+   "x": 45,
+   "y": 68
+  },
+  "alt": {
+   "vi": "Người nông dân cày ruộng nước bằng trâu, một người đội nón đi phía sau, núi xanh phía xa",
+   "en": "A farmer ploughs a flooded field with a water buffalo, another person in a conical hat behind, green hills beyond"
+  },
+  "caption": {
+   "vi": "Huyện Mai Châu, tỉnh Hòa Bình. Ảnh không chụp ở Nghệ An.",
+   "en": "Mai Châu district, Hòa Bình province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Franzfoto, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Franzfoto, CC BY-SA 3.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Mai_Chau_-_Arbeit_mit_Wasserb%C3%BCffel_im_Reisfeld.jpg",
+  "geography": {
+   "vi": "Huyện Mai Châu, tỉnh Hòa Bình",
+   "en": "Mai Châu district, Hòa Bình province"
+  },
+  "is_study_area": false,
+  "use": "hero"
+ },
+ "paddy-farmer-seedlings": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2550,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/paddy-farmer-seedlings-640.avif",
+    "webp": "media/photo/paddy-farmer-seedlings-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/paddy-farmer-seedlings-1280.avif",
+    "webp": "media/photo/paddy-farmer-seedlings-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/paddy-farmer-seedlings-1920.avif",
+    "webp": "media/photo/paddy-farmer-seedlings-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADQAwCdASoYABAAPu1Ct1apoqakGAEwHYljAL5IIeFNIVc+wgqos3wA/pB/muGlaVWpwWY9tKu+cjdX3Bmz8jJsBLgD+OZrzyrlLEEdgAA=",
+  "dominant": "#d8d8d8",
+  "focal": {
+   "x": 72,
+   "y": 45
+  },
+  "alt": {
+   "vi": "Người nông dân đội nón, mặc áo xanh, đứng giữa ruộng nước cầm bó mạ",
+   "en": "A farmer in a conical hat and a blue shirt stands in a flooded field holding rice seedlings"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Dennis G. Jarvis, CC BY-SA 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Dennis G. Jarvis, CC BY-SA 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Paddy_field_in_Vietnam_with_farmer.jpg",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "ha-giang-golden-terraces-clouds": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2257,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/ha-giang-golden-terraces-clouds-640.avif",
+    "webp": "media/photo/ha-giang-golden-terraces-clouds-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/ha-giang-golden-terraces-clouds-1280.avif",
+    "webp": "media/photo/ha-giang-golden-terraces-clouds-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/ha-giang-golden-terraces-clouds-1920.avif",
+    "webp": "media/photo/ha-giang-golden-terraces-clouds-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQBACdASoYAA4APu1yrU+pp6QiMAgBMB2JbACsLwAB0UGAn/e0xuyK0AD+7YAj8YqDa+vOqZOLgE9ppKftp+5GbNQSE/RLWlzG88LNfBcZ5/RXvtn/02OQAAA=",
+  "dominant": "#e8e8e8",
+  "focal": {
+   "x": 50,
+   "y": 58
+  },
+  "alt": {
+   "vi": "Biển mây trắng lấp đầy thung lũng, ruộng bậc thang lúa chín ở sườn đồi phía trước",
+   "en": "A sea of white cloud filling a valley, ripe rice terraces on the slope in front"
+  },
+  "caption": {
+   "vi": "Tỉnh Hà Giang. Ảnh không chụp ở Nghệ An.",
+   "en": "Hà Giang province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: minhphuc_99kdd, Public domain, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: minhphuc_99kdd, Public domain, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "Public domain",
+  "license_url": "https://commons.wikimedia.org/wiki/File:Ha_Giang_-_2012_-_166_(10056929673).jpg",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Ha_Giang_-_2012_-_166_(10056929673).jpg",
+  "geography": {
+   "vi": "Tỉnh Hà Giang",
+   "en": "Hà Giang province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "long-xuyen-ripe-rice": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2880,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/long-xuyen-ripe-rice-640.avif",
+    "webp": "media/photo/long-xuyen-ripe-rice-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/long-xuyen-ripe-rice-1280.avif",
+    "webp": "media/photo/long-xuyen-ripe-rice-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/long-xuyen-ripe-rice-1920.avif",
+    "webp": "media/photo/long-xuyen-ripe-rice-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQBACdASoYABIAPt1apE2opSOjN/qoARAbiWQAnTLQw0LWCLJeCdK1NL4hkOgA/tSvAJz1OfKkyIy9m3h1RICFzITr88XtqGQYVuk3VgvXA+jgKSDpQcsGVBwHSY94366AGTpggOzEAA==",
+  "dominant": "#f8f8f8",
+  "focal": {
+   "x": 50,
+   "y": 62
+  },
+  "alt": {
+   "vi": "Cánh đồng lúa chín vàng trải rộng tới hàng cây phía xa dưới trời xanh nhạt",
+   "en": "A wide field of golden ripe rice reaching a line of trees under a pale sky"
+  },
+  "caption": {
+   "vi": "Long Xuyên, tỉnh An Giang. Ảnh không chụp ở Nghệ An.",
+   "en": "Long Xuyên, An Giang province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Bùi Thụy Đào Nguyên, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Bùi Thụy Đào Nguyên, CC BY-SA 3.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:M%E1%BB%99t_c%C3%A1nh_%C4%91%E1%BB%93ng_l%C3%BAa_ch%C3%ADn.jpg",
+  "geography": {
+   "vi": "Long Xuyên, tỉnh An Giang",
+   "en": "Long Xuyên, An Giang province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "terraced-rice-fields": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2560,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/terraced-rice-fields-640.avif",
+    "webp": "media/photo/terraced-rice-fields-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/terraced-rice-fields-1280.avif",
+    "webp": "media/photo/terraced-rice-fields-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/terraced-rice-fields-1920.avif",
+    "webp": "media/photo/terraced-rice-fields-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQBACdASoYABAAPu1mq04ppaQiMAgBMB2JaACsABZ3ufoNZakDn0KP2AD4T1GAN8p3MoJIbjTHx4+vW/cXhJ8U7dWlMwS9txt7BokbluF311bCMbEkoA6AAAA=",
+  "dominant": "#080808",
+  "focal": {
+   "x": 50,
+   "y": 60
+  },
+  "alt": {
+   "vi": "Ruộng bậc thang xanh mướt xếp lớp trên sườn đồi, xen những lùm cây",
+   "en": "Bright green rice terraces stacked on hillsides, with clumps of trees"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Jeff Caylor, CC BY 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Jeff Caylor, CC BY 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:RiceTerracesVietnam.jpg",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "farmer-carrying-seedlings": {
+  "kind": "photo",
+  "width": 2555,
+  "height": 1650,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/farmer-carrying-seedlings-640.avif",
+    "webp": "media/photo/farmer-carrying-seedlings-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/farmer-carrying-seedlings-1280.avif",
+    "webp": "media/photo/farmer-carrying-seedlings-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/farmer-carrying-seedlings-1920.avif",
+    "webp": "media/photo/farmer-carrying-seedlings-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADQAwCdASoYAA8APu1iqU2ppaOiMAgBMB2JYgCsAB6EOuUJgADx18AA8bFPauQaHB/wKnJcOrz1VT188gaiDS2Y5Bg8l3RWaWAEG5GgAAA=",
+  "dominant": "#b8b888",
+  "focal": {
+   "x": 48,
+   "y": 52
+  },
+  "alt": {
+   "vi": "Người nông dân đội nón gánh hai thúng mạ trên bờ ruộng nước",
+   "en": "A farmer in a conical hat carries two baskets of rice seedlings on a shoulder pole along a paddy bank"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Philippe Berry, IFPRI, Public domain, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Philippe Berry, IFPRI, Public domain, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "Public domain",
+  "license_url": "https://commons.wikimedia.org/wiki/File:Farmer_in_Vietnam.jpg",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Farmer_in_Vietnam.jpg",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "son-la-terraced-paddies": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2560,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/son-la-terraced-paddies-640.avif",
+    "webp": "media/photo/son-la-terraced-paddies-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/son-la-terraced-paddies-1280.avif",
+    "webp": "media/photo/son-la-terraced-paddies-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/son-la-terraced-paddies-1920.avif",
+    "webp": "media/photo/son-la-terraced-paddies-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAwCdASoYABAAPu1kqk2ppaQiMAgBMB2JYwAAQ2pTVdsd6sNgCmwA/qgy4MvS2hGls7auSCve9fmIyQSgYAh7KnplypPRQckbfgQA",
+  "dominant": "#383828",
+  "focal": {
+   "x": 50,
+   "y": 55
+  },
+  "alt": {
+   "vi": "Ruộng bậc thang ngập nước uốn theo sườn núi dốc, lấp lánh dưới ánh sáng",
+   "en": "Flooded terraces following a steep mountainside, shining in the light"
+  },
+  "caption": {
+   "vi": "Tỉnh Sơn La. Ảnh không chụp ở Nghệ An.",
+   "en": "Sơn La province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Quangpraha, CC0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Quangpraha, CC0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Terraced_paddy_fields,_Sonla,_Vietnam.jpg",
+  "geography": {
+   "vi": "Tỉnh Sơn La",
+   "en": "Sơn La province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "pu-luong-terraces": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2560,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/pu-luong-terraces-640.avif",
+    "webp": "media/photo/pu-luong-terraces-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/pu-luong-terraces-1280.avif",
+    "webp": "media/photo/pu-luong-terraces-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/pu-luong-terraces-1920.avif",
+    "webp": "media/photo/pu-luong-terraces-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACwAwCdASoYABAAPu1kq04ppaQiMAgBMB2JaACw7CHcUJRKhAIcIAD+3nUryau8ThUlJTCLG5s7OSkc44TXXosJt7Nie8nyJmPH+bqsUbodf4AA",
+  "dominant": "#c8d8e8",
+  "focal": {
+   "x": 50,
+   "y": 62
+  },
+  "alt": {
+   "vi": "Ruộng bậc thang lúa đang ngả vàng trải tới dãy núi đá, trời xanh mây trắng",
+   "en": "Terraces of yellowing rice stretching to a limestone range under a blue sky with white clouds"
+  },
+  "caption": {
+   "vi": "Pù Luông, tỉnh Thanh Hóa. Ảnh không chụp ở Nghệ An.",
+   "en": "Pù Luông, Thanh Hóa province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: NKSTTSSHNVN, CC BY-SA 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: NKSTTSSHNVN, CC BY-SA 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Ru%E1%BB%99ng_b%E1%BA%ADc_thang_P%C3%B9_Lu%C3%B4ng_1_-_NKS.jpg",
+  "geography": {
+   "vi": "Pù Luông, tỉnh Thanh Hóa",
+   "en": "Pù Luông, Thanh Hóa province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "paddy-field-workers": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2537,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/paddy-field-workers-640.avif",
+    "webp": "media/photo/paddy-field-workers-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/paddy-field-workers-1280.avif",
+    "webp": "media/photo/paddy-field-workers-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/paddy-field-workers-1920.avif",
+    "webp": "media/photo/paddy-field-workers-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAACQAwCdASoYABAAPu1iqk4ppaQiMAgBMB2JZACdMoAC8u+VpWAAAPnZUPwjvwGOhzQdpyXCOlfGvELMHMvCKldaoMTVUuq8wAA=",
+  "dominant": "#588828",
+  "focal": {
+   "x": 45,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Nhiều người nông dân đội nón làm việc trên ruộng lúa xanh, bao mạ xếp dọc bờ",
+   "en": "Several farmers in conical hats working a green paddy, bags of seedlings along the bank"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Jean-Marc Astesana from Voisins le Bretonneux, France, CC BY-SA 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Jean-Marc Astesana from Voisins le Bretonneux, France, CC BY-SA 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Paddy_field_(8586596737).jpg",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "ha-giang-tea-plantation": {
+  "kind": "photo",
+  "width": 3783,
+  "height": 2428,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/ha-giang-tea-plantation-640.avif",
+    "webp": "media/photo/ha-giang-tea-plantation-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/ha-giang-tea-plantation-1280.avif",
+    "webp": "media/photo/ha-giang-tea-plantation-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/ha-giang-tea-plantation-1920.avif",
+    "webp": "media/photo/ha-giang-tea-plantation-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACwAwCdASoYAA8APu1kqU2ppaQiMAgBMB2JYgAAW2S4LPvYuUesCAD+7/E+MDc7VPsoxq9pnFNLdf4o/T5szIaBpTqfga5FKXaFssfJIAA=",
+  "dominant": "#f8f8e8",
+  "focal": {
+   "x": 45,
+   "y": 60
+  },
+  "alt": {
+   "vi": "Những hàng chè xanh đều nhau trên một quả đồi thấp, vài cây cao trên đỉnh",
+   "en": "Even rows of green tea bushes on a low hill, a few tall trees on the top"
+  },
+  "caption": {
+   "vi": "Tỉnh Hà Giang. Ảnh không chụp ở Nghệ An.",
+   "en": "Hà Giang province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Velvet, CC BY-SA 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Velvet, CC BY-SA 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Ha_Giang_theiers.jpg",
+  "geography": {
+   "vi": "Tỉnh Hà Giang",
+   "en": "Hà Giang province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "eggplant-farm-south": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2560,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/eggplant-farm-south-640.avif",
+    "webp": "media/photo/eggplant-farm-south-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/eggplant-farm-south-1280.avif",
+    "webp": "media/photo/eggplant-farm-south-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/eggplant-farm-south-1920.avif",
+    "webp": "media/photo/eggplant-farm-south-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAADQAwCdASoYABAAPu1iqk4ppaQiMAgBMB2JYgC/OCHV4C2S9clN2gAA/q8POw96fkohDWHvN2KgIX0PWJSi1ll3UEmTMTT+BLGNzzz1gaIAAA==",
+  "dominant": "#a8b8c8",
+  "focal": {
+   "x": 48,
+   "y": 45
+  },
+  "alt": {
+   "vi": "Người phụ nữ đội nón, xách xô đi giữa ruộng cà tím, bông lau phía trước",
+   "en": "A woman in a conical hat carrying a bucket through an eggplant field, reeds in front"
+  },
+  "caption": {
+   "vi": "Miền Nam Việt Nam. Ảnh không chụp ở Nghệ An.",
+   "en": "Southern Vietnam. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Vinnie Cartabiano, CC BY 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Vinnie Cartabiano, CC BY 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Agriculture_in_Vietnam_(28132442379).jpg",
+  "geography": {
+   "vi": "Miền Nam Việt Nam",
+   "en": "Southern Vietnam"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "riverbank-afternoon": {
+  "kind": "photo",
+  "width": 2068,
+  "height": 1456,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/riverbank-afternoon-640.avif",
+    "webp": "media/photo/riverbank-afternoon-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/riverbank-afternoon-1280.avif",
+    "webp": "media/photo/riverbank-afternoon-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/riverbank-afternoon-1920.avif",
+    "webp": "media/photo/riverbank-afternoon-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADQBACdASoYABEAPulkqk2pJaQiMBgMASAdCWIArAAQ+CnLNmFlpbp8s6R9capPkAD8f77dXcU4417OsR1/wCy1u7UuwXKw1vCso66KXcu2wVKvNj53ggiWTyAuYkbc6cyuxEDFL29/TC8kAAA=",
+  "dominant": "#d8e8e8",
+  "focal": {
+   "x": 62,
+   "y": 62
+  },
+  "alt": {
+   "vi": "Bến sông buổi chiều: chiếc thuyền nhỏ, người và xe đạp trên bãi cát, hàng cây bên kia sông",
+   "en": "A riverbank in the afternoon: a small boat, people and bicycles on the sand, trees on the far bank"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: LÊ TẤN LỘC at Vietnamese Wikipedia, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: LÊ TẤN LỘC at Vietnamese Wikipedia, CC BY-SA 3.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Chi%E1%BB%81u_v%E1%BB%81_nh%E1%BB%99n_nh%E1%BB%8Bp_b%E1%BA%BFn_s%C3%B4ng.JPG",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "ninh-binh-karst-fields": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2564,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/ninh-binh-karst-fields-640.avif",
+    "webp": "media/photo/ninh-binh-karst-fields-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/ninh-binh-karst-fields-1280.avif",
+    "webp": "media/photo/ninh-binh-karst-fields-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/ninh-binh-karst-fields-1920.avif",
+    "webp": "media/photo/ninh-binh-karst-fields-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAABwAwCdASoYABAAPu1iqU2ppaOiMAgBMB2JQAAKVQradiAPZ4wA/YkCS7YQVW8gLThPnDvgIJshZR+kNqZJjinzuM93af3LwAA=",
+  "dominant": "#a8a8a8",
+  "focal": {
+   "x": 50,
+   "y": 60
+  },
+  "alt": {
+   "vi": "Đồng ruộng ngập nước giữa những núi đá vôi dựng đứng, sương mờ phía xa",
+   "en": "Flooded fields between steep limestone hills, mist in the distance"
+  },
+  "caption": {
+   "vi": "Gần thành phố Ninh Bình. Ảnh không chụp ở Nghệ An.",
+   "en": "Near Ninh Bình city. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Jakub Hałun, CC BY 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Jakub Hałun, CC BY 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Fields_near_Ninh_B%C3%ACnh,_Vietnam,_20240201_1523_4872.jpg",
+  "geography": {
+   "vi": "Gần thành phố Ninh Bình",
+   "en": "Near Ninh Bình city"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "sa-pa-patterns-from-the-sky": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2400,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/sa-pa-patterns-from-the-sky-640.avif",
+    "webp": "media/photo/sa-pa-patterns-from-the-sky-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/sa-pa-patterns-from-the-sky-1280.avif",
+    "webp": "media/photo/sa-pa-patterns-from-the-sky-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/sa-pa-patterns-from-the-sky-1920.avif",
+    "webp": "media/photo/sa-pa-patterns-from-the-sky-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABQBACdASoYAA8APu1iqU2ppaOiMAgBMB2JZACdACHpJnfH8ecstBiVV1sAAP6p7AGK0JwKIOjBDRfG9iJ+2G8wNbUXM0qq7w7QaEKizFPOpqAA",
+  "dominant": "#384828",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Nhìn từ trên cao: những mảnh ruộng bậc thang vàng, nâu, xanh xen nhau",
+   "en": "Seen from above: patchwork rice terraces in yellow, brown and green"
+  },
+  "caption": {
+   "vi": "Vùng Sa Pa, tỉnh Lào Cai. Ảnh không chụp ở Nghệ An.",
+   "en": "Sa Pa area, Lào Cai province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Kandukuru Nagarjun, CC BY 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Kandukuru Nagarjun, CC BY 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Patterns_from_the_sky.jpg",
+  "geography": {
+   "vi": "Vùng Sa Pa, tỉnh Lào Cai",
+   "en": "Sa Pa area, Lào Cai province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "planting-rice": {
+  "kind": "photo",
+  "width": 3264,
+  "height": 2448,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/planting-rice-640.avif",
+    "webp": "media/photo/planting-rice-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/planting-rice-1280.avif",
+    "webp": "media/photo/planting-rice-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/planting-rice-1920.avif",
+    "webp": "media/photo/planting-rice-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAwBACdASoYABIAPu1kqE2ppaOiMAgBMB2JZQAAW+s0nAQmKYGwBSXWaNwA/q4xGAVlnaco/XvRTQZ4d9zOJT4xP/lN8uTxRg0ghnWZV1q7mAAAAAA=",
+  "dominant": "#b8b8a8",
+  "focal": {
+   "x": 40,
+   "y": 55
+  },
+  "alt": {
+   "vi": "Người phụ nữ cúi cấy lúa trong ruộng nước, những hàng mạ non quanh chân",
+   "en": "A woman bends to plant rice in a flooded field, rows of young seedlings around her"
+  },
+  "caption": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm). Ảnh không chụp ở Nghệ An.",
+   "en": "Vietnam (place not given by the source). Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Andrew Crump from London, UK, CC BY 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Andrew Crump from London, UK, CC BY 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:C%E1%BA%A5y_l%C3%BAa.jpg",
+  "geography": {
+   "vi": "Việt Nam (nguồn không ghi địa điểm)",
+   "en": "Vietnam (place not given by the source)"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "mai-chau-houses-rice": {
+  "kind": "photo",
+  "width": 3570,
+  "height": 1749,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/mai-chau-houses-rice-640.avif",
+    "webp": "media/photo/mai-chau-houses-rice-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/mai-chau-houses-rice-1280.avif",
+    "webp": "media/photo/mai-chau-houses-rice-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/mai-chau-houses-rice-1920.avif",
+    "webp": "media/photo/mai-chau-houses-rice-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAABQBACdASoYAAwAPu1iqk2ppaQiMAgBMB2JZACdMoADUtvurG5FzSFjzW2gAPfa7xwkS/ReRzsZmkLm0FXr9/uLJDGQUTjpwFFc0mWfL5h4yuziUjDJeIAA",
+  "dominant": "#c8d8e8",
+  "focal": {
+   "x": 50,
+   "y": 60
+  },
+  "alt": {
+   "vi": "Nhà sàn mái lá và mái ngói bên ruộng nước, hàng dừa và núi phía sau",
+   "en": "Stilt houses with thatched and tiled roofs beside a flooded field, palm trees and mountains behind"
+  },
+  "caption": {
+   "vi": "Huyện Mai Châu, tỉnh Hòa Bình. Ảnh không chụp ở Nghệ An.",
+   "en": "Mai Châu district, Hòa Bình province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Franzfoto, CC BY-SA 3.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Franzfoto, CC BY-SA 3.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Mai_Chau_-_H%C3%A4user_im_Reisfeld.jpg",
+  "geography": {
+   "vi": "Huyện Mai Châu, tỉnh Hòa Bình",
+   "en": "Mai Châu district, Hòa Bình province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "sa-pa-rice-paddies": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2160,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/sa-pa-rice-paddies-640.avif",
+    "webp": "media/photo/sa-pa-rice-paddies-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/sa-pa-rice-paddies-1280.avif",
+    "webp": "media/photo/sa-pa-rice-paddies-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/sa-pa-rice-paddies-1920.avif",
+    "webp": "media/photo/sa-pa-rice-paddies-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAACQAwCdASoYAA4APu1krU6ppaSiMAgBMB2JQBWAA9CqXTQxwfDAAP7L5+v7yq1tdKNFpRjPCqtVynJaEtbz1+lcnQ+OzBB7WyAAAA==",
+  "dominant": "#385858",
+  "focal": {
+   "x": 50,
+   "y": 50
+  },
+  "alt": {
+   "vi": "Nhìn từ trên cao: ruộng bậc thang ngập nước loang lổ giữa rừng xanh",
+   "en": "Seen from above: flooded rice terraces in patches among green forest"
+  },
+  "caption": {
+   "vi": "Vùng Sa Pa, tỉnh Lào Cai. Ảnh không chụp ở Nghệ An.",
+   "en": "Sa Pa area, Lào Cai province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Kandukuru Nagarjun, CC BY 2.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Kandukuru Nagarjun, CC BY 2.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Rice_paddies_at_Fansipan.jpg",
+  "geography": {
+   "vi": "Vùng Sa Pa, tỉnh Lào Cai",
+   "en": "Sa Pa area, Lào Cai province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "trang-an-river": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2563,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/trang-an-river-640.avif",
+    "webp": "media/photo/trang-an-river-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/trang-an-river-1280.avif",
+    "webp": "media/photo/trang-an-river-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/trang-an-river-1920.avif",
+    "webp": "media/photo/trang-an-river-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADwAwCdASoYABAAPu1kqU2ppaQiMAgBMB2JQAALfgc1QESmhNvKPnwAAP7ukLrceFBYUG9lAG0gHuVN8DK67dqmkgnVuQZg7ftkNPwA",
+  "dominant": "#181808",
+  "focal": {
+   "x": 45,
+   "y": 60
+  },
+  "alt": {
+   "vi": "Dòng sông xanh lặng dưới vách đá vôi phủ cây, vài chiếc thuyền phía xa",
+   "en": "A calm green river below tree-covered limestone cliffs, a few boats in the distance"
+  },
+  "caption": {
+   "vi": "Quần thể danh thắng Tràng An, tỉnh Ninh Bình. Ảnh không chụp ở Nghệ An.",
+   "en": "Tràng An Landscape Complex, Ninh Bình province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: Jakub Hałun, CC BY 4.0, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: Jakub Hałun, CC BY 4.0, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Trang_An_Landscape_Complex,_Ninh_Binh_Province,_Vietnam,_20240202_1456_5313.jpg",
+  "geography": {
+   "vi": "Quần thể danh thắng Tràng An, tỉnh Ninh Bình",
+   "en": "Tràng An Landscape Complex, Ninh Bình province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
+ "ha-giang-terraces-village": {
+  "kind": "photo",
+  "width": 3840,
+  "height": 2552,
+  "sources": [
+   {
+    "w": 640,
+    "avif": "media/photo/ha-giang-terraces-village-640.avif",
+    "webp": "media/photo/ha-giang-terraces-village-640.webp"
+   },
+   {
+    "w": 1280,
+    "avif": "media/photo/ha-giang-terraces-village-1280.avif",
+    "webp": "media/photo/ha-giang-terraces-village-1280.webp"
+   },
+   {
+    "w": 1920,
+    "avif": "media/photo/ha-giang-terraces-village-1920.avif",
+    "webp": "media/photo/ha-giang-terraces-village-1920.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBACdASoYABAAPu1mqk2ppaQiMAgBMB2JbACdL1yB28HBwjC+3v7Rz7rQAPKkmX7+S5ZUB3bSPw8/GSjGtRjNZvzdmbW3EmgQdq4ZcwMHmU1H7/30U0GEqWYtdecxipq6HzY587A3eAAA",
+  "dominant": "#a8d8f8",
+  "focal": {
+   "x": 50,
+   "y": 60
+  },
+  "alt": {
+   "vi": "Thung lũng ruộng bậc thang lúa chín, một làng nhỏ và hồ nước giữa núi",
+   "en": "A valley of ripe rice terraces with a small village and a lake among mountains"
+  },
+  "caption": {
+   "vi": "Tỉnh Hà Giang. Ảnh không chụp ở Nghệ An.",
+   "en": "Hà Giang province. Not photographed in Nghệ An."
+  },
+  "credit": {
+   "vi": "Ảnh: minhphuc_99kdd, Public domain, Wikimedia Commons (đã chỉnh màu nhẹ)",
+   "en": "Photo: minhphuc_99kdd, Public domain, Wikimedia Commons (colour lightly adjusted)"
+  },
+  "license": "Public domain",
+  "license_url": "https://commons.wikimedia.org/wiki/File:Rice_terraces_in_Ha_Giang,_Vietnam_-_2012_-_140_(10057539993).jpg",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Rice_terraces_in_Ha_Giang,_Vietnam_-_2012_-_140_(10057539993).jpg",
+  "geography": {
+   "vi": "Tỉnh Hà Giang",
+   "en": "Hà Giang province"
+  },
+  "is_study_area": false,
+  "use": "card"
+ },
  "a1-horizon": {
   "kind": "illustration",
   "width": 765,
