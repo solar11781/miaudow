@@ -442,7 +442,7 @@ export const en: Messages = {
       yourCost: 'Your costs',
       invalid: 'Type a whole number, 0 or more, up to 9 digits. This number is not used yet.',
       invalidCost:
-        'Type a number of million VND, 0 or more, up to 6 digits before the decimal point, for example 24.7. This number is not used yet.',
+        'Type the cost in million VND, 0 or more, up to 6 digits before the decimal point, for example 24.7. This number is not used yet.',
       title: 'Your numbers',
       revenue: 'Sales money at your price, before costs',
       margin: 'Left after the costs you typed',
