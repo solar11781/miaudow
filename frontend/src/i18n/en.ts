@@ -23,7 +23,7 @@ export const en: Messages = {
     closeMenu: 'Close menu',
     skip: 'Skip to main content',
     main: 'Main navigation',
-    lite: 'Simple mode',
+    lite: 'Less motion',
     liteHelp: 'Turn off 3D and motion for a lighter page',
     theme: 'Appearance',
     themeAuto: 'Auto',
@@ -42,7 +42,6 @@ export const en: Messages = {
     winterFragile: 'The winter rice weather result is narrow and fragile',
     support:
       'This app helps you look and compare. It does not replace your own judgement or your extension officer’s advice.',
-    dataLine: 'Data: NASA POWER · CHIRPS v3 · NASA MODIS · National Statistics Office · Trịnh Đức Toàn et al. (2023)',
     back: 'Back',
     next: 'Continue',
     source: 'Source',
@@ -229,6 +228,9 @@ export const en: Messages = {
   farmer: {
     hardYears: 'Don’t remember? Pick the hardest years for me',
     hardYearsNote: 'For each hazard, the most recent year it covered the most farmland. You can still change them.',
+    province: 'Province',
+    provinceName: 'Nghe An',
+    provinceNote: 'Only Nghe An for now; other provinces are not available yet.',
     dataLine: (names: string) => `Data: ${names}`,
     dataSources: {
       'R-N01': 'NASA POWER',
@@ -631,6 +633,11 @@ export const en: Messages = {
     exampleTag: 'Example',
   },
   evidence: {
+    photosTitle: 'Photographs and licences',
+    photosLead:
+      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghệ An.',
+    photoLicence: 'Licence',
+    photoSource: 'Original file page',
     eyebrow: 'Evidence library',
     title: 'Every conclusion has a place to check it',
     lead: 'What Miaudow relies on, linked to the number, the calculation and the page of the original document. Where a source is unclear or contradicts itself, we say so instead of hiding it.',
@@ -1061,14 +1068,10 @@ export const en: Messages = {
     tcvnLabel: (crop: string) => `Irrigation, ${crop}`,
   },
   footer: {
-    tagline: 'From field experience to knowledge from data.',
-    team: 'Team Miaudow · NASA Space Apps Challenge 2026, Hanoi · Field Shift challenge',
-    photos: 'Photographs and licences',
-    photosLead:
-      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghệ An.',
-    licence: 'Licence',
-    source: 'Original file page',
-    built: 'Data generated',
+    linksLabel: 'More links',
+    privacy: 'Privacy',
+    code: 'Code on GitHub',
+    team: '© 2026 Team Miau · Apache-2.0 licence',
   },
   account: {
     signInTitle: 'Sign in to save your answers',
