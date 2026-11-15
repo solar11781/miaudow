@@ -123,7 +123,7 @@ function Hero() {
           ))}
         </ol>
         {!calm && (
-          <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)} aria-pressed={paused}>
+          <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)}>
             <Icon name={paused ? 'play' : 'pause'} size={16} />
             {paused ? t.home.play : t.home.pause}
           </button>
