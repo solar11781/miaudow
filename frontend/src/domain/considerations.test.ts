@@ -7,6 +7,7 @@ import { consideration } from './considerations';
 import { vi } from '../i18n/vi';
 import { en } from '../i18n/en';
 import type { RiskItem } from '../types';
+import decision from '../../data/canonical/decision.json';
 
 const QUOTES: RiskItem[] = [
   ...new Map(
@@ -49,5 +50,16 @@ describe('plain lines of the risk quotes', () => {
     const cost = QUOTES.find((q) => q.source_ids.includes('R-P02'));
     if (!cost) throw new Error('no quote');
     expect(consideration({ ...cost, source_ids: ['R-P03'] })).toBeNull();
+  });
+});
+
+// the paper says "thường cao gấp 2 - 3 lần" (usually, tr. 48); the officer questions now on every card must not
+// soften it to "có thể" (may) (rules/rotations.yaml, R-P02)
+describe('the officer questions word the cost as the paper does', () => {
+  it('says usually, not may', () => {
+    const text = JSON.stringify(decision);
+    expect(text).not.toMatch(/có thể gấp 2-3 lần|can cost 2-3 times/);
+    expect(text).toMatch(/thường gấp 2-3 lần/);
+    expect(text).toMatch(/usually cost 2-3 times/);
   });
 });
