@@ -54,21 +54,40 @@ const gibs = (layer: string, matrix: string, ext: 'jpeg' | 'png', time?: string)
     credit: 'NASA GIBS',
   });
 
+/** Splits a long name at the space nearest its middle, so the label stays inside a 360 px screen. */
+const twoLines = (text: string) => {
+  const spaces = [...text.matchAll(/ /g)].map((m) => m.index);
+  const at = spaces.reduce((b, i) => (Math.abs(i - text.length / 2) < Math.abs(b - text.length / 2) ? i : b), -1);
+  return at < 0 ? text : `${text.slice(0, at)}\n${text.slice(at + 1)}`;
+};
+
 /** Reference places for orientation (city centres, rounded; the district label sits inside the geoBoundaries outline). */
 const PLACES = [
   { vi: vi.places.vietnam, en: en.places.vietnam, lat: 14.2, lon: 108.2, big: true, dot: false, near: 1.5e6, far: 6e6 },
   // Vietnam's islands, shown wherever the country is (member A); points from Wikidata Q274388, Q215664, Q146695
   {
-    vi: vi.places.hoangSa,
-    en: en.places.hoangSa,
+    vi: twoLines(vi.places.hoangSa),
+    en: twoLines(en.places.hoangSa),
     lat: 16.654612,
     lon: 112.747192,
     big: false,
     dot: true,
     near: 1e5,
     far: 9e6,
+    west: true,
   },
-  { vi: vi.places.truongSa, en: en.places.truongSa, lat: 10, lon: 114, big: false, dot: true, near: 1e5, far: 9e6 },
+  {
+    vi: twoLines(vi.places.truongSa),
+    en: twoLines(en.places.truongSa),
+    lat: 10,
+    lon: 114,
+    big: false,
+    dot: true,
+    near: 1e5,
+    far: 9e6,
+    west: true,
+    below: true,
+  },
   {
     vi: vi.places.phuQuoc,
     en: en.places.phuQuoc,
@@ -181,9 +200,9 @@ export function createGlobe(
         outlineColor: Color.BLACK,
         outlineWidth: 3,
         style: LabelStyle.FILL_AND_OUTLINE,
-        pixelOffset: new Cartesian2(p.dot ? 10 : 0, 0),
-        horizontalOrigin: p.dot ? HorizontalOrigin.LEFT : HorizontalOrigin.CENTER,
-        verticalOrigin: VerticalOrigin.CENTER,
+        pixelOffset: new Cartesian2(p.west ? (p.below ? 8 : -10) : p.dot ? 10 : 0, p.below ? 20 : 0),
+        horizontalOrigin: p.west ? HorizontalOrigin.RIGHT : p.dot ? HorizontalOrigin.LEFT : HorizontalOrigin.CENTER,
+        verticalOrigin: p.below ? VerticalOrigin.TOP : VerticalOrigin.CENTER,
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
         translucencyByDistance: new NearFarScalar(p.near, 1, p.far, 0),
       },
