@@ -216,6 +216,13 @@ test('T5 the evidence page shows the data-quality report as written, warnings in
   await expect(section.locator('li[data-status="fail"]')).toHaveCount(q.counts.fail);
 });
 
+// D-63, UI-UX-SPEC section 11b item 5: the PICSA sentence with its source R-U19 one tap away
+test('T5 the method page shows the PICSA sentence and its source opens the field manual', async ({ page }) => {
+  await page.goto('/#/phuong-phap');
+  await page.locator('li', { hasText: 'sổ tay thực địa PICSA' }).getByRole('button').click();
+  await expect(page.getByRole('dialog')).toContainText('PICSA Field Manual');
+});
+
 test('T5 the copilot answers from data and abstains otherwise', async ({ page }) => {
   await page.goto('/#/tro-ly');
   await page.getByRole('button', { name: 'Năm 2010 có hạn không?' }).click();

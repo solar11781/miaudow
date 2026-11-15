@@ -207,6 +207,9 @@ limitations:
   - {vi: "Quyết định không xếp loại các đợt nắng nóng hoặc rét hại có các ngày nằm ở nhiều khoảng nhiệt độ khác nhau, nên chúng tôi không tính các đợt như vậy; một chuỗi ngày đủ điều kiện nằm trong một khoảng nhiệt độ vẫn được tính, kể cả khi nó nằm trong một đợt dài hơn.",
      en: "The Decision does not classify heat or cold spells whose days fall in different temperature bands, so we do not count such spells; a run of days inside one band that meets its rule still counts, also inside a longer spell."}
 
+# picsa: the sources of the PICSA sentence, whose text is the i18n key method.picsa (UI-UX-SPEC §11b item 5; D-63).
+picsa: {source_ids: [R-U19]}
+
 # stability_scope: the card scope text (03-ML-SPEC §5b; UI-UX-SPEC §11 Stability.scope), no number.
 stability_scope: {vi: "Trung bình của tỉnh; phần lớn là lúa có tưới", en: "Province average; mostly irrigation-served rice"}
 

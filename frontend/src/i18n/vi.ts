@@ -344,6 +344,7 @@ export const vi = {
         'Giá trị mô hình NASA (MERRA-2), phần trăm bão hòa (100% là đất no nước), trong thời gian cây trên ruộng. Không phải số đo tại ruộng.',
       land: 'Chăm sóc đất',
       checks: 'Cần cân nhắc',
+      checksCount: (n: number) => `Cần cân nhắc (${n})`,
       why: 'Vì sao có cách trồng này',
       rice: 'Lúa cả tỉnh so với bình thường',
     },
@@ -1113,6 +1114,8 @@ export const vi = {
     rainTable: 'Bảng mưa từng tháng',
     rainNotRun: 'Phép đối chiếu mưa chưa chạy.',
     notUsed: 'Bộ số liệu đã xem xét nhưng không dùng',
+    picsa:
+      'Phần so sánh làm theo các bước B đến G của sổ tay thực địa PICSA (Dorward, Clarkson và Stern 2015): khí hậu các năm đã qua, đếm số năm, một bảng các cách làm, và người nông dân tự quyết định. Đây không phải một quy trình PICSA đầy đủ: PICSA do cán bộ đã được tập huấn thực hiện cùng nhóm nông dân, và ứng dụng này chưa được thử với nông dân.',
     noUserTest: 'Ứng dụng chưa được thử với nông dân.',
   },
   refs: {

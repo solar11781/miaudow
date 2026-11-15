@@ -758,6 +758,7 @@ interface MethodResponse {
   explain_terms: ExplainTerm[];                    // the six keys, in ExplainKey order
   limitations: Text[];                             // one line per limitation
   datasets_not_used: NotUsedDataset[];             // section 11b item 4b
+  picsa: { source_ids: SourceId[] };               // sources of the PICSA sentence (key method.picsa; item 5)
   rain_check: RainCheck | null;                    // null = not run
   sources: Record<SourceId, SourceFacts>;
 }

@@ -584,6 +584,19 @@
        en: "Profit subtracts material costs only and may leave out labour."}
   url: "https://ngheandost.gov.vn/tap-chi-chuyen-san/tap-chi-kh-cn-nghe-an/dac-san-kh-cn-nghe-an-so-2-2023-112.html?download=1&id=0"
   nso_credit: false
+- id: R-U19
+  citation:
+    vi: "Dorward, P., Clarkson, G., Stern, R. (2015) PICSA Field Manual, Walker Institute, University of Reading, ISBN 9780704915633"
+    en: "Dorward, P., Clarkson, G., Stern, R. (2015) PICSA Field Manual, Walker Institute, University of Reading, ISBN 9780704915633"
+  study_type: {vi: "Sổ tay hướng dẫn thực địa", en: "Field manual"}
+  place_years: {vi: "Walker Institute, Đại học Reading; xuất bản năm 2015", en: "Walker Institute, University of Reading; published 2015"}
+  read_status: "READ (licence not checked)"
+  full_text_read: true
+  limitations:
+    - {vi: "PICSA do cán bộ đã được tập huấn thực hiện cùng nhóm nông dân; công cụ này chỉ theo các bước B đến G và chưa được thử với nông dân.",
+       en: "PICSA is run by trained staff with farmer groups; this tool follows steps B to G only and has not been tested with farmers."}
+  url: "https://cgspace.cgiar.org/items/4788fe81-7ae4-48f4-b4eb-731616823808"
+  nso_credit: false
 - id: R-V05
   citation: {vi: "Cục Thống kê, Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm",
              en: "NSO, Phụ lục 1: Lịch thời vụ gieo trồng và thu hoạch cây hằng năm (annex 1: sowing and harvest calendar of annual crops)"}
