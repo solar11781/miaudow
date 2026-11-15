@@ -389,7 +389,8 @@
 
 .hz {
   display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) auto;
+  /* name above its bar, the share on the right */
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto auto;
   align-items: center;
   gap: 0 0.55rem;
@@ -398,18 +399,13 @@
   background: var(--bg-sunk);
 }
 
-.hz > svg {
-  grid-row: 1 / 3;
-  color: var(--fg-3);
-}
-
 .hzName {
   color: var(--fg-2);
   font-size: var(--t-small);
 }
 
 .hz > :last-child {
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 1 / 3;
 }
 
