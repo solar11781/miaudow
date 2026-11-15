@@ -33,7 +33,8 @@ test('T37 priority-line the line is on cc1..cc4 only, inside the highlighted row
   await page.goto(plansUrl('income'));
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
   const total = (id: string) =>
-    values(page, `[data-testid="card-${id}-row-money"] > div:not([data-testid]) [data-value]`);
+    // the money total is the first block of the row's fold (D-187 item 4)
+    values(page, `[id="card-${id}-row-money-body"] > div:not([data-testid]) [data-value]`);
   const usualTotal = await total('usual');
   expect(usualTotal).toHaveLength(1);
   for (const id of TESTED) {
@@ -78,7 +79,8 @@ test('T3 changing the priority in the link with the same response changes only t
     page.locator('[data-testid^="card-"][data-testid*="-row-"]').evaluateAll((els) =>
       els.map((e) => {
         const line = e.querySelector('[data-testid$="-priority-line"]')?.textContent ?? '';
-        const label = e.querySelector('h3 > span')?.textContent ?? '';
+        // the "your priority" tag under the title in the row's heading button (D-187 item 4)
+        const label = e.querySelector('h3 > button > span > span')?.textContent ?? '';
         return {
           hook: e.getAttribute('data-testid'),
           highlighted: e.getAttribute('data-highlighted') === 'true',

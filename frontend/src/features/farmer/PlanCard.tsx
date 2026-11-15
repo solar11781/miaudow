@@ -39,7 +39,9 @@ const FAMILY_DOT: Record<string, string> = {
 const WEATHER_RULES: RuleCode[] = ['heavy_rain', 'heat', 'cold'];
 const DROUGHT_RULES: RuleCode[] = ['drought_rain_consecutive', 'drought_rain_any2'];
 
-/** One card row; `hook` is its test hook card-<plan id>-row-<row> (UI-UX-SPEC section 14a, B's row names, D-169). */
+/** One card row; `hook` is its test hook card-<plan id>-row-<row> (UI-UX-SPEC section 14a, B's row names, D-169). The
+ * row folds behind its heading button so the card face fits one phone screen (D-187 item 4); the folded part stays in
+ * the page and is hidden by screen-only CSS, so print shows it (T35). */
 function Row({
   hook,
   icon,
@@ -55,13 +57,14 @@ function Row({
   title: string;
   note?: string;
   highlight?: boolean;
-  /** The priority line, shown right after the label of the highlighted row. */
+  /** The priority line, shown on the face right after the heading of the highlighted row. */
   line?: ReactNode;
-  /** A link elsewhere on the card moves the focus here. */
+  /** A link elsewhere on the card opens this row and moves the focus here. */
   target?: boolean;
   children: ReactNode;
 }) {
   const t = useT();
+  const [open, setOpen] = useState(false);
   return (
     <section
       id={hook}
@@ -71,18 +74,31 @@ function Row({
       data-highlighted={highlight ? 'true' : undefined}
     >
       <h3 className={s.rowHead}>
-        <Icon name={icon} size={18} />
-        {title}
-        {highlight && (
-          <span className={s.prioTag}>
-            <Icon name="check" size={14} strokeWidth={2.6} />
-            {t.farmer.yourPriority}
+        <button
+          type="button"
+          className={s.rowButton}
+          aria-expanded={open}
+          aria-controls={`${hook}-body`}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <Icon name={icon} size={18} />
+          <span className={s.rowTitle}>
+            {title}
+            {highlight && (
+              <span className={s.prioTag}>
+                <Icon name="check" size={14} strokeWidth={2.6} />
+                {t.farmer.yourPriority}
+              </span>
+            )}
           </span>
-        )}
+          <Icon name="chevronDown" size={18} />
+        </button>
       </h3>
       {highlight && line}
-      {children}
-      {note && <p className={s.rowNote}>{note}</p>}
+      <div id={`${hook}-body`} className={[s.rowBody, open ? '' : s.folded].join(' ')}>
+        {children}
+        {note && <p className={s.rowNote}>{note}</p>}
+      </div>
     </section>
   );
 }
@@ -531,6 +547,8 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
         onClick={(e) => {
           e.preventDefault();
           const row = document.getElementById(water);
+          const open = row?.querySelector<HTMLButtonElement>('h3 > button[aria-expanded="false"]');
+          open?.click();
           row?.scrollIntoView({ block: 'start' });
           row?.focus({ preventScroll: true });
         }}
@@ -625,7 +643,7 @@ function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: 
   );
 }
 
-/** The risks, always open, then the four reasons of the API's Why behind a disclosure (UI-UX-SPEC section 9). */
+/** The risks, then the four reasons of the API's Why (UI-UX-SPEC section 9). */
 function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers: CompareRequest; explain: boolean }) {
   const t = useT();
   const pick = usePick();
@@ -670,24 +688,17 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
           </div>
         )}
       </Row>
-      <details className={s.more}>
-        <summary>
-          <Icon name="question" size={18} />
-          {t.farmer.rows.why}
-          <Icon name="chevronDown" size={18} />
-        </summary>
-        <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
-          {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
-            <div key={k}>
-              <p className={s.why}>
-                <strong>{t.farmer.whyParts[k]}: </strong>
-                {displayUnit(pick(why[k]))}
-              </p>
-              {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
-            </div>
-          ))}
-        </Row>
-      </details>
+      <Row hook={`card-${plan.id}-row-why`} icon="question" title={t.farmer.rows.why}>
+        {(['why', 'evidence', 'benefits', 'gaps'] as const).map((k) => (
+          <div key={k}>
+            <p className={s.why}>
+              <strong>{t.farmer.whyParts[k]}: </strong>
+              {displayUnit(pick(why[k]))}
+            </p>
+            {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
+          </div>
+        ))}
+      </Row>
     </>
   );
 }
@@ -725,7 +736,7 @@ export function PlanCard({
     >
       <CardHead plan={plan} refs={refs} />
       <div className={s.body}>
-        <div data-testid={`card-${plan.id}-row-calendar`}>
+        <Row hook={`card-${plan.id}-row-calendar`} icon="calendar" title={t.farmer.rows.calendar}>
           {hasDates ? (
             <MonthBar plan={plan} refs={refs} />
           ) : (
@@ -734,7 +745,7 @@ export function PlanCard({
               {t.farmer.p03NoCalendar}
             </p>
           )}
-        </div>
+        </Row>
         <MoneyRow plan={plan} res={res} refs={refs} highlight={priority === 'income'} line={line} own={own} />
         <WeatherRow plan={plan} res={res} refs={refs} highlight={priority === 'stability'} line={line} />
         <WaterRow plan={plan} res={res} refs={refs} highlight={priority === 'water'} line={line} />

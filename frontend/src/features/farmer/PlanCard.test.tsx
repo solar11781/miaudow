@@ -133,15 +133,38 @@ describe('rule names', () => {
   });
 });
 
-// UI-UX-SPEC section 9: the check row is "always open (no disclosure)"; the why row is a disclosure, collapsed
-describe('check and why rows', () => {
+// D-187 item 4 (F1, replaces section 9's "every row stays open"): the card face fits one phone screen, so each row
+// under the head folds behind its own heading button; the folded part stays in the page, so print shows it (T35)
+const FOLDED = ['calendar', 'money', 'weather', 'water', 'land', 'checks', 'why'];
+describe('card face', () => {
   afterEach(cleanup);
-  it('keep the risks open and fold only the reasons', () => {
+  it('folds each row behind one heading button, closed at first', async () => {
     const id = renderCard();
-    expect(document.querySelector(`[data-testid="card-${id}-row-checks"]`)?.closest('details')).toBeNull();
-    const why = document.querySelector(`[data-testid="card-${id}-row-why"]`)?.closest('details');
-    expect(why).not.toBeNull();
-    expect(why?.open).toBe(false);
+    for (const row of FOLDED) {
+      const box = document.querySelector(`[data-testid="card-${id}-row-${row}"]`);
+      const button = box?.querySelector('h3 > button');
+      expect(button?.getAttribute('aria-expanded'), row).toBe('false');
+      const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+      expect(box?.contains(panel ?? null), row).toBe(true);
+      expect(panel?.hasAttribute('hidden'), row).toBe(false);
+      (button as HTMLButtonElement | null)?.click();
+      await Promise.resolve();
+      expect(button?.getAttribute('aria-expanded'), row).toBe('true');
+    }
+  });
+  it('keeps the warnings and the priority label outside every fold (H17, H11)', () => {
+    const id = renderCard();
+    const panels = [...document.querySelectorAll('h3 > button')].map((b) =>
+      document.getElementById(b.getAttribute('aria-controls') ?? ''),
+    );
+    const folded = (el: Element) => panels.some((p) => p?.contains(el));
+    const card = document.querySelector(`[data-testid="card-${id}"]`);
+    for (const line of [vi.farmer.trialNote, vi.farmer.priceYearNotStated, vi.common.notForecast, vi.common.support]) {
+      const el = [...(card?.querySelectorAll('p') ?? [])].find((p) => p.textContent === line);
+      expect(el && !folded(el), line).toBe(true);
+    }
+    const water = document.querySelector(`[data-testid="card-${id}-row-water"] h3 > button`);
+    expect(water?.textContent).toContain(vi.farmer.yourPriority);
   });
 });
 
@@ -428,6 +451,8 @@ describe('card summary', () => {
     expect(scroll).toHaveBeenCalledTimes(1);
     expect(document.activeElement).toBe(row);
     expect(row?.getAttribute('tabindex')).toBe('-1');
+    // D-187 item 4: the water row folds, so the link opens it
+    expect(row?.querySelector('h3 > button')?.getAttribute('aria-expanded')).toBe('true');
   });
 });
 
@@ -512,7 +537,10 @@ describe('explain simply', () => {
   it('says only that the part could not be reworded on a 502', async () => {
     answer(502, { detail: 'Bad Gateway' });
     const { row } = card(true);
-    fireEvent.click(row.getByRole('button', { name: new RegExp(vi.farmer.whyParts.why) }));
+    // the row's own heading button also starts with "Vì sao", so the name starts with the explain button's text
+    fireEvent.click(
+      row.getByRole('button', { name: new RegExp(`^${vi.farmer.explain.button}.*${vi.farmer.whyParts.why}`) }),
+    );
     expect(await row.findByText('Không viết lại được đoạn này. Hãy đọc đoạn gốc ở trên.')).not.toBeNull();
     expect(en.farmer.explain.refused).toBe('Could not reword this part. Please read the text above.');
   });
