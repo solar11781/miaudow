@@ -2,7 +2,7 @@
 // prices, costs and "Tổng thu" are P-02 Tables 4, 8, 12 and "Lãi thuần" Table 13 (research/price-entry-notes.md
 // section 2); the other expected values are worked out by hand (t/ha x đ/kg = thousand đ/ha, rounded once, half up).
 import { describe, expect, it } from 'vitest';
-import { ownMoney, readWhole } from './ownMoney';
+import { millionsOf, ownMoney, readMillions, readWhole } from './ownMoney';
 
 const entry = (price: string | null, cost: string | null = null) => ({ price, cost });
 
@@ -68,5 +68,43 @@ describe('a typed field', () => {
     const start = performance.now();
     expect(readWhole('9'.repeat(200_000))).toBe('invalid');
     expect(performance.now() - start).toBeLessThan(100);
+  });
+});
+
+// D-192: a cost is typed in million đ/ha like every money number shown (D-190) and kept in thousand đ/ha (D-180)
+describe('a cost typed in million đồng per ha', () => {
+  it('keeps a typed number of million as whole thousand, with a decimal comma or dot', () => {
+    expect(readMillions('')).toBeNull();
+    expect(readMillions('24,7')).toBe('24700');
+    expect(readMillions('24.7')).toBe('24700');
+    expect(readMillions('24,689')).toBe('24689');
+    expect(readMillions('83,5')).toBe('83500');
+    expect(readMillions('25')).toBe('25000');
+    expect(readMillions('0')).toBe('0');
+    expect(readMillions('0024,70')).toBe('24700');
+  });
+  it('rounds to a whole thousand, half up', () => {
+    expect(readMillions('24,6894')).toBe('24689');
+    expect(readMillions('24,6895')).toBe('24690');
+    expect(readMillions('0,0004')).toBe('0');
+  });
+  it('rejects anything else, and keeps the same 9-digit thousand limit', () => {
+    for (const bad of ['-3', '1e3', ' 5', '24,7,1', '1.000,5', ',', 'abc']) expect(readMillions(bad)).toBe('invalid');
+    expect(readMillions('999999,999')).toBe('999999999');
+    expect(readMillions('999999,9995')).toBe('invalid'); // rounds to 1,000,000,000 thousand, 10 digits
+    expect(readMillions('1000000')).toBe('invalid');
+    const start = performance.now();
+    expect(readMillions('9'.repeat(200_000))).toBe('invalid');
+    expect(readMillions(`1,${'9'.repeat(200_000)}`)).toBe('invalid');
+    expect(performance.now() - start).toBeLessThan(100);
+  });
+  it('shows a kept cost back in million, as a number field takes it', () => {
+    expect(millionsOf('24700')).toBe('24.7');
+    expect(millionsOf('24689')).toBe('24.689');
+    expect(millionsOf('25000')).toBe('25');
+    expect(millionsOf('5')).toBe('0.005');
+    expect(millionsOf('0')).toBe('0');
+    expect(millionsOf('999999999')).toBe('999999.999');
+    expect(readMillions(millionsOf('24700'))).toBe('24700');
   });
 });

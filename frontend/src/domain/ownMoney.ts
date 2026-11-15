@@ -14,6 +14,29 @@ export function readWhole(raw: string): string | null | 'invalid' {
   return WHOLE.test(raw) ? BigInt(raw).toString() : 'invalid';
 }
 
+// D-192: a cost typed in million đ/ha (one decimal comma or dot); the digit counts only bound the work, the limit is
+// the thousand value's MAX_DIGITS
+const MILLIONS = /^([0-9]{0,9})(?:[.,]([0-9]{0,9}))?$/;
+
+/** The thousand-đồng digits of a cost typed in million đồng, rounded once to a whole thousand, half up (D-192). */
+export function readMillions(raw: string): string | null | 'invalid' {
+  if (raw === '') return null;
+  const m = MILLIONS.exec(raw);
+  const whole = m?.[1] ?? '';
+  const decimals = m?.[2] ?? '';
+  if (!m || whole + decimals === '') return 'invalid';
+  // million = digits / 10^decimals, so thousand = digits x 1000 / 10^decimals, rounded half up
+  const d = 10n ** BigInt(decimals.length);
+  return readWhole(((BigInt(`${whole}${decimals}`) * 2000n + d) / (2n * d)).toString());
+}
+
+/** A kept cost in thousand đồng as million đồng, in the form a number field takes ("24.7"; D-192). */
+export function millionsOf(thousands: string): string {
+  const digits = thousands.padStart(4, '0');
+  const fraction = digits.slice(-3).replace(/0+$/, '');
+  return `${BigInt(digits.slice(0, -3)).toString()}${fraction && `.${fraction}`}`;
+}
+
 /** A number as numerator / 10^places, so the study's decimal yields stay exact. */
 interface Exact {
   n: bigint;
