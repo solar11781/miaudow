@@ -76,7 +76,7 @@ export const plan = (id: string) => ({
     },
   ],
   bare_periods: [{ from: '05-02', to: '01-31' }],
-  money: { items: [], total: null, price_year: null, definition: text, text_only: null },
+  money: { items: [], total: null, price_year: null, definition: text, season_values: [] },
   exposure: [
     {
       crop_key: `${id}_spring_rice`,
@@ -126,6 +126,7 @@ export const method = () => ({
   explain_terms: EXPLAIN_KEYS.map((key) => ({ key, title: text, text, source_ids: ['R-P02'] })),
   limitations: [text],
   datasets_not_used: [{ dataset: 'x', reason: text, source_ids: ['R-P02'] }],
+  picsa: { source_ids: ['R-P02'] },
   rain_check: null,
   sources,
 });

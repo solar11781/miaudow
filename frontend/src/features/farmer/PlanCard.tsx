@@ -125,6 +125,31 @@ function useMoneyNotes(plan: Plan) {
   return { study, definition, plain, total: sentences(t.farmer.ourSumNote, definition) };
 }
 
+/** The P-03 money of each season as the paper gives it (D-191): its value with its source, or the paper's words where
+ * it gives no number; never summed. The words, the page and the definition close each sheet. */
+function useSeasonValues(plan: Plan, res: CompareResponse, refs: ApiRefs) {
+  const t = useT();
+  const pick = usePick();
+  const notes = useMoneyNotes(plan);
+  const textIds = plan.calendar.flatMap((c) => c.source_ids);
+  return plan.money.season_values.map((v) => {
+    const season = res.seasons.find((x) => x.code === v.season);
+    const label = season ? pick(season.label) : '';
+    const note = sentences(pick(v.words), t.farmer.paperPage(v.page), notes.definition);
+    const shown = v.value ? (
+      <>
+        <SourceValue {...refs.value(v.value, `${t.farmer.rows.money} · ${label}`, note)}>
+          {refs.money(v.value).number}
+        </SourceValue>{' '}
+        {refs.money(v.value).unit}
+      </>
+    ) : (
+      <SourceValue {...refs.sources(textIds, pick(v.words), `${t.farmer.rows.money} · ${label}`)} note={note} />
+    );
+    return { season: v.season, label: v.value ? label : '', shown };
+  });
+}
+
 function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: OwnState }) {
   const t = useT();
   const pick = usePick();
@@ -133,8 +158,8 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
     const season = res.seasons.find((x) => x.code === item.season);
     return `${pick(item.crop)}${season ? `, ${pick(season.label)}` : ''}`;
   });
-  const textIds = plan.calendar.flatMap((c) => c.source_ids);
   const notes = useMoneyNotes(plan);
+  const seasons = useSeasonValues(plan, res, refs);
   return (
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
@@ -172,12 +197,15 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
           })}
         </ul>
       )}
-      {m.text_only && (
-        <SourceValue
-          {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)}
-          note={notes.definition}
-          plain={notes.plain}
-        />
+      {seasons.length > 0 && (
+        <ul className={s.cropMoney}>
+          {seasons.map((v) => (
+            <li key={v.season}>
+              {v.label && <span>{v.label}</span>}
+              <div>{v.shown}</div>
+            </li>
+          ))}
+        </ul>
       )}
       {/* P-03 money takes off material costs only, so its card keeps saying so: never compared with P-02 (section 9) */}
       {notes.study === 'p03' && <p className={s.rowNote}>{t.farmer.definitionPlain.p03}</p>}
@@ -481,15 +509,15 @@ function LandRow({ plan, refs, highlight, line }: Omit<Ctx, 'res'> & Hl) {
   );
 }
 
-/** The card's money total, or the P-03 text, then per crop the TCVN 8641 water to apply from the lowest to the highest
- * of its rows (D-172, D-175): the money is the money row's own value with its source; the water range carries the
- * rows' TCVN sources, is labelled by region and planting method because the rows differ in both and the standard does
- * not place Nghệ An (D-68), and leaves FAO out (D-64). */
-function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
+/** The card's money total, or the P-03 money of each season, then per crop the TCVN 8641 water to apply from the
+ * lowest to the highest of its rows (D-172, D-175): the money is the money row's own values with their sources; the
+ * water range carries the rows' TCVN sources, is labelled by region and planting method because the rows differ in both
+ * and the standard does not place Nghệ An (D-68), and leaves FAO out (D-64). */
+function Summary({ plan, res, refs }: Ctx) {
   const t = useT();
   const pick = usePick();
   const m = plan.money;
-  const textIds = plan.calendar.flatMap((c) => c.source_ids);
+  const seasons = useSeasonValues(plan, res, refs);
   const water = `card-${plan.id}-row-water`;
   const notes = useMoneyNotes(plan);
   return (
@@ -503,14 +531,16 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
           {refs.money(m.total).unit} · {t.farmer.own.yearSum}
         </p>
       ) : (
-        m.text_only && (
+        seasons.length > 0 && (
           <p>
             {t.farmer.rows.money}:{' '}
-            <SourceValue
-              {...refs.sources(textIds, pick(m.text_only), t.farmer.rows.money)}
-              note={notes.definition}
-              plain={notes.plain}
-            />
+            {seasons.map((v, i) => (
+              <span key={v.season}>
+                {i > 0 && ' · '}
+                {v.label && `${v.label}: `}
+                {v.shown}
+              </span>
+            ))}
           </p>
         )
       )}
@@ -559,7 +589,7 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
   );
 }
 
-function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
+function CardHead({ plan, res, refs }: Ctx) {
   const t = useT();
   const pick = usePick();
   return (
@@ -587,7 +617,7 @@ function CardHead({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
           </span>
         ))}
       </h2>
-      <Summary plan={plan} refs={refs} />
+      <Summary plan={plan} res={res} refs={refs} />
     </header>
   );
 }
@@ -651,7 +681,12 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
   const questions = cardQuestions(plan.id);
   return (
     <>
-      <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
+      <Row
+        hook={`card-${plan.id}-row-checks`}
+        icon="alert"
+        // the folded row says on its face how many things it holds, so the risks are not missed
+        title={why.risks.length ? t.farmer.rows.checksCount(why.risks.length) : t.farmer.rows.checks}
+      >
         {why.risks.length ? (
           <ul className={s.risks}>
             {why.risks.map((r) => {
@@ -734,7 +769,7 @@ export function PlanCard({
       className={[s.card, focused ? s.focused : ''].join(' ')}
       aria-labelledby={`title-${plan.id}`}
     >
-      <CardHead plan={plan} refs={refs} />
+      <CardHead plan={plan} res={res} refs={refs} />
       <div className={s.body}>
         <Row hook={`card-${plan.id}-row-calendar`} icon="calendar" title={t.farmer.rows.calendar}>
           {hasDates ? (

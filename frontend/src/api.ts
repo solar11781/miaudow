@@ -159,7 +159,7 @@ const plan = obj({
     total: nullable(value),
     price_year: nullable(str),
     definition: text,
-    text_only: nullable(text),
+    season_values: arr(obj({ season, value: nullable(value), page: str, words: text })),
   }),
   exposure: arr(
     obj({
@@ -253,6 +253,7 @@ const methodShape = obj({
   explain_terms: arr(obj({ key: oneOf(EXPLAIN_KEYS), title: text, text, source_ids: ids })),
   limitations: arr(text),
   datasets_not_used: arr(obj({ dataset: str, reason: text, source_ids: ids })),
+  picsa: obj({ source_ids: ids }),
   rain_check: nullable(
     obj({
       months: arr(obj({ month: str, imerg: value, power: value })),

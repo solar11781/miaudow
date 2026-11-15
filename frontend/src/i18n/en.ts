@@ -354,6 +354,7 @@ export const en: Messages = {
         'NASA model value (MERRA-2), percent of saturation (100% is soil full of water), over the field time. Not a field measurement.',
       land: 'Care for the land',
       checks: 'Weigh this',
+      checksCount: (n: number) => `Weigh this (${n})`,
       why: 'Why this plan is here',
       rice: 'Province rice against normal',
     },
@@ -373,6 +374,7 @@ export const en: Messages = {
     profit: 'Net profit in the trial',
     profitTable: 'Net profit: Table 13 of the paper (p. 50).',
     paperDefinition: (definition: string) => `How the paper counts it: ${definition}.`,
+    paperPage: (page: string) => `The paper, p. ${page}.`,
     cost: 'Total cost in the trial',
     ourSum: 'our addition of the profit values, not reported as a sequence',
     ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',
@@ -1117,6 +1119,8 @@ export const en: Messages = {
     rainTable: 'Monthly rain table',
     rainNotRun: 'The rain check has not run.',
     notUsed: 'Datasets considered and not used',
+    picsa:
+      'The comparison follows steps B to G of the PICSA field manual (Dorward, Clarkson and Stern 2015): past-year climate, counting years, an options table, and the farmer decides. It is not a full PICSA process: PICSA is run by trained staff with farmer groups, and this tool has not been tested with farmers.',
     noUserTest: 'Usability has not been tested with farmers.',
   },
   refs: {

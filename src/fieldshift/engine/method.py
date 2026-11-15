@@ -1,7 +1,7 @@
 """GET /api/method content (UI-UX-SPEC §11 MethodResponse, §11b; 05-DATA-CONTRACTS §10).
 
 Test years, freeze commit, metric rows, weather claims and reports from artifacts/metrics.json, gate verdicts from
-artifacts/gates.json (§5b), coverage, explain terms, datasets not used (D-165) and limitations from rules/method.yaml (§7b), source facts from
+artifacts/gates.json (§5b), coverage, explain terms, datasets not used (D-165), limitations and the PICSA sentence's sources (D-63) from rules/method.yaml (§7b), source facts from
 rules/sources.yaml for every id used. Metric numbers stay numbers: the schema types them `number` and the page formats
 them (D-160). `rain_check` is null until the satellite rain check is built (D-135: null = not run).
 """
@@ -40,6 +40,7 @@ def method(root: Path) -> MethodResponse:
         *texts.coverage,
         *texts.explain_terms,
         *texts.datasets_not_used,
+        texts.picsa,
     )
     return MethodResponse(
         test_years=metrics.test_years,
@@ -52,6 +53,7 @@ def method(root: Path) -> MethodResponse:
         explain_terms=texts.explain_terms,
         limitations=texts.limitations,
         datasets_not_used=texts.datasets_not_used,
+        picsa=texts.picsa,
         rain_check=None,
         sources=pick_sources(load_sources(root), source_ids_in([item.model_dump() for item in parts])),
     )
