@@ -13,7 +13,8 @@ describe('Media label for AI illustrations', () => {
         <Media slug="d1-horizon" sizes="100vw" />
       </SettingsProvider>,
     );
-    expect(container.textContent).toBe('Tranh do AI tạo, không phải ảnh thật');
+    // short enough to show uncut on a 328 px home step card at 360 x 740
+    expect(container.textContent).toBe('Do AI tạo, không phải ảnh thật');
     expect(container.querySelector('picture img')?.getAttribute('alt')).toMatch(/^Tranh do AI tạo: /);
   });
   it('starts every illustration alt text with the AI words in both languages', () => {
