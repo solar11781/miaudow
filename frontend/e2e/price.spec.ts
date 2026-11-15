@@ -1,8 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { signInOn } from './fakeGoogle';
 
-// UI-UX-SPEC section 12d, D-163, H14: the farmer's own price and costs are worked out in the browser; they stay in
-// the URL fragment, no request carries them and nothing is stored
+// UI-UX-SPEC section 12d, D-163, D-180, H14: the farmer's own price and costs are worked out in the browser; they stay
+// in the URL fragment, no request but a signed-in farmer's save carries them and nothing is stored
 const PLANS_URL = '/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020&uutien=income';
 const PRICE = '31357'; // digits that appear nowhere else, so a request that carries them is found
 const COST = '24689';
@@ -15,15 +16,22 @@ async function typeNumbers(page: Page) {
   return card;
 }
 
-test('T4 T14 your price and costs: worked out in the browser, never in a request, nothing stored', async ({ page }) => {
+/** Every request the page makes (method, URL, body and headers such as Referer), to look for the typed numbers. */
+function requests(page: Page) {
   const sent: string[] = [];
   page.on('request', (r) => {
     // an antivirus on a team laptop injects its own script into every page; that request is not the app's
     if (new URL(r.url()).hostname.endsWith('.kaspersky-labs.com')) return;
     sent.push([r.method(), r.url(), r.postData() ?? '', JSON.stringify(r.headers())].join(' '));
   });
-  const storage = () =>
-    page.evaluate(() => ({ counts: [localStorage.length, sessionStorage.length, document.cookie.length] }));
+  return sent;
+}
+
+const storage = (page: Page) =>
+  page.evaluate(() => ({ counts: [localStorage.length, sessionStorage.length, document.cookie.length] }));
+
+test('T4 T14 your price and costs: worked out in the browser, never in a request, nothing stored', async ({ page }) => {
+  const sent = requests(page);
   await page.goto(PLANS_URL);
   const card = await typeNumbers(page);
   // 3.91 t/ha (P-02 Table 12, peanut) x 31,357 đ/kg = 122,605.87 thousand đ/ha; minus 24,689 = 97,916.87
@@ -40,18 +48,71 @@ test('T4 T14 your price and costs: worked out in the browser, never in a request
   expect(await card.locator('input[type=number]').count()).toBe(6); // a price and a cost for each of the 3 crops
 
   // H14: nothing in localStorage, sessionStorage or cookies
-  expect((await storage()).counts).toEqual([0, 0, 0]);
+  expect((await storage(page)).counts).toEqual([0, 0, 0]);
 
   // section 12d: the numbers stay in the fragment and survive a reload
   await expect(page).toHaveURL(new RegExp(`#.*yp[.]cc1_spring_peanut=${PRICE}`));
   await page.reload();
   await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('122.606 nghìn đồng/ha');
   // and still nothing after the reload (PR #68 removed the router's scroll restoration, which wrote sessionStorage)
-  expect((await storage()).counts).toEqual([0, 0, 0]);
+  expect((await storage(page)).counts).toEqual([0, 0, 0]);
 
   // H14: no request (URL, body or headers such as Referer) carried them
   expect(sent.length).toBeGreaterThan(0);
   for (const r of sent) {
+    expect(r, r.slice(0, 200)).not.toContain(PRICE);
+    expect(r, r.slice(0, 200)).not.toContain(COST);
+  }
+});
+
+// D-180: a signed-in save keeps the typed numbers and the saved set reopens with them; the sign-in page's address,
+// Google's requests and every other request never carry them, and nothing is stored on the phone
+test('T14 a signed-in save carries your price and costs, no other request does, nothing stored', async ({ page }) => {
+  const google = await signInOn(page);
+  const saved: object[] = [];
+  await page.route('**/api/account/sign-in', (route) => route.fulfill({ status: 204 }));
+  await page.route('**/api/account/saved', (route) => {
+    if (route.request().method() === 'GET')
+      return route.fulfill({ json: { saved: saved.map((set, i) => ({ id: i + 1, ...set })) } });
+    saved.push(route.request().postDataJSON());
+    return route.fulfill({ status: 201, json: { id: saved.length, ...route.request().postDataJSON() } });
+  });
+  const sent = requests(page);
+  await page.goto(PLANS_URL);
+  await typeNumbers(page);
+  await page.getByRole('link', { name: 'Đăng nhập để lưu các câu trả lời này' }).click();
+  await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
+  // the sign-in page, where Google's script runs, has no typed number in its address
+  expect(page.url()).toContain('dang-nhap');
+  expect(page.url()).not.toContain(PRICE);
+  expect(page.url()).not.toContain(COST);
+  await page.getByTestId('google-button').getByRole('button', { name: 'Google' }).click();
+  await expect(page.getByText('Đã lưu các câu trả lời này.')).toBeVisible();
+  expect(google.length).toBeGreaterThan(0);
+  expect(saved).toEqual([
+    {
+      land: 'canal_end',
+      years: [2010, 2020],
+      priority: 'income',
+      prices: { cc1_spring_peanut: PRICE },
+      costs: { cc1_spring_peanut: COST },
+    },
+  ]);
+  // back on the cards with the numbers: 3.91 t/ha (P-02 Table 12, peanut) x 31,357 đ/kg - 24,689 = 97,916.87
+  await expect(page).toHaveURL(new RegExp(`yp[.]cc1_spring_peanut=${PRICE}`));
+  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97.917 nghìn đồng/ha');
+
+  // the saved set reopens with them
+  await page.getByRole('link', { name: 'Xem câu trả lời đã lưu' }).click();
+  await page.getByRole('link', { name: /^Mở: / }).click();
+  await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
+  await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97.917 nghìn đồng/ha');
+
+  expect((await storage(page)).counts).toEqual([0, 0, 0]);
+  const save = sent.filter((r) => r.startsWith('POST ') && r.includes('/api/account/saved'));
+  expect(save).toHaveLength(1);
+  expect(save[0]).toContain(PRICE);
+  for (const r of sent.filter((x) => x !== save[0])) {
     expect(r, r.slice(0, 200)).not.toContain(PRICE);
     expect(r, r.slice(0, 200)).not.toContain(COST);
   }
