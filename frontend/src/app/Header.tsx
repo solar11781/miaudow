@@ -45,7 +45,7 @@ function Settings({ inMenu, farmer }: { inMenu?: boolean; farmer?: boolean }) {
         aria-label={`${t.nav.theme}: ${themeLabel}`}
         title={`${t.nav.theme}: ${themeLabel}`}
       >
-        <Icon name={THEME_ICON[theme]} size={17} /> {inMenu && <span>{themeLabel}</span>}
+        <Icon name={THEME_ICON[theme]} size={17} /> {(inMenu || farmer) && <span>{themeLabel}</span>}
       </button>
       <button
         type="button"

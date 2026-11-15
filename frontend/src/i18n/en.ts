@@ -23,7 +23,7 @@ export const en: Messages = {
     closeMenu: 'Close menu',
     skip: 'Skip to main content',
     main: 'Main navigation',
-    lite: 'Simple mode',
+    lite: 'Less motion',
     liteHelp: 'Turn off 3D and motion for a lighter page',
     theme: 'Appearance',
     themeAuto: 'Auto',

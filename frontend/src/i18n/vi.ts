@@ -21,7 +21,7 @@ export const vi = {
     closeMenu: 'Đóng menu',
     skip: 'Bỏ qua, đến nội dung chính',
     main: 'Điều hướng chính',
-    lite: 'Chế độ nhẹ',
+    lite: 'Giảm chuyển động',
     liteHelp: 'Tắt hình 3D và hiệu ứng để trang nhẹ hơn',
     theme: 'Giao diện',
     themeAuto: 'Tự động',

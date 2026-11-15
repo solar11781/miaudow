@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { en } from '../i18n/en';
 import { vi, type Messages } from '../i18n/vi';
 import type { Bilingual } from '../domain/provenance';
+import { useMedia } from '../hooks/useMedia';
 
 export type Lang = 'vi' | 'en';
 export type Theme = 'auto' | 'light' | 'dark';
@@ -25,9 +26,6 @@ export function browserLang(languages: readonly string[] | undefined): Lang {
   return (languages ?? []).some((l) => l.toLowerCase().startsWith('vi')) ? 'vi' : 'en';
 }
 
-const prefersReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
-
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(() =>
     typeof navigator === 'undefined'
@@ -36,24 +34,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   );
   const [lite, setLite] = useState(false);
   const [theme, setTheme] = useState<Theme>('auto');
-  const [reduced, setReduced] = useState(prefersReducedMotion);
-
-  useEffect(() => {
-    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    if (!mq) return;
-    const on = () => setReduced(mq.matches);
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
+  const reduced = useMedia('(prefers-reduced-motion: reduce)');
+  // D-187: Auto follows the phone's light or dark setting; dark stays the default when the phone does not say light
+  const systemLight = useMedia('(prefers-color-scheme: light)');
 
   useEffect(() => {
     const root = document.documentElement;
     root.lang = lang;
     root.dataset.lite = String(lite);
-    if (theme === 'auto') delete root.dataset.theme;
-    else root.dataset.theme = theme;
+    root.dataset.theme = theme === 'auto' ? (systemLight ? 'light' : 'dark') : theme;
     document.title = (lang === 'vi' ? vi : en).meta.title;
-  }, [lang, lite, theme]);
+  }, [lang, lite, theme, systemLight]);
 
   const value = useMemo<Settings>(
     () => ({ lang, lite, theme, setLang, setLite, setTheme, calm: lite || reduced }),
