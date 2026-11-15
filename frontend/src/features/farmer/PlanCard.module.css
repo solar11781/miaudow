@@ -302,6 +302,13 @@
   align-items: center;
 }
 
+/* below the 360 px phone (200% zoom, H9) the 44 px value and "why" buttons go under the label */
+@media (max-width: 359px) {
+  .checks li {
+    flex-wrap: wrap;
+  }
+}
+
 .legume {
   gap: 0.4rem;
   min-height: 44px;

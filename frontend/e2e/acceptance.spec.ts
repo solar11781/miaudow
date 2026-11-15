@@ -240,8 +240,7 @@ test('T26 every stability block shows its years count and its scope', async ({ p
   }
 });
 
-test.fixme('T7 tap-targets every button and link on the plans page is at least 44 x 44 px', async ({ page }) => {
-  // fixme: number buttons with a one-digit value ("0 %", "4 %") in the share tables and rice rows are about 37 px wide
+test('T7 tap-targets every button and link on the plans page is at least 44 x 44 px', async ({ page }) => {
   await openPlans(page);
   await openFolds(page);
   const small = async () =>
