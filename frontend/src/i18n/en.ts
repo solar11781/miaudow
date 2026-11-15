@@ -738,7 +738,7 @@ export const en: Messages = {
     serverOn: 'The copilot server is running',
     serverOff: 'Running in offline mode',
     claudeOn:
-      'Claude is connected on the server: it only picks which passages from Miaudow’s data answer the question. They are shown word for word with their sources; Claude writes no part of the answer.',
+      'Claude is connected on the server: it only picks which passages from Miaudow’s data answer the question. They are shown word for word with their sources; Claude writes no part of the answer. The question you type is sent to Claude (Anthropic) for this, so do not type names or phone numbers.',
     claudeOff:
       'Claude is not connected. Answers are assembled from tool results with fixed sentences; no language model is used.',
     browserHelp:

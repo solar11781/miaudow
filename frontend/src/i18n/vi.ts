@@ -734,7 +734,7 @@ export const vi = {
     serverOn: 'Máy chủ trợ lý đang chạy',
     serverOff: 'Đang dùng chế độ ngoại tuyến',
     claudeOn:
-      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời.',
+      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời. Câu hỏi bạn gõ được gửi tới Claude (Anthropic) để làm việc này, nên đừng gõ tên hay số điện thoại.',
     claudeOff:
       'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu cố định, không dùng mô hình ngôn ngữ.',
     browserHelp:

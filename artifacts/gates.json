@@ -1,6 +1,6 @@
 {
  "schema_version": "0.4",
- "generated_at": "2026-11-14T05:36:31+00:00",
+ "generated_at": "2026-11-15T06:40:15+00:00",
  "freeze_commit": "ea7a60c21d1867c4096fc3b3c4822b4127b53839",
  "gates": [
   {
@@ -9,8 +9,8 @@
    "model_id": "m1_ridge",
    "passed": false,
    "detail": {
-    "vi": "Mức hơn dự báo trung bình nhiều năm 0,051 (khoảng tin cậy 90%: 0,013 đến 0,123); hơn mô hình không dùng thời tiết 0,025 (khoảng tin cậy 90%: -0,027 đến 0,082).",
-    "en": "skill 0.051 (90% CI 0.013 to 0.123) against the climatology reference; skill 0.025 (90% CI -0.027 to 0.082) against the no-weather model."
+    "vi": "Mức hơn so với trung bình nhiều năm 0,05 (khoảng tin cậy 90%: 0,01 đến 0,12); hơn mô hình không dùng thời tiết 0,03 (khoảng tin cậy 90%: -0,03 đến 0,08).",
+    "en": "skill 0.05 (90% CI 0.01 to 0.12) against the climatology reference; skill 0.03 (90% CI -0.03 to 0.08) against the no-weather model."
    },
    "source_ids": [
     "E-012"
@@ -22,8 +22,8 @@
    "model_id": "m1_ridge",
    "passed": true,
    "detail": {
-    "vi": "Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước 0,537 (khoảng tin cậy 90%: -0,153 đến 0,947).",
-    "en": "Nghe An, Ha Tinh, Thanh Hoa: skill 0.537 (90% CI -0.153 to 0.947) against persistence."
+    "vi": "Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn so với giá trị năm trước 0,54 (khoảng tin cậy 90%: -0,15 đến 0,95).",
+    "en": "Nghe An, Ha Tinh, Thanh Hoa: skill 0.54 (90% CI -0.15 to 0.95) against persistence."
    },
    "source_ids": [
     "E-012"
@@ -35,7 +35,7 @@
    "model_id": "m1_ridge",
    "passed": true,
    "detail": {
-    "vi": "Khoảng dự báo 80% chứa 86% kết quả của các năm kiểm tra (cần 70% đến 90%).",
+    "vi": "Khoảng 80% của mô hình chứa 86% kết quả của các năm kiểm tra (cần 70% đến 90%).",
     "en": "The 80% range covered 86% of the held-out outcomes (needs 70% to 90%)."
    },
    "source_ids": [
@@ -48,8 +48,8 @@
    "model_id": "m1_ridge",
    "passed": true,
    "detail": {
-    "vi": "Mức hơn dự báo trung bình nhiều năm 0,112 (khoảng tin cậy 90%: 0,081 đến 0,147); hơn mô hình không dùng thời tiết 0,068 (khoảng tin cậy 90%: 0,003 đến 0,134).",
-    "en": "skill 0.112 (90% CI 0.081 to 0.147) against the climatology reference; skill 0.068 (90% CI 0.003 to 0.134) against the no-weather model."
+    "vi": "Mức hơn so với trung bình nhiều năm 0,11 (khoảng tin cậy 90%: 0,08 đến 0,15); hơn mô hình không dùng thời tiết 0,07 (khoảng tin cậy 90%: 0,003 đến 0,13).",
+    "en": "skill 0.11 (90% CI 0.08 to 0.15) against the climatology reference; skill 0.07 (90% CI 0.003 to 0.13) against the no-weather model."
    },
    "source_ids": [
     "E-012"
@@ -61,8 +61,8 @@
    "model_id": "m1_ridge",
    "passed": true,
    "detail": {
-    "vi": "Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước 0,461 (khoảng tin cậy 90%: -0,584 đến 0,760).",
-    "en": "Nghe An, Ha Tinh, Thanh Hoa: skill 0.461 (90% CI -0.584 to 0.760) against persistence."
+    "vi": "Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn so với giá trị năm trước 0,46 (khoảng tin cậy 90%: -0,58 đến 0,76).",
+    "en": "Nghe An, Ha Tinh, Thanh Hoa: skill 0.46 (90% CI -0.58 to 0.76) against persistence."
    },
    "source_ids": [
     "E-012"
@@ -74,7 +74,7 @@
    "model_id": "m1_ridge",
    "passed": true,
    "detail": {
-    "vi": "Khoảng dự báo 80% chứa 77% kết quả của các năm kiểm tra (cần 70% đến 90%).",
+    "vi": "Khoảng 80% của mô hình chứa 77% kết quả của các năm kiểm tra (cần 70% đến 90%).",
     "en": "The 80% range covered 77% of the held-out outcomes (needs 70% to 90%)."
    },
    "source_ids": [

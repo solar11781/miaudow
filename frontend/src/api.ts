@@ -526,13 +526,11 @@ export const api = {
   snapshot: async (signal?: AbortSignal): Promise<SnapshotIndex> =>
     validateSnapshotIndex(await fromSnapshot('index.json', signal)),
   health: (signal?: AbortSignal) => call('/health', { signal, timeoutMs: 4000 }) as Promise<Health>,
-  copilot: (body: CopilotRequest, signal?: AbortSignal) =>
-    call('/copilot', {
-      method: 'POST',
-      body: JSON.stringify(body),
-      signal,
-      timeoutMs: 90000,
-    }) as Promise<CopilotResponse>,
+  copilot: async (body: CopilotRequest, signal?: AbortSignal): Promise<CopilotResponse> => {
+    const raw = await call('/copilot', { method: 'POST', body: JSON.stringify(body), signal, timeoutMs: 90000 });
+    copilotShape(raw, 'copilot');
+    return raw as CopilotResponse;
+  },
   account: {
     config(): Promise<SignInConfig> {
       configOnce ??= call('/account/config').then(validateSignInConfig);
@@ -652,6 +650,27 @@ export interface CopilotResponse {
   numbers: { checked: number; unverified: string[] };
   missing_information: Bilingual[];
 }
+
+// src/fieldshift/api/copilot.py CopilotResponse; the card kinds and statuses of member B's contract stay allowed
+const copilotShape = obj({
+  status: oneOf(['grounded', 'reference_only', 'insufficient_evidence', 'provider_error', 'not_configured']),
+  engine: oneOf(['claude', 'deterministic']),
+  model: nullable(str),
+  answer: str,
+  citations: arr(obj({ passage_id: str, source_id: str, title: text, location: nullable(str), url: nullable(str) })),
+  cards: arr(obj({ kind: oneOf(['plan', 'year', 'metric', 'passage']), ref_id: str, title: text })),
+  tool_trace: arr(
+    obj({
+      tool: str,
+      input: (v, at) => {
+        if (!isObj(v)) fail(at, 'not an object');
+      },
+      ok: bool,
+    }),
+  ),
+  numbers: obj({ checked: num, unverified: arr(str) }),
+  missing_information: arr(text),
+});
 
 export interface Health {
   status: string;
