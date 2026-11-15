@@ -6,7 +6,8 @@ import { signInOn } from './fakeGoogle';
 // in the URL fragment, no request but a signed-in farmer's save carries them and nothing is stored
 const PLANS_URL = '/#/nong-dan/phuong-an?ruong=canal_end&nam=2010,2020&uutien=income';
 const PRICE = '31357'; // digits that appear nowhere else, so a request that carries them is found
-const COST = '24689';
+const COST = '24689'; // kept in thousand đ/ha in the fragment and a saved set (D-180)
+const COST_TYPED = '24.689'; // typed in million đ/ha (D-192)
 
 async function typeNumbers(page: Page) {
   const card = page.locator('#the-cc1');
@@ -14,7 +15,7 @@ async function typeNumbers(page: Page) {
   await card.getByTestId('card-cc1-row-money').locator('h3 > button').click();
   await card.getByRole('button', { name: 'Tính với giá bán và chi phí của bạn' }).click();
   await card.getByRole('spinbutton', { name: /^Lạc.*Giá bán của bạn/ }).fill(PRICE);
-  await card.getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn/ }).fill(COST);
+  await card.getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn \(triệu đồng\/ha\)/ }).fill(COST_TYPED);
   return card;
 }
 
@@ -111,6 +112,11 @@ test('T14 a signed-in save carries your price and costs, no other request does, 
   await page.getByRole('link', { name: /^Mở: / }).click();
   await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
   await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97,9 triệu đồng/ha');
+  // the reopened card starts with its rows folded (D-187 item 4): open the money row to read the field
+  await page.locator('#the-cc1').getByTestId('card-cc1-row-money').locator('h3 > button').click();
+  await expect(page.locator('#the-cc1').getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn/ })).toHaveValue(
+    COST_TYPED,
+  );
 
   expect((await storage(page)).counts).toEqual([0, 0, 0]);
   const save = sent.filter((r) => r.startsWith('POST ') && r.includes('/api/account/saved'));

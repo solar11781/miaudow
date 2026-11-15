@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { MoneyItem, SourceId, Value } from '../../types';
 import { Icon } from '../../design-system/Icon';
-import { ownMoney, readWhole } from '../../domain/ownMoney';
+import { millionsOf, ownMoney, readMillions, readWhole } from '../../domain/ownMoney';
 import type { OwnNumbers as Own } from '../../domain/farmerState';
 import { SourceValue } from '../provenance/SourceValue';
 import type { ApiRefs } from '../provenance/useApiRefs';
@@ -14,10 +14,22 @@ export interface OwnState {
   set: (field: keyof Own, crop: string, digits: string | null) => void;
 }
 
+/** How a field reads and shows its number: a price as whole đồng per kg, a cost typed in million đồng per ha and kept
+ * in thousand (D-192, so a link or saved set keeps its meaning, D-180). */
+const PRICE = { inputMode: 'numeric', step: 1, read: readWhole, show: (d: string) => d, invalid: 'invalid' } as const;
+const COST = {
+  inputMode: 'decimal',
+  step: 'any',
+  read: readMillions,
+  show: millionsOf,
+  invalid: 'invalidCost',
+} as const;
+
 function Field({
   id,
   crop,
   label,
+  kind,
   digits,
   onDigits,
 }: {
@@ -25,6 +37,7 @@ function Field({
   /** Said to screen readers before the label; the fieldset's legend shows it on screen. */
   crop: string;
   label: string;
+  kind: typeof PRICE | typeof COST;
   digits: string | undefined;
   onDigits: (digits: string | null) => void;
 }) {
@@ -40,14 +53,14 @@ function Field({
       <input
         id={id}
         type="number"
-        inputMode="numeric"
+        inputMode={kind.inputMode}
         min={0}
-        step={1}
-        defaultValue={digits}
+        step={kind.step}
+        defaultValue={digits === undefined ? undefined : kind.show(digits)}
         aria-invalid={invalid || undefined}
         aria-describedby={invalid ? `${id}-invalid` : undefined}
         onChange={(e) => {
-          const read = e.currentTarget.validity.badInput ? 'invalid' : readWhole(e.currentTarget.value);
+          const read = e.currentTarget.validity.badInput ? 'invalid' : kind.read(e.currentTarget.value);
           setInvalid(read === 'invalid');
           onDigits(read === 'invalid' ? null : read);
         }}
@@ -55,7 +68,7 @@ function Field({
       {invalid && (
         <p id={`${id}-invalid`} className={s.ownInvalid}>
           <Icon name="alert" size={16} />
-          {t.farmer.own.invalid}
+          {t.farmer.own[kind.invalid]}
         </p>
       )}
     </div>
@@ -130,13 +143,15 @@ export function OwnNumbers({
                 id={`own-${item.crop_key}-price`}
                 crop={name}
                 label={`${t.farmer.own.yourPrice} (${refs.unit(item.price)})`}
+                kind={PRICE}
                 digits={prices[item.crop_key]}
                 onDigits={(d) => own.set('prices', item.crop_key, d)}
               />
               <Field
                 id={`own-${item.crop_key}-cost`}
                 crop={name}
-                label={`${t.farmer.own.yourCost} (${refs.unit(item.profit)})`}
+                label={`${t.farmer.own.yourCost} (${t.common.millionPerHa})`}
+                kind={COST}
                 digits={costs[item.crop_key]}
                 onDigits={(d) => own.set('costs', item.crop_key, d)}
               />
