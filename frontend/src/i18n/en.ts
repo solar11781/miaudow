@@ -785,7 +785,7 @@ export const en: Messages = {
     vinhCity: 'Vinh city',
     approx: (name: string) => `≈ ${name}`,
     vietnam: 'VIETNAM',
-    hanoi: 'Ha Noi',
+    hanoi: 'Hanoi',
     vinh: 'Vinh',
     ngheAn: 'NGHE AN',
     formerDoLuong: 'former Do Luong',
