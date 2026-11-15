@@ -71,8 +71,9 @@ def winter_claim_report(metrics: list[dict]) -> dict:
     low, drop = primary["ci90_low"], primary["ci90_low"] - min(lows)
     if not 0 < low < drop:
         raise ValueError(f"lower end {low} is not above 0 and below the largest drop {drop}: not narrow")
-    (v, e), (lv, le), (hv, he) = (decimal_text(primary[k]) for k in ("value", "ci90_low", "ci90_high"))
-    (dv, de), (zv, ze) = decimal_text(drop), decimal_text(0.0)
+    # 3 decimals: the counts above round to 3, and the claim is about a lower end next to zero (D-183)
+    (v, e), (lv, le), (hv, he) = (decimal_text(primary[k], 3) for k in ("value", "ci90_low", "ci90_high"))
+    (dv, de), (zv, ze) = decimal_text(drop, 3), decimal_text(0.0, 3)
     return {
         "id": "E-018",
         "title": bilingual(
