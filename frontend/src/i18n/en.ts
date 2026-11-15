@@ -789,8 +789,8 @@ export const en: Messages = {
     vinh: 'Vinh',
     ngheAn: 'NGHE AN',
     formerDoLuong: 'former Do Luong',
-    hoangSa: 'Hoang Sa (Paracel) Archipelago, Vietnam',
-    truongSa: 'Truong Sa (Spratly) Archipelago, Vietnam',
+    hoangSa: 'Hoang Sa (Paracel) Archipelago',
+    truongSa: 'Truong Sa (Spratly) Archipelago',
     phuQuoc: 'Phu Quoc Island',
   },
   media: {
