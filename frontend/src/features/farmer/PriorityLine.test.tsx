@@ -75,6 +75,9 @@ describe('priority line', () => {
     card(response(), 'cc1', 'income');
     expect(values(line('cc1'))).toEqual(['53.380 nghìn đồng/ha', '30.799 nghìn đồng/ha']);
     expect(line('cc1')?.textContent).toContain('Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu');
+    // shown in million dong per ha (D-190); the source buttons keep the exact values above
+    expect(line('cc1')?.textContent).toContain('53,4 triệu đồng/ha');
+    expect(line('cc1')?.textContent).toContain('30,8 triệu đồng/ha');
   });
   it("T37 land shows this card's and the usual card's crops in the year and living days", () => {
     card(response(), 'cc1', 'land');

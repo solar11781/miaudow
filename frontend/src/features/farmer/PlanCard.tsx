@@ -124,10 +124,10 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
       {m.total && (
         <div className={s.money}>
           <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>
-            {refs.number(m.total)}
+            {refs.money(m.total).number}
           </SourceValue>
           <span className={s.unit}>
-            {refs.unit(m.total)} · {t.farmer.own.yearSum}
+            {refs.money(m.total).unit} · {t.farmer.own.yearSum}
           </span>
         </div>
       )}
@@ -141,15 +141,15 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
               <li key={item.crop_key}>
                 <span>{name}</span>
                 <span>{t.farmer.profit}</span>
-                <SourceValue
-                  {...refs.value(
-                    item.profit,
-                    `${t.farmer.profit} · ${name}`,
-                    sentences(t.farmer.profitTable, flag, notes.definition),
-                  )}
+                <NumberOr
+                  v={item.profit}
+                  label={`${t.farmer.profit} · ${name}`}
+                  refs={refs}
+                  note={sentences(t.farmer.profitTable, flag, notes.definition)}
+                  money
                 />
                 <span>{t.farmer.cost}</span>
-                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} note={flag} />
+                <NumberOr v={item.cost} label={`${t.farmer.cost} · ${name}`} refs={refs} note={flag} money />
               </li>
             );
           })}
@@ -474,8 +474,10 @@ function Summary({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
       {m.total ? (
         <p>
           {t.farmer.rows.money}:{' '}
-          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>{refs.number(m.total)}</SourceValue>{' '}
-          {refs.unit(m.total)} · {t.farmer.own.yearSum}
+          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)}>
+            {refs.money(m.total).number}
+          </SourceValue>{' '}
+          {refs.money(m.total).unit} · {t.farmer.own.yearSum}
         </p>
       ) : (
         m.text_only && (

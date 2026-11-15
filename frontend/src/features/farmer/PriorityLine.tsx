@@ -29,14 +29,14 @@ export function PriorityLine({
   const usualName = usual ? pick(usual.name) : t.common.notAvailable;
   const l = t.farmer.priorityLine;
   // `name` labels the values in the source sheet; it is shown on the line only when the lead does not say it
-  const pair = (name: string, mine: Value | null, theirs: Value | null, shown = true) => (
+  const pair = (name: string, mine: Value | null, theirs: Value | null, shown = true, money = false) => (
     <p className={s.pair}>
       {shown && <span className={s.name}>{name}:</span>}
       <span className={s.side}>
-        {l.thisPlan} <NumberOr v={mine} label={`${name} · ${l.thisPlan}`} refs={refs} />
+        {l.thisPlan} <NumberOr v={mine} label={`${name} · ${l.thisPlan}`} refs={refs} money={money} />
       </span>
       <span className={s.side}>
-        {l.usualPlan} <NumberOr v={theirs} label={`${name} · ${l.usualPlan}`} refs={refs} />
+        {l.usualPlan} <NumberOr v={theirs} label={`${name} · ${l.usualPlan}`} refs={refs} money={money} />
       </span>
     </p>
   );
@@ -45,7 +45,7 @@ export function PriorityLine({
       {priority === 'income' && (
         <>
           <p>{l.income(usualName, SOURCES.p02.short)}</p>
-          {pair(t.farmer.ourSum, plan.money.total, usual?.money.total ?? null, false)}
+          {pair(t.farmer.ourSum, plan.money.total, usual?.money.total ?? null, false, true)}
         </>
       )}
       {priority === 'land' && (
