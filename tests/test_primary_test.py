@@ -154,7 +154,8 @@ def test_gate_text_uses_two_decimals_and_three_only_where_two_would_read_as_zero
     skill = {"value": 0.0681, "ci90_low": 0.0011, "ci90_high": 0.1372}
     text = gate_detail("G2", {"skill_vs_b0": skill, "skill_vs_bnw": skill, "coverage_80": 0.76}, {})
     assert "skill 0.07 (90% CI 0.001 to 0.14)" in text["en"]
-    assert "0,07" in text["vi"] and "0,001" in text["vi"] and "0,14" in text["vi"]
+    for part in ("0,07", "0,001", "0,14"):
+        assert part in text["vi"]
     assert "0.001" not in text["vi"]
 
 
