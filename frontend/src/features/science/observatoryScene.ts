@@ -33,6 +33,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { geo, hazards, type RuleCode } from '../../data';
+import { MAP_PLACES } from '../../data/places';
 import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
 
 // Real geometry only: the geoBoundaries outline of Nghệ An and the NASA POWER cells at their true centres, in an
@@ -42,11 +43,6 @@ const K_LON = Math.cos((19.3 * Math.PI) / 180);
 const HALF_LAT = 0.25,
   HALF_LON = 0.3125; // POWER cell half sizes in degrees
 const HMAX = 6.5; // column height for the largest value of the chosen measure, in scene units
-// The trial commune's map marker (Wikidata Q10788283) and Vinh, for orientation only.
-export const PLACES = [
-  { id: 'vinh', lat: 18.68, lon: 105.68, vi: 'TP Vinh', en: 'Vinh city' },
-  { id: 'doluong', lat: 18.8964, lon: 105.2803, vi: 'Lưu Sơn · nơi thử nghiệm', en: 'Lưu Sơn · trial site' },
-];
 export const WEIGHTED = geo.grid.filter((c) => c.weight > 0);
 
 const [minLon, minLat, maxLon, maxLat] = geo.bounds;
@@ -225,8 +221,8 @@ function addColumns(world: Group): Map<string, Column> {
     world.add(mesh);
     columns.set(c.id, { id: c.id, mesh, edges, from: 0.001, to: 0.001 });
   }
-  for (const p of PLACES) {
-    const site = p.id === 'doluong';
+  for (const p of MAP_PLACES) {
+    const site = p.id === 'trial';
     const pin = new Mesh(
       new CylinderGeometry(0.06, 0.06, 2.4, 8),
       new MeshStandardMaterial({ color: site ? '#e9bc57' : '#f4f0e5', emissive: site ? '#5a3d07' : '#000000' }),
@@ -249,7 +245,7 @@ function placeLabels(
     h = el.clientHeight;
   for (const node of Array.from(overlay.children) as HTMLElement[]) {
     const col = node.dataset.id ? columns.get(node.dataset.id) : undefined;
-    const place = PLACES.find((q) => q.id === node.dataset.place);
+    const place = MAP_PLACES.find((q) => q.id === node.dataset.place);
     if (col) v3.set(col.mesh.position.x, col.mesh.position.y + col.mesh.scale.y + 0.6, col.mesh.position.z);
     else if (place) v3.set(toX(place.lon), 2.8, toZ(place.lat));
     else continue;
@@ -257,7 +253,7 @@ function placeLabels(
     // values sit above their column; place names sit beside their pin (the trial site to the left, Vinh to the right)
     const shift = col
       ? 'translate(-50%, -100%)'
-      : place?.id === 'doluong'
+      : place?.id === 'trial'
         ? 'translate(calc(-100% - 10px), -50%)'
         : 'translate(10px, -50%)';
     node.style.transform = `${shift} translate(${((v3.x + 1) / 2) * w}px, ${((1 - v3.y) / 2) * h}px)`;

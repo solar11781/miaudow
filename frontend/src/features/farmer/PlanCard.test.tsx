@@ -20,7 +20,7 @@ function renderCard(languages: string[] = ['vi-VN', 'vi']) {
   const res = validateCompare(compare(), body);
   const plan = res.plans[2];
   if (!plan) throw new Error('no plan');
-  plan.money.total = { value: '30,799', unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' }, source_ids: ['R-P02'] };
+  plan.money.total = { value: '30,799', unit: { vi: 'nghìn đồng/ha', en: 'thousand VND/ha' }, source_ids: ['R-P02'] };
   const water = { value: '6,500-7,500', unit: { vi: 'm3/ha', en: 'm3/ha' }, source_ids: ['R-P02'] };
   plan.water = [
     { crop_key: plan.calendar[0]?.crop_key ?? '', measure: 'to_apply', value: water, scope: null, note: null },
@@ -56,7 +56,7 @@ describe('plan card test hooks', () => {
     expect(values()).toEqual(expect.arrayContaining(['30.799 nghìn đồng/ha', '6.500-7.500 m³/ha']));
     cleanup();
     renderCard(['en-GB', 'en']);
-    expect(values()).toEqual(expect.arrayContaining(['30,799 thousand đ/ha', '6,500-7,500 m³/ha']));
+    expect(values()).toEqual(expect.arrayContaining(['30,799 thousand VND/ha', '6,500-7,500 m³/ha']));
     Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
   });
 });
@@ -180,7 +180,11 @@ describe('money notes', () => {
       plan.money.items = [
         { ...moneyItem('cc1_summer_autumn_mung_bean', '1.03', '40,000', '16,200', '25,000'), flag: FLAG },
       ];
-      plan.money.total = { value: '53,380', unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' }, source_ids: ['R-P02'] };
+      plan.money.total = {
+        value: '53,380',
+        unit: { vi: 'nghìn đồng/ha', en: 'thousand VND/ha' },
+        source_ids: ['R-P02'],
+      };
     } else {
       plan.money = { ...plan.money, definition: P03_DEF, items: [], total: null, text_only: P03_TEXT };
       res.sources = { ...res.sources, 'R-P03': { ...res.sources['R-P02'], id: 'R-P03' } } as typeof res.sources;
@@ -356,7 +360,7 @@ describe('card summary', () => {
   afterEach(cleanup);
   const P03_TEXT = {
     vi: 'Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng): "gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha". Vụ Thu Đông: bỏ hoang.',
-    en: 'Spring-season rice 2021 (control): economic return ("hiệu quả kinh tế") 5.36 million đ/ha. Summer-autumn rice 2020 (control): "almost no profit, the economic return only reaches 1.16 million/ha" (our translation). Autumn-winter: fallow.',
+    en: 'Spring-season rice 2021 (control): economic return ("hiệu quả kinh tế") 5.36 million VND/ha. Summer-autumn rice 2020 (control): "almost no profit, the economic return only reaches 1.16 million/ha" (our translation). Autumn-winter: fallow.',
   };
   const head = (planIndex: number) => {
     const res = validateCompare(compare(), body);
@@ -365,7 +369,7 @@ describe('card summary', () => {
     if (!usual || !p03) throw new Error('no plan');
     usual.money.total = {
       value: '30,799',
-      unit: { vi: 'nghìn đồng/ha', en: 'thousand đ/ha' },
+      unit: { vi: 'nghìn đồng/ha', en: 'thousand VND/ha' },
       source_ids: ['R-P02', 'E-022'],
     };
     p03.money = { ...p03.money, items: [], total: null, text_only: P03_TEXT };

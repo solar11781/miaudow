@@ -648,6 +648,7 @@
 
 .heroTitle {
   font-size: clamp(2.8rem, 1.8rem + 4vw, 5.5rem);
+  overflow-wrap: anywhere;
   color: #f7f5ee;
 }
 
