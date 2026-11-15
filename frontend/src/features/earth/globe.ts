@@ -24,6 +24,9 @@ import {
   type Entity,
 } from 'cesium';
 import { geo } from '../../data';
+import { TRIAL_SITE } from '../../data/places';
+import { en } from '../../i18n/en';
+import { vi } from '../../i18n/vi';
 import { cellYear } from './cellClimate';
 import { FLAGSHIPS, satelliteImage, trackFrame, trackPoint, wrap } from './flagships';
 import { MISSIONS } from './missions';
@@ -40,10 +43,7 @@ interface Composite {
   png: string;
   bounds: [number, number, number, number];
 }
-const DO_LUONG = doLuongJson as unknown as {
-  do_luong: { outline: [number, number][][] };
-  study_point: { lat: number; lon: number };
-};
+const DO_LUONG = doLuongJson as unknown as { do_luong: { outline: [number, number][][] } };
 const VEG = vegetationJson as unknown as { composites: Composite[] };
 
 const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best';
@@ -56,13 +56,13 @@ const gibs = (layer: string, matrix: string, ext: 'jpeg' | 'png', time?: string)
 
 /** Reference places for orientation (city centres, rounded; the district label sits inside the geoBoundaries outline). */
 const PLACES = [
-  { vi: 'VIỆT NAM', en: 'VIETNAM', lat: 14.2, lon: 108.2, big: true, dot: false, near: 1.5e6, far: 6e6 },
-  { vi: 'Hà Nội', en: 'Hà Nội', lat: 21.03, lon: 105.85, big: false, dot: true, near: 4e5, far: 9e6 },
-  { vi: 'Vinh', en: 'Vinh', lat: 18.68, lon: 105.69, big: false, dot: true, near: 5e4, far: 1.5e6 },
-  { vi: 'NGHỆ AN', en: 'NGHE AN', lat: 19.25, lon: 104.75, big: true, dot: false, near: 1e5, far: 1.6e6 },
+  { vi: vi.places.vietnam, en: en.places.vietnam, lat: 14.2, lon: 108.2, big: true, dot: false, near: 1.5e6, far: 6e6 },
+  { vi: vi.places.hanoi, en: en.places.hanoi, lat: 21.03, lon: 105.85, big: false, dot: true, near: 4e5, far: 9e6 },
+  { vi: vi.places.vinh, en: en.places.vinh, lat: 18.68, lon: 105.69, big: false, dot: true, near: 5e4, far: 1.5e6 },
+  { vi: vi.places.ngheAn, en: en.places.ngheAn, lat: 19.25, lon: 104.75, big: true, dot: false, near: 1e5, far: 1.6e6 },
   {
-    vi: 'Đô Lương (cũ)',
-    en: 'former Do Luong',
+    vi: vi.places.formerDoLuong,
+    en: en.places.formerDoLuong,
     lat: 18.98,
     lon: 105.33,
     big: false,
@@ -112,6 +112,7 @@ export function createGlobe(
   onPick: (cell: string) => void,
   lang: 'vi' | 'en',
 ): Globe {
+  const t = lang === 'vi' ? vi : en;
   const viewer = new Viewer(el, {
     baseLayer: new ImageryLayer(gibs('BlueMarble_NextGeneration', 'GoogleMapsCompatible_Level8', 'jpeg')),
     terrainProvider: new EllipsoidTerrainProvider(),
@@ -180,9 +181,8 @@ export function createGlobe(
       polyline: { positions: ring(r), width: 2, material: Color.fromCssColorString('#ffffff').withAlpha(0.85) },
     });
   }
-  const sp = DO_LUONG.study_point;
   viewer.entities.add({
-    position: Cartesian3.fromDegrees(sp.lon, sp.lat, 200),
+    position: Cartesian3.fromDegrees(TRIAL_SITE.lon, TRIAL_SITE.lat, 200),
     point: {
       pixelSize: 10,
       color: Color.fromCssColorString('#e9bc57'),
@@ -191,7 +191,7 @@ export function createGlobe(
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
     },
     label: {
-      text: lang === 'vi' ? 'Lưu Sơn · nơi thử nghiệm' : 'Luu Son · trial site',
+      text: t.places.trialSite,
       font: '600 17px "Be Vietnam Pro", sans-serif',
       fillColor: Color.WHITE,
       outlineColor: Color.BLACK,
@@ -351,10 +351,7 @@ export function createGlobe(
         Number(id.split('_')[0]),
         (v ? Math.max(2000, v.rain * COLUMN_M_PER_MM) : 1500) + 600,
       ) as never;
-      if (e.label)
-        e.label.text = (
-          v ? `${Math.round(v.rain).toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-GB')} mm` : '—'
-        ) as never;
+      if (e.label) e.label.text = (v ? `${Math.round(v.rain).toLocaleString(t.meta.locale)} mm` : '—') as never;
     }
     requestRender();
   };

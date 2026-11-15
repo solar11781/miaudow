@@ -777,6 +777,16 @@ export const vi = {
     chirpsDetail:
       'Tổng 12 tháng của CHIRPS v3 (vệ tinh kết hợp trạm đo, 0,05°), trung bình các điểm ảnh thuộc Nghệ An trong ô. Bản cuối, không dùng bản sơ bộ.',
   },
+  places: {
+    trialSite: 'Lưu Sơn · nơi thử nghiệm',
+    vinhCity: 'TP Vinh',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIỆT NAM',
+    hanoi: 'Hà Nội',
+    vinh: 'Vinh',
+    ngheAn: 'NGHỆ AN',
+    formerDoLuong: 'Đô Lương (cũ)',
+  },
   media: {
     illustration: 'Do AI tạo, không phải ảnh thật',
     photo: 'Ảnh thật',

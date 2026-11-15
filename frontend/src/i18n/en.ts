@@ -780,6 +780,16 @@ export const en: Messages = {
     chirpsDetail:
       'Sum of 12 months of CHIRPS v3 (satellite and station blend, 0.05°), mean of the cell’s Nghe An pixels. Final product, never the preliminary one.',
   },
+  places: {
+    trialSite: 'Luu Son · trial site',
+    vinhCity: 'Vinh city',
+    approx: (name: string) => `≈ ${name}`,
+    vietnam: 'VIETNAM',
+    hanoi: 'Ha Noi',
+    vinh: 'Vinh',
+    ngheAn: 'NGHE AN',
+    formerDoLuong: 'former Do Luong',
+  },
   media: {
     illustration: 'AI-generated, not a photograph',
     photo: 'Photograph',
