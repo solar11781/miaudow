@@ -219,7 +219,7 @@ def test_money_items_are_the_reported_profit_and_cost_per_crop(resp: dict) -> No
     assert money["definition"]["vi"] == (
         "lợi nhuận thuần (RVAC) = GR - TVC; TVC gồm vật tư, công lao động, năng lượng và lãi vay"
     )
-    assert money["text_only"] is None
+    assert money["season_values"] == []
 
 
 # UI-UX-SPEC §12d, D-163: P-02 Tables 4 (p. 46), 8 (p. 48) and 12 (p. 49), "Năng suất (tấn/ha)" as printed (D-95) and
@@ -295,11 +295,45 @@ def test_the_total_is_our_sum_of_the_profit_values(resp: dict, plan_id: str, tot
     assert plan(resp, plan_id)["money"]["total"] == {"value": total, "unit": P02_UNIT, "source_ids": ["R-P02", "E-022"]}
 
 
-def test_p03_money_is_text_only_with_its_own_definition(resp: dict) -> None:
+# D-191: P-03 pp. [4]-[5] give the rice control per season in million đồng/ha and no whole-year total; p. [2] the fallow
+def test_p03_money_is_each_season_as_the_paper_gives_it_never_summed(resp: dict) -> None:
     money = plan(resp, "usual_p03")["money"]
     assert (money["items"], money["total"], money["price_year"]) == ([], None, "2020-21")
     assert money["definition"]["vi"] == "Lợi nhuận = GR - Tổng chi phí vật chất"
-    assert money["text_only"]["vi"].startswith("Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha")
+    unit = {"vi": "triệu đồng/ha", "en": "million VND/ha"}
+    shown = [(v["season"], v["value"], v["page"]) for v in money["season_values"]]
+    assert shown == [
+        ("spring", {"value": "5.36", "unit": unit, "source_ids": ["R-P03"]}, "4-5"),
+        ("summer_autumn", {"value": "1.16", "unit": unit, "source_ids": ["R-P03"]}, "4"),
+        ("autumn_winter", None, "2"),
+    ]
+    assert money["season_values"][0]["words"]["vi"].startswith(
+        "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36"
+    )
+    assert money["season_values"][2]["words"]["vi"] == "Vụ Thu Đông: bỏ hoang."
+
+
+def test_season_values_and_per_crop_money_never_mix(root: Path) -> None:
+    def mix(plans: list[dict]) -> None:
+        p03 = next(p for p in plans if p["id"] == "usual_p03")
+        both = {"usual_p03_spring_rice": "5", "usual_p03_summer_autumn_rice": "1"}
+        unit = {"vi": "x", "en": "x"}
+        p03["reported_economics"].update(
+            profit_per_crop=both, yield_per_crop=both, price_per_crop=both, yield_unit=unit, price_unit=unit
+        )
+
+    edit_yaml(root, "rotations.yaml", mix)
+    with pytest.raises(ValueError, match="usual_p03 season_values need the unit and no per-crop money"):
+        compare(request(), load_compare_data(root))
+
+
+def test_a_season_value_needs_the_unit(root: Path) -> None:
+    def drop_unit(plans: list[dict]) -> None:
+        del next(p for p in plans if p["id"] == "usual_p03")["reported_economics"]["unit"]
+
+    edit_yaml(root, "rotations.yaml", drop_unit)
+    with pytest.raises(ValueError, match="usual_p03 season_values need the unit"):
+        compare(request(), load_compare_data(root))
 
 
 def test_a_cost_the_source_does_not_report_is_null(root: Path) -> None:

@@ -364,6 +364,7 @@ export const vi = {
     profit: 'Lãi thuần trong thử nghiệm',
     profitTable: 'Lãi thuần: Bảng 13 của bài báo (tr. 50).',
     paperDefinition: (definition: string) => `Cách bài báo tính: ${definition}.`,
+    paperPage: (page: string) => `Bài báo, tr. ${page}.`,
     cost: 'Tổng chi trong thử nghiệm',
     ourSum: 'phép cộng tiền lãi của chúng tôi, bài báo không báo cáo cho cả chuỗi',
     ourSumNote: 'Chúng tôi cộng tiền lãi của các vụ; bài báo không báo cáo tiền lãi cho cả chuỗi.',

@@ -13,11 +13,11 @@ describe('money study', () => {
     plan.money.items = [moneyItem('k', '1', '1', '1', null)];
     expect(moneyStudy(plan)).toBe('p02');
   });
-  it('is P-03 when the plan cites R-P03, with or without text', () => {
+  it('is P-03 when the plan cites R-P03, with or without season values', () => {
     const plan = plans()[1];
     if (!plan) throw new Error('no plan');
     plan.calendar = plan.calendar.map((c) => ({ ...c, source_ids: ['R-P03'] }));
-    plan.money.text_only = null;
+    plan.money.season_values = [];
     expect(moneyStudy(plan)).toBe('p03');
   });
   it('is unknown when neither study is cited', () => {

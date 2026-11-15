@@ -167,12 +167,19 @@ class MoneyItem(Contract):
     flag: Text | None
 
 
+class SeasonValue(Contract):
+    season: SeasonCode
+    value: Value | None  # null where the study gives no number for the season (P-03 fallow)
+    page: str
+    words: Text
+
+
 class Money(Contract):
     items: list[MoneyItem]
     total: Value | None
     price_year: str | None
     definition: Text
-    text_only: Text | None
+    season_values: list[SeasonValue]  # P-03 per season, never summed (D-191)
 
 
 class SoilWetness(Contract):
