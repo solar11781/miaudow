@@ -4,7 +4,7 @@ import { useEffect, type ReactNode } from 'react';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-dom';
-import { api, ApiError, type SavedSet } from '../../api';
+import { api, ApiError, type SavedAnswers, type SavedSet } from '../../api';
 import { SettingsProvider } from '../../app/settings';
 import { vi as text } from '../../i18n/vi';
 import { AccountProvider, safeBack, useAccount } from './AccountProvider';
@@ -17,10 +17,16 @@ vi.mock('./google', () => ({ loadGoogle: vi.fn(), unloadGoogle: vi.fn() }));
 
 const ON = { available: true, client_id: 'test.apps.googleusercontent.com' } as const;
 const OFF = { available: false, client_id: null } as const;
+// D-180: a saved set keeps the typed prices (đ/kg) and costs (thousand đ/ha) by crop key
+const OWN = { prices: { cc1_spring_peanut: '31357' }, costs: { cc1_spring_peanut: '24689' } };
+const NO_OWN = { prices: {}, costs: {} };
 const SETS: SavedSet[] = [
-  { id: 1, land: 'high_field', years: [2010, 2020], priority: 'income' },
-  { id: 2, land: 'ask', years: [1998], priority: 'water' },
+  { id: 1, land: 'high_field', years: [2010, 2020], priority: 'income', ...OWN },
+  { id: 2, land: 'ask', years: [1998], priority: 'water', ...NO_OWN },
 ];
+const ANSWERS: SavedAnswers = { land: 'canal_end', years: [2010], priority: 'income', ...OWN };
+const PLANS = '/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income';
+const PLANS_OWN = `${PLANS}&yp.cc1_spring_peanut=31357&yc.cc1_spring_peanut=24689`;
 const t = text.account;
 
 function Where() {
@@ -49,7 +55,7 @@ function show(path: string, token: string | null = null) {
       { path: '/da-luu', element: page(<SavedPage />) },
       {
         path: '/nong-dan/phuong-an',
-        element: page(<SaveAnswers answers={{ land: 'canal_end', years: [2010], priority: 'income' }} />),
+        element: page(<SaveAnswers answers={ANSWERS} />),
       },
     ],
     { initialEntries: [path] },
@@ -165,17 +171,19 @@ describe('saved answers page', () => {
     expect(screen.getByRole('link', { name: t.signInCta }).getAttribute('href')).toBe('/dang-nhap?ve=%2Fda-luu');
   });
 
-  it('names each set from its answers and opens it on the plan cards', async () => {
+  it('names each set from its answers and opens it on the plan cards with its typed prices and costs', async () => {
     vi.spyOn(api.account, 'saved').mockResolvedValue(SETS);
     show('/da-luu', 'tok');
     const name = `${text.farmer.lands.high_field.title} · ${t.yearsLabel('2010, 2020')} · ${text.farmer.prios.income.title}`;
     expect(await screen.findByText(name)).toBeTruthy();
+    // D-180: the typed numbers come back in the fragment keys yp.<crop key> and yc.<crop key>
     expect(screen.getByRole('link', { name: t.openLabel(name) }).getAttribute('href')).toBe(
-      '/nong-dan/phuong-an?ruong=high_field&nam=2010%2C2020&uutien=income',
+      '/nong-dan/phuong-an?ruong=high_field&nam=2010%2C2020&uutien=income&yp.cc1_spring_peanut=31357&yc.cc1_spring_peanut=24689',
     );
-    expect(
-      screen.getByText(`${text.farmer.lands.ask.title} · ${t.yearsLabel('1998')} · ${text.farmer.prios.water.title}`),
-    ).toBeTruthy();
+    const other = `${text.farmer.lands.ask.title} · ${t.yearsLabel('1998')} · ${text.farmer.prios.water.title}`;
+    expect(screen.getByRole('link', { name: t.openLabel(other) }).getAttribute('href')).toBe(
+      '/nong-dan/phuong-an?ruong=ask&nam=1998&uutien=water',
+    );
   });
 
   it('deletes one set and loads the list again', async () => {
@@ -252,39 +260,61 @@ describe('save these answers', () => {
     );
   });
 
-  // privacy review of PR #66: Google's script runs on the sign-in page and can read the address, and the save never
-  // includes the typed price and costs (D-163), so the way back leaves the yp. and yc. keys out
+  // privacy review of PR #66: Google's script runs on the sign-in page and can read the address, so the way back
+  // leaves the yp. and yc. keys out
   it('leaves the typed price and costs out of the way back', async () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
-    show(
-      '/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&yp.cc1_spring_peanut=31357&yc.cc1_spring_peanut=9',
-    );
+    show(PLANS_OWN);
     const link = await screen.findByRole('link', { name: t.saveSignIn });
-    expect(link.getAttribute('href')).toBe(
-      `/dang-nhap?ve=${encodeURIComponent('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1')}`,
-    );
+    expect(link.getAttribute('href')).toBe(`/dang-nhap?ve=${encodeURIComponent(`${PLANS}&luu=1`)}`);
+  });
+
+  // D-180: the typed numbers wait in memory while the farmer signs in, never in the sign-in page's address or the
+  // browser's storage, and come back into the fragment on the plan cards for the pending save
+  it('brings the typed price and costs back after signing in, without them in the sign-in address', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
+    vi.spyOn(api.account, 'signIn').mockResolvedValue();
+    const save = vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, ...ANSWERS, years: [2010] });
+    const google = fakeGoogle();
+    show(PLANS_OWN);
+    await userEvent.click(await screen.findByRole('link', { name: t.saveSignIn }));
+    await waitFor(() => expect(where()).toBe(`/dang-nhap?ve=${encodeURIComponent(`${PLANS}&luu=1`)}`));
+    await userEvent.click(await screen.findByRole('button', { name: t.agree }));
+    await waitFor(() => expect(google.id.renderButton).toHaveBeenCalled());
+    await google.answer('google-id-token');
+    expect(await screen.findByText(t.saved)).toBeTruthy();
+    expect(save).toHaveBeenCalledWith('google-id-token', ANSWERS);
+    await waitFor(() => expect(where()).toBe(PLANS_OWN));
+    expect([localStorage.length, sessionStorage.length, document.cookie]).toEqual([0, 0, '']);
+  });
+
+  it('does not bring typed numbers to a sign-in that started elsewhere', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
+    vi.spyOn(api.account, 'signIn').mockResolvedValue();
+    const google = fakeGoogle();
+    show(`/dang-nhap?ve=${encodeURIComponent(PLANS)}`);
+    await userEvent.click(await screen.findByRole('button', { name: t.agree }));
+    await waitFor(() => expect(google.id.renderButton).toHaveBeenCalled());
+    await google.answer('google-id-token');
+    await waitFor(() => expect(where()).toBe(PLANS));
   });
 
   it('saves at once on the way back from signing in, then drops the pending mark', async () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
-    const save = vi
-      .spyOn(api.account, 'save')
-      .mockResolvedValue({ id: 3, land: 'canal_end', years: [2010], priority: 'income' });
-    show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1', 'tok');
+    const save = vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, ...ANSWERS, years: [2010] });
+    show(`${PLANS_OWN}&luu=1`, 'tok');
     expect(await screen.findByText(t.saved)).toBeTruthy();
     expect(save).toHaveBeenCalledTimes(1);
-    expect(save).toHaveBeenCalledWith('tok', { land: 'canal_end', years: [2010], priority: 'income' });
-    await waitFor(() => expect(where()).toBe('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income'));
+    expect(save).toHaveBeenCalledWith('tok', ANSWERS);
+    await waitFor(() => expect(where()).toBe(PLANS_OWN));
   });
 
-  it('saves land, years and priority with the token', async () => {
+  it('saves land, years, priority and the typed prices and costs with the token', async () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
-    const save = vi
-      .spyOn(api.account, 'save')
-      .mockResolvedValue({ id: 3, land: 'canal_end', years: [2010], priority: 'income' });
-    show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income', 'tok');
+    const save = vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, ...ANSWERS, years: [2010] });
+    show(PLANS_OWN, 'tok');
     await userEvent.click(await screen.findByRole('button', { name: t.save }));
-    expect(save).toHaveBeenCalledWith('tok', { land: 'canal_end', years: [2010], priority: 'income' });
+    expect(save).toHaveBeenCalledWith('tok', ANSWERS);
     expect(await screen.findByText(t.saved)).toBeTruthy();
     // walkthrough recheck: a second tap cannot store the same set twice
     const done = screen.getByRole('button', { name: t.savedDone });
@@ -294,7 +324,7 @@ describe('save these answers', () => {
 
   it('is done, not offered again, after the automatic save', async () => {
     vi.spyOn(api.account, 'config').mockResolvedValue(ON);
-    vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, land: 'canal_end', years: [2010], priority: 'income' });
+    vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, ...ANSWERS, years: [2010] });
     show('/nong-dan/phuong-an?ruong=canal_end&nam=2010&uutien=income&luu=1', 'tok');
     expect((await screen.findByRole('button', { name: t.savedDone })).hasAttribute('disabled')).toBe(true);
   });

@@ -180,7 +180,14 @@ describe('requests', () => {
 // UI-UX-SPEC §12c: the optional Google sign-in (server: src/fieldshift/api/accounts.py, tests/test_accounts.py)
 describe('account requests', () => {
   afterEach(() => vi.unstubAllGlobals());
-  const answers: SavedAnswers = { land: 'canal_end', years: [2010, 2020], priority: 'income' };
+  // D-180: the typed price (đ/kg) and cost (thousand đ/ha) by crop key go with the save
+  const answers: SavedAnswers = {
+    land: 'canal_end',
+    years: [2010, 2020],
+    priority: 'income',
+    prices: { cc1_spring_peanut: '31357' },
+    costs: { cc1_spring_peanut: '24689' },
+  };
   const reply = (status: number, json?: unknown) =>
     vi.fn<(path: string, init: RequestInit) => Promise<Response>>(async () =>
       json === undefined ? new Response(null, { status }) : new Response(JSON.stringify(json), { status }),
@@ -211,7 +218,7 @@ describe('account requests', () => {
     expect(init?.method).toBe('POST');
     expect(new Headers(init?.headers).get('Authorization')).toBe('Bearer tok');
   });
-  it('saves land, years and priority only, and checks the saved set', async () => {
+  it('saves land, years, priority and the typed prices and costs only, and checks the saved set', async () => {
     const fetchMock = reply(201, { id: 7, ...answers });
     vi.stubGlobal('fetch', fetchMock);
     await expect(api.account.save('tok', answers)).resolves.toEqual({ id: 7, ...answers });
@@ -221,6 +228,18 @@ describe('account requests', () => {
     vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers }] }));
     await expect(api.account.saved('tok')).resolves.toEqual([{ id: 1, ...answers }]);
     vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers, land: 'dry' }] }));
+    await expect(api.account.saved('tok')).rejects.toThrow(ContractError);
+  });
+  // D-179, D-180: the typed numbers come back only as the page keeps them, crop keys with 1 to 9 ASCII digits
+  it.each([
+    ['no prices', { prices: undefined }],
+    ['a price that is a number', { prices: { cc1_spring_peanut: 31357 } }],
+    ['a price of 10 digits', { prices: { cc1_spring_peanut: '1000000000' } }],
+    ['a negative cost', { costs: { cc1_spring_peanut: '-3' } }],
+    ['a crop key with a dot', { costs: { 'cc1.spring': '3' } }],
+    ['a list of costs', { costs: ['3'] }],
+  ])('rejects a saved set with %s', async (_, change) => {
+    vi.stubGlobal('fetch', reply(200, { saved: [{ id: 1, ...answers, ...change }] }));
     await expect(api.account.saved('tok')).rejects.toThrow(ContractError);
   });
   it('deletes one set and the whole account', async () => {
