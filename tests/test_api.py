@@ -28,6 +28,7 @@ from fastapi.testclient import TestClient
 from fieldshift.api import app as api
 from fieldshift.api.app import MAX_BODY_BYTES, create_app
 from fieldshift.engine.schemas import CompareResponse, HealthResponse, MethodResponse, PastYearsResponse
+from test_rules_catalog import dong_units
 
 REPO = Path(__file__).resolve().parents[1]
 FRONTEND_ROUTES = (
@@ -92,6 +93,13 @@ def test_method_answers(client: TestClient) -> None:
     assert r.status_code == 200
     assert r.headers["content-type"] == "application/json"
     MethodResponse.model_validate(r.json())
+
+
+def test_english_texts_of_the_answers_write_the_currency_as_vnd(client: TestClient) -> None:
+    # D-190 (member A, 2026-11-15): English text writes the currency as "VND", not "đ"
+    answers = [client.get("/api/past-years", params={"province": "nghe_an"}).json(), client.get("/api/method").json()]
+    answers += [client.post("/api/compare", json={**BODY, "land": land}).json() for land in ("dry", "unsure")]
+    assert [hit for answer in answers for hit in dong_units(answer)] == []
 
 
 def test_the_grid_figure_is_served_as_svg(client: TestClient) -> None:
