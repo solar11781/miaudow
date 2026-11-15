@@ -31,6 +31,15 @@ for (const route of ['/', '/#/nong-dan']) {
   });
 }
 
+// audit F10, D-187: the switch only stops motion, and the theme button showed a bare icon
+test('the farmer header names its motion switch and shows the theme it is on at 360 px', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/#/nong-dan/ruong');
+  const header = page.getByRole('banner');
+  await expect(header.getByRole('switch', { name: 'Giảm chuyển động' })).toBeVisible();
+  await expect(header.getByRole('button', { name: 'Giao diện: Tự động' })).toHaveText('Tự động');
+});
+
 test.describe('on a phone in light mode', () => {
   test.use({ colorScheme: 'light' });
   // audit F10, D-187: the theme Auto stayed dark on a phone set to light mode
