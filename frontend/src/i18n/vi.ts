@@ -166,7 +166,7 @@ export const vi = {
       },
       {
         name: 'Lõi so sánh cách trồng',
-        does: 'Đặt 6 cách trồng đã thử cạnh nhau: lịch 12 tháng, tiền lãi, nước, đất. Không chấm điểm, không xếp hạng.',
+        does: 'Đặt 6 cách trồng đã thử cạnh nhau: lịch 12 tháng, tiền lãi trong thử nghiệm, nước, đất. Không chấm điểm, không xếp hạng.',
         uses: 'Kết quả thử nghiệm 2020–2021, TCVN 8641, độ ẩm đất NASA',
         gives: 'Sáu thẻ so sánh và câu hỏi nên mang tới cán bộ khuyến nông',
         limit: 'Mỗi cách trồng mới thử trên một ô ruộng, trong một năm.',
@@ -199,7 +199,7 @@ export const vi = {
       },
       {
         title: 'Xem và so sánh các cách trồng',
-        body: 'Lịch 12 tháng, tiền lãi, nước, đất và những điều cần hỏi thêm.',
+        body: 'Lịch 12 tháng, tiền lãi trong thử nghiệm, nước, đất và những điều cần hỏi thêm.',
       },
     ],
     obsTitle: 'Từ cánh đồng lúa, tới ô lưới vệ tinh',
@@ -239,7 +239,7 @@ export const vi = {
     helpsTitle: 'Phần này giúp bạn',
     helps: [
       'Xem lại những năm hạn, nóng, mưa lớn bạn còn nhớ, bằng số liệu thời tiết NASA.',
-      'Đặt 6 cách trồng đã thử ở Đô Lương cạnh nhau: lịch trồng, tiền lãi, nước tưới, đất.',
+      'Đặt 6 cách trồng đã thử ở Đô Lương cạnh nhau: lịch trồng, tiền lãi trong thử nghiệm, nước tưới, đất.',
       'Có sẵn câu hỏi để mang tới cán bộ khuyến nông.',
     ],
     notTitle: 'Phần này không làm',
@@ -282,7 +282,7 @@ export const vi = {
     prioTitle: 'Gia đình quan tâm điều gì nhất?',
     prioHelp: 'Câu trả lời chỉ tô sáng một dòng trên mỗi thẻ. Ứng dụng không chấm điểm và không xếp hạng.',
     prios: {
-      income: { title: 'Thu nhập', body: 'Tiền lãi cả năm' },
+      income: { title: 'Thu nhập', body: 'Tiền lãi cả năm trong thử nghiệm' },
       stability: { title: 'Ổn định', body: 'Ít gặp thời tiết xấu' },
       water: { title: 'Tiết kiệm nước', body: 'Cần ít nước tưới' },
       land: { title: 'Chăm sóc đất', body: 'Giữ đất tốt lâu dài' },
@@ -559,7 +559,7 @@ export const vi = {
     toMethod: 'Xem kết quả kiểm tra mô hình ở trang Phương pháp',
     skillTitle: 'Mô hình có thắng cách đoán đơn giản không?',
     skillLead:
-      'Mức hơn (skill) so với dự báo trung bình nhiều năm (B0), trên các năm kiểm tra 2016–2024. Trên 0 là tốt hơn B0. Vạch ngang là khoảng tin cậy 90%.',
+      'Mức hơn (skill) so với mức trung bình nhiều năm (B0), trên các năm kiểm tra 2016–2024. Trên 0 là tốt hơn B0. Vạch ngang là khoảng tin cậy 90%.',
     skillVsBnw: 'Phép thử quyết định: mô hình có thời tiết so với cùng mô hình bỏ thời tiết (BNW)',
     models: {
       m1_ridge: 'M1 · ridge + thời tiết NASA',
@@ -1050,7 +1050,7 @@ export const vi = {
     cropProfitLabel: (crop: string) => `Lãi ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
       `Bảng 13: ${profit} nghìn đ/ha, đã trừ công. Chi phí ${cost} nghìn đ/ha; giá bán ${price} đ/kg lúc thu hoạch.`,
-    planProfitLabel: 'Lãi cả năm, ba vụ cộng lại',
+    planProfitLabel: 'Lãi cả năm trong thử nghiệm, ba vụ cộng lại',
     planProfitSum: 'Bảng 13, phép cộng của Miaudow',
     tcvnLabel: (crop: string) => `Mức tưới ${crop}`,
   },
