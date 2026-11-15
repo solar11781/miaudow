@@ -32,13 +32,18 @@ ends with a reminder to check with local farmers or experts before changing anyt
    years for me": for each official hazard, the most recent year in which it covered the most farmland (2013, 2020,
    2022 and 2024 with the data in the app); the picked years stay editable. Each year shows the share of Nghe An
    farmland that met each official hazard rule of Decision 18/2021/QĐ-TTg (heavy rain, heat, drought, damaging cold).
-   Always labelled as a past year, never a forecast, with its limits ("grid values smooth out extremes").
+   Always labelled as a past year, never a forecast, with its limits ("grid values smooth out extremes"). A "?" button
+   beside each hazard opens the rule's own text and its sources.
 3. Priority: one tap (income, stability, water or land care).
 4. Plans: one card per plan, named "Current practice" or "Trial way of farming n" (Vietnamese "Cách làm hiện nay",
-   "Cách trồng thử n") above its crop list, all with the same rows:
+   "Cách trồng thử n") above its crop list. The card face shows the money total, the water line, the farmer's
+   priority and the four warnings; every row folds behind a heading button, and the strip at the top marks the card
+   in view. All cards have the same rows:
    - Money: net profit and total cost per crop as reported in the trial (prices of 2020-21), labelled "Profit in the
      trial, not on your own field", shown in million VND/ha (Vietnamese "triệu đồng/ha"); the source sheet keeps the
-     paper's exact value in thousand VND/ha. The whole-year total is our addition, labelled as such.
+     paper's exact value in thousand VND/ha. The whole-year total is our addition, labelled as such. The local-practice
+     card of the second study shows that paper's own season values (spring 5.36, summer-autumn 1.16 million VND/ha,
+     autumn-winter fallow), never summed and never compared with the first study's cards.
    - Water: seasonal irrigation from the national standard TCVN 8641:2011 in m³/ha, shown as a range over the
      standard's regional rows (the standard does not say which region Nghe An belongs to); FAO's rough estimate of
      crop water need where listed.
@@ -57,9 +62,9 @@ ends with a reminder to check with local farmers or experts before changing anyt
      longer notes (table numbers, definitions, the standard's notes).
 
 **Your price and costs** (optional, on the trial plan cards): the farmer can type a sale price per kg and their own
-costs for each crop in thousand VND/ha, the trial's unit. The phone works out revenue (the study yield times the typed
-price) and, once a cost is typed, revenue minus cost, shown in million VND/ha. Both are labelled as the farmer's own
-numbers, and the trial's money row stays as it was. Only whole numbers of up to 9 digits are accepted.
+costs for each crop in million VND/ha, the unit every money number shows (one decimal; stored as whole thousand
+VND/ha). The phone works out revenue (the study yield times the typed price) and, once a cost is typed, revenue minus
+cost, shown in million VND/ha. Both are labelled as the farmer's own numbers, and the trial's money row stays as it was.
 
 **Phone checks**: browser acceptance tests (`frontend/e2e/acceptance.spec.ts`) check 22 pages at 200% zoom of a
 360 x 740 phone (no text cut off, every control reachable), 44 x 44 px tap targets on the plans page, and no sliders.
@@ -121,6 +126,10 @@ Full citations, links and terms: `rules/sources.yaml` and the app's evidence pag
 ## 4. Method and honest limits
 
 The method page in the app has the full details and every number below.
+
+- **Compare, never choose.** The comparison follows steps B to G of the PICSA field manual (Dorward, Clarkson and Stern
+  2015): past-year climate, counting years, an options table, and the farmer decides. It is not a full PICSA process,
+  which trained staff run with farmer groups, and the app has not been tested with farmers.
 
 - **Model.** One pooled ridge regression over Vietnam's provinces predicts the province rice yield anomaly (yield
   against a past-only normal, the mean of the 3 previous years) from NASA POWER weather features weighted by farmland.
