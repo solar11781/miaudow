@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import { api, GRID_FIGURE_URL } from '../../api';
+import { ART } from '../../data/art';
+import { PhotoHead } from '../../design-system/PhotoHead';
 import type { Interval, MethodResponse, MetricRow, SeasonCode } from '../../types';
 import { COVERAGE_AXES, SEASON_CODES } from '../../types';
 import { SkillChart, type SkillRow } from '../charts/SkillChart';
@@ -363,14 +365,7 @@ export function MethodPage() {
   const [res, retry] = useApi(api.method, 'method');
   return (
     <main id="main" className="surface-paper">
-      <section className="band surface-paper" aria-labelledby="method-title">
-        <div className="container stack">
-          <h1 id="method-title" className="display" tabIndex={-1}>
-            {t.method.title}
-          </h1>
-          <p className="lead">{t.method.lead}</p>
-        </div>
-      </section>
+      <PhotoHead shot={ART.pageHead.method} id="method-title" title={t.method.title} lead={t.method.lead} />
       {res.status === 'ok' ? (
         <Method res={res.data} />
       ) : (
