@@ -1,7 +1,8 @@
 /* ---- opening: full-bleed photographs, title low on the frame like a film card ---- */
 .hero {
   position: relative;
-  min-height: max(640px, 100svh);
+  /* shorter than the screen, so the "what this is" box below shows on the first screen too (D-187) */
+  min-height: max(380px, 52svh);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -64,31 +65,11 @@
     white-space: nowrap;
   }
 }
-.heroLead {
-  font-size: var(--t-lead);
-  line-height: 1.5;
-  max-width: 36rem;
-  color: #e3e6dc;
-}
 .ctas {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-3) var(--s-6);
-}
-.textLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 48px;
-  color: inherit;
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: rgba(243, 244, 238, 0.4);
-  text-underline-offset: 0.3em;
-}
-.textLink:hover {
-  text-decoration-color: currentColor;
 }
 .heroFoot {
   position: absolute;
@@ -153,13 +134,67 @@
 }
 @media (max-width: 640px) {
   .heroInner {
-    padding-top: 130px;
-    padding-bottom: 6rem;
+    padding-top: 96px;
+    padding-bottom: 4.5rem;
     gap: var(--s-5);
   }
   .heroTitle {
     line-height: 0.98;
   }
+}
+
+/* ---- what this is: three plain lines right under the opening (D-187) ---- */
+.about {
+  padding-block: var(--s-2) var(--s-8);
+}
+.aboutCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5) var(--s-6);
+  border-radius: var(--r-xl);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+}
+.aboutList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-8);
+}
+.aboutList li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+.aboutIcon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--c-gold-500) 18%, transparent);
+  color: var(--c-gold-300);
+}
+@media (max-width: 899.98px) {
+  .aboutList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .aboutCard {
+    padding: var(--s-4);
+  }
+  .aboutList li {
+    gap: 0.6rem;
+  }
+}
+
+/* ---- the plain heading over the proof material for officers and judges (D-187) ---- */
+.more {
+  border-top: 1px solid var(--line);
 }
 
 /* letterbox: two bars that open like the start of a film (final state: closed to nothing) */
@@ -445,6 +480,25 @@
   line-height: 1.45;
   color: var(--fg);
   max-width: 32ch;
+}
+.coreMore {
+  max-width: 42rem;
+}
+.coreMore summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--c-gold-300);
+  font-weight: 650;
+}
+.coreMore summary::-webkit-details-marker {
+  display: none;
+}
+.coreMore[open] summary svg {
+  transform: rotate(180deg);
 }
 .coreFacts {
   display: grid;
