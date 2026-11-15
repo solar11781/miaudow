@@ -246,11 +246,6 @@ p {
   background: var(--line);
 }
 
-/* Content is visible at rest. Motion is added by GSAP only when allowed (src/motion), never by a hidden start state
-   in CSS, so a slow phone, a screen reader or a screenshot always gets the whole page. */
-.reveal {
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

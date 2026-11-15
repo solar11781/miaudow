@@ -79,19 +79,3 @@ export function Icon({
     </svg>
   );
 }
-
-/** The source seal: a small red chop with a rice ear, the app's signature mark next to every sourced number. */
-export function SealGlyph({ size = 12 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-      <path
-        d="M6 10.6V6.2M6 6.2c.1-1.9.7-3.4 1.9-4.8M6.1 6.3c-1 .2-1.9.9-2.5 2M6.2 8.1c1 .2 1.8.8 2.3 1.8"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <ellipse cx="8.2" cy="2.7" rx=".8" ry="1.3" transform="rotate(30 8.2 2.7)" fill="currentColor" />
-    </svg>
-  );
-}
