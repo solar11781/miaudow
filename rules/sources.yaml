@@ -559,6 +559,11 @@
        en: "The methods text lists CC2-CC4 differently from the results tables."}
     - {vi: "Bảng 4 có dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau.",
        en: "Table 4 has identical rows for CC1 mung bean and CC5 black bean."}
+    # research/price-entry-notes.md section 2 (UI-UX-SPEC §12d, D-163)
+    - {vi: "Tiêu đề bảng ghi giá bán theo tấn; các phép tính trong bảng chỉ khớp với giá theo kg (chúng tôi kiểm tra).",
+       en: "The table header gives the price per tonne; the table's own sums fit a price per kg (our check)."}
+    - {vi: "Bài báo không nói năng suất ngô sinh khối là khối lượng tươi hay khô.",
+       en: "The paper does not say whether the biomass maize yield is fresh or dry weight."}
   url: "https://vjol.info.vn/vaas/vi/article/download/167049/143292/289735"
   nso_credit: false
 - id: R-P03

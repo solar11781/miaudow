@@ -259,16 +259,24 @@ def _money(plan: PlanEntry, calendar: list[CropSpan]) -> Money:
     """Money as the study reports it per crop; the total is our sum of the profit values (05-DATA-CONTRACTS §7)."""
     econ = plan.reported_economics
     keys = [span.crop_key for span in calendar]
-    named = (("profit_per_crop", econ.profit_per_crop.keys()), ("cost_per_crop", econ.cost_per_crop.keys()))
+    named = (
+        ("profit_per_crop", econ.profit_per_crop.keys()),
+        ("cost_per_crop", econ.cost_per_crop.keys()),
+        ("yield_per_crop", econ.yield_per_crop.keys()),
+        ("price_per_crop", econ.price_per_crop.keys()),
+    )
     for field, crop_keys in (*named, ("flags", econ.flags.keys())):
         unknown = sorted(set(crop_keys) - set(keys))
         if unknown:
             raise ValueError(f"rules/rotations.yaml: {plan.id} {field} names crops not in the plan: {unknown}")
     items: list[MoneyItem] = []
     if econ.profit_per_crop:  # P-03 reports money as text only (§7)
-        missing = [key for key in keys if key not in econ.profit_per_crop]
-        if missing or econ.unit is None:
-            raise ValueError(f"rules/rotations.yaml: {plan.id} needs a unit and a profit for every crop: {missing}")
+        per_crop = (econ.profit_per_crop, econ.yield_per_crop, econ.price_per_crop)
+        missing = [key for key in keys if any(key not in values for values in per_crop)]
+        if missing or econ.unit is None or econ.yield_unit is None or econ.price_unit is None:
+            raise ValueError(
+                f"rules/rotations.yaml: {plan.id} needs the units and a profit, yield and price for every crop: {missing}"
+            )
         unit, ids = econ.unit, [econ.source_id]
         for span in calendar:
             cost = econ.cost_per_crop.get(span.crop_key)
@@ -279,6 +287,8 @@ def _money(plan: PlanEntry, calendar: list[CropSpan]) -> Money:
                     season=span.season,
                     profit=Value(value=econ.profit_per_crop[span.crop_key], unit=unit, source_ids=ids),
                     cost=None if cost is None else Value(value=cost, unit=unit, source_ids=ids),
+                    yield_=Value(value=econ.yield_per_crop[span.crop_key], unit=econ.yield_unit, source_ids=ids),
+                    price=Value(value=econ.price_per_crop[span.crop_key], unit=econ.price_unit, source_ids=ids),
                     flag=econ.flags.get(span.crop_key),
                 )
             )

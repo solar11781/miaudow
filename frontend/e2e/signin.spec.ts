@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { signInOn } from './fakeGoogle';
 
 // UI-UX-SPEC §12c and H14: the optional Google sign-in. The test server runs with sign-in off (playwright.config.ts);
 // the "on" tests answer /api/account/config in the browser and stand in for Google's script, so Google is never called.
@@ -16,34 +17,6 @@ const OTHER_ROUTES = [
   '/#/bang-chung',
   '/#/tro-ly',
 ];
-// a stand-in for https://accounts.google.com/gsi/client: Google's API with a plain button that signs in with a fake
-// token, and Google's stylesheet link, as the real script adds one
-const FAKE_GSI = `let done = () => {};
-window.google = { accounts: { id: {
-  initialize(c) { done = c.callback; }, disableAutoSelect() {}, cancel() {},
-  renderButton(el) {
-    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://accounts.google.com/gsi/style';
-    document.head.append(css);
-    const b = document.createElement('button'); b.textContent = 'Google'; b.onclick = () => done({ credential: 'fake' });
-    el.append(b);
-  },
-} } };`;
-
-async function signInOn(page: Page): Promise<string[]> {
-  const google: string[] = [];
-  await page.route('**/api/account/config', (route) =>
-    route.fulfill({ json: { available: true, client_id: 'test.apps.googleusercontent.com' } }),
-  );
-  await page.route(/^https:\/\/([a-z0-9-]+\.)*google\.com\//, (route) => {
-    google.push(route.request().url());
-    const css = route.request().url().endsWith('/gsi/style');
-    return route.fulfill(
-      css ? { contentType: 'text/css', body: '' } : { contentType: 'text/javascript', body: FAKE_GSI },
-    );
-  });
-  return google;
-}
-
 test('T14 sign-in off: the sign-in page says it is not available', async ({ page }) => {
   await page.goto('/#/dang-nhap');
   await expect(page.getByText('Hiện chưa đăng nhập được', { exact: false })).toBeVisible();
@@ -129,14 +102,14 @@ test('T14 after signing in, the plan cards hold no Google script or stylesheet a
   await page.route('**/api/account/sign-in', (route) => route.fulfill({ status: 204 }));
   await page.route('**/api/account/saved', (route) => {
     saved.push(route.request().postDataJSON());
-    return route.fulfill({ status: 201, json: { id: 1, land: 'canal_end', years: [2010, 2020], priority: 'income' } });
+    return route.fulfill({ status: 201, json: { id: 1, ...route.request().postDataJSON() } });
   });
   await page.goto(PLANS_URL);
   await page.getByRole('link', { name: 'Đăng nhập để lưu các câu trả lời này' }).click();
   await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();
   await page.getByTestId('google-button').getByRole('button', { name: 'Google' }).click();
   await expect(page.getByText('Đã lưu các câu trả lời này.')).toBeVisible();
-  expect(saved).toEqual([{ land: 'canal_end', years: [2010, 2020], priority: 'income' }]);
+  expect(saved).toEqual([{ land: 'canal_end', years: [2010, 2020], priority: 'income', prices: {}, costs: {} }]);
   await expect(page).toHaveURL(/#\/nong-dan\/phuong-an\?/);
   await expect(page).not.toHaveURL(/luu=1/);
   const left = await page.evaluate(() => ({
@@ -206,7 +179,7 @@ test('UI-UX-SPEC 12c a saved set cannot be saved twice, and new answers can be s
     saved.push(route.request().postDataJSON());
     return route.fulfill({
       status: 201,
-      json: { id: saved.length, land: 'canal_end', years: [2010], priority: 'income' },
+      json: { id: saved.length, ...route.request().postDataJSON() },
     });
   });
   await page.goto(PLANS_URL);
@@ -227,7 +200,9 @@ test('UI-UX-SPEC 12c the delete confirm buttons are not in the main button style
   await signInOn(page);
   await page.route('**/api/account/sign-in', (route) => route.fulfill({ status: 204 }));
   await page.route('**/api/account/saved', (route) =>
-    route.fulfill({ json: { saved: [{ id: 1, land: 'canal_end', years: [2010], priority: 'income' }] } }),
+    route.fulfill({
+      json: { saved: [{ id: 1, land: 'canal_end', years: [2010], priority: 'income', prices: {}, costs: {} }] },
+    }),
   );
   await page.goto('/#/dang-nhap');
   await page.getByRole('button', { name: 'Tôi đã đọc, đăng nhập bằng Google' }).click();

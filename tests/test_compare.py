@@ -10,6 +10,7 @@ worked out by hand (percent = fraction x 100 rounded half up).
 import json
 import shutil
 from collections.abc import Callable
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -219,6 +220,65 @@ def test_money_items_are_the_reported_profit_and_cost_per_crop(resp: dict) -> No
         "lợi nhuận thuần (RVAC) = GR - TVC; TVC gồm vật tư, công lao động, năng lượng và lãi vay"
     )
     assert money["text_only"] is None
+
+
+# UI-UX-SPEC §12d, D-163: P-02 Tables 4 (p. 46), 8 (p. 48) and 12 (p. 49), "Năng suất (tấn/ha)" as printed (D-95) and
+# "Giá bán" in đồng per kg, the unit the tables' own sums fit (research/price-entry-notes.md section 2)
+P02_YIELD_PRICE = {
+    "usual": [
+        ("usual_spring_rice", "5.01", "7,500"),
+        ("usual_summer_autumn_black_bean", "1.03", "40,000"),
+        ("usual_autumn_winter_sweet_potato", "10.05", "5,000"),
+    ],
+    "cc1": [
+        ("cc1_spring_peanut", "3.91", "28,000"),
+        ("cc1_summer_autumn_mung_bean", "1.03", "40,000"),
+        ("cc1_autumn_winter_maize_grain", "6.85", "6,000"),
+    ],
+    "cc2": [
+        ("cc2_spring_chili", "12.2", "11,000"),
+        ("cc2_summer_autumn_soybean", "1.08", "40,000"),
+        ("cc2_autumn_winter_maize_biomass", "50.9", "850"),
+    ],
+    "cc3": [
+        ("cc3_spring_maize_grain", "6.92", "6,000"),
+        ("cc3_summer_autumn_black_sesame", "0.72", "50,000"),
+        ("cc3_autumn_winter_pumpkin", "9.83", "8,000"),
+    ],
+    "cc4": [
+        ("cc4_spring_maize_biomass", "54.5", "850"),
+        ("cc4_summer_autumn_maize_biomass", "55.00", "850"),
+        ("cc4_autumn_winter_sweet_potato", "12.86", "6,500"),
+    ],
+}
+
+
+@pytest.mark.parametrize("plan_id", P02_YIELD_PRICE)
+def test_money_items_carry_the_study_yield_and_price(resp: dict, plan_id: str) -> None:
+    items = plan(resp, plan_id)["money"]["items"]
+    assert [(i["crop_key"], i["yield"]["value"], i["price"]["value"]) for i in items] == P02_YIELD_PRICE[plan_id]
+    for item in items:
+        assert item["yield"]["unit"] == {"vi": "tấn/ha", "en": "t/ha"}
+        assert item["price"]["unit"] == {"vi": "đồng/kg", "en": "đ/kg"}
+        assert item["yield"]["source_ids"] == item["price"]["source_ids"] == ["R-P02"]
+
+
+def test_yield_times_price_is_the_study_gross_return(resp: dict) -> None:
+    # P-02 Tables 4, 8, 12: "Tổng thu" = yield x price (t/ha x đ/kg = thousand đ/ha) = "Lãi thuần" + "Tổng chi"
+    for plan_id in P02_YIELD_PRICE:
+        for item in plan(resp, plan_id)["money"]["items"]:
+            gross = Decimal(item["yield"]["value"]) * int(item["price"]["value"].replace(",", ""))
+            parts = [int(item[k]["value"].replace(",", "")) for k in ("profit", "cost")]
+            assert gross == sum(parts), item["crop_key"]
+
+
+def test_a_crop_without_a_yield_fails_naming_it(root: Path) -> None:
+    def drop_yield(plans: list[dict]) -> None:
+        del plans[0]["reported_economics"]["yield_per_crop"]["usual_spring_rice"]
+
+    edit_yaml(root, "rotations.yaml", drop_yield)
+    with pytest.raises(ValueError, match="usual_spring_rice"):
+        compare(request(), load_compare_data(root))
 
 
 @pytest.mark.parametrize(
