@@ -23,7 +23,7 @@ export const en: Messages = {
     closeMenu: 'Close menu',
     skip: 'Skip to main content',
     main: 'Main navigation',
-    lite: 'Simple mode',
+    lite: 'Less motion',
     liteHelp: 'Turn off 3D and motion for a lighter page',
     theme: 'Appearance',
     themeAuto: 'Auto',
@@ -227,6 +227,8 @@ export const en: Messages = {
     honestyCta: 'See the test',
   },
   farmer: {
+    hardYears: 'Don’t remember? Pick the hardest years for me',
+    hardYearsNote: 'For each hazard, the most recent year it covered the most farmland. You can still change them.',
     province: 'Province',
     provinceName: 'Nghe An',
     provinceNote: 'Only Nghe An for now; other provinces are not available yet.',

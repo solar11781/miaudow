@@ -15,7 +15,10 @@
     <title>Miaudow · Đồng lúa Nghệ An</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- shown until the app starts on a slow phone (audit F3, D-187); React replaces it, no script needed -->
+    <div id="root">
+      <p class="boot">Đang tải trang, xin chờ…<span lang="en">Loading the page, please wait…</span></p>
+    </div>
     <noscript>Miaudow cần JavaScript để chạy. / Miaudow needs JavaScript.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

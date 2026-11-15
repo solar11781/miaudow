@@ -21,7 +21,7 @@ export const vi = {
     closeMenu: 'Đóng menu',
     skip: 'Bỏ qua, đến nội dung chính',
     main: 'Điều hướng chính',
-    lite: 'Chế độ nhẹ',
+    lite: 'Giảm chuyển động',
     liteHelp: 'Tắt hình 3D và hiệu ứng để trang nhẹ hơn',
     theme: 'Giao diện',
     themeAuto: 'Tự động',
@@ -221,6 +221,8 @@ export const vi = {
     inviteLead: 'Không cần tài khoản, không lưu gì trên máy của bạn.',
   },
   farmer: {
+    hardYears: 'Không nhớ năm nào? Chọn giúp tôi những năm khó nhất',
+    hardYearsNote: 'Với mỗi loại thiên tai, chọn năm gần nhất mà nó phủ nhiều đất trồng nhất. Bạn vẫn đổi được.',
     province: 'Tỉnh',
     provinceName: 'Nghệ An',
     provinceNote: 'Hiện chỉ có Nghệ An; các tỉnh khác chưa có.',
