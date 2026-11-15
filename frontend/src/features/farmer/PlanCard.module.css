@@ -322,6 +322,15 @@
   font-size: var(--t-small);
 }
 
+.questions {
+  padding-left: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--fg-2);
+  font-size: var(--t-small);
+}
+
 .foot {
   margin-top: auto;
   padding: var(--s-4) var(--s-5) var(--s-5);
@@ -426,13 +435,6 @@
 
 .wTable td {
   white-space: nowrap;
-}
-
-.waterNote {
-  color: var(--fg-3);
-  font-size: var(--t-small);
-  line-height: 1.45;
-  padding-block: var(--s-2);
 }
 
 .fold {
