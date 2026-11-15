@@ -117,9 +117,12 @@ def bilingual(vi: str, en: str) -> dict:
     return {"vi": vi, "en": en}
 
 
-def decimal_text(x: float) -> tuple[str, str]:
-    """(vi, en) of a number with 3 decimals; Vietnamese writes a decimal comma."""
-    en = f"{x:.3f}"
+def decimal_text(x: float, places: int = 2) -> tuple[str, str]:
+    """(vi, en) of a number with `places` decimals (2 by D-160), one more where that would show a non-zero value as
+    zero (D-183); Vietnamese writes a decimal comma."""
+    en = f"{x:.{places}f}"
+    if x != 0 and float(en) == 0:
+        en = f"{x:.{places + 1}f}"
     return en.replace(".", ","), en
 
 
@@ -204,7 +207,7 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
             decimal_text(national["skill_vs_bnw"][k]) for k in ("value", "ci90_low", "ci90_high")
         )
         return bilingual(
-            f"Mức hơn dự báo trung bình nhiều năm {v0} (khoảng tin cậy 90%: {vl0} đến {vh0}); "
+            f"Mức hơn so với trung bình nhiều năm {v0} (khoảng tin cậy 90%: {vl0} đến {vh0}); "
             f"hơn mô hình không dùng thời tiết {v1} (khoảng tin cậy 90%: {vl1} đến {vh1}).",
             f"skill {e0} (90% CI {el0} to {eh0}) against the climatology reference; "
             f"skill {e1} (90% CI {el1} to {eh1}) against the no-weather model.",
@@ -212,12 +215,12 @@ def gate_detail(gate: str, national: dict, pilot: dict) -> dict:
     if gate == "G3":
         (v, e), (vl, el), (vh, eh) = (decimal_text(pilot["skill_vs_b2"][k]) for k in ("value", "ci90_low", "ci90_high"))
         return bilingual(
-            f"Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn dự báo bằng năm trước {v} (khoảng tin cậy 90%: {vl} đến {vh}).",
+            f"Nghệ An, Hà Tĩnh, Thanh Hóa: mức hơn so với giá trị năm trước {v} (khoảng tin cậy 90%: {vl} đến {vh}).",
             f"Nghe An, Ha Tinh, Thanh Hoa: skill {e} (90% CI {el} to {eh}) against persistence.",
         )
     cover = f"{100 * national['coverage_80']:.0f}"
     return bilingual(
-        f"Khoảng dự báo 80% chứa {cover}% kết quả của các năm kiểm tra (cần 70% đến 90%).",
+        f"Khoảng 80% của mô hình chứa {cover}% kết quả của các năm kiểm tra (cần 70% đến 90%).",
         f"The 80% range covered {cover}% of the held-out outcomes (needs 70% to 90%).",
     )
 
