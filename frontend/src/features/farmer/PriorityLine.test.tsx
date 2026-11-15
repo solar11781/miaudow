@@ -49,6 +49,9 @@ function card(res: CompareResponse, id: PlanId, priority: Priority) {
   return { rerender: (pr: Priority) => view.rerender(ui(pr)) };
 }
 
+// D-190: the line names the usual plan by its crops, not by the API's variety name
+const usualCrops = () =>
+  (response().plans.find((p) => p.id === 'usual')?.calendar ?? []).map((c) => c.crop.vi).join(' → ');
 const line = (id: PlanId) => document.querySelector(`[data-testid="card-${id}-priority-line"]`);
 const values = (el: Element | null) =>
   [...(el?.querySelectorAll('button[data-value]') ?? [])].map((b) => b.getAttribute('data-value'));
@@ -74,7 +77,10 @@ describe('priority line', () => {
   it("T37 income shows this card's money total and the usual card's, each a source button", () => {
     card(response(), 'cc1', 'income');
     expect(values(line('cc1'))).toEqual(['53.380 nghìn đồng/ha', '30.799 nghìn đồng/ha']);
-    expect(line('cc1')?.textContent).toContain('Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu');
+    expect(line('cc1')?.textContent).toContain(usualCrops());
+    // shown in million dong per ha (D-190); the source buttons keep the exact values above
+    expect(line('cc1')?.textContent).toContain('53,4 triệu đồng/ha');
+    expect(line('cc1')?.textContent).toContain('30,8 triệu đồng/ha');
   });
   it("T37 land shows this card's and the usual card's crops in the year and living days", () => {
     card(response(), 'cc1', 'land');
@@ -94,7 +100,7 @@ describe('priority line', () => {
     for (const pr of ['stability', 'water'] as const) {
       card(response(), 'cc1', pr);
       expect(values(line('cc1'))).toEqual([]);
-      expect(line('cc1')?.textContent).toContain('Lúa Khang dân - Đậu đen xanh lòng VT1 - Khoai lang Chiêm Dâu');
+      expect(line('cc1')?.textContent).toContain(usualCrops());
       cleanup();
     }
   });

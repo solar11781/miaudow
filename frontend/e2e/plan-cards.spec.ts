@@ -68,3 +68,22 @@ test('D-187 each card lists the questions for the officer of its plan', async ({
   }
   await expect(page.getByTestId('card-cc4-row-checks')).toContainText('hợp đồng thu mua ngô sinh khối');
 });
+
+// D-190 (roleplay audit 2026-11-15, F9): one name per plan with its crops under it, and money in million dong per ha;
+// the source sheet keeps the paper's exact thousand value and unit (P-02 Table 13)
+test('D-190 each plan has one name and its money is in million dong per hectare', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  const jump = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  await expect(jump).toContainText(vi.farmer.trialShort('1'));
+  await expect(jump).not.toContainText(/\bCC\d\b/i);
+  const head = page.getByTestId('card-cc1-row-header');
+  await expect(head.locator('p').first()).toHaveText(vi.farmer.trialShort('1'));
+  await expect(page.getByTestId('card-usual-row-header').locator('p').first()).toHaveText(vi.farmer.current);
+  const money = page.getByTestId('card-cc1-row-money');
+  const button = money.locator('ul [data-value]').first();
+  await expect(button).toContainText(vi.common.millionPerHa);
+  const exact = await button.getAttribute('data-value');
+  expect(exact).toMatch(/^[\d.]+ nghìn đồng\/ha$/);
+  await button.click();
+  await expect(page.getByTestId('source-sheet').locator('h2')).toHaveText(exact ?? '');
+});

@@ -2,13 +2,14 @@ import { useMemo } from 'react';
 import type { ApiSourceRef } from '../../domain/provenance';
 import type { Rule, RuleCode, SourceFacts, SourceId, Value } from '../../types';
 import { displayUnit, displayValue } from '../../domain/format';
-import { usePick, useSettings, useT } from '../../app/settings';
+import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 
 /** Source references for API numbers: the sheet gets the response's own facts for each id (H5). */
 export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[]) {
   const pick = usePick();
   const t = useT();
   const { lang } = useSettings();
+  const f = useFormat();
   return useMemo(() => {
     const facts = (ids: SourceId[]) => [...new Set(ids)].flatMap((id) => (sources[id] ? [sources[id]] : []));
     // one display of a Value for the cards and the source sheet: the language's digit grouping and the unit as written
@@ -18,6 +19,14 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
     return {
       number,
       unit,
+      /** A money Value in thousand dong per ha (P-02) as the farmer reads it, in million dong per ha (D-190); the
+       * value as written when it is in another unit. Its source sheet keeps the exact value (`value`). */
+      money(v: Value): { number: string; unit: string } {
+        const thousands = Number(v.value.replaceAll(',', ''));
+        return /^thousand /.test(v.unit.en) && v.value !== '' && Number.isFinite(thousands)
+          ? { number: f.million(thousands), unit: t.common.millionPerHa }
+          : { number: number(v), unit: unit(v) };
+      },
       /** A Value as a source button's props; `note` closes its sheet (the source notes kept off the card, D-187). */
       value(v: Value, label: string, note?: string): ApiSourceRef {
         return { facts: facts(v.source_ids), value: shown(v), label, ...(note ? { note } : {}) };
@@ -38,6 +47,6 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
         return { facts: facts(ids), value, label };
       },
     };
-  }, [sources, rules, pick, t, lang]);
+  }, [sources, rules, pick, t, lang, f]);
 }
 export type ApiRefs = ReturnType<typeof useApiRefs>;

@@ -45,7 +45,8 @@ export const vi = {
     source: 'Nguồn',
     open: 'Mở',
     close: 'Đóng',
-    millionPerHa: 'triệu đ/ha',
+    millionPerHa: 'triệu đồng/ha',
+    perKg: 'đồng/kg',
     notListed: 'Không có trong nguồn',
     noData: 'Chưa có số liệu',
     farmland: 'đất trồng',
@@ -555,8 +556,6 @@ export const vi = {
     filterAll: 'Tất cả',
     costs: 'Chi phí',
     price: 'Giá bán',
-    perKg: 'đ/kg',
-    thousandPerHa: 'nghìn đ/ha',
   },
   science: {
     eyebrow: 'Phòng dữ liệu · dành cho nhà nghiên cứu',
@@ -1101,7 +1100,7 @@ export const vi = {
       'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
     cropProfitLabel: (crop: string) => `Lãi ${crop}`,
     cropProfitDetail: (profit: string, cost: string, price: string) =>
-      `Bảng 13: ${profit} nghìn đ/ha, đã trừ công. Chi phí ${cost} nghìn đ/ha; giá bán ${price} đ/kg lúc thu hoạch.`,
+      `Bảng 13: ${profit} nghìn đồng/ha, đã trừ công. Chi phí ${cost} nghìn đồng/ha; giá bán ${price} đồng/kg lúc thu hoạch.`,
     planProfitLabel: 'Lãi cả năm trong thử nghiệm, ba vụ cộng lại',
     planProfitSum: 'Bảng 13, phép cộng của Miaudow',
     tcvnLabel: (crop: string) => `Mức tưới ${crop}`,
