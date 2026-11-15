@@ -261,18 +261,6 @@
   padding-top: var(--s-6);
   border-top: 1px solid var(--line);
 }
-.pairItem {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  color: var(--fg-2);
-}
-.pairItem:first-child {
-  color: var(--fg-2);
-}
-.pairItem:last-child :global(button) {
-  color: var(--c-gold-300);
-}
 .note {
   color: var(--fg-3);
   max-width: 46ch;

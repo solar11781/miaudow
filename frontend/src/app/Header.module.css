@@ -38,6 +38,8 @@
   color: var(--fg);
   margin-right: auto;
   min-height: 48px;
+  /* below 374 px only the 36 px mark shows; the link still needs a 44 px target */
+  min-width: 44px;
 }
 
 .word {
