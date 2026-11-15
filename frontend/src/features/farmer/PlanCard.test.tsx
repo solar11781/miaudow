@@ -736,3 +736,38 @@ describe('questions for the officer', () => {
     expect(decisionPlan('cc1')?.questions_for_officer.length).toBeGreaterThan(0);
   });
 });
+
+// D-192 (screen check of the plans page, 2026-11-15)
+describe('screen check details', () => {
+  afterEach(cleanup);
+  const card = (id: 'usual' | 'cc1' | 'cc2', languages = ['vi-VN', 'vi'], priority: 'income' | 'land' = 'income') => {
+    Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
+    onTestFinished(() => {
+      Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+    });
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === id);
+    if (!plan) throw new Error('no plan');
+    return { res, plan, priority };
+  };
+  const show = ({ res, plan, priority }: ReturnType<typeof card>) =>
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority={priority} own={own} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+  it('points from the bad-weather table to the irrigation row for drought, in both languages', () => {
+    show(card('cc1'));
+    const fold = document.getElementById('card-cc1-weather-years');
+    expect(fold?.firstElementChild?.textContent).toBe('Hạn hán nằm ở mục Nước tưới bên dưới.');
+    expect(vi.farmer.rows.water).toBe('Nước tưới');
+    cleanup();
+    show(card('cc1', ['en-GB', 'en']));
+    expect(document.getElementById('card-cc1-weather-years')?.firstElementChild?.textContent).toBe(
+      'Drought is under Irrigation below.',
+    );
+    expect(en.farmer.rows.water).toBe('Irrigation');
+  });
+});

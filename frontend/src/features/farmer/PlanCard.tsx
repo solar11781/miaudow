@@ -316,6 +316,8 @@ function WeatherRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
     >
       {plan.exposure.length > 0 && (
         <YearsFold id={`card-${plan.id}-weather-years`}>
+          {/* drought is a water reading, so the table says where it is (D-58, D-192) */}
+          <p className={s.rowNote}>{t.farmer.rows.droughtPointer(t.farmer.rows.water)}</p>
           {/* what the shares are, next to the tables it explains (D-187) */}
           <p className={s.rowNote}>{t.farmer.rows.weatherNote}</p>
           <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
