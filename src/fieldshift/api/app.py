@@ -156,9 +156,10 @@ def _invalid(errors: list[dict[str, object]]) -> RequestValidationError:
     return RequestValidationError([{**e, "loc": ("body", *e["loc"])} for e in errors])
 
 
-async def _body(request: Request, model: type[M], limit: int = MAX_BODY_BYTES) -> M:
-    """The body as a `model`; reading stops past `limit` bytes, whatever content-length says, after
-    BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422, and nothing logs a traceback)."""
+async def _body(request: Request, model: type[M], limit: int = MAX_BODY_BYTES, context: object = None) -> M:
+    """The body as a `model`, checked with `context` as its validation context; reading stops past `limit` bytes,
+    whatever content-length says, after BODY_TIMEOUT_SECONDS, or when the client leaves (then nobody reads the 422,
+    and nothing logs a traceback)."""
     body = b""
     try:
         async with asyncio.timeout(BODY_TIMEOUT_SECONDS):
@@ -171,7 +172,7 @@ async def _body(request: Request, model: type[M], limit: int = MAX_BODY_BYTES) -
     except ClientDisconnect as err:
         raise _invalid([{"type": "incomplete", "loc": (), "msg": "client left before the body ended"}]) from err
     try:
-        return model.model_validate_json(body)
+        return model.model_validate_json(body, context=context)
     except ValidationError as err:
         raise _invalid(err.errors()) from err
 
@@ -296,7 +297,7 @@ async def saved_route(request: Request, service: Service, account: AccountId) ->
 
 @accounts_router.post("/saved")
 async def save_route(request: Request, service: Service, sub: GoogleId) -> Response:
-    answers = await _body(request, SavedAnswers, SAVE_MAX_BODY_BYTES)
+    answers = await _body(request, SavedAnswers, SAVE_MAX_BODY_BYTES, service.crop_keys)
     return _private(await _account_work(request, service.save, sub, answers), 201)
 
 
@@ -494,7 +495,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
         return Response(grid_figure, media_type="image/svg+xml")
 
     _add_privacy_routes(app, privacy_body)
-    app.state.accounts = accounts_from(os.environ)  # None while sign-in is off
+    app.state.accounts = accounts_from(os.environ, base)  # None while sign-in is off
     app.state.account_limiter = anyio.CapacityLimiter(ACCOUNT_THREADS)
     app.state.model_calls = ModelCallCaps()  # one cap for both model routes: they share the key (caps.py)
     app.include_router(accounts_router)
