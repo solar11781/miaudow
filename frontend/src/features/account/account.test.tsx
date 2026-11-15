@@ -9,6 +9,7 @@ import { SettingsProvider } from '../../app/settings';
 import { vi as text } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { AccountProvider, safeBack, useAccount } from './AccountProvider';
+import { NO_OWN } from '../../domain/farmerState';
 import { SaveAnswers } from './SaveAnswers';
 import { SavedPage } from './SavedPage';
 import { SignInPage } from './SignInPage';
@@ -20,7 +21,6 @@ const ON = { available: true, client_id: 'test.apps.googleusercontent.com' } as 
 const OFF = { available: false, client_id: null } as const;
 // D-180: a saved set keeps the typed prices (đ/kg) and costs (thousand đ/ha) by crop key
 const OWN = { prices: { cc1_spring_peanut: '31357' }, costs: { cc1_spring_peanut: '24689' } };
-const NO_OWN = { prices: {}, costs: {} };
 const SETS: SavedSet[] = [
   { id: 1, land: 'high_field', years: [2010, 2020], priority: 'income', ...OWN },
   { id: 2, land: 'ask', years: [1998], priority: 'water', ...NO_OWN },
@@ -68,6 +68,7 @@ function show(path: string, token: string | null = null) {
       </AccountProvider>
     </SettingsProvider>,
   );
+  return router;
 }
 
 function fakeGoogle() {
@@ -287,6 +288,42 @@ describe('save these answers', () => {
     expect(save).toHaveBeenCalledWith('google-id-token', ANSWERS);
     await waitFor(() => expect(where()).toBe(PLANS_OWN));
     expect([localStorage.length, sessionStorage.length, document.cookie]).toEqual([0, 0, '']);
+  });
+
+  it('drops the held numbers once the farmer is back on the plan cards, so a later sign-in brings back no old ones', async () => {
+    vi.spyOn(api.account, 'config').mockResolvedValue(ON);
+    vi.spyOn(api.account, 'signIn').mockResolvedValue();
+    vi.spyOn(api.account, 'save').mockResolvedValue({ id: 3, ...ANSWERS, years: [2010] });
+    const google = fakeGoogle();
+    const router = show(PLANS_OWN);
+    await userEvent.click(await screen.findByRole('link', { name: t.saveSignIn }));
+    await waitFor(() => expect(where()).toContain('/dang-nhap'));
+    await act(() => router.navigate(-1));
+    await waitFor(() => expect(where()).toBe(PLANS_OWN));
+    await act(() => router.navigate(1));
+    await userEvent.click(await screen.findByRole('button', { name: t.agree }));
+    await waitFor(() => expect(google.id.renderButton).toHaveBeenCalled());
+    await google.answer('google-id-token');
+    await waitFor(() => expect(where()).toBe(PLANS));
+  });
+
+  it('drops the held numbers on sign-out', () => {
+    const box: { account: ReturnType<typeof useAccount> | null } = { account: null };
+    function Probe() {
+      const account = useAccount();
+      useEffect(() => {
+        box.account = account;
+      });
+      return null;
+    }
+    render(
+      <AccountProvider>
+        <Probe />
+      </AccountProvider>,
+    );
+    act(() => box.account?.hold(`${PLANS}&luu=1`, `${PLANS_OWN}&luu=1`));
+    act(() => box.account?.signOut());
+    expect(box.account?.returnTo(`${PLANS}&luu=1`)).toBe(`${PLANS}&luu=1`);
   });
 
   it('does not bring typed numbers to a sign-in that started elsewhere', async () => {
