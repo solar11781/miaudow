@@ -772,12 +772,12 @@ describe('screen check details', () => {
   it('points from the bad-weather table to the irrigation row for drought, in both languages', () => {
     show(card('cc1'));
     const fold = document.getElementById('card-cc1-weather-years');
-    expect(fold?.firstElementChild?.textContent).toBe('Hạn hán nằm ở mục Nước tưới bên dưới.');
+    expect(fold?.firstElementChild?.textContent).toBe('Hạn hán: xem mục “Nước tưới” bên dưới.');
     expect(vi.farmer.rows.water).toBe('Nước tưới');
     cleanup();
     show(card('cc1', ['en-GB', 'en']));
     expect(document.getElementById('card-cc1-weather-years')?.firstElementChild?.textContent).toBe(
-      'Drought is under Irrigation below.',
+      'Drought: see “Irrigation” below.',
     );
     expect(en.farmer.rows.water).toBe('Irrigation');
   });
