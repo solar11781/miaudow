@@ -1080,7 +1080,7 @@ export const vi = {
     rainNotRun: 'Phép đối chiếu mưa chưa chạy.',
     notUsed: 'Bộ số liệu đã xem xét nhưng không dùng',
     picsa:
-      'Phần so sánh theo các bước B đến G của sổ tay thực địa PICSA (Dorward, Clarkson và Stern 2015): khí hậu các năm đã qua, đếm số năm, một bảng các cách làm, và người nông dân tự quyết định. Đây không phải một quy trình PICSA đầy đủ: PICSA do cán bộ đã được tập huấn thực hiện cùng nhóm nông dân, và công cụ này chưa được thử với nông dân.',
+      'Phần so sánh làm theo các bước B đến G của sổ tay thực địa PICSA (Dorward, Clarkson và Stern 2015): khí hậu các năm đã qua, đếm số năm, một bảng các cách làm, và người nông dân tự quyết định. Đây không phải một quy trình PICSA đầy đủ: PICSA do cán bộ đã được tập huấn thực hiện cùng nhóm nông dân, và ứng dụng này chưa được thử với nông dân.',
     noUserTest: 'Ứng dụng chưa được thử với nông dân.',
   },
   refs: {
