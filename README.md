@@ -156,8 +156,18 @@ The method page in the app has the full details and every number below.
 
 ## 6. What was prepared before the event
 
-Before the event, Team Miau researched the challenge, explored the public datasets and the local field-trial papers,
-and planned what to build.
+The competition rules allow some preparation before 09:00 ICT on Saturday 14 November. Team Miau prepared only this:
+
+- Research and planning: the challenge, the local field-trial papers, the public datasets and the plan for the product.
+  The resulting specifications are the documents in `docs/`.
+- Data caches: the public downloads (national crop statistics, NASA POWER daily weather, MODIS land cover) were fetched
+  on 10 and 11 November. Every file is listed in `data/MANIFEST.csv` with its retrieval date and sha256.
+- Generic, tested code: the data readers (manifest writer, statistics parser, NASA POWER client, boundary reader, IMERG
+  reader), the series cleaning, the past-only normal yield, the farmland weights and the season windows.
+- Tooling: the CI, the Claude Code skills and the safety hook (the first commits, on 13 November).
+
+Everything else was built during the event: the decision engine, the model runs and every result in `artifacts/`, the
+product screens, the Vietnamese and English text, and the deployment.
 
 ## 7. How to run it
 
@@ -194,14 +204,15 @@ The licences of the frontend bundle are also written at build time to `THIRD-PAR
 
 **npm runtime packages** (`frontend/package.json`, licences from `package-lock.json`)
 
-| Package                                                                      | Version               | Licence    | Role                                                |
-| ---------------------------------------------------------------------------- | --------------------- | ---------- | --------------------------------------------------- |
-| react, react-dom                                                             | 19.3.1                | MIT        | UI                                                  |
-| react-router-dom                                                             | 7.18.5                | MIT        | Routing (hash routes)                               |
-| cesium                                                                       | 1.146.0               | Apache-2.0 | 3D globe on the observatory page; no Cesium ion use |
-| @cesium/engine, @cesium/widgets, @cesium/core (overrides)                    | 26.4.0, 16.3.0, 0.1.0 | Apache-2.0 | Parts of cesium                                     |
-| three                                                                        | 0.186.1               | MIT        | 3D grid view on the science page                    |
-| @fontsource/be-vietnam-pro, @fontsource-variable/alegreya, @fontsource/charm | 5.3.0                 | OFL-1.1    | Self-hosted fonts                                   |
+| Package                                                                      | Version               | Licence                                           | Role                                                      |
+| ---------------------------------------------------------------------------- | --------------------- | ------------------------------------------------- | --------------------------------------------------------- |
+| react, react-dom                                                             | 19.3.1                | MIT                                               | UI                                                        |
+| react-router-dom                                                             | 7.18.5                | MIT                                               | Routing (hash routes)                                     |
+| cesium                                                                       | 1.146.0               | Apache-2.0                                        | 3D globe on the observatory page; no Cesium ion use       |
+| @cesium/engine, @cesium/widgets, @cesium/core (overrides)                    | 26.4.0, 16.3.0, 0.1.0 | Apache-2.0                                        | Parts of cesium                                           |
+| three                                                                        | 0.186.1               | MIT                                               | 3D grid view on the science page                          |
+| gsap, @gsap/react                                                            | 3.15.0, 2.1.2         | GSAP Standard "no charge" licence (free; not OSI) | Motion outside the farmer pages, off under reduced motion |
+| @fontsource/be-vietnam-pro, @fontsource-variable/alegreya, @fontsource/charm | 5.3.0                 | OFL-1.1                                           | Self-hosted fonts                                         |
 
 **npm development tools** (not shipped)
 
@@ -240,7 +251,7 @@ The licences of the frontend bundle are also written at build time to `THIRD-PAR
 Pipeline, models and tests only (`requirements-dev.lock`, not shipped): scikit-learn 1.9.1 (BSD-3-Clause), scipy
 1.18.1 (BSD License), lightgbm 4.7.0 (MIT), pytest 9.2.0 (MIT), httpx 0.28.1 (BSD License), pyhdf 0.11.7 (MIT; MODIS
 download step only), pillow 13.0.0 (MIT-CMU; encoded the field-step AVIF copies). CI tools: ruff 0.17.4 (MIT), pip-audit 2.10.1 (Apache-2.0), gitleaks 8.30.1 (MIT), npm audit;
-GitHub Actions checkout, setup-python, setup-node and cache. Base images: node 22.23.5-slim and python 3.13.18-slim,
+GitHub Actions checkout v4, setup-python v5, setup-node v4 and cache v4, pinned by commit. Base images: node 22.23.5-slim and python 3.13.18-slim,
 pinned in the `Dockerfile`.
 
 **Data and papers.** NASA POWER, MODIS MCD12C1, MOD13Q1, GPM IMERG, GIBS and CMR are NASA open data (no restriction
@@ -294,7 +305,7 @@ colour-adjusted, and adjusted CC BY-SA photos are shared under the same licence)
 | [A riverbank in the afternoon: a small boat](https://commons.wikimedia.org/wiki/File:Chi%E1%BB%81u_v%E1%BB%81_nh%E1%BB%99n_nh%E1%BB%8Bp_b%E1%BA%BFn_s%C3%B4ng.JPG)                                   | Vietnam (place not given by the source)                                             | LÊ TẤN LỘC at Vietnamese Wikipedia                    | CC BY-SA 3.0  |
 | [A woman bends to plant rice in a flooded field](https://commons.wikimedia.org/wiki/File:C%E1%BA%A5y_l%C3%BAa.jpg)                                                                                   | Vietnam (place not given by the source)                                             | Andrew Crump from London, UK                          | CC BY 2.0     |
 | [Bright green rice terraces stacked on hillsides](https://commons.wikimedia.org/wiki/File:RiceTerracesVietnam.jpg)                                                                                   | Vietnam (place not given by the source)                                             | Jeff Caylor                                           | CC BY 2.0     |
-| [Flooded rice terraces reflecting a sunset sky](https://commons.wikimedia.org/wiki/File:Vietnam_rice_terrace_with_water_reflection.jpg)                                                              | Vietnam (place not given by the source)                                             | Vietnam Photo Tours                                   | An Bui        | CC BY 2.0 |
+| [Flooded rice terraces reflecting a sunset sky](https://commons.wikimedia.org/wiki/File:Vietnam_rice_terrace_with_water_reflection.jpg)                                                              | Vietnam (place not given by the source)                                             | Vietnam Photo Tours \| An Bui                         | CC BY 2.0     |
 | [Several farmers in conical hats working a green paddy](<https://commons.wikimedia.org/wiki/File:Paddy_field_(8586596737).jpg>)                                                                      | Vietnam (place not given by the source)                                             | Jean-Marc Astesana from Voisins le Bretonneux, France | CC BY-SA 2.0  |
 
 Source pages: `frontend/src/data/generated/media.json` (field `source_url`).
