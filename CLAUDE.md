@@ -14,9 +14,10 @@ This file must work on its own: in a cloud session only this repository is avail
 
 ## Specs
 
-The product, requirements, design, data contracts and ML specs live in the team's planning repository until
-they are copied into `docs/` at the end of the event. Read them there; if it is not available in this session,
-ask the team before any change that depends on them. If a spec does not say what should happen, ask the team.
+The product, requirements, design, data contracts and ML specs are in `docs/` (PRD, SRS, ARCHITECTURE, ML-DESIGN,
+DATA-DICTIONARY, UI-UX-SPEC, DATA-SOURCES, REFERENCES, GLOSSARY, TEST-PLAN, SETUP), copied from the team's planning
+repository on 2026-11-15. The decision log stays in the planning repository; if it is not available in this session,
+ask the team before any change that depends on a decision. If a spec does not say what should happen, ask the team.
 Never let the code decide.
 
 ## Branches, commits and merging
@@ -94,6 +95,23 @@ The `task` skill runs this loop for every task; follow it by hand only for work 
 3. Before a screen counts as done: a Playwright check at 360 x 740 and `/cognitive-walkthrough` as a first-time
    farmer with an Android phone, little technical experience and nothing to type. The walkthrough is an
    expert-method review; never call it user testing.
+
+## Working rules after the Hanoi submission (team, 2026-11-15)
+
+- `production` stays at the submitted commit (tag `submitted-hanoi`) until member A says the local event is over.
+  New work merges into `main` through the gate and is not deployed.
+- No rushing: the global submission is far off. Work one task at a time; at most one helper agent runs alongside
+  the main session, and only on a task that does not depend on the main session's current work.
+- Test in proportion: for a small change, run locally only the tests that cover it, plus lint, format and type
+  check of the touched area and the build for frontend code. Run the full suites only when the change can cascade
+  (shared components, the API contract, rules files, the engine, build settings). CI runs everything on the pull
+  request; the gate still needs it green.
+- A teammate's work reaches `main` with their own commits (merge their branch; never copy their files into a commit
+  of yours). Pull request titles and descriptions about it stay neutral and factual.
+- Before larger UI changes: a roleplay usability audit of the app (a farmer on a basic Android phone with slow
+  internet, an extension officer, a commune or district official, a judge), with its ranked findings shown to member
+  A first. The app must serve farmers, not only impress judges. Sources may be made less prominent (one tap away),
+  but every displayed number keeps its source unless member A decides otherwise.
 
 ## Model choice
 
