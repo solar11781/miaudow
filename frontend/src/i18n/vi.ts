@@ -433,6 +433,8 @@ export const vi = {
       yourPrice: 'Giá bán của bạn',
       yourCost: 'Chi phí của bạn',
       invalid: 'Hãy nhập số nguyên, từ 0 trở lên, tối đa 9 chữ số. Số này chưa được dùng.',
+      invalidCost:
+        'Hãy nhập số triệu đồng, từ 0 trở lên, tối đa 6 chữ số trước dấu phẩy, ví dụ 24,7. Số này chưa được dùng.',
       title: 'Số của bạn',
       revenue: 'Tổng thu theo giá của bạn, chưa trừ chi phí',
       margin: 'Còn lại sau chi phí bạn nhập',
