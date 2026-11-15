@@ -348,7 +348,7 @@ function Cores() {
                   <dd>{c.limit}</dd>
                 </div>
               </dl>
-              <Link to={c.to} className={s.coreLink} viewTransition>
+              <Link to={c.to} className={s.coreLink}>
                 {t.home.coreOpen(c.where)}
                 <Icon name="arrowRight" size={18} />
               </Link>
