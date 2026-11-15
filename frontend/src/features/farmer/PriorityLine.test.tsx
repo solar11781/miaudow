@@ -26,7 +26,7 @@ function response(): CompareResponse {
     const p = res.plans.find((x) => x.id === id);
     if (!p) throw new Error(id);
     p.name = { vi: name, en: name };
-    p.money.total = v(total, unit('nghìn đồng/ha', 'thousand đ/ha'));
+    p.money.total = v(total, unit('nghìn đồng/ha', 'thousand VND/ha'));
     p.land.crops_in_year = { ...p.land.crops_in_year, value: v(crops, unit('loại cây', 'crops')) };
     p.land.living_days = { ...p.land.living_days, value: days ? v(days, unit('ngày', 'days')) : null };
   };
