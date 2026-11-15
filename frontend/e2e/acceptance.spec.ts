@@ -62,15 +62,9 @@ test('T2 no slider on any page', async ({ page }) => {
   }
 });
 
-// pages that fail T9 on main today (2026-11-15); each fixme names what is cut at 180 px
-const ZOOM_GAPS: Record<string, string> = {
-  '/#/tro-ly': 'the copilot page header cuts its title and lead at 180 px',
-};
-
 // H9: 200% zoom of a 360 x 740 phone is a 180 x 370 CSS px viewport
 for (const url of PAGES) {
   test(`T9 zoom at 200% nothing is clipped and every control is reachable (${url})`, async ({ page }) => {
-    test.fixme(url in ZOOM_GAPS, ZOOM_GAPS[url]);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 180, height: 370 });
     await page.goto(url);
