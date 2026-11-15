@@ -156,7 +156,7 @@ def test_a_file_with_broken_syntax_fails_naming_the_file(
 def test_a_privacy_notice_without_paragraphs_or_english_fails_naming_the_file(root: Path) -> None:
     # H15: every shown text has both languages; a notice with nothing to say must not start the app
     path = root / "rules" / "privacy.yaml"
-    head = "title: {vi: a, en: b}\ndraft_note: {vi: c, en: d}\n"
+    head = "title: {vi: a, en: b}\nback: {vi: c, en: d}\n"
     for text in (head + "paragraphs: []\n", head + "paragraphs: [{vi: e}]\n"):
         path.write_text(text, encoding="utf-8")
         with pytest.raises(ValueError, match=r"privacy\.yaml"):

@@ -187,16 +187,34 @@ async def _unprocessable(_: Request, exc: RequestValidationError) -> JSONRespons
     return JSONResponse({"detail": detail}, status_code=422)
 
 
+# The app's colours and UI font stack (frontend/src/styles/tokens.css): night over the field by default, the light
+# theme when the phone asks for it. The app's font files have build-hashed names, so the system fonts apply; headings
+# use them too, since the display stack's Georgia fallback breaks Vietnamese accents.
+_PRIVACY_STYLE = (
+    ":root{color-scheme:dark;--bg:#0b1a12;--fg:#f6f4ec;--fg-2:#dfe5d9;--line:rgba(244,242,234,.12);--link:#e8b94e}"
+    "@media (prefers-color-scheme: light){:root{color-scheme:light;--bg:#f1f3ee;--fg:#0f1511;--fg-2:#2f3a32;"
+    "--line:rgba(15,21,17,.1);--link:#19331f}}"
+    "body{margin:0;background:var(--bg);color:var(--fg-2);font:17px/1.6 'Be Vietnam Pro',system-ui,-apple-system,"
+    "'Segoe UI',Roboto,'Noto Sans',Arial,sans-serif}"
+    "main{max-width:40rem;margin:0 auto;padding:8px 16px 48px}"
+    "nav{display:flex;flex-wrap:wrap;column-gap:24px;border-bottom:1px solid var(--line)}"
+    "a{color:var(--link);text-underline-offset:.22em;display:inline-flex;align-items:center;min-height:44px}"
+    "h1,h2{color:var(--fg);line-height:1.25;margin:24px 0 8px}"
+    "section+section{border-top:1px solid var(--line);margin-top:32px}"
+)
+
+
 def _privacy_page(texts: PrivacyTexts) -> bytes:
-    """The privacy notice as one page in both languages, with no script, style or third-party resource (H14)."""
+    """The privacy notice as one page in both languages, with no script or third-party resource (H14)."""
     parts = [
         '<!doctype html><html lang="vi"><head><meta charset="utf-8">',
         '<meta name="viewport" content="width=device-width, initial-scale=1">',
-        f"<title>{html.escape(texts.title['vi'])}</title></head><body><main>",
+        f"<title>{html.escape(texts.title['vi'])}</title><style>{_PRIVACY_STYLE}</style></head><body><main>",
+        f'<nav><a href="/" lang="vi">{html.escape(texts.back["vi"])}</a>',
+        f'<a href="/#/home" lang="en">{html.escape(texts.back["en"])}</a></nav>',
     ]
     for lang, heading in (("vi", "h1"), ("en", "h2")):
         parts.append(f'<section lang="{lang}"><{heading}>{html.escape(texts.title[lang])}</{heading}>')
-        parts.append(f"<p><em>{html.escape(texts.draft_note[lang])}</em></p>")
         parts += [f"<p>{html.escape(p[lang])}</p>" for p in texts.paragraphs]
         parts.append("</section>")
     parts.append("</main></body></html>")
