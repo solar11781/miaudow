@@ -1076,7 +1076,7 @@ export const en: Messages = {
     team: 'Team Miaudow · NASA Space Apps Challenge 2026, Hanoi · Field Shift challenge',
     photos: 'Photographs and licences',
     photosLead:
-      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” (the words are also printed on the picture) are not photographs of Nghệ An.',
+      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghệ An.',
     licence: 'Licence',
     source: 'Original file page',
     built: 'Data generated',
