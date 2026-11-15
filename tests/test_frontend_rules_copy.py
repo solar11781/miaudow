@@ -148,6 +148,9 @@ KNOWN = {
     "source.R-P02.url": "intended (D-191: a page people can read vs the data address): sources.ts tapchi.vaas.vn article page vs sources.yaml vjol.info.vn download link",
     "source.R-N01.url": "intended (D-191: a page people can read vs the data address): sources.ts https://power.larc.nasa.gov/ vs sources.yaml .../api/temporal/daily/point",
     "source.R-N02.url": "intended (D-191: a page people can read vs the data address): sources.ts doi.org/10.5067/MODIS/MCD12C1.061 vs sources.yaml cmr.earthdata.nasa.gov granules",
+    "source.R-D05.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-D05 credits data bundled in the frontend and is in docs/REFERENCES.md",
+    "source.R-N11.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-N11 credits data bundled in the frontend and is in docs/REFERENCES.md",
+    "source.R-D04.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-D04 credits data bundled in the frontend and is in docs/REFERENCES.md",
 }
 
 PAIRS = pairs()

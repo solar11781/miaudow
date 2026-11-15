@@ -266,33 +266,6 @@
        en: "A province average yield, mostly irrigation-served rice; not the yield of one field."}
   url: "https://pxweb.nso.gov.vn/pxweb/en/"
   nso_credit: true
-- id: R-D04
-  citation:
-    vi: "Runfola, D. và cs. (2020). geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866. Bộ dữ liệu gbOpen VNM ADM1"
-    en: "Runfola, D. et al. (2020). geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): e0231866. Dataset gbOpen VNM ADM1"
-  study_type: {vi: "Bản đồ ranh giới hành chính", en: "Administrative boundary map"}
-  place_years: {vi: "Ranh giới tỉnh Việt Nam; bản phát hành 9469f09", en: "Vietnam province boundaries; release 9469f09"}
-  read_status: "READ (data, licence field)"
-  full_text_read: true
-  limitations:
-    - {vi: "Ranh giới trước sắp xếp năm 2025; đã làm đơn giản để vẽ.",
-       en: "Boundary before the 2025 reform; simplified for drawing."}
-  url: "https://www.geoboundaries.org/api/current/gbOpen/VNM/ADM1/"
-  nso_credit: false
-- id: R-D05
-  citation:
-    vi: "Climate Hazards Center, UC Santa Barbara. CHIRPS v3.0 (Climate Hazards Center InfraRed Precipitation with Station data), theo tháng"
-    en: "Climate Hazards Center, UC Santa Barbara. CHIRPS v3.0 (Climate Hazards Center InfraRed Precipitation with Station data), monthly"
-  study_type: {vi: "Số liệu mưa từ vệ tinh, hiệu chỉnh bằng trạm đo", en: "Satellite rainfall calibrated with station data"}
-  place_years: {vi: "Các điểm ảnh 0,05° thuộc Nghệ An trong 5 ô lưới NASA POWER, và điểm ảnh ở Lưu Sơn; theo tháng 1991-2024",
-                en: "The 0.05° Nghe An pixels inside the 5 NASA POWER cells, and the Luu Son pixel; monthly 1991-2024"}
-  read_status: "READ (data)"
-  full_text_read: true
-  limitations:
-    - {vi: "Lưới 0,05° (khoảng 5 km) vẫn lớn hơn một thửa ruộng; không trộn với NASA POWER.",
-       en: "A 0.05° grid (about 5 km) is still larger than a field; never merged with NASA POWER."}
-  url: "https://www.chc.ucsb.edu/data/chirps3"
-  nso_credit: false
 - id: R-D06
   citation:
     vi: "ESA Copernicus Sentinel-2 Mức 2A (MSI), qua Element 84 Earth Search v1 (bộ sentinel-2-l2a, lưu trên AWS Open Data); thông báo pháp lý: Copernicus Sentinel Data Legal Notice"
@@ -565,20 +538,6 @@
   limitations:
     - {vi: "Chúng tôi chỉ đọc trang mô tả, không tải số liệu.", en: "We read only the mission page, not the data."}
   url: "https://gedi.umd.edu/mission/mission-overview/"
-  nso_credit: false
-- id: R-N11
-  citation:
-    vi: "Didan, K. (2021). MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061 (MOD13Q1), NASA LP DAAC, doi:10.5067/MODIS/MOD13Q1.061"
-    en: "Didan, K. (2021). MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061 (MOD13Q1), NASA LP DAAC, doi:10.5067/MODIS/MOD13Q1.061"
-  study_type: {vi: "Chỉ số thực vật từ vệ tinh của NASA", en: "NASA satellite vegetation index"}
-  place_years: {vi: "81 điểm ảnh 250 m quanh xã Lưu Sơn (cũ), Đô Lương; 2015-2024, 16 ngày một lần",
-                en: "81 pixels of 250 m around former Luu Son commune, Do Luong; 2015-2024, every 16 days"}
-  read_status: "READ (data)"
-  full_text_read: true
-  limitations:
-    - {vi: "Độ xanh không phải năng suất hay sâu bệnh; một điểm ảnh gồm nhiều thửa.",
-       en: "Greenness is not yield or pests; one pixel mixes several fields."}
-  url: "https://doi.org/10.5067/MODIS/MOD13Q1.061"
   nso_credit: false
 - id: R-P02
   citation:
