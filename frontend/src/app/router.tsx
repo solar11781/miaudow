@@ -1,6 +1,5 @@
 import { useLayoutEffect } from 'react';
 import { Navigate, Outlet, createHashRouter, type RouteObject } from 'react-router-dom';
-import { HomePage } from '../features/home/HomePage';
 import { Layout } from './Layout';
 import { EN_HOME, EN_SEGMENT } from './paths';
 import { NotFound, RouteError } from './RouteError';
@@ -69,17 +68,18 @@ function InEnglish() {
   return <Outlet />;
 }
 
-// Hash routing: works from any static host or sub-folder without server rewrites. The home page ships in the main
-// bundle (it is the usual landing page, one network round trip less); every other area loads on demand. The English
-// paths render the same components rather than redirecting, so the address the farmer shares stays in English.
+// Hash routing: works from any static host or sub-folder without server rewrites. Every area loads on demand, the
+// home page too: it carries the motion library, which the farmer path must not download (H1). The English paths render
+// the same components rather than redirecting, so the address the farmer shares stays in English.
+const home = async () => ({ Component: (await import('../features/home/HomePage')).HomePage });
 export const router = createHashRouter([
   {
     element: <Layout />,
     errorElement: <RouteError />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, lazy: home },
       ...pages('vi'),
-      { element: <InEnglish />, children: [{ path: EN_HOME.slice(1), element: <HomePage /> }, ...pages('en')] },
+      { element: <InEnglish />, children: [{ path: EN_HOME.slice(1), lazy: home }, ...pages('en')] },
       { path: 'hoi', element: <Navigate to="/tro-ly" replace /> },
       { path: '*', element: <NotFound /> },
     ],
