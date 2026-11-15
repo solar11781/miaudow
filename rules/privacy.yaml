@@ -3,9 +3,9 @@
 # answers are stored (§12c; with the typed prices and costs, D-180), in a database on Railway (§12c) in the Singapore region (§11 privacy settings), the
 # delete-everything button (§12c), the Google script only on the two sign-in pages (§12c, H14), answers in the page
 # address after "#" (§6b), no request log of our server and Railway's edge logs of 7 days (§11 privacy settings).
-# All text is a draft for the copy review.
+# Member A accepted the text on 2026-11-15. "back" is the app's own go-home link text (frontend/src/i18n, goHome).
 title: {vi: "Quyền riêng tư khi đăng nhập", en: "Privacy when you sign in"}
-draft_note: {vi: "Bản nháp, chờ duyệt lời văn.", en: "Draft, awaiting the copy review."}
+back: {vi: "Về trang chủ", en: "Go home"}
 paragraphs:
   - vi: "Mọi trang đều dùng được mà không cần đăng nhập. Khi bạn không đăng nhập, câu trả lời chỉ nằm trong địa chỉ trang (sau dấu #); máy chủ của chúng tôi không lưu câu trả lời và không ghi nhật ký yêu cầu."
     en: "Every page works without signing in. When you do not sign in, your answers stay only in the page address (after the # sign); our server does not store them and keeps no request log."
