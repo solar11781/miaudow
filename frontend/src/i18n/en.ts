@@ -45,6 +45,9 @@ export const en: Messages = {
     back: 'Back',
     next: 'Continue',
     source: 'Source',
+    /** The singular of an API unit after the number 1 (D-192). */
+    unitOfOne: (unit: string) => (unit === 'crops' ? 'crop' : unit),
+    sourceFor: (name: string) => `See the source: ${name}`,
     open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',
@@ -227,9 +230,10 @@ export const en: Messages = {
       'The machine-learning model was tested on 2016–2024, years it had never seen, against simple ways of guessing. The result is published as it is.',
     // chosen per season from the run's weather claim and season status (src/domain/rice.ts modelVerdict)
     honestyNoHelp: 'NASA weather did not help predict better than the model without weather.',
-    honestyHelps: 'The model with NASA weather predicts better, by a small margin.',
-    honestyHidden: (season: string) => `No ${season} prediction is shown.`,
-    honestyShown: (season: string) => `Predictions for ${season} are shown next to the real values.`,
+    honestyHelps: 'NASA weather helps predict better than the model without weather, but only slightly.',
+    honestyHidden: (season: string) => `No model estimate is shown for ${season}.`,
+    honestyShown: (season: string) =>
+      `Model estimates for ${season} in the test years are shown next to the real values.`,
     vsBnw: 'vs BNW',
     skillVsBnw: 'skill vs BNW',
     honestySummer: 'Too few provinces have data to test it, so only the real values are shown.',
@@ -296,6 +300,7 @@ export const en: Messages = {
     yearsPicked: (n: number) => `${n} years picked`,
     yearChipLegend: 'Gold line under each year: share of farmland meeting the drought (rain part) condition that year.',
     yearRowLabel: 'Share of Nghe An farmland meeting each condition while crops were in the field',
+    legendTitle: 'Weather conditions in Decision 18/2021',
     limitsTitle: 'Limits of these numbers',
     cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghe An farmland, each about 55 × 66 km.`,
     limits: [
@@ -335,11 +340,13 @@ export const en: Messages = {
     datesAsReported: 'dates as reported',
     overlapNote: 'Two crops sit on separate lanes because the reported dates overlap.',
     rows: {
+      calendar: '12-month calendar',
       money: 'Profit in the trial, not on your own field',
       weather: 'Bad weather while the crop is in the field',
       weatherNote:
         'Share of Nghe An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation',
+      droughtPointer: (row: string) => `Drought: see “${row}” below.`,
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
       soilNote: 'NASA model value, not a field measurement. 100% is soil full of water.',

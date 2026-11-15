@@ -46,7 +46,10 @@ async function openPlans(page: Page): Promise<Compare> {
 
 // the per-year share tables fold (UI-UX-SPEC section 9); open them so their buttons count too
 async function openFolds(page: Page) {
-  const folded = page.locator('main button[aria-controls$="-years"][aria-expanded="false"]');
+  // the card rows (D-187 item 4) and the per-year tables inside them (D-170)
+  const folded = page.locator(
+    'main button:is([aria-controls$="-body"], [aria-controls$="-years"])[aria-expanded="false"]',
+  );
   await folded.evaluateAll((folds) => folds.forEach((b) => (b as HTMLButtonElement).click()));
   await expect(folded).toHaveCount(0);
 }
@@ -198,17 +201,25 @@ test('T18 every condition share on the cards opens the rule text, both NASA sour
 });
 
 // UI-UX-SPEC section 8 item 2 places a legend with one "?" button per rule (`legend-<rule code>`) on /nam
-test.fixme('T18 every legend "?" button on the past-years page opens the rule sheet', async ({ page }) => {
-  // fixme: /nam has no legend and no legend-<rule code> buttons, so this part of T18 cannot run as written
+test('T18 every legend "?" button on the past-years page opens the rule sheet', async ({ page }) => {
+  const loaded = page.waitForResponse((r) => r.url().includes('/api/past-years'));
   await page.goto(YEARS_URL);
+  const res = (await (await loaded).json()) as Pick<Compare, 'rules' | 'sources'>;
   const legend = page.locator('[data-testid^="legend-"]');
-  await expect(legend).toHaveCount(5);
-  for (const button of await legend.all()) {
-    await button.click();
-    const sheet = page.getByTestId('source-sheet');
-    await expect(sheet).toContainText(RULE_TEXT);
-    await expect(sheet).toContainText(COMPUTED_NOTE);
+  await expect(legend).toHaveCount(res.rules.length);
+  const sheet = page.getByTestId('source-sheet');
+  for (const rule of res.rules) {
+    await page.getByTestId(`legend-${rule.code}`).click();
+    await expect(sheet).toBeVisible();
+    for (const part of [
+      RULE_TEXT,
+      rule.rule_text.vi,
+      ...['R-A01', 'R-N01', 'R-N02'].map((id) => res.sources[id]?.citation.vi ?? id),
+      COMPUTED_NOTE,
+    ])
+      await expect(sheet, `${rule.code}: ${part}`).toContainText(part);
     await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
   }
 });
 
@@ -224,6 +235,9 @@ test('T26 every stability block shows its years count and its scope', async ({ p
       .filter({ hasText: yearsCount(years_count) })
       .filter({ hasText: scope.vi });
     await expect(lines, `card ${id}`).toHaveCount(same.length);
+    // D-187 item 4: the weather row folds behind its heading button
+    const fold = page.getByTestId(`card-${id}-row-weather`).locator('h3 > button');
+    if ((await fold.getAttribute('aria-expanded')) === 'false') await fold.click();
     await expect(lines.first()).toBeVisible();
   }
 });

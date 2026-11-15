@@ -46,9 +46,15 @@ export function decisionPlan(id: PlanId): DecisionPlan | undefined {
   return DECISION.plans[RULEBOOK_ID[id]];
 }
 
-/** The questions for the extension officer of a plan by its API id, as the officer page lists them (the plan cards). */
+/** The questions for the extension officer of a plan by its API id, as the officer page lists them. */
 export function officerQuestions(id: ApiPlanId): Bilingual[] {
   return DECISION.plans[id]?.questions_for_officer ?? [];
+}
+
+/** A plan card's own questions: those every plan shares are asked once, in the plans page's closing box (D-191). */
+export function cardQuestions(id: ApiPlanId): Bilingual[] {
+  const all = Object.values(DECISION.plans);
+  return officerQuestions(id).filter((q) => !all.every((p) => p.questions_for_officer.some((x) => x.en === q.en)));
 }
 
 export const MISSING_INFORMATION = DECISION.missing_information;

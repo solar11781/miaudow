@@ -34,7 +34,7 @@ export interface SourceRecord {
   /** The row of the team's source registers (REFERENCES.md R-ids, EXPERIMENTS.md E-ids). */
   registerId: string;
   kind: EvidenceKind;
-  short: string;
+  short: Bilingual;
   title: Bilingual;
   publisher: Bilingual;
   where: Bilingual;
@@ -69,6 +69,8 @@ export interface ApiSourceRef {
   ruleText?: string;
   /** The full quote a plain card line stands for (D-187), shown first. */
   quote?: string;
+  /** The value in plain words, right under the number (D-192). */
+  plain?: string;
   /** Closing line, e.g. that a share is our computation, not an official record (H19). */
   note?: string;
 }
