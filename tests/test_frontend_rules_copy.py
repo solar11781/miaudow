@@ -139,18 +139,15 @@ def pairs() -> list[tuple[str, object, object]]:
 
 # Differences found on 2026-11-15, left for a team decision (field: frontend value vs rules value).
 KNOWN = {
-    "crop.blackbean.name": "plans.ts vi 'Đậu đen' vs crops.yaml vi 'Đậu đen xanh lòng'",
-    "crop.maize.name": "plans.ts vi 'Ngô hạt' vs crops.yaml vi 'Ngô thương phẩm'",
-    "crop.chili.name": "plans.ts vi 'Ớt' vs crops.yaml vi 'Ớt chỉ thiên'",
-    "plan.cc2.cc2_spring_chili.variety": "plans.ts 'Chỉ thiên F1' vs rotations.yaml 'F1'",
-    "plan.cc3.cc3_summer_autumn_black_sesame.variety": "plans.ts 'Vừng đen' vs rotations.yaml null",
-    "plan.cc3.cc3_autumn_winter_pumpkin.variety": "plans.ts 'F1 Flato 757' vs rotations.yaml 'F1 Flato 757 - Én vàng'",
-    "source.R-P02.url": "sources.ts tapchi.vaas.vn article page vs sources.yaml vjol.info.vn download link",
-    "source.R-N01.url": "sources.ts https://power.larc.nasa.gov/ vs sources.yaml .../api/temporal/daily/point",
-    "source.R-N02.url": "sources.ts doi.org/10.5067/MODIS/MCD12C1.061 vs sources.yaml cmr.earthdata.nasa.gov granules",
-    "source.R-D05.registered": "sources.ts chirps-v3 has registerId R-D05; sources.yaml has no R-D05 entry",
-    "source.R-N11.registered": "sources.ts modis-ndvi has registerId R-N11; sources.yaml has no R-N11 entry",
-    "source.R-D04.registered": "sources.ts geoboundaries has registerId R-D04; sources.yaml has no R-D04 entry",
+    "crop.blackbean.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Đậu đen' vs crops.yaml vi 'Đậu đen xanh lòng'",
+    "crop.maize.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Ngô hạt' vs crops.yaml vi 'Ngô thương phẩm'",
+    "crop.chili.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Ớt' vs crops.yaml vi 'Ớt chỉ thiên'",
+    "plan.cc2.cc2_spring_chili.variety": "to align (D-191) after the D-190 change: plans.ts 'Chỉ thiên F1' vs rotations.yaml 'F1'",
+    "plan.cc3.cc3_summer_autumn_black_sesame.variety": "to align (D-191) after the D-190 change: plans.ts 'Vừng đen' vs rotations.yaml null",
+    "plan.cc3.cc3_autumn_winter_pumpkin.variety": "to align (D-191) after the D-190 change: plans.ts 'F1 Flato 757' vs rotations.yaml 'F1 Flato 757 - Én vàng'",
+    "source.R-P02.url": "intended (D-191: a page people can read vs the data address): sources.ts tapchi.vaas.vn article page vs sources.yaml vjol.info.vn download link",
+    "source.R-N01.url": "intended (D-191: a page people can read vs the data address): sources.ts https://power.larc.nasa.gov/ vs sources.yaml .../api/temporal/daily/point",
+    "source.R-N02.url": "intended (D-191: a page people can read vs the data address): sources.ts doi.org/10.5067/MODIS/MCD12C1.061 vs sources.yaml cmr.earthdata.nasa.gov granules",
 }
 
 PAIRS = pairs()
