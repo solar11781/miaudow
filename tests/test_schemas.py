@@ -101,6 +101,7 @@ CONTRACT_FIELDS = {
     "CoverageCell": ["row_key", "crop", "axis", "text", "source_ids"],
     "ExplainTerm": ["key", "title", "text", "source_ids"],
     "NotUsedDataset": ["dataset", "reason", "source_ids"],  # D-165 (UI-UX-SPEC §11b item 4b)
+    "SourcedLine": ["source_ids"],  # D-63: the sources of the PICSA sentence
     "MethodResponse": [
         "test_years",
         "freeze_commit",
@@ -112,6 +113,7 @@ CONTRACT_FIELDS = {
         "explain_terms",
         "limitations",
         "datasets_not_used",  # D-165
+        "picsa",  # D-63 (UI-UX-SPEC §11b item 5)
         "rain_check",
         "sources",
     ],
@@ -394,8 +396,9 @@ def method(coverage: list[tuple[str, str]], keys: list[str] = EXPLAIN_KEYS) -> d
         "explain_terms": [{"key": k, "title": T, "text": T, "source_ids": []} for k in keys],
         "datasets_not_used": [],
         "limitations": [],
+        "picsa": {"source_ids": ["R-U19"]},
         "rain_check": None,
-        "sources": {},
+        "sources": {"R-U19": source("R-U19")},
     }
 
 
@@ -405,6 +408,12 @@ def test_method_coverage_cells_are_unique_and_explain_terms_ordered() -> None:
     for bad in (method([("rice", "money"), ("rice", "money")]), method([], EXPLAIN_KEYS[::-1])):
         with pytest.raises(ValidationError):
             s.MethodResponse.model_validate(bad)
+
+
+def test_the_picsa_sentence_needs_at_least_one_source() -> None:
+    # H5: nothing shown without a source; D-63: the PICSA sentence cites R-U19
+    with pytest.raises(ValidationError):
+        s.SourcedLine.model_validate({"source_ids": []})
 
 
 def test_a_dataset_not_used_needs_at_least_one_source() -> None:

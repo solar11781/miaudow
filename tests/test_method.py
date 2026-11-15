@@ -181,6 +181,16 @@ def test_the_ndvi_texts_say_what_the_app_shows(resp: dict) -> None:
     assert "không con số nào" not in landsat["vi"]
 
 
+def test_the_picsa_sentence_cites_the_picsa_field_manual(resp: dict) -> None:
+    # UI-UX-SPEC §11b item 5 and D-63: the PICSA sentence (key method.picsa) has the source R-U19
+    assert resp["picsa"] == {"source_ids": ["R-U19"]}
+    facts = resp["sources"]["R-U19"]
+    # REFERENCES.md row R-U19: Dorward, Clarkson, Stern (2015) PICSA Field Manual, its link and status
+    assert facts["citation"]["en"].startswith("Dorward, P., Clarkson, G., Stern, R. (2015) PICSA Field Manual")
+    assert facts["url"] == "https://cgspace.cgiar.org/items/4788fe81-7ae4-48f4-b4eb-731616823808"
+    assert facts["read_status"] == "READ (licence not checked)"
+
+
 def test_rain_check_is_not_run(resp: dict) -> None:
     assert resp["rain_check"] is None  # D-135: null = not run (queue item 45 not built)
 

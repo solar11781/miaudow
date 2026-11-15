@@ -351,6 +351,10 @@ function Method({ res }: { res: MethodResponse }) {
             </li>
           ))}
           <li>
+            <span>{t.method.picsa}</span>
+            <SourceValue {...refs.sources(res.picsa.source_ids, t.common.source, 'PICSA')} />
+          </li>
+          <li>
             <span>{t.method.noUserTest}</span>
           </li>
         </ul>

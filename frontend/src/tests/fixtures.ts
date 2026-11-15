@@ -126,6 +126,7 @@ export const method = () => ({
   explain_terms: EXPLAIN_KEYS.map((key) => ({ key, title: text, text, source_ids: ['R-P02'] })),
   limitations: [text],
   datasets_not_used: [{ dataset: 'x', reason: text, source_ids: ['R-P02'] }],
+  picsa: { source_ids: ['R-P02'] },
   rain_check: null,
   sources,
 });
