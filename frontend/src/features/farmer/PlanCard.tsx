@@ -14,6 +14,7 @@ import type {
 import { Icon, type IconName } from '../../design-system/Icon';
 import { displayUnit } from '../../domain/format';
 import { consideration } from '../../domain/considerations';
+import { officerQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
@@ -614,6 +615,7 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
   const t = useT();
   const pick = usePick();
   const { why } = plan;
+  const questions = officerQuestions(plan.id);
   return (
     <>
       <Row hook={`card-${plan.id}-row-checks`} icon="alert" title={t.farmer.rows.checks}>
@@ -641,6 +643,17 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
           <p className={s.why}>{t.farmer.noneListed}</p>
         )}
         <p className={s.why}>{t.farmer.localReview}</p>
+        {/* the officer page's questions for this plan, so the farmer knows what to ask (D-187) */}
+        {questions.length > 0 && (
+          <div className={s.sub}>
+            <p className={s.subHead}>{t.farmer.askOfficer}</p>
+            <ol className={s.questions}>
+              {questions.map((q) => (
+                <li key={q.vi}>{pick(q)}</li>
+              ))}
+            </ol>
+          </div>
+        )}
       </Row>
       <details className={s.more}>
         <summary>

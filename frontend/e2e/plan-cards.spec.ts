@@ -57,3 +57,14 @@ test('D-187 a consideration is one plain line and its quote opens in the source 
     'Tổng chi phí trồng lạc và ớt chỉ thiên F1 thường cao gấp 2 - 3 lần so với trồng lúa.',
   );
 });
+
+// D-187 (F5): each card lists the officer page's questions for its plan
+test('D-187 each card lists the questions for the officer of its plan', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  for (const id of IDS) {
+    const checks = page.getByTestId(`card-${id}-row-checks`);
+    await expect(checks.getByText(vi.farmer.askOfficer, { exact: true }), id).toBeVisible();
+    expect(await checks.locator('ol li').count(), id).toBeGreaterThan(1);
+  }
+  await expect(page.getByTestId('card-cc4-row-checks')).toContainText('hợp đồng thu mua ngô sinh khối');
+});

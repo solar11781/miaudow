@@ -10,7 +10,7 @@ import { NO_OWN } from '../../domain/farmerState';
 import { vi } from '../../i18n/vi';
 import { en } from '../../i18n/en';
 import { SOURCES } from '../../domain/sources';
-import { rulebookPlan } from '../../data/rulebook';
+import { decisionPlan, rulebookPlan } from '../../data/rulebook';
 
 const own = { values: NO_OWN, set: () => undefined };
 const ROWS = ['header', 'calendar', 'money', 'weather', 'water', 'land', 'checks', 'why', 'share'];
@@ -694,5 +694,37 @@ describe('considerations', () => {
       { text: { vi: 'Một câu trích khác', en: 'Another quote' }, source_ids: ['R-P02'] },
     ]).textContent;
     expect(text).toContain('Một câu trích khác');
+  });
+});
+
+// D-187 (roleplay audit 2026-11-15, F5): each card lists the questions for the extension officer that the officer
+// page shows for the same plan (the API's decision core, data/canonical/decision.json), not new text
+describe('questions for the officer', () => {
+  afterEach(cleanup);
+  const questions = (id: 'usual' | 'cc1') => {
+    const res = validateCompare(compare(), body);
+    const plan = res.plans.find((p) => p.id === id);
+    if (!plan) throw new Error('no plan');
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <PlanCard plan={plan} res={res} priority="income" own={own} onShare={async () => true} />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const row = document.querySelector(`[data-testid="card-${id}-row-checks"]`);
+    if (!row) throw new Error('no checks row');
+    return [...row.querySelectorAll('ol li')].map((li) => li.textContent);
+  };
+  it('lists the officer page questions of the plan, in their order', () => {
+    expect(questions('cc1')).toEqual(decisionPlan('cc1')?.questions_for_officer.map((q) => q.vi));
+    cleanup();
+    expect(questions('usual')).toEqual(decisionPlan('cc5')?.questions_for_officer.map((q) => q.vi));
+  });
+  it('heads them with the take-to-the-officer label', () => {
+    questions('cc1');
+    const row = document.querySelector('[data-testid="card-cc1-row-checks"]');
+    expect(row?.textContent).toContain(vi.farmer.askOfficer);
+    expect(decisionPlan('cc1')?.questions_for_officer.length).toBeGreaterThan(0);
   });
 });

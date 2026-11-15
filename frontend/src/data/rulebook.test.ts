@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { browserLang } from '../app/settings';
 import { PLANS } from '../domain/plans';
-import { decisionPlan, MISSING_INFORMATION, rulebookPlan } from './rulebook';
+import { decisionPlan, MISSING_INFORMATION, officerQuestions, RULEBOOK_ID, rulebookPlan } from './rulebook';
 
 describe('governed plan text', () => {
   it('every plan has its rulebook entry and decision text', () => {
@@ -32,5 +32,13 @@ describe('starting language (H16)', () => {
     expect(browserLang(['vi'])).toBe('vi');
     expect(browserLang(['en-GB', 'fr'])).toBe('en');
     expect(browserLang(undefined)).toBe('en');
+  });
+});
+
+// D-187 (F5): the farmer's cards read the officer questions by the API's plan id
+describe('questions for the officer by API plan id', () => {
+  it('are the decision text of the same plan', () => {
+    for (const p of PLANS)
+      expect(officerQuestions(RULEBOOK_ID[p.id]), p.id).toEqual(decisionPlan(p.id)?.questions_for_officer);
   });
 });
