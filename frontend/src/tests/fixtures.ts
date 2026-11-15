@@ -21,10 +21,10 @@ export const moneyItem = (crop_key: string, yieldT: string, price: string, profi
     crop_key,
     crop: text,
     season: 'spring' as const,
-    profit: v(profit, 'nghìn đồng/ha', 'thousand đ/ha'),
-    cost: cost === null ? null : v(cost, 'nghìn đồng/ha', 'thousand đ/ha'),
+    profit: v(profit, 'nghìn đồng/ha', 'thousand VND/ha'),
+    cost: cost === null ? null : v(cost, 'nghìn đồng/ha', 'thousand VND/ha'),
     yield: v(yieldT, 'tấn/ha', 't/ha'),
-    price: v(price, 'đồng/kg', 'đ/kg'),
+    price: v(price, 'đồng/kg', 'VND/kg'),
     flag: null,
   };
 };

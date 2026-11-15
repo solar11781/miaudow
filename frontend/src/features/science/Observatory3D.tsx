@@ -4,7 +4,8 @@ import { cellMagnitude, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
 import { Grid3D } from './Grid3D';
-import { createObservatory, hasWebGL, PLACES, WEIGHTED, type Observatory } from './observatoryScene';
+import { MAP_PLACES } from '../../data/places';
+import { createObservatory, hasWebGL, WEIGHTED, type Observatory } from './observatoryScene';
 import s from './Observatory3D.module.css';
 
 /**
@@ -105,9 +106,9 @@ export function Observatory3D({
               {f.n(cellMagnitude(magKey, c.id, year))}
             </span>
           ))}
-          {PLACES.map((p) => (
+          {MAP_PLACES.map((p) => (
             <span key={p.id} data-place={p.id} className={s.place}>
-              {lang === 'vi' ? p.vi : p.en}
+              {t.places[p.name]}
             </span>
           ))}
         </div>

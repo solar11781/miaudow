@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
@@ -63,6 +63,33 @@ function Cards({ res }: { res: CompareResponse }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // the cards crossing the middle of the screen (one on a phone, a row of two on a wide screen) are in view; the jump
+  // strip marks them (D-187 item 4)
+  const [inView, setInView] = useState<ReadonlySet<string>>(new Set());
+  const strip = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const seen = new IntersectionObserver(
+      (entries) =>
+        setInView((now) => {
+          const next = new Set(now);
+          entries.forEach((e) => (e.isIntersecting ? next.add(e.target.id) : next.delete(e.target.id)));
+          return next;
+        }),
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    res.plans.forEach((p) => {
+      const el = document.getElementById(`the-${p.id}`);
+      if (el) seen.observe(el);
+    });
+    return () => seen.disconnect();
+  }, [res.plans]);
+  useEffect(() => {
+    const nav = strip.current;
+    const link = nav?.querySelector<HTMLElement>('[aria-current="true"]');
+    // the strip scrolls sideways on a phone, so the marked plan is kept in sight
+    if (nav && link) nav.scrollLeft = link.offsetLeft - nav.offsetLeft - 16;
+  }, [inView]);
+
   const share = useCallback(
     async (plan: Plan) => {
       // the farmer's own price and costs never go into a shared link (D-163, D-180)
@@ -88,11 +115,12 @@ function Cards({ res }: { res: CompareResponse }) {
   return (
     <>
       <DataLine sources={res.sources} className="muted small" />
-      <nav className={s.jump} aria-label={t.farmer.jumpTo}>
+      <nav className={s.jump} aria-label={t.farmer.jumpTo} ref={strip}>
         {res.plans.map((p) => (
           <a
             key={p.id}
             href={`#the-${p.id}`}
+            aria-current={inView.has(`the-${p.id}`) ? 'true' : undefined}
             onClick={(e) => {
               e.preventDefault();
               document.getElementById(`the-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });

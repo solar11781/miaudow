@@ -31,7 +31,7 @@
       vi: "lợi nhuận thuần (RVAC) = GR - TVC; TVC gồm vật tư, công lao động, năng lượng và lãi vay"
       en: "net profit (RVAC) = GR - TVC (gross return minus total variable cost); TVC counts materials, labour, energy
         and interest"
-    unit: &p02_unit {vi: "nghìn đồng/ha", en: "thousand đ/ha"}
+    unit: &p02_unit {vi: "nghìn đồng/ha", en: "thousand VND/ha"}
     profit_per_crop: {usual_spring_rice: "5,149", usual_summer_autumn_black_bean: "16,200",
                       usual_autumn_winter_sweet_potato: "9,450"}
     cost_per_crop: {usual_spring_rice: "32,426", usual_summer_autumn_black_bean: "25,000",
@@ -39,7 +39,7 @@
     yield_unit: &p02_yield_unit {vi: "tấn/ha", en: "t/ha"}
     yield_per_crop: {usual_spring_rice: "5.01", usual_summer_autumn_black_bean: "1.03",
                      usual_autumn_winter_sweet_potato: "10.05"}
-    price_unit: &p02_price_unit {vi: "đồng/kg", en: "đ/kg"}
+    price_unit: &p02_price_unit {vi: "đồng/kg", en: "VND/kg"}
     price_per_crop: {usual_spring_rice: "7,500", usual_summer_autumn_black_bean: "40,000",
                      usual_autumn_winter_sweet_potato: "5,000"}
     price_year: "2020-21"  # P-02: "Giá bán theo giá thị trường tại thời điểm thu hoạch", trial 2020-21
@@ -101,7 +101,7 @@
     text_only:
       vi: "Lúa vụ Đông Xuân 2021 (đối chứng): hiệu quả kinh tế 5,36 triệu đồng/ha. Lúa vụ Hè Thu 2020 (đối chứng):
         \"gần như không có lợi nhuận, hiệu quả kinh tế chỉ đạt 1,16 triệu/ha\". Vụ Thu Đông: bỏ hoang."
-      en: "Spring-season rice 2021 (control): economic return (\"hiệu quả kinh tế\") 5.36 million đ/ha. Summer-autumn
+      en: "Spring-season rice 2021 (control): economic return (\"hiệu quả kinh tế\") 5.36 million VND/ha. Summer-autumn
         rice 2020 (control): \"almost no profit, the economic return only reaches 1.16 million/ha\" (our translation).
         Autumn-winter: fallow."
     price_year: "2020-21"  # D-103: P-03 p.3 prices at harvest; trial June 2020 - June 2021

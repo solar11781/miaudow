@@ -45,13 +45,13 @@ export function Matrix() {
                   <span className={s.planSeq}>
                     {p.textOnly ? pick(p.textOnly.sequence) : p.crops.map((c) => pick(CROPS[c.crop].name)).join(' → ')}
                   </span>
-                  <span className={s.planSrc}>{SOURCES[p.source].short}</span>
+                  <span className={s.planSrc}>{pick(SOURCES[p.source].short)}</span>
                 </th>
                 <td>
                   {/* each study with its own label and definition, never one yearly framing for both (D-52) */}
                   {total !== null ? (
                     <>
-                      <SourceValue {...refs.planProfit(p, total)} showSource={SOURCES.p02.short} />
+                      <SourceValue {...refs.planProfit(p, total)} showSource={pick(SOURCES.p02.short)} />
                       <span className={s.cellNote}>{t.farmer.definitionPlain.p02}</span>
                     </>
                   ) : (
@@ -63,7 +63,7 @@ export function Matrix() {
                           kind="study"
                           value={pick(p.textOnly.profitNote)}
                           label={t.officer.p03Money}
-                          showSource={SOURCES.p03.short}
+                          showSource={pick(SOURCES.p03.short)}
                         />
                         <span className={s.cellNote}>{t.farmer.definitionPlain.p03}</span>
                       </>
@@ -171,7 +171,7 @@ function Registry() {
               <button
                 type="button"
                 className={s.regItem}
-                onClick={() => open({ sourceId: id, kind: src.kind, value: src.short, label: pick(src.title) })}
+                onClick={() => open({ sourceId: id, kind: src.kind, value: pick(src.short), label: pick(src.title) })}
               >
                 <KindBadge kind={src.kind} compact />
                 <span className={s.regTitle}>{pick(src.title)}</span>
