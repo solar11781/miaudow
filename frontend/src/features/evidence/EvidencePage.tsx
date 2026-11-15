@@ -13,6 +13,7 @@ import { usePick, useT } from '../../app/settings';
 import { CONFLICTS, STATUSES, TOPICS, useClaims, type Claim, type Status, type Topic } from './claims';
 import { Datasets } from './Datasets';
 import { Quality } from './Quality';
+import { PhotoCredits } from './PhotoCredits';
 import s from './evidence.module.css';
 
 export function StatusTag({ status }: { status: Status }) {
@@ -234,6 +235,7 @@ export function EvidencePage() {
           ))}
         </div>
       </section>
+      <PhotoCredits />
     </main>
   );
 }
