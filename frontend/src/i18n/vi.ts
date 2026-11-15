@@ -43,6 +43,7 @@ export const vi = {
     back: 'Quay lại',
     next: 'Tiếp tục',
     source: 'Nguồn',
+    sourceFor: (name: string) => `Xem nguồn: ${name}`,
     open: 'Mở',
     close: 'Đóng',
     millionPerHa: 'triệu đồng/ha',
@@ -286,6 +287,7 @@ export const vi = {
     yearsPicked: (n: number) => `Đã chọn ${n} năm`,
     yearChipLegend: 'Vạch vàng dưới mỗi năm: phần đất trồng gặp điều kiện hạn hán (phần lượng mưa) năm đó.',
     yearRowLabel: 'Phần đất trồng Nghệ An gặp điều kiện, trong thời gian có cây trên ruộng',
+    legendTitle: 'Các điều kiện của Quyết định 18/2021',
     limitsTitle: 'Giới hạn của các con số này',
     cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
