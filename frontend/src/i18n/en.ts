@@ -399,7 +399,7 @@ export const en: Messages = {
       sheetNote:
         "The trial's yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.",
       private: (button: string) =>
-        `The numbers you type are not sent anywhere; they stay only in this page's address on this phone. The "${button}" button leaves them out.`,
+        `The numbers you type stay only in this page's address on this phone, unless you sign in and save your answers: then they are saved with them, and deleted when you delete your account. The "${button}" button leaves them out.`,
     },
     monthAxis: 'Month',
     definitionPlain: {
@@ -1037,7 +1037,7 @@ export const en: Messages = {
     noticeTitle: 'Please read before you sign in',
     noticeLead: 'Only your Google account id and your answers are saved; you can delete them at any time.',
     notice: [
-      'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you), so you can open them again on another phone. Saving does not change any number.',
+      'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you, the sale prices and costs you typed, if any), so you can open them again on another phone. Saving does not change any number.',
       'We store only your Google account id (a code that Google gives) and the answers you save. No name, email or picture.',
       'This data is kept in a database hosted by Railway, in the Singapore region, until you delete it.',
       "Google carries out the sign-in itself, under Google's privacy policy. Google's code runs only on this page and the saved answers page, and may set cookies there.",

@@ -393,7 +393,7 @@ export const vi = {
       sheetNote:
         'Năng suất của thử nghiệm nhân giá bán của bạn, rồi trừ chi phí của bạn. Giá bán và chi phí là số bạn tự nhập, chưa ai kiểm tra.',
       private: (button: string) =>
-        `Các số bạn nhập không được gửi đi đâu, chỉ nằm trong địa chỉ trang trên máy này. Nút "${button}" không kèm các số này.`,
+        `Các số bạn nhập chỉ nằm trong địa chỉ trang trên máy này, trừ khi bạn đăng nhập và lưu các câu trả lời: khi đó các số này được lưu cùng, và bị xóa khi bạn xóa tài khoản. Nút "${button}" không kèm các số này.`,
     },
     monthAxis: 'Tháng',
     definitionPlain: {
@@ -1042,7 +1042,7 @@ export const vi = {
     noticeTitle: 'Đọc trước khi đăng nhập',
     noticeLead: 'Chỉ lưu mã tài khoản Google và câu trả lời của bạn; xóa được bất cứ lúc nào.',
     notice: [
-      'Đăng nhập chỉ để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất), để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào.',
+      'Đăng nhập chỉ để lưu câu trả lời của bạn (loại ruộng, các năm đã chọn, điều bạn quan tâm nhất, giá bán và chi phí bạn tự nhập, nếu có), để mở lại trên điện thoại khác. Việc lưu không làm thay đổi con số nào.',
       'Chúng tôi chỉ lưu mã tài khoản Google của bạn (một mã do Google cấp) và các câu trả lời bạn lưu. Không lưu tên, email hay ảnh.',
       'Dữ liệu nằm trong một cơ sở dữ liệu do Railway lưu trữ, ở vùng máy chủ Singapore, cho đến khi bạn xóa.',
       'Google tự làm việc đăng nhập, theo chính sách quyền riêng tư của Google. Đoạn mã của Google chỉ chạy trên trang này và trang câu trả lời đã lưu, và có thể đặt cookie ở đó.',
