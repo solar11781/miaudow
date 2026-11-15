@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { model, YEARS } from '../../data';
 import { yearShare } from '../../domain/hazards';
+import { lowerFirst, upperFirst } from '../../domain/format';
+import { modelVerdict } from '../../domain/rice';
 import { CROPS, PLANS, type PlanCrop } from '../../domain/plans';
 import type { Bilingual, SourceRef } from '../../domain/provenance';
 import { useRefs } from '../provenance/useRefs';
@@ -62,8 +64,6 @@ export function useClaims(): Claim[] {
         (m) =>
           m.model_id === 'm1_ridge' && m.season === season && m.subset === 'national' && m.scheme === 'rolling_origin',
       )?.skill_vs_bnw ?? null;
-    const sp = skill('spring');
-    const wi = skill('winter');
     const skillRef = (
       season: 'spring' | 'winter',
       v: { value: number; ci90_low: number; ci90_high: number },
@@ -222,59 +222,78 @@ export function useClaims(): Claim[] {
         },
       },
     ];
-    if (sp)
+    // the sentence follows the run's verdict for the season (ML-DESIGN §5b), so a re-run cannot leave it wrong
+    for (const season of ['spring', 'winter'] as const) {
+      const v = skill(season);
+      if (!v) continue;
+      const verdict = modelVerdict(season);
+      const name = { vi: lowerFirst(viText.science.seasons[season]), en: lowerFirst(enText.science.seasons[season]) };
+      const method = {
+        vi: 'Kiểm tra ngoài mẫu theo năm (2016–2024): mô hình chỉ thấy các năm trước năm cần dự đoán.',
+        en: 'Rolling-origin out-of-sample test (2016–2024): the model only sees years before the predicted one.',
+      };
+      if (!verdict.weatherHelps) {
+        claims.push({
+          id: `model-${season}`,
+          topic: 'model',
+          status: 'DERIVED',
+          conclusion: {
+            vi: `Thêm thời tiết vào mô hình không giúp dự đoán năng suất ${name.vi} tốt hơn.`,
+            en: `Adding weather to the model does not predict ${name.en} yields better.`,
+          },
+          meaning: {
+            vi: `Vì vậy Miaudow không hiện dự đoán ${name.vi}. Một kết quả âm tính cũng là bằng chứng.`,
+            en: `So Miaudow shows no ${name.en} prediction. A negative result is evidence too.`,
+          },
+          refs: [skillRef(season, v)],
+          location: {
+            vi: 'Thực nghiệm E-012 của nhóm, metrics.json và gates.json',
+            en: 'Team experiment E-012, metrics.json and gates.json',
+          },
+          method,
+          appliesTo: {
+            vi: 'Năng suất trung bình cả tỉnh, các tỉnh Việt Nam.',
+            en: 'Province-average yields, Vietnamese provinces.',
+          },
+          notProve: {
+            vi: 'Không nói thời tiết không ảnh hưởng tới lúa; chỉ nói mô hình này không đo được điều đó tốt hơn mô hình đơn giản.',
+            en: 'Does not say weather has no effect on rice; only that this model does not capture it better than the simple one.',
+          },
+        });
+        continue;
+      }
+      const lookBack = verdict.shown
+        ? {
+            vi: 'dự đoán chỉ dùng để xem lại các năm đã qua.',
+            en: 'predictions are only used to look back at past years.',
+          }
+        : { vi: lowerFirst(viText.science.modelHidden), en: lowerFirst(enText.science.modelHidden) };
       claims.push({
-        id: 'model-spring',
-        topic: 'model',
-        status: 'DERIVED',
-        conclusion: {
-          vi: 'Thêm thời tiết vào mô hình không giúp dự đoán năng suất lúa vụ xuân tốt hơn.',
-          en: 'Adding weather to the model does not predict spring rice yields better.',
-        },
-        meaning: {
-          vi: 'Vì vậy Miaudow không hiện dự đoán lúa vụ xuân. Một kết quả âm tính cũng là bằng chứng.',
-          en: 'So Miaudow shows no spring rice prediction. A negative result is evidence too.',
-        },
-        refs: [skillRef('spring', sp)],
-        location: {
-          vi: 'Thực nghiệm E-012 của nhóm, metrics.json và gates.json',
-          en: 'Team experiment E-012, metrics.json and gates.json',
-        },
-        method: {
-          vi: 'Kiểm tra ngoài mẫu theo năm (2016–2024): mô hình chỉ thấy các năm trước năm cần dự đoán.',
-          en: 'Rolling-origin out-of-sample test (2016–2024): the model only sees years before the predicted one.',
-        },
-        appliesTo: {
-          vi: 'Năng suất trung bình cả tỉnh, các tỉnh Việt Nam.',
-          en: 'Province-average yields, Vietnamese provinces.',
-        },
-        notProve: {
-          vi: 'Không nói thời tiết không ảnh hưởng tới lúa; chỉ nói mô hình này không đo được điều đó tốt hơn mô hình đơn giản.',
-          en: 'Does not say weather has no effect on rice; only that this model does not capture it better than the simple one.',
-        },
-      });
-    if (wi)
-      claims.push({
-        id: 'model-winter',
+        id: `model-${season}`,
         topic: 'model',
         status: 'ESTIMATED',
         conclusion: {
-          vi: 'Với lúa vụ mùa, mô hình có thời tiết dự đoán tốt hơn một chút so với mô hình không dùng thời tiết.',
-          en: 'For winter-season rice, the weather model predicts slightly better than the no-weather model.',
+          vi: `Với ${name.vi}, mô hình có thời tiết dự đoán tốt hơn một chút so với mô hình không dùng thời tiết.`,
+          en: `For ${name.en}, the weather model predicts slightly better than the no-weather model.`,
         },
-        meaning: {
-          vi: `${viText.common.winterFragile} (trang Phương pháp, báo cáo E-018); dự đoán chỉ dùng để xem lại các năm đã qua.`,
-          en: `${enText.common.winterFragile} (method page, report E-018); predictions are only used to look back at past years.`,
-        },
-        refs: [skillRef('winter', wi)],
+        // D-165: the narrow, fragile wording belongs to the winter result of report E-018
+        meaning:
+          season === 'winter'
+            ? {
+                vi: `${viText.common.winterFragile} (trang Phương pháp, báo cáo E-018); ${lookBack.vi}`,
+                en: `${enText.common.winterFragile} (method page, report E-018); ${lookBack.en}`,
+              }
+            : { vi: upperFirst(lookBack.vi), en: upperFirst(lookBack.en) },
+        refs: [skillRef(season, v)],
         location: { vi: 'Thực nghiệm E-012 của nhóm', en: 'Team experiment E-012' },
-        method: { vi: 'Như trên, cùng bài kiểm tra.', en: 'As above, same test.' },
+        method,
         appliesTo: { vi: 'Năng suất trung bình cả tỉnh.', en: 'Province-average yields.' },
         notProve: {
           vi: 'Không phải dự báo vụ tới, không áp cho một thửa ruộng.',
           en: 'Not a forecast of the next season and not valid for one field.',
         },
       });
+    }
     claims.push(
       {
         id: 'gap-sentinel',
