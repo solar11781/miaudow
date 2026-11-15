@@ -4,5 +4,5 @@ Copyright 2026 the Miaudow contributors
 This project's code is licensed under the Apache License, Version 2.0 (see LICENSE).
 
 Data and published sources are not part of this licence. Each source, its terms and the required credit are listed in
-docs/REFERENCES.md and docs/DATA-SOURCES.md; the app shows the sources on its evidence page (/bang-chung) and the photo credits in the page footer.
+docs/REFERENCES.md and docs/DATA-SOURCES.md; the app shows the sources and the photo credits on its evidence page (#/bang-chung).
 Third-party software licences of the frontend bundle are written at build time to THIRD-PARTY-LICENSES.txt in the build output.
