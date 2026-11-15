@@ -20,7 +20,6 @@ import { useSignInAvailable } from '../account/AccountProvider';
 import { useLocalTo } from '../../app/paths';
 import s from './HomePage.module.css';
 
-const STEP_LINKS = ['/nong-dan/ruong', '/nong-dan/nam', '/nong-dan/uu-tien', '/nong-dan/phuong-an'];
 const SLIDE_MS = 7000;
 
 /** Opening: photographs that change by themselves (pausable, H1), the title rising out of its mask. */
@@ -518,7 +517,6 @@ function Honesty() {
 
 function Steps() {
   const t = useT();
-  const local = useLocalTo();
   return (
     <section className={`band surface-forest grain ${s.steps}`} aria-labelledby="steps-title">
       <div className="container stack" style={{ ['--gap' as string]: 'var(--s-10)' }}>
@@ -528,7 +526,7 @@ function Steps() {
         <ol className={s.strip} data-stagger>
           {t.home.steps.map((step, i) => (
             <li key={step.title}>
-              <Link to={local(STEP_LINKS[i] ?? '/nong-dan')} className={s.step}>
+              <div className={s.step}>
                 <span className={s.stepPhoto}>
                   <Media
                     slug={ART.steps[i]?.slug ?? ART.steps[0].slug}
@@ -541,7 +539,7 @@ function Steps() {
                   <span className={s.stepTitle}>{step.title}</span>
                   <span className={s.stepBody}>{step.body}</span>
                 </span>
-              </Link>
+              </div>
             </li>
           ))}
         </ol>
