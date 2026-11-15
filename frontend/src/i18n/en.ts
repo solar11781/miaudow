@@ -315,6 +315,7 @@ export const en: Messages = {
     jumpTo: 'Go to card',
     current: 'Current practice',
     trialPlan: (n: string, code: string) => `Trial way of farming ${n} (${code}), from the Lưu Sơn trial`,
+    trialShort: (n: string) => `Trial way of farming ${n}`,
     describedByP02: 'Trial in Lưu Sơn, Đô Lương (2020–21)',
     describedByP03: 'The same team’s second paper, same commune',
     fallow: 'fallow',

@@ -307,6 +307,7 @@ export const vi = {
     jumpTo: 'Đến thẻ',
     current: 'Cách làm hiện nay',
     trialPlan: (n: string, code: string) => `Cách trồng thử ${n} (${code}), theo thử nghiệm ở Lưu Sơn`,
+    trialShort: (n: string) => `Cách trồng thử ${n}`,
     describedByP02: 'Thử nghiệm ở Lưu Sơn, Đô Lương (2020–21)',
     describedByP03: 'Bài báo thứ hai của cùng nhóm, cùng xã',
     fallow: 'bỏ trống',

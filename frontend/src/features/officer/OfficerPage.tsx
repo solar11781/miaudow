@@ -14,13 +14,12 @@ import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useProvenance } from '../provenance/ProvenanceProvider';
-import { useFormat, usePick, useSettings, useT } from '../../app/settings';
+import { useFormat, usePick, useT } from '../../app/settings';
 import { EvidenceDesk } from './EvidenceDesk';
 import s from './officer.module.css';
 
 export function Matrix() {
   const t = useT();
-  const { lang } = useSettings();
   const pick = usePick();
   const f = useFormat();
   const refs = useRefs();
@@ -42,7 +41,7 @@ export function Matrix() {
             return (
               <tr key={p.id}>
                 <th scope="row">
-                  <span className={s.planId}>{planLabel(p, lang, false)}</span>
+                  <span className={s.planId}>{planLabel(p, t.farmer)}</span>
                   <span className={s.planSeq}>
                     {p.textOnly ? pick(p.textOnly.sequence) : p.crops.map((c) => pick(CROPS[c.crop].name)).join(' → ')}
                   </span>
