@@ -112,6 +112,8 @@ test('T14 a signed-in save carries your price and costs, no other request does, 
   await page.getByRole('link', { name: /^Mở: / }).click();
   await expect(page).toHaveURL(new RegExp(`yc[.]cc1_spring_peanut=${COST}`));
   await expect(page.locator('#the-cc1').getByTestId('card-cc1-own')).toContainText('97,9 triệu đồng/ha');
+  // the reopened card starts with its rows folded (D-187 item 4): open the money row to read the field
+  await page.locator('#the-cc1').getByTestId('card-cc1-row-money').locator('h3 > button').click();
   await expect(page.locator('#the-cc1').getByRole('spinbutton', { name: /^Lạc.*Chi phí của bạn/ })).toHaveValue(
     COST_TYPED,
   );
