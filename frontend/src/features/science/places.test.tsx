@@ -54,12 +54,14 @@ describe('islands on the globe', () => {
     expect(vi.places.hoangSa).toBe('QĐ. Hoàng Sa (Việt Nam)');
     expect(vi.places.truongSa).toBe('QĐ. Trường Sa (Việt Nam)');
     expect(vi.places.phuQuoc).toBe('Đảo Phú Quốc');
-    expect(en.places.hoangSa).toBe('Hoang Sa (Paracel) Archipelago, Vietnam');
-    expect(en.places.truongSa).toBe('Truong Sa (Spratly) Archipelago, Vietnam');
+    expect(en.places.hoangSa).toBe('Hoang Sa (Paracel) Archipelago');
+    expect(en.places.truongSa).toBe('Truong Sa (Spratly) Archipelago');
     expect(en.places.phuQuoc).toBe('Phu Quoc Island');
     const flat = globeSource.replace(/\s+/g, '');
-    expect(flat).toContain('vi:vi.places.hoangSa,en:en.places.hoangSa,lat:16.654612,lon:112.747192');
-    expect(flat).toContain('vi:vi.places.truongSa,en:en.places.truongSa,lat:10,lon:114');
+    expect(flat).toContain(
+      'vi:twoLines(vi.places.hoangSa),en:twoLines(en.places.hoangSa),lat:16.654612,lon:112.747192',
+    );
+    expect(flat).toContain('vi:twoLines(vi.places.truongSa),en:twoLines(en.places.truongSa),lat:10,lon:114');
     expect(flat).toContain('vi:vi.places.phuQuoc,en:en.places.phuQuoc,lat:10.228889,lon:103.957222');
   });
 });

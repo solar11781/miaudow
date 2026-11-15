@@ -60,6 +60,10 @@
 .credits :global(a) {
   text-decoration: underline;
 }
+/* CesiumJS shows and hides this link through its inline display, so padding (not min-height) makes the 44 px target */
+.credits :global(.cesium-credit-expand-link) {
+  padding-block: 11px;
+}
 .credits :global(img) {
   height: 18px;
   vertical-align: middle;
@@ -646,4 +650,17 @@
   font-size: var(--t-small);
   line-height: 1.5;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+.flagNoteBelow {
+  display: none;
+}
+@media (max-width: 900px) {
+  .flagNoteOver {
+    display: none;
+  }
+  .flagNoteBelow {
+    display: block;
+    order: 1;
+    margin: 12px 12px 0;
+  }
 }
