@@ -25,6 +25,22 @@
 .on {
   opacity: 1;
 }
+/* Space Apps 2026 submission guide: every AI-generated picture says so (PR #70), never hidden */
+.tag {
+  position: absolute;
+  z-index: 2;
+  right: 10px;
+  bottom: 10px;
+  max-width: calc(100% - 20px);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--r-sm);
+  background: rgba(244, 240, 229, 0.9);
+  color: #16201a;
+  font: 500 17px/1.3 var(--font-ui);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .drift.on {
   animation: drift 26s var(--ease-in-out) infinite alternate;
 }
