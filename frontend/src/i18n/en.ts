@@ -7,10 +7,10 @@ export const en: Messages = {
     locale: 'en-GB',
     other: 'VI',
     otherLabel: 'Chuyển sang tiếng Việt',
-    title: 'Miaudow · Nghệ An rice fields',
+    title: 'Miaudow · Nghe An rice fields',
   },
   nav: {
-    tagline: 'Nghệ An rice fields',
+    tagline: 'Nghe An rice fields',
     home: 'Home',
     method: 'Method',
     farmer: 'Farmers',
@@ -123,12 +123,12 @@ export const en: Messages = {
     titleA: 'Our village fields,',
     titleB: 'read with data from space.',
     ctaFarmer: 'Understand my field',
-    ctaScience: 'Explore Nghệ An data',
+    ctaScience: 'Explore Nghe An data',
     ctaCopilot: 'Ask the copilot',
     pause: 'Pause photos',
     aboutTitle: 'What does this app do?',
     about: [
-      'Water-short rice land in Nghệ An: compares 6 tested ways of farming, keeping rice among them.',
+      'Water-short rice land in Nghe An: compares 6 tested ways of farming, keeping rice among them.',
       'Looks back at past years with NASA data. No forecast of next season.',
       'Does not choose for your family, and scores nothing.',
     ],
@@ -144,7 +144,7 @@ export const en: Messages = {
     trialNote: 'One plot, one year (2020–2021), at that year’s prices. Not the profit to expect on your field.',
     verseTitle: 'The land of Nghệ',
     verse: ['Đường vô xứ Nghệ quanh quanh,', 'Non xanh nước biếc như tranh họa đồ.'],
-    verseBy: 'Folk verse of Nghệ An',
+    verseBy: 'Folk verse of Nghe An',
     verseNote:
       '“The road into Nghệ winds round and round, / green hills, clear water, like a painted map.” (our translation)',
     coresTitle: 'Four AI cores, one source of data',
@@ -157,7 +157,7 @@ export const en: Messages = {
     cores: [
       {
         name: 'Climate core',
-        does: 'Reads more than 30 years of NASA weather over Nghệ An farmland, with the state’s own thresholds for drought, heat, cold and heavy rain.',
+        does: 'Reads more than 30 years of NASA weather over Nghe An farmland, with the state’s own thresholds for drought, heat, cold and heavy rain.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Decision 18/2021',
         gives: 'Weather of each year and the share of farmland meeting each condition of Decision 18/2021',
         limit: 'No forecast of next season. Past years are not a forecast.',
@@ -187,14 +187,14 @@ export const en: Messages = {
         does: 'Hears a question by voice or text, then picks the passages in Miaudow’s data that answer it.',
         uses: 'The three cores above; Claude (Anthropic’s AI) only to pick the passages, when the server has a key',
         gives: 'The picked passages, shown word for word with their sources, read aloud on request',
-        limit: 'Not tested yet with the local Nghệ An accent.',
+        limit: 'Not tested yet with the local Nghe An accent.',
         to: '/tro-ly',
         where: 'the Copilot',
       },
     ],
     climateTitle: (n: number) => `${n} of 30 years, over half the farmland met drought`,
     climateLead:
-      'Each bar is one year, 1995–2024: the share of Nghệ An farmland that met the drought condition of Decision 18/2021 while crops were in the field.',
+      'Each bar is one year, 1995–2024: the share of Nghe An farmland that met the drought condition of Decision 18/2021 while crops were in the field.',
     droughtAxis: 'Share of farmland meeting the condition',
     evidenceCta: 'See the evidence',
     stepsTitle: 'Four steps, no typing',
@@ -216,7 +216,7 @@ export const en: Messages = {
     ],
     obsTitle: 'From the rice field, to the satellite grid',
     obsLead:
-      'The real border of Nghệ An, divided into NASA POWER grid cells about 55 × 66 km wide. The darker a cell, the more farmland it holds.',
+      'The real border of Nghe An, divided into NASA POWER grid cells about 55 × 66 km wide. The darker a cell, the more farmland it holds.',
     obsCta: 'Open the 3D observatory',
     inviteTitle: 'Next season, start from your own field',
     inviteLead: 'No account, nothing stored on your phone.',
@@ -248,7 +248,7 @@ export const en: Messages = {
       'R-P03': 'Trịnh Đức Toàn et al. (2023)',
     } as Record<string, string>,
     stepOf: (n: number) => `Step ${n}/4`,
-    startEyebrow: 'Water-short rice land in Nghệ An',
+    startEyebrow: 'Water-short rice land in Nghe An',
     startTitle: 'Your field: what to grow next season?',
     startLead:
       'Four short steps. No typing. At the end you have 6 cards to compare with your family and the extension officer.',
@@ -292,9 +292,9 @@ export const en: Messages = {
     yearsHelp: 'Pick the years you remember: a drought year, a cold year, a poor harvest. Up to 10 years.',
     yearsPicked: (n: number) => `${n} years picked`,
     yearChipLegend: 'Gold line under each year: share of farmland meeting the drought (rain part) condition that year.',
-    yearRowLabel: 'Share of Nghệ An farmland meeting each condition while crops were in the field',
+    yearRowLabel: 'Share of Nghe An farmland meeting each condition while crops were in the field',
     limitsTitle: 'Limits of these numbers',
-    cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghệ An farmland, each about 55 × 66 km.`,
+    cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghe An farmland, each about 55 × 66 km.`,
     limits: [
       'Grid values smooth out extremes; your own field is not measured.',
       'Official warnings weigh other factors too; this is a mechanical reading of the Decision’s tables.',
@@ -335,7 +335,7 @@ export const en: Messages = {
       money: 'Profit in the trial, not on your own field',
       weather: 'Bad weather while the crop is in the field',
       weatherNote:
-        'Share of Nghệ An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
+        'Share of Nghe An farmland meeting the condition while the crop is in the field, if sown on the trial’s 2020–21 dates, for each year you picked.',
       water: 'Irrigation',
       waterNote: 'Seasonal irrigation in TCVN 8641 (m³/ha).',
       soil: 'NASA soil wetness',
@@ -462,7 +462,7 @@ export const en: Messages = {
     lead: 'Each row on a farmer’s card comes from a specific source. This page gathers them so officers can explain, and says plainly where the evidence is thin.',
     scopeTitle: 'Scope of the evidence',
     scope: [
-      { label: 'Trial site', value: 'Lưu Sơn commune, Đô Lương, Nghệ An' },
+      { label: 'Trial site', value: 'Lưu Sơn commune, Đô Lương, Nghe An' },
       { label: 'Period', value: 'June 2020 – June 2021, one year' },
       { label: 'Design', value: 'One 1,000 m² plot per crop, not replicated' },
       { label: 'Land type', value: 'Low-return (inefficient) rice land, often in drought' },
@@ -496,7 +496,7 @@ export const en: Messages = {
       {
         kind: 'derived',
         title: 'The number on the card',
-        body: 'Share of Nghệ An farmland meeting the condition; tap the number for its source',
+        body: 'Share of Nghe An farmland meeting the condition; tap the number for its source',
       },
     ],
     talkTitle: 'How to talk about it',
@@ -508,7 +508,7 @@ export const en: Messages = {
       { do: 'Say “the plots were in Lưu Sơn; your field may differ”', dont: 'Do not say “this plan suits your field”' },
     ],
     talkDrought: (year: number, share: string) => ({
-      do: `Say “in ${year}, ${share} of Nghệ An farmland met the drought condition of Decision 18/2021”`,
+      do: `Say “in ${year}, ${share} of Nghe An farmland met the drought condition of Decision 18/2021”`,
       dont: 'Do not say “next year will be dry”',
     }),
     gapsTitle: 'Where the evidence is thin',
@@ -528,10 +528,10 @@ export const en: Messages = {
   },
   science: {
     eyebrow: 'Data room · for judges and researchers',
-    title: 'Nghệ An across 30 seasons',
+    title: 'Nghe An across 30 seasons',
     lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline and NSO rice yields.',
     globeCta: 'See it on the 3D globe, from space down to the fields',
-    mapTitle: 'The NASA POWER grid over Nghệ An',
+    mapTitle: 'The NASA POWER grid over Nghe An',
     mapLead:
       'Each column is one 0.5° × 0.625° cell. Height is the amount measured while crops are in the field; a solid colour means the cell met the rule at level 1 or higher; faded cells have no farmland (weight 0).',
     rule: 'Rule',
@@ -551,7 +551,7 @@ export const en: Messages = {
     cellFootprint: 'outline of one NASA grid cell (≈ 55 × 66 km)',
     heightIs: 'Column height',
     readingFor: (y: number) => `Reading for ${y}`,
-    shareOfFarmland: 'of Nghệ An farmland met level 1 or higher',
+    shareOfFarmland: 'of Nghe An farmland met level 1 or higher',
     met: 'met',
     notMet: 'not met',
     zeroWeight: 'no farmland',
@@ -562,7 +562,7 @@ export const en: Messages = {
     yes: 'Yes',
     no: 'No',
     tableCaption: 'Grid-cell values for the selected year and rule',
-    riceTitle: 'Nghệ An rice yield against normal',
+    riceTitle: 'Nghe An rice yield against normal',
     riceLead:
       'Real NSO values, 1995–2024. For winter rice, the model estimate for each test year is shown next to the real values for 2016–2024, with its 80% range.',
     seasons: { spring: 'Spring rice', summer_autumn: 'Summer-autumn rice', winter: 'Winter rice' },
@@ -584,7 +584,7 @@ export const en: Messages = {
       b2: 'B2 · like last year',
       b0: 'B0 · climatology',
     },
-    subsets: { national: 'Nationwide', na_ht_th: 'Nghệ An, Hà Tĩnh, Thanh Hóa', nghe_an: 'Nghệ An only' },
+    subsets: { national: 'Nationwide', na_ht_th: 'Nghe An, Hà Tĩnh, Thanh Hóa', nghe_an: 'Nghe An only' },
     gatesTitle: 'Four gates before a prediction is shown',
     gateNames: {
       G1: 'Enough data',
@@ -642,7 +642,7 @@ export const en: Messages = {
   evidence: {
     photosTitle: 'Photographs and licences',
     photosLead:
-      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghệ An.',
+      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghe An.',
     photoLicence: 'Licence',
     photoSource: 'Original file page',
     eyebrow: 'Evidence library',
@@ -721,7 +721,7 @@ export const en: Messages = {
       'NDVI from the Terra satellite (MODIS) shows fields greening and being harvested through the seasons. It says nothing about yield or pests.',
     askYear: (y: number) => `Ask the copilot about ${y}`,
     askYearQ: (y: number) => `Was ${y} a drought year?`,
-    stripTitle: (a: number, b: number) => `Monthly rain against normal, Nghệ An farmland, ${a}–${b}`,
+    stripTitle: (a: number, b: number) => `Monthly rain against normal, Nghe An farmland, ${a}–${b}`,
     drier: 'Drier than normal',
     wetter: 'Wetter than normal',
     normal: (base: string) => `Close to the ${base} normal`,
@@ -829,22 +829,22 @@ export const en: Messages = {
   },
   earth: {
     scan: {
-      satA: 'Satellite with the flag of Viet Nam',
+      satA: 'Satellite with the flag of Vietnam',
       satB: 'NASA Terra (US flag)',
-      province: 'Nghệ An',
+      province: 'Nghe An',
       pause: 'Pause',
       play: 'Play',
       caption:
-        'Illustration: two satellites pass over Nghệ An, each scanning a strip of land. The province border and the NASA POWER cells are real; a cell lights up by its share of farmland.',
+        'Illustration: two satellites pass over Nghe An, each scanning a strip of land. The province border and the NASA POWER cells are real; a cell lights up by its share of farmland.',
     },
     scanLight: 'The light version of the observatory: a drawn satellite scene, no 3D needed.',
-    flagships: { vn: 'Viet Nam · illustrative satellite', terra: 'NASA Terra · MODIS' },
+    flagships: { vn: 'Vietnam · illustrative satellite', terra: 'NASA Terra · MODIS' },
     satPause: 'Pause satellites',
     satPlay: 'Fly satellites',
     flagshipNote:
-      'The two large satellites are illustrations: one flies the flag of Viet Nam, the other is NASA’s Terra (source of the MODIS farmland data) with the US flag. Their orbits are drawn to pass over Nghệ An, not their real positions.',
+      'The two large satellites are illustrations: one flies the flag of Vietnam, the other is NASA’s Terra (source of the MODIS farmland data) with the US flag. Their orbits are drawn to pass over Nghe An, not their real positions.',
     eyebrow: 'Earth observatory',
-    title: 'From space down to the rice fields of Nghệ An',
+    title: 'From space down to the rice fields of Nghe An',
     scenes: {
       cosmos: {
         title: 'Space',
@@ -862,14 +862,14 @@ export const en: Messages = {
         body: 'A few satellites circle Earth every day and photograph rice fields. The cards below say which ones MIAUDOW has used data from, and which it could not use yet.',
       },
       vietnam: {
-        title: 'Viet Nam',
-        short: 'Viet Nam',
-        body: 'The S-shaped country. Nghệ An lies in the North Central region, where rain comes mostly in autumn and drought often comes in summer.',
+        title: 'Vietnam',
+        short: 'Vietnam',
+        body: 'The S-shaped country. Nghe An lies in the North Central region, where rain comes mostly in autumn and drought often comes in summer.',
       },
       'nghe-an': {
-        title: 'Nghệ An',
-        short: 'Nghệ An',
-        body: 'The pale gold line is Nghệ An province; the white-edged area is the former Đô Lương district. You can switch on a satellite layer to see greenness, rainfall or soil moisture.',
+        title: 'Nghe An',
+        short: 'Nghe An',
+        body: 'The pale gold line is Nghe An province; the white-edged area is the former Đô Lương district. You can switch on a satellite layer to see greenness, rainfall or soil moisture.',
       },
       'do-luong': {
         title: 'Đô Lương and Lưu Sơn',
@@ -895,7 +895,7 @@ export const en: Messages = {
     openEyes: 'View in NASA Eyes',
     missionPage: 'Official mission page',
     globeLabel:
-      '3D globe: Earth, Viet Nam, Nghệ An and the grid cells with rain data. Every number is also in the panel beside it.',
+      '3D globe: Earth, Vietnam, Nghe An and the grid cells with rain data. Every number is also in the panel beside it.',
     calmNote:
       'Reduced motion is on, so the 3D globe is off. Every number is still in the panel beside it and on the Science page.',
     noWebgl: 'This device cannot draw 3D yet. Every number is still in the panel beside it and on the Science page.',
@@ -955,7 +955,7 @@ export const en: Messages = {
     play: 'Play',
     eyesBy: 'NASA Eyes · NASA’s official 3D app, shown in a frame',
     newTab: 'Open in a new tab',
-    backToEarth: 'Back to Earth — explore the rice fields of Nghệ An',
+    backToEarth: 'Back to Earth — explore the rice fields of Nghe An',
     eyesNote:
       'If the frame stays empty, use “Open in a new tab”. NASA Eyes is made by NASA/JPL; MIAUDOW only opens their public page.',
     cellLabel: 'Choose a grid cell',
@@ -1016,7 +1016,7 @@ export const en: Messages = {
       raw === 'national'
         ? 'Nationwide'
         : raw === 'na_ht_th'
-          ? 'Nghệ An, Hà Tĩnh, Thanh Hóa'
+          ? 'Nghe An, Hà Tĩnh, Thanh Hóa'
           : raw.replace(/^(unit|region):/, ''),
     skillCi: (v: string, lo: string, hi: string) => `${v} (${lo} to ${hi})`,
     notRun: 'Not run',
@@ -1037,8 +1037,8 @@ export const en: Messages = {
     termsTitle: 'Explain the terms',
     dataTitle: 'Data and the use of NASA data',
     farmland: 'NASA POWER grid cells are weighted by farmland: the lowest MODIS cropland percent over 2001–2015.',
-    gridAlt: 'Map of Nghệ An with its NASA POWER grid cells, shaded by farmland weight.',
-    gridCaption: 'The NASA POWER grid cells over Nghệ An, shaded by MODIS farmland weight.',
+    gridAlt: 'Map of Nghe An with its NASA POWER grid cells, shaded by farmland weight.',
+    gridCaption: 'The NASA POWER grid cells over Nghe An, shaded by MODIS farmland weight.',
     rainCheck: 'Satellite rain check',
     rainCc: 'Correlation of monthly IMERG and POWER rain:',
     meanImerg: 'Mean monthly rain, IMERG:',
@@ -1058,7 +1058,7 @@ export const en: Messages = {
       `${article}, Decision 18/2021: “${quote}”. Applied to each NASA POWER cell over ${window}; MODIS farmland weights of the cells meeting it are added. Miaudow’s computation, not an official record.`,
     cellDetail: (unit: string, share: string) =>
       `Each NASA POWER cell’s amount over the year (${unit}); the weight is the cell’s farmland share on the MODIS map. ${share}`,
-    riceSeriesLabel: (span: string) => `Nghệ An rice yield against normal, ${span}`,
+    riceSeriesLabel: (span: string) => `Nghe An rice yield against normal, ${span}`,
     riceSeason: { spring: 'spring', summer_autumn: 'summer-autumn', winter: 'winter' },
     riceDetail: (season: string) => `Actual yield ÷ mean of the 3 previous years − 1 (${season} season).`,
     predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',

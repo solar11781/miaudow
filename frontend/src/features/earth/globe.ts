@@ -56,10 +56,10 @@ const gibs = (layer: string, matrix: string, ext: 'jpeg' | 'png', time?: string)
 
 /** Reference places for orientation (city centres, rounded; the district label sits inside the geoBoundaries outline). */
 const PLACES = [
-  { vi: 'VIỆT NAM', en: 'VIET NAM', lat: 14.2, lon: 108.2, big: true, dot: false, near: 1.5e6, far: 6e6 },
+  { vi: 'VIỆT NAM', en: 'VIETNAM', lat: 14.2, lon: 108.2, big: true, dot: false, near: 1.5e6, far: 6e6 },
   { vi: 'Hà Nội', en: 'Hà Nội', lat: 21.03, lon: 105.85, big: false, dot: true, near: 4e5, far: 9e6 },
   { vi: 'Vinh', en: 'Vinh', lat: 18.68, lon: 105.69, big: false, dot: true, near: 5e4, far: 1.5e6 },
-  { vi: 'NGHỆ AN', en: 'NGHỆ AN', lat: 19.25, lon: 104.75, big: true, dot: false, near: 1e5, far: 1.6e6 },
+  { vi: 'NGHỆ AN', en: 'NGHE AN', lat: 19.25, lon: 104.75, big: true, dot: false, near: 1e5, far: 1.6e6 },
   {
     vi: 'Đô Lương (cũ)',
     en: 'former Đô Lương',

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { en } from './en';
 import { vi } from './vi';
 import method from '../../snapshot/method.json';
+import enSource from './en.ts?raw';
 
 type Node = unknown;
 
@@ -82,5 +83,13 @@ describe('translations', () => {
         /checks every number|short answer|answer engine|kiểm từng con số|câu trả lời ngắn|bộ trả lời/i,
       );
     }
+  });
+});
+
+// D-186: English text writes "Nghe An" and "Vietnam"; titles, names and quotes stay verbatim (the journal "Nghệ An S&T")
+describe('place names in English', () => {
+  it('use Nghe An and Vietnam outside verbatim titles', () => {
+    const lines = enSource.split(/\r?\n/).filter((l) => /Nghệ An|Viet Nam|Việt Nam/.test(l) && !l.includes('S&T'));
+    expect(lines).toEqual([]);
   });
 });
