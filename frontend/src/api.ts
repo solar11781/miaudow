@@ -2,7 +2,7 @@
 // the farmer's answers go to our own server only, in the POST body (D-92). Every response is checked before a screen
 // uses it ("Validation in src/api.ts"); a response that fails the check is an error, never shown.
 import type { Bilingual } from './domain/provenance';
-import type { Land } from './domain/farmerState';
+import { isOwnEntry, type Land, type OwnNumbers } from './domain/farmerState';
 import {
   COVERAGE_AXES,
   EXPLAIN_KEYS,
@@ -373,19 +373,27 @@ export function validateMethod(raw: unknown): MethodResponse {
 
 /** Whether sign-in is on, and the public Google client id the sign-in page starts Google's button with. */
 export type SignInConfig = { available: true; client_id: string } | { available: false; client_id: null };
-/** One saved set: the answers of steps 1-3 (accounts.py SavedAnswers), the field as the farmer answered it; an
- * irrigated field gets no plans, so it is never saved. */
-export type SavedAnswers = Pick<CompareRequest, 'years' | 'priority'> & { land: SavedLand };
+/** One saved set: the answers of steps 1-3 (accounts.py SavedAnswers), the field as the farmer answered it, and the
+ * typed prices and costs (D-180); an irrigated field gets no plans, so it is never saved. */
+export type SavedAnswers = Pick<CompareRequest, 'years' | 'priority'> & { land: SavedLand } & OwnNumbers;
 export type SavedLand = Exclude<Land, 'reliable'>;
 export interface SavedSet extends SavedAnswers {
   id: number;
 }
 
+// D-180: the typed prices and costs of a saved set come back only as the fragment keeps them
+const ownMap: Check = (v, at) => {
+  if (!isObj(v)) return fail(at, 'not an object');
+  for (const [crop, digits] of Object.entries(v))
+    if (!isOwnEntry(crop, digits)) fail(at, 'not crop keys with 1 to 9 digits');
+};
 const savedSet = obj({
   id: num,
   land: oneOf(['high_field', 'canal_end', 'water_short', 'ask']),
   years: arr(num),
   priority: oneOf(['income', 'stability', 'water', 'land']),
+  prices: ownMap,
+  costs: ownMap,
 });
 
 export function validateSignInConfig(raw: unknown): SignInConfig {

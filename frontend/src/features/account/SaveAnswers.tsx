@@ -18,7 +18,7 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
   const t = useT();
   const { pathname, search } = useLocation();
   const [params, setParams] = useSearchParams();
-  const { token, expired, check } = useAccount();
+  const { token, expired, check, hold } = useAccount();
   const available = useSignInAvailable();
   const [status, setStatus] = useState<Status>('idle');
   const started = useRef(false);
@@ -55,8 +55,11 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
 
   const again = new URLSearchParams(search);
   again.set(PENDING, '1');
-  // Google's script runs on the sign-in page and the save never includes the typed price and costs (D-163)
+  const full = `${pathname}?${again.toString()}`;
+  // Google's script runs on the sign-in page and can read its address, so the typed price and costs stay out of it
+  // and wait in memory for the way back (D-180)
   for (const key of [...again.keys()]) if (isOwnKey(key)) again.delete(key);
+  const back = `${pathname}?${again.toString()}`;
   const message = {
     idle: null,
     saving: t.account.saving,
@@ -80,7 +83,7 @@ export function SaveAnswers({ answers }: { answers: SavedAnswers }) {
           {status === 'saved' ? t.account.savedDone : t.account.save}
         </Button>
       ) : (
-        <ButtonLink to={signInLink(`${pathname}?${again.toString()}`)} variant="secondary" leadingIcon="check">
+        <ButtonLink to={signInLink(back)} onClick={() => hold(back, full)} variant="secondary" leadingIcon="check">
           {expired ? t.account.signInAgain : t.account.saveSignIn}
         </ButtonLink>
       )}

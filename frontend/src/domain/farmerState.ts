@@ -24,6 +24,11 @@ export const NO_OWN: OwnNumbers = { prices: {}, costs: {} };
 const OWN_KEY = /^y([pc])\.([a-z0-9_]+)$/;
 /** A fragment key of the farmer's own price or cost. */
 export const isOwnKey = (key: string) => OWN_KEY.test(key);
+/** A crop key with the digits of a price or cost, as the fragment keeps them (a saved set coming back, D-180). */
+export function isOwnEntry(crop: string, raw: unknown) {
+  const digits = typeof raw === 'string' ? readWhole(raw) : 'invalid';
+  return isOwnKey(`yp.${crop}`) && digits !== null && digits !== 'invalid';
+}
 
 export const LANDS: Land[] = ['high_field', 'canal_end', 'water_short', 'reliable', 'ask'];
 /** Links shared before the four water situations existed keep working. */
