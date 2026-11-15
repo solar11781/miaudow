@@ -17,7 +17,7 @@ interface ArtDirection {
   invite: Shot;
   farmerStart: Shot;
   officer: Shot;
-  pageHead: { science: Shot; evidence: Shot; assistant: Shot };
+  pageHead: { science: Shot; evidence: Shot; assistant: Shot; method: Shot };
 }
 
 export const ART: ArtDirection = {
@@ -49,5 +49,6 @@ export const ART: ArtDirection = {
     science: { slug: 'sa-pa-rice-paddies' },
     evidence: { slug: 'trang-an-river' },
     assistant: { slug: 'ha-giang-terraces-village' },
+    method: { slug: 'terraced-rice-fields' },
   },
 };

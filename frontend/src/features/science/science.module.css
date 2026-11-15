@@ -252,6 +252,13 @@
   vertical-align: top;
 }
 
+/* wide result tables scroll sideways inside their frame instead of breaking numbers and headings word by word */
+.table thead th,
+.table td.num,
+.table td:first-child {
+  white-space: nowrap;
+}
+
 .table thead th {
   font-weight: 500;
   color: var(--fg-3);
