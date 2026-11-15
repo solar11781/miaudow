@@ -40,7 +40,6 @@ export const vi = {
     winterFragile: 'Kết quả thời tiết của lúa vụ Mùa còn hẹp và chưa vững',
     support:
       'Ứng dụng giúp bạn xem và so sánh. Nó không thay thế kinh nghiệm của bạn và lời khuyên của cán bộ khuyến nông.',
-    dataLine: 'Dữ liệu: NASA POWER · CHIRPS v3 · NASA MODIS · Cục Thống kê · Trịnh Đức Toàn và cs. (2023)',
     back: 'Quay lại',
     next: 'Tiếp tục',
     source: 'Nguồn',
@@ -628,6 +627,11 @@ export const vi = {
     exampleTag: 'Ví dụ',
   },
   evidence: {
+    photosTitle: 'Ảnh và giấy phép',
+    photosLead:
+      'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Do AI tạo” không phải ảnh chụp Nghệ An.',
+    photoLicence: 'Giấy phép',
+    photoSource: 'Trang ảnh gốc',
     eyebrow: 'Thư viện bằng chứng',
     title: 'Mỗi kết luận có chỗ để kiểm tra',
     lead: 'Đây là những điều Miaudow dựa vào, nối tới con số, phép tính và trang tài liệu gốc. Chỗ nào nguồn chưa rõ hay mâu thuẫn, chúng tôi ghi ra, không giấu.',
@@ -733,7 +737,7 @@ export const vi = {
     serverOn: 'Máy chủ trợ lý đang chạy',
     serverOff: 'Đang dùng chế độ ngoại tuyến',
     claudeOn:
-      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời.',
+      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời. Câu hỏi bạn gõ được gửi tới Claude (Anthropic) để làm việc này, nên đừng gõ tên hay số điện thoại.',
     claudeOff:
       'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu cố định, không dùng mô hình ngôn ngữ.',
     browserHelp:
@@ -1058,14 +1062,10 @@ export const vi = {
     tcvnLabel: (crop: string) => `Mức tưới ${crop}`,
   },
   footer: {
-    tagline: 'Từ kinh nghiệm đồng ruộng đến tri thức dữ liệu.',
-    team: 'Nhóm Miaudow · NASA Space Apps Challenge 2026, Hà Nội · thử thách Field Shift',
-    photos: 'Ảnh và giấy phép',
-    photosLead:
-      'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Do AI tạo” không phải ảnh chụp Nghệ An.',
-    licence: 'Giấy phép',
-    source: 'Trang ảnh gốc',
-    built: 'Dữ liệu tạo lúc',
+    linksLabel: 'Liên kết khác',
+    privacy: 'Quyền riêng tư',
+    code: 'Mã nguồn trên GitHub',
+    team: '© 2026 Nhóm Miau · giấy phép Apache-2.0',
   },
   account: {
     signInTitle: 'Đăng nhập để lưu câu trả lời',
