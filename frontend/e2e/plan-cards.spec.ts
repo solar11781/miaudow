@@ -92,3 +92,16 @@ test('D-190 each plan has one name and its money is in million dong per hectare'
   await button.click();
   await expect(page.getByTestId('source-sheet').locator('h2')).toHaveText(exact ?? '');
 });
+
+// D-187 item 4 (F1): the jump strip marks the card in view (on a wide screen, the row of two cards in view)
+test('D-187 the jump strip marks the card in view', async ({ page }, info) => {
+  await page.goto(PLANS_URL);
+  const jump = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  const current = jump.locator('a[aria-current="true"]');
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  for (const id of ['cc2', 'cc4']) {
+    await page.getByTestId(`card-${id}`).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await expect(jump.locator(`a[href="#the-${id}"]`), id).toHaveAttribute('aria-current', 'true');
+    if (info.project.name === 'phone-360') await expect(current, id).toHaveCount(1);
+  }
+});
