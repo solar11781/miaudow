@@ -4,3 +4,15 @@
   gap: var(--s-3);
   font-size: var(--t-small);
 }
+/* the licence and source links of one photo sit side by side, each a full tap target (UI-UX-SPEC H7) */
+.creditLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-3);
+}
+.creditLinks a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+}

@@ -179,6 +179,8 @@ export function EarthPage() {
     if (backToNgheAn) go('nghe-an');
   };
 
+  // over the globe on wide screens; below it on narrow ones, so it never covers the island labels
+  const flagNote = live3d && sceneDef.flagships;
   return (
     <main id="main" className={`${s.page} surface-forest`}>
       <section className={s.stage} aria-labelledby="earth-title">
@@ -220,8 +222,9 @@ export function EarthPage() {
           {live3d && (sceneDef.orbits || sceneDef.flagships) && (
             <SatToggle moving={satsMoving} onToggle={() => setSatsMoving((m) => !m)} />
           )}
-          {live3d && sceneDef.flagships && <p className={s.flagNote}>{t.earth.flagshipNote}</p>}
+          {flagNote && <p className={`${s.flagNote} ${s.flagNoteOver}`}>{t.earth.flagshipNote}</p>}
         </header>
+        {flagNote && <p className={`${s.flagNote} ${s.flagNoteBelow}`}>{t.earth.flagshipNote}</p>}
 
         <ScenePanel st={st} sceneDef={sceneDef} openEyes={openEyes} />
         <SceneRail idx={idx} go={go} autoplay={autoplay} onAutoplay={() => setAutoplay((a) => !a)} />
