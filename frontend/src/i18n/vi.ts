@@ -176,9 +176,9 @@ export const vi = {
       },
       {
         name: 'Lõi trợ lý tiếng Việt',
-        does: 'Nghe câu hỏi bằng giọng nói hoặc chữ, gọi ba lõi trên, rồi kiểm từng con số trước khi trả lời.',
-        uses: 'Ba lõi trên; Claude (AI của Anthropic) khi máy chủ có khóa, nếu không thì bộ trả lời cố định',
-        gives: 'Câu trả lời ngắn, có nguồn, đọc to được',
+        does: 'Nghe câu hỏi bằng giọng nói hoặc chữ, rồi chọn trong dữ liệu của Miaudow những đoạn trả lời câu hỏi đó.',
+        uses: 'Ba lõi trên; Claude (AI của Anthropic) chỉ để chọn đoạn, khi máy chủ có khóa',
+        gives: 'Các đoạn được chọn, hiện nguyên văn kèm nguồn, đọc to được',
         limit: 'Chưa thử với giọng nói địa phương Nghệ An.',
         to: '/tro-ly',
         where: 'Trợ lý',
@@ -728,7 +728,7 @@ export const vi = {
     gridNote: 'Số theo ô lưới NASA POWER (mô hình), không đo tại ruộng.',
   },
   media: {
-    illustration: 'Tranh minh họa, không phải ảnh thật',
+    illustration: 'Do AI tạo, không phải ảnh thật',
     photo: 'Ảnh thật',
     pause: 'Dừng chuyển động ảnh',
     play: 'Cho ảnh chuyển động',
@@ -827,14 +827,13 @@ export const vi = {
       satA: 'Vệ tinh cờ Việt Nam',
       satB: 'NASA Terra (cờ Mỹ)',
       province: 'Nghệ An',
-      lat: 'Vĩ độ',
-      lon: 'Kinh độ',
       pause: 'Tạm dừng',
       play: 'Chạy tiếp',
       caption:
         'Minh họa: hai vệ tinh bay qua Nghệ An, mỗi chiếc quét một dải đất. Ranh giới tỉnh và các ô lưới NASA POWER là thật; ô sáng theo phần đất trồng của ô.',
     },
     scanLight: 'Bản nhẹ của đài quan sát: cảnh vệ tinh vẽ bằng hình, không cần 3D.',
+    flagships: { vn: 'Việt Nam · vệ tinh minh họa', terra: 'NASA Terra · MODIS' },
     satPause: 'Dừng vệ tinh',
     satPlay: 'Cho vệ tinh bay',
     flagshipNote:
@@ -1076,7 +1075,7 @@ export const vi = {
     team: 'Nhóm Miaudow · NASA Space Apps Challenge 2026, Hà Nội · thử thách Field Shift',
     photos: 'Ảnh và giấy phép',
     photosLead:
-      'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Tranh minh họa” do máy tạo, không phải ảnh chụp Nghệ An.',
+      'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Do AI tạo” (và dòng chữ “Ảnh tạo bằng AI” in trên tranh) không phải ảnh chụp Nghệ An.',
     licence: 'Giấy phép',
     source: 'Trang ảnh gốc',
     built: 'Dữ liệu tạo lúc',

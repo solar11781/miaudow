@@ -3,6 +3,8 @@
 // pass over Nghệ An, not computed from real ephemerides, and the page says so. No agency insignia is drawn (NASA's
 // insignia may not be used on non-NASA products).
 import { Cartesian3, Math as CMath } from 'cesium';
+import { en } from '../../i18n/en';
+import { vi } from '../../i18n/vi';
 
 export type Flag = 'vn' | 'us';
 
@@ -25,7 +27,7 @@ export const FLAGSHIPS: Flagship[] = [
     heading: -14,
     altKm: 680,
     offset: 0,
-    label: { vi: 'Việt Nam · vệ tinh minh họa', en: 'Viet Nam · illustrative satellite' },
+    label: { vi: vi.earth.flagships.vn, en: en.earth.flagships.vn },
     color: '#f1d38c',
   },
   {
@@ -34,7 +36,7 @@ export const FLAGSHIPS: Flagship[] = [
     heading: 196,
     altKm: 705,
     offset: 0.9,
-    label: { vi: 'NASA Terra · MODIS', en: 'NASA Terra · MODIS' },
+    label: { vi: vi.earth.flagships.terra, en: en.earth.flagships.terra },
     color: '#85c0e6',
   },
 ];

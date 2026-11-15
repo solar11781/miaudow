@@ -69,4 +69,15 @@ describe('field-step illustrations', () => {
     expect(viText.farmer.artNote).toMatch(/\bAI\b/);
     expect(en.farmer.artNote).toMatch(/\bAI\b/);
   });
+
+  it.each([
+    ['/nong-dan/ruong', <LandStep key="land" />, 5],
+    ['/nong-dan', <StartStep key="start" />, 4],
+  ] as const)('shows the AI label on every field picture of %s', (path, element, count) => {
+    const { container } = renderStep(path, element);
+    const labels = [...container.querySelectorAll('img')]
+      .filter((img) => (img.getAttribute('src') ?? '').includes('/field/'))
+      .map((img) => img.closest('span')?.textContent);
+    expect(labels).toEqual(Array(count).fill(viText.media.illustration));
+  });
 });

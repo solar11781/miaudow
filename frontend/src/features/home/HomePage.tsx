@@ -13,7 +13,7 @@ import { Icon, type IconName } from '../../design-system/Icon';
 import { Media } from '../../design-system/Media';
 import { EASE, gsap, riseLines, useCinema } from '../../motion/cinema';
 import { YearBars } from '../charts/YearBars';
-import { CountUp, SourceValue } from '../provenance/SourceValue';
+import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import { useSignInAvailable } from '../account/AccountProvider';
@@ -123,7 +123,7 @@ function Hero() {
           ))}
         </ol>
         {!calm && (
-          <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)} aria-pressed={paused}>
+          <button type="button" className={s.motionBtn} onClick={() => setPaused((p) => !p)}>
             <Icon name={paused ? 'play' : 'pause'} size={16} />
             {paused ? t.home.play : t.home.pause}
           </button>
@@ -171,7 +171,7 @@ export function Problem() {
         {rice && (
           <div className={s.money}>
             <SourceValue size="xl" {...refs.cropProfit(rice)}>
-              <CountUp text={f.million(rice.profit)} />
+              {f.million(rice.profit)}
               <span className={s.unit}>{t.common.millionPerHa}</span>
             </SourceValue>
             <span className={s.moneyLabel}>{t.home.riceSpring}</span>

@@ -179,9 +179,9 @@ export const en: Messages = {
       },
       {
         name: 'Vietnamese copilot core',
-        does: 'Hears a question by voice or text, calls the three cores above, and checks every number before it answers.',
-        uses: 'The three cores above; Claude (Anthropic’s AI) when the server has a key, otherwise a fixed answer engine',
-        gives: 'A short answer with its source, read aloud on request',
+        does: 'Hears a question by voice or text, then picks the passages in Miaudow’s data that answer it.',
+        uses: 'The three cores above; Claude (Anthropic’s AI) only to pick the passages, when the server has a key',
+        gives: 'The picked passages, shown word for word with their sources, read aloud on request',
         limit: 'Not tested yet with the local Nghệ An accent.',
         to: '/tro-ly',
         where: 'the Copilot',
@@ -729,7 +729,7 @@ export const en: Messages = {
     gridNote: 'NASA POWER grid values (a model), not measured on a farm.',
   },
   media: {
-    illustration: 'Illustration, not a photograph',
+    illustration: 'AI-generated, not a photograph',
     photo: 'Photograph',
     pause: 'Pause the image motion',
     play: 'Play the image motion',
@@ -829,14 +829,13 @@ export const en: Messages = {
       satA: 'Satellite with the flag of Viet Nam',
       satB: 'NASA Terra (US flag)',
       province: 'Nghệ An',
-      lat: 'Latitude',
-      lon: 'Longitude',
       pause: 'Pause',
       play: 'Play',
       caption:
         'Illustration: two satellites pass over Nghệ An, each scanning a strip of land. The province border and the NASA POWER cells are real; a cell lights up by its share of farmland.',
     },
     scanLight: 'The light version of the observatory: a drawn satellite scene, no 3D needed.',
+    flagships: { vn: 'Viet Nam · illustrative satellite', terra: 'NASA Terra · MODIS' },
     satPause: 'Pause satellites',
     satPlay: 'Fly satellites',
     flagshipNote:
@@ -1077,7 +1076,7 @@ export const en: Messages = {
     team: 'Team Miaudow · NASA Space Apps Challenge 2026, Hanoi · Field Shift challenge',
     photos: 'Photographs and licences',
     photosLead:
-      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “Illustration” are machine-made, not photographs of Nghệ An.',
+      'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” (the words are also printed on the picture) are not photographs of Nghệ An.',
     licence: 'Licence',
     source: 'Original file page',
     built: 'Data generated',

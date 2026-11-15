@@ -384,7 +384,7 @@ function SatToggle({ moving, onToggle }: { moving: boolean; onToggle: () => void
   const { calm } = useSettings();
   if (calm) return null;
   return (
-    <button type="button" className={s.satBtn} aria-pressed={!moving} onClick={onToggle}>
+    <button type="button" className={s.satBtn} onClick={onToggle}>
       <Icon name={moving ? 'pause' : 'play'} size={16} />
       {moving ? t.earth.satPause : t.earth.satPlay}
     </button>

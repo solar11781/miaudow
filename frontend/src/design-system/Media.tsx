@@ -13,7 +13,8 @@ interface Props {
   className?: string;
   /** Decorative images get empty alt text; meaningful ones carry their description. */
   decorative?: boolean;
-  /** Kept for callers; pictures carry no caption or credit on top. Credits live in the footer list. */
+  /** Kept for callers; photos carry no caption or credit on top (credits live in the footer list), and an AI
+   * illustration always says it is one. */
   label?: 'overlay' | 'none';
   /** Slow drift for hero images; switched off by the caller under reduced motion or when paused. */
   drift?: boolean;
@@ -24,7 +25,7 @@ const set = (slug: string, kind: 'avif' | 'webp') =>
     .sources.map((x) => `${x[kind]} ${x.w}w`)
     .join(', ');
 
-/** AVIF/WebP picture with a blurred placeholder and the image's own focal point. No text on the picture. */
+/** AVIF/WebP picture with a blurred placeholder and the image's own focal point; an AI illustration says so on it. */
 export function Media({ slug, narrow, sizes, priority, className, decorative, drift }: Props) {
   const pick = usePick();
   const t = useT();
@@ -58,6 +59,7 @@ export function Media({ slug, narrow, sizes, priority, className, decorative, dr
           style={{ objectPosition: pos, transformOrigin: pos }}
         />
       </picture>
+      {illustration && <span className={s.tag}>{t.media.illustration}</span>}
     </span>
   );
 }

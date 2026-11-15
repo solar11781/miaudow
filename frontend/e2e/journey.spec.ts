@@ -82,6 +82,21 @@ test('T1 the farmer route loads no WebGL and no 3D code', async ({ page }) => {
   expect(await page.locator('canvas').count()).toBe(0);
 });
 
+test('T1 the farmer route loads no motion library (H1: no motion beyond the H1 conditions on the farmer path)', async ({
+  page,
+}) => {
+  const bodies: Promise<string>[] = [];
+  page.on('response', (r) => {
+    if (r.request().resourceType() === 'script') bodies.push(r.text().catch(() => ''));
+  });
+  for (const url of ['/#/nong-dan', '/#/nong-dan/ruong', PLANS_URL]) {
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+  }
+  // GSAP's scroll plugin registers itself under this name; no farmer script may carry it
+  expect((await Promise.all(bodies)).filter((code) => code.includes('ScrollTrigger'))).toEqual([]);
+});
+
 test('T5 every sourced number opens its provenance sheet and Escape closes it', async ({ page }) => {
   await page.goto(PLANS_URL);
   const firstValue = page.locator('#the-cc1 [data-value]').first();
