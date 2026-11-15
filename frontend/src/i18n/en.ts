@@ -610,9 +610,6 @@ export const en: Messages = {
       'Miaudow does not choose a plan for you. The evidence covers one year and one plot per crop, which is not enough to rank. This is what each plan shows:',
     evidenceFrom: 'Evidence',
     matchScore: 'match',
-    llmStatus: 'Language model: not connected',
-    llmHelp:
-      'If a language model is connected on a server (never with an API key in the browser), it may only rephrase these evidence passages.',
     you: 'You',
     bot: 'Assistant',
     clear: 'Clear the conversation',
@@ -712,7 +709,7 @@ export const en: Messages = {
     serverOn: 'The copilot server is running',
     serverOff: 'Running in offline mode',
     claudeOn:
-      'Claude is connected on the server: it orchestrates the tools and words the answer, but may not add new numbers.',
+      'Claude is connected on the server: it only picks which passages from Miaudow’s data answer the question. They are shown word for word with their sources; Claude writes no part of the answer.',
     claudeOff:
       'Claude is not connected. Answers are assembled from tool results with fixed sentences; no language model is used.',
     browserHelp:
