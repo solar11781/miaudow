@@ -43,6 +43,8 @@ export const vi = {
     back: 'Quay lại',
     next: 'Tiếp tục',
     source: 'Nguồn',
+    /** The singular of an API unit after the number 1: Vietnamese nouns have no plural (D-192). */
+    unitOfOne: (unit: string) => unit,
     open: 'Mở',
     close: 'Đóng',
     millionPerHa: 'triệu đồng/ha',

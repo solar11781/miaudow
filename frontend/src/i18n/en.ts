@@ -45,6 +45,8 @@ export const en: Messages = {
     back: 'Back',
     next: 'Continue',
     source: 'Source',
+    /** The singular of an API unit after the number 1 (D-192). */
+    unitOfOne: (unit: string) => (unit === 'crops' ? 'crop' : unit),
     open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',

@@ -794,4 +794,16 @@ describe('screen check details', () => {
     const button = view.getByRole('button', { name: `Nguồn: ${line}` });
     expect(button.textContent).not.toMatch(/Nguồn.*Nguồn/);
   });
+  it('says 1 crop, not 1 crops, in English and keeps loại cây in Vietnamese', () => {
+    const one = (c: ReturnType<typeof card>) => {
+      c.plan.land.crops_in_year.value = { value: '1', unit: { vi: 'loại cây', en: 'crops' }, source_ids: ['R-P02'] };
+      return c;
+    };
+    show(one(card('cc1', ['en-GB', 'en'])));
+    const values = () => [...document.querySelectorAll('[data-testid="card-cc1-row-land"] [data-value]')];
+    expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 crop');
+    cleanup();
+    show(one(card('cc1')));
+    expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 loại cây');
+  });
 });

@@ -14,7 +14,7 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
     const facts = (ids: SourceId[]) => [...new Set(ids)].flatMap((id) => (sources[id] ? [sources[id]] : []));
     // one display of a Value for the cards and the source sheet: the language's digit grouping and the unit as written
     const number = (v: Value) => displayValue(v.value, lang);
-    const unit = (v: Value) => displayUnit(pick(v.unit));
+    const unit = (v: Value) => displayUnit(v.value === '1' ? t.common.unitOfOne(pick(v.unit)) : pick(v.unit));
     const shown = (v: Value) => `${number(v)} ${unit(v)}`.trim();
     return {
       number,
