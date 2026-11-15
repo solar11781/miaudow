@@ -174,5 +174,3 @@ export const MISSIONS: Mission[] = [
     source: 'https://ecostress.jpl.nasa.gov/',
   },
 ];
-
-export const STATUS_ORDER: MissionStatus[] = ['ingested', 'visual', 'blocked'];
