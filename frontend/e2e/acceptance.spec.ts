@@ -62,21 +62,9 @@ test('T2 no slider on any page', async ({ page }) => {
   }
 });
 
-// pages that fail T9 on main today (2026-11-15); each fixme names what is cut at 180 px
-const PHOTO_STAGE = 'the "Nghệ An" caption is cut by the photo stage box at 180 px';
-const ZOOM_GAPS: Record<string, string> = {
-  '/#/': PHOTO_STAGE,
-  ...Object.fromEntries(SCENES.map((c) => [`/#/dai-quan-sat?canh=${c}`, PHOTO_STAGE])),
-  '/#/nong-dan': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
-  '/#/nong-dan/ruong': 'the photo tag "Do AI tạo, không phải ảnh thật" is cut by its own box at 180 px',
-  [PLANS_URL]: 'the plan card cuts the "Bạn quan tâm" label and a long question line at 180 px',
-  '/#/tro-ly': 'the copilot page header cuts its title and lead at 180 px',
-};
-
 // H9: 200% zoom of a 360 x 740 phone is a 180 x 370 CSS px viewport
 for (const url of PAGES) {
   test(`T9 zoom at 200% nothing is clipped and every control is reachable (${url})`, async ({ page }) => {
-    test.fixme(url in ZOOM_GAPS, ZOOM_GAPS[url]);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 180, height: 370 });
     await page.goto(url);
@@ -240,8 +228,7 @@ test('T26 every stability block shows its years count and its scope', async ({ p
   }
 });
 
-test.fixme('T7 tap-targets every button and link on the plans page is at least 44 x 44 px', async ({ page }) => {
-  // fixme: number buttons with a one-digit value ("0 %", "4 %") in the share tables and rice rows are about 37 px wide
+test('T7 tap-targets every button and link on the plans page is at least 44 x 44 px', async ({ page }) => {
   await openPlans(page);
   await openFolds(page);
   const small = async () =>
