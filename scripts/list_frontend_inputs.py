@@ -35,12 +35,6 @@ GROUPS: list[tuple[str, str, str]] = [
         f"`web/pipeline/build_media.mjs` in {LAMGIANG}.",
     ),
     (
-        "frontend/public/media/art",
-        "*",
-        f"AI-generated illustrations (OpenAI image generation, `assets/ASSET_MANIFEST.json` in {LAMGIANG}); "
-        "the app labels each one as AI-generated.",
-    ),
-    (
         "frontend/public/media/field",
         "*",
         f"AI-generated field-step illustrations made for Miaudow (`assets/field-conditions/manifest.json` in {LAMGIANG}); "
