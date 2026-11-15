@@ -114,7 +114,9 @@ describe('priority line', () => {
         card(response(), 'cc1', pr);
         expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).not.toMatch(BANNED);
         // P-02, not the author line it shares with P-03 (D-52)
-        expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).toContain(SOURCES.p02.short);
+        expect(line('cc1')?.textContent, `${languages[0]} ${pr}`).toContain(
+          SOURCES.p02.short[languages[0] === 'en-GB' ? 'en' : 'vi'],
+        );
         cleanup();
       }
     }

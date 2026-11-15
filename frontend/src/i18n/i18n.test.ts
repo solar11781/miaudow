@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { en } from './en';
 import { vi } from './vi';
 import method from '../../snapshot/method.json';
+import { SOURCES } from '../domain/sources';
 
 type Node = unknown;
 
@@ -81,6 +82,14 @@ describe('translations', () => {
       expect(text).not.toMatch(
         /checks every number|short answer|answer engine|kiểm từng con số|câu trả lời ngắn|bộ trả lời/i,
       );
+    }
+  });
+  // D-192: English writes et al. where Vietnamese writes và cs., in the text files and the short source names
+  it('write et al. in English and và cs. in Vietnamese', () => {
+    expect(strings(en).join(' ')).not.toContain('và cs.');
+    for (const src of Object.values(SOURCES)) {
+      expect(src.short.en, src.id).not.toContain('và cs.');
+      if (src.short.vi.includes('và cs.')) expect(src.short.en, src.id).toContain('et al.');
     }
   });
 });

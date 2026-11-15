@@ -806,4 +806,15 @@ describe('screen check details', () => {
     show(one(card('cc1')));
     expect(values().map((e) => e.getAttribute('data-value'))).toContain('1 loại cây');
   });
+  it('writes et al. in English where Vietnamese writes và cs.', () => {
+    show(card('cc1', ['en-GB', 'en'], 'land'));
+    const line = document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent ?? '';
+    expect(line).toContain('Trịnh Đức Toàn et al. 2023');
+    expect(line).not.toContain('và cs.');
+    cleanup();
+    show(card('cc1', ['vi-VN', 'vi'], 'land'));
+    expect(document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent).toContain(
+      'Trịnh Đức Toàn và cs. 2023',
+    );
+  });
 });

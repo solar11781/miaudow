@@ -62,7 +62,7 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
               <ol className={s.chain}>
                 {value.chain.map((id) => (
                   <li key={id}>
-                    <KindBadge kind={SOURCES[id].kind} compact /> <span>{SOURCES[id].short}</span>
+                    <KindBadge kind={SOURCES[id].kind} compact /> <span>{pick(SOURCES[id].short)}</span>
                   </li>
                 ))}
               </ol>
