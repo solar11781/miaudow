@@ -103,11 +103,11 @@ describe('your price and costs', () => {
     type(/^Đậu xanh.*Giá bán/, '45000');
     expect(latest.prices).toEqual({ cc1_summer_autumn_mung_bean: '45000' });
     expect(result(id)).toContain(vi.farmer.yourNumbersLabel);
-    expect(result(id)).toContain(`${vi.farmer.own.revenue}: 46.350 nghìn đồng/ha`);
+    expect(result(id)).toContain(`${vi.farmer.own.revenue}: 46,4 triệu đồng/ha`);
     expect(result(id)).not.toContain(vi.farmer.own.margin);
     expect(result(id)).toContain(vi.farmer.own.needPrice); // peanut has no price yet
     type(/^Đậu xanh.*Chi phí/, '25000');
-    expect(result(id)).toContain(`${vi.farmer.own.margin}: 21.350 nghìn đồng/ha`);
+    expect(result(id)).toContain(`${vi.farmer.own.margin}: 21,4 triệu đồng/ha`);
     expect(result(id)).not.toContain(vi.farmer.own.yearSum); // no partial whole-year sum
   });
 
@@ -117,10 +117,10 @@ describe('your price and costs', () => {
     type(/^Lạc.*Giá bán/, '30000');
     type(/^Đậu xanh.*Giá bán/, '45000');
     expect(result(id)).toContain(vi.farmer.own.yearSum);
-    expect(result(id)).toContain('163.650 nghìn đồng/ha'); // 117,300 + 46,350
+    expect(result(id)).toContain('163,7 triệu đồng/ha'); // 117,300 + 46,350 thousand, in million (D-190)
     type(/^Lạc.*Chi phí/, '90000');
     type(/^Đậu xanh.*Chi phí/, '25000');
-    expect(result(id)).toContain('48.650 nghìn đồng/ha'); // 27,300 + 21,350
+    expect(result(id)).toContain('48,7 triệu đồng/ha'); // 27,300 + 21,350 thousand, in million (D-190)
   });
 
   it('does not use a number that is not whole and says so', () => {
@@ -150,15 +150,15 @@ describe('your price and costs', () => {
     type(/^Lạc.*Giá bán/, '30000');
     const row = document.querySelector(`[data-testid="card-${id}-row-money"]`);
     if (!(row instanceof HTMLElement)) throw new Error('no money row');
-    for (const v of ['25.980 nghìn đồng/ha', '83.500 nghìn đồng/ha'])
-      expect(within(row).getAllByText(v).length).toBe(1);
+    for (const v of ['26,0 triệu đồng/ha', '83,5 triệu đồng/ha']) expect(within(row).getAllByText(v).length).toBe(1);
   });
 
   it('opens with the numbers already in the link, and its sheet names the study yield and your own numbers', () => {
     const id = renderForm({ prices: { cc1_spring_peanut: '30000' }, costs: {} });
     expect(field(/^Lạc.*Giá bán/)).toHaveProperty('value', '30000');
-    fireEvent.click(within(ownBox(id)).getByRole('button', { name: /^117\.300/ }));
+    fireEvent.click(within(ownBox(id)).getByRole('button', { name: /^117,3 triệu đồng\/ha/ }));
     const sheet = screen.getByTestId('source-sheet').textContent;
+    expect(sheet).toContain('117.300 nghìn đồng/ha'); // the sheet keeps the exact value and unit (D-190)
     expect(sheet).toContain('bài P-02'); // the study yield's source
     expect(sheet).toContain('phép tính E-022'); // a number we compute cites its inputs and E-022 (D-158)
     expect(sheet).toContain(vi.farmer.own.sheetNote);
