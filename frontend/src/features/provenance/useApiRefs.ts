@@ -42,6 +42,16 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
           note: t.common.computedNote,
         };
       },
+      /** Rule mode of a legend "?" button (UI-UX-SPEC section 10): the rule label is the title, no value row. */
+      rule(r: Rule): ApiSourceRef {
+        return {
+          facts: facts([r.threshold_source_id, ...r.values_source_ids, r.computed_by]),
+          value: pick(r.label),
+          label: t.farmer.legendTitle,
+          ruleText: pick(r.rule_text),
+          note: t.common.computedNote,
+        };
+      },
       /** Sources only (calendar dates, land-care principles, risks): `value` is the text shown on the button. */
       sources(ids: SourceId[], value: string, label: string): ApiSourceRef {
         return { facts: facts(ids), value, label };

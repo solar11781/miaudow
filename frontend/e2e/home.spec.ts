@@ -7,6 +7,6 @@ test('D-187 the first screen holds the start button and the "what this is" box',
   const about = page.getByRole('region', { name: 'Ứng dụng này làm gì?' });
   await expect(start).toBeInViewport({ ratio: 1 });
   await expect(about).toBeInViewport({ ratio: 1 });
-  await expect(about).toContainText('Không dự báo mùa tới');
+  await expect(about).toContainText('Không dự báo vụ tới');
   await expect(about).toContainText('Không chọn thay gia đình bạn');
 });
