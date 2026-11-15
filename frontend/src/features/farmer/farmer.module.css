@@ -152,20 +152,6 @@
   background: linear-gradient(180deg, rgba(10, 23, 15, 0) 40%, #0a170f 100%);
 }
 
-.photoCaption {
-  position: absolute;
-  z-index: 1;
-  right: 12px;
-  top: 12px;
-  padding: 0.3rem 0.7rem;
-  border-radius: var(--r-pill);
-  background: rgba(8, 20, 11, 0.55);
-  color: #efe9d8;
-  font-size: var(--t-micro);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
 /* the body starts below the photo, so the photo's credit at its bottom edge stays readable */
 .startBody {
   padding: var(--s-5) var(--s-6) var(--s-6);
@@ -184,41 +170,7 @@
   color: var(--fg-2);
 }
 
-.startList {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-block: var(--s-2);
-}
-
-.startList li {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: var(--fg);
-}
-
-.startNum {
-  flex: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line-2);
-  font: 500 17px/1 var(--font-mono);
-  color: var(--c-gold-300);
-}
-
 /* choices */
-.choices {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-}
-
-.choice,
 .prio {
   position: relative;
   display: flex;
@@ -239,12 +191,10 @@
     transform var(--d-fast) var(--ease-out);
 }
 
-.choice:hover,
 .prio:hover {
   border-color: var(--line-2);
 }
 
-.choice:active,
 .prio:active {
   transform: scale(0.992);
 }
@@ -267,27 +217,6 @@
     background: color-mix(in srgb, var(--c-paddy-600) 22%, var(--bg-raised));
     border-color: var(--c-gold-500);
   }
-}
-
-.choiceArt {
-  flex: none;
-  width: 112px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-}
-
-.choiceArt svg {
-  width: 100%;
-  height: auto;
-}
-
-.choiceText {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-  padding-right: 2rem;
 }
 
 .choiceTitle {
@@ -316,12 +245,6 @@
   background: var(--c-gold-500);
   border-color: var(--c-gold-500);
   color: var(--on-accent);
-}
-
-@media (max-width: 380px) {
-  .choiceArt {
-    width: 84px;
-  }
 }
 
 .prioGrid {
@@ -485,26 +408,9 @@
   font-size: var(--t-small);
 }
 
-.hzWord {
-  grid-column: 2;
-  font: var(--w-head) 1.4rem/1.1 var(--font-display);
-}
-
 .hz > :last-child {
   grid-column: 3;
   grid-row: 1 / 3;
-}
-
-.hz[data-reach='most'] .hzWord {
-  color: var(--data-heat);
-}
-
-.hz[data-reach='many'] .hzWord {
-  color: var(--data-drought-strong);
-}
-
-.hz[data-reach='none'] .hzWord {
-  color: var(--fg-3);
 }
 
 .riceLine {

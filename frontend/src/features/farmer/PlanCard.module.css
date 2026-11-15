@@ -384,27 +384,12 @@
   color: var(--fg-3);
 }
 
-.more,
-.all {
+.more {
   border-radius: var(--r-md);
   background: var(--bg-sunk);
 }
 
-.all {
-  background: transparent;
-  border-radius: 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  margin-inline: calc(var(--s-3) * -1);
-  padding-inline: var(--s-3);
-}
-
-.all > summary {
-  padding-inline: 0;
-}
-
-.more > summary,
-.all > summary {
+.more > summary {
   min-height: 52px;
   display: flex;
   align-items: center;
@@ -416,19 +401,16 @@
   color: var(--fg);
 }
 
-.more > summary::-webkit-details-marker,
-.all > summary::-webkit-details-marker {
+.more > summary::-webkit-details-marker {
   display: none;
 }
 
-.more > summary svg:last-child,
-.all > summary svg:last-child {
+.more > summary svg:last-child {
   margin-left: auto;
   transition: transform var(--d-med) var(--ease-out);
 }
 
-.more[open] > summary svg:last-child,
-.all[open] > summary svg:last-child {
+.more[open] > summary svg:last-child {
   transform: rotate(180deg);
 }
 
@@ -436,68 +418,9 @@
   padding: 0 var(--s-4) var(--s-3);
 }
 
-.all > :not(summary) {
-  margin-inline: 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .more > summary svg:last-child,
-  .all > summary svg:last-child {
+  .more > summary svg:last-child {
     transition: none;
-  }
-}
-
-/* bad weather at a glance: one plain word per condition, the sourced share beside it */
-.glance {
-  list-style: none;
-  display: grid;
-  gap: var(--s-2);
-}
-
-.glanceItem {
-  display: grid;
-  grid-template-columns: 26px minmax(4.5rem, auto) 1fr auto;
-  align-items: center;
-  gap: 0.2rem 0.6rem;
-  padding: 0.2rem 0.7rem;
-  border-radius: var(--r-sm);
-  background: var(--bg-sunk);
-  min-height: 52px;
-}
-
-.glanceItem > svg {
-  color: var(--fg-3);
-}
-
-.glanceName {
-  color: var(--fg-2);
-}
-
-.glanceWord {
-  font: var(--w-head) 1.35rem/1.1 var(--font-display);
-}
-
-.glanceItem[data-reach='most'] .glanceWord {
-  color: var(--data-heat);
-}
-
-.glanceItem[data-reach='many'] .glanceWord {
-  color: var(--data-drought-strong);
-}
-
-.glanceItem[data-reach='none'] .glanceWord {
-  color: var(--fg-3);
-}
-
-@media (max-width: 420px) {
-  .glanceItem {
-    grid-template-columns: 26px 1fr auto;
-  }
-  .glanceName {
-    grid-column: 2 / -1;
-  }
-  .glanceWord {
-    grid-column: 2;
   }
 }
 
