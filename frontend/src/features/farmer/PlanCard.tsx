@@ -362,14 +362,15 @@ function WeatherRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
       highlight={highlight}
       line={line}
     >
+      {/* the bad-years answer shows as soon as the row opens, with no second fold (F-B1) */}
       {plan.exposure.length > 0 && (
-        <YearsFold id={`card-${plan.id}-weather-years`}>
+        <div id={`card-${plan.id}-weather-years`} className={s.fold}>
           {/* drought is a water reading, so the table says where it is (D-58, D-192) */}
           <p className={s.rowNote}>{t.farmer.rows.droughtPointer(t.farmer.rows.water)}</p>
           {/* what the shares are, next to the tables it explains (D-187) */}
           <p className={s.rowNote}>{t.farmer.rows.weatherNote}</p>
           <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
-        </YearsFold>
+        </div>
       )}
       {rice.length > 0 && (
         <div className={s.sub}>

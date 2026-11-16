@@ -404,24 +404,38 @@ describe('water notes', () => {
   });
 });
 
-// D-170: the per-year share tables of the stability and water rows fold behind "Xem từng năm"; the rows stay open
+// D-170: the per-year share tables of the water row fold behind "Xem từng năm"; the rows stay open
 describe('per-year tables', () => {
   afterEach(cleanup);
-  it('fold behind an accessible button and stay in the page for print', async () => {
+  it('fold behind an accessible button in the water row and stay in the page for print', async () => {
     const id = renderCard();
-    for (const row of ['weather', 'water']) {
-      const box = document.querySelector(`[data-testid="card-${id}-row-${row}"]`);
-      const button = [...(box?.querySelectorAll('button') ?? [])].find((b) => b.textContent === vi.farmer.eachYear);
-      expect(button?.getAttribute('aria-expanded'), row).toBe('false');
-      const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
-      expect(panel?.querySelector('table'), row).not.toBeNull();
-      // D-187: the line that says what the weather shares are sits with the tables it explains
-      if (row === 'weather') expect(panel?.textContent).toContain(vi.farmer.rows.weatherNote);
-      expect(panel?.hasAttribute('hidden'), row).toBe(false); // hidden by screen-only CSS, so print shows it (T35)
-      button?.click();
-      await Promise.resolve();
-      expect(button?.getAttribute('aria-expanded'), row).toBe('true');
-    }
+    const box = document.querySelector(`[data-testid="card-${id}-row-water"]`);
+    const button = [...(box?.querySelectorAll('button') ?? [])].find((b) => b.textContent === vi.farmer.eachYear);
+    expect(button?.getAttribute('aria-expanded')).toBe('false');
+    const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+    expect(panel?.querySelector('table')).not.toBeNull();
+    expect(panel?.hasAttribute('hidden')).toBe(false); // hidden by screen-only CSS, so print shows it (T35)
+    button?.click();
+    await Promise.resolve();
+    expect(button?.getAttribute('aria-expanded')).toBe('true');
+  });
+  // F-B1 (roleplay audit 2026-11-16): the bad-years answer is the first thing the opened weather row shows, and the
+  // line that the crops have no yearly yield data comes after the tables, as their limit
+  it('show at once in the weather row, before the no-yearly-data line', () => {
+    // a plan with no rice, like the four trial plans
+    const id = renderCard(['vi-VN', 'vi'], (plan) => {
+      plan.stability = [];
+    });
+    const body = document.getElementById(`card-${id}-row-weather-body`);
+    expect([...(body?.querySelectorAll('button') ?? [])].some((b) => b.textContent === vi.farmer.eachYear)).toBe(false);
+    expect(body?.querySelector('[aria-expanded]')).toBeNull();
+    const table = body?.querySelector('table');
+    expect(table).not.toBeNull();
+    // D-187: the line that says what the weather shares are sits with the tables it explains
+    expect(body?.textContent).toContain(vi.farmer.rows.weatherNote);
+    const limit = [...(body?.querySelectorAll('p') ?? [])].find((p) => p.textContent?.includes(vi.farmer.rice.noData));
+    expect(limit).toBeDefined();
+    expect(table && limit && table.compareDocumentPosition(limit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
 
