@@ -50,16 +50,6 @@ textarea {
 button {
   cursor: pointer;
 }
-/* the loading line of index.html, seen only until the app starts */
-.boot {
-  padding: 40vh var(--gutter-r) 0 var(--gutter-l);
-  text-align: center;
-  color: var(--fg-2);
-}
-.boot span {
-  display: block;
-  color: var(--fg-3);
-}
 h1,
 h2,
 h3,

@@ -81,10 +81,26 @@ ${'-'.repeat(72)}
   ];
 }
 
+// A stylesheet in the head holds back all drawing until it has arrived. At the end of the body it lets a slow phone
+// draw the loading line of index.html at once; the app's own script still waits for it, so nothing shows unstyled.
+function lateStylesheet(): Plugin {
+  return {
+    name: 'late-stylesheet',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html) {
+        const links = html.match(/[ \t]*<link rel="stylesheet"[^>]*>\n?/g) ?? [];
+        const rest = links.reduce((page, link) => page.replace(link, ''), html);
+        return rest.replace('  </body>', `${links.join('')}  </body>`);
+      },
+    },
+  };
+}
+
 // Relative base so the built app also runs from a sub-folder or a static file host (hash routing, no server rewrites).
 export default defineConfig({
   base: './',
-  plugins: [react(), snapshotFiles(), thirdPartyLicenses()],
+  plugins: [react(), snapshotFiles(), thirdPartyLicenses(), lateStylesheet()],
   resolve: { alias: { '@data': canonical } },
   server: { proxy: { '/api': api } },
   preview: { proxy: { '/api': api } },
