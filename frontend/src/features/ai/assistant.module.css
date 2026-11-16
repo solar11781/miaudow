@@ -677,13 +677,13 @@
   line-height: 1.5;
 }
 
+/* a phone keeps the head short so the first question to tap shows on the first screen; the header carries the emblem */
 @media (max-width: 760px) {
   .heroInner {
-    flex-direction: column;
-    align-items: flex-start;
+    padding-block: var(--s-5);
   }
-  .heroEmblem img {
-    width: 150px !important;
+  .heroEmblem {
+    display: none;
   }
 }
 

@@ -24,6 +24,16 @@ test('the example questions come before the explanation of how the assistant wor
   expect(examples && explanation && examples.y < explanation.y).toBe(true);
 });
 
+// roleplay audit 2026-11-16 (farmer, 360 x 740): the page head filled the first screen, so nothing to tap showed
+test('a phone shows the first example question on the first screen', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) > 960, 'a phone finding');
+  await page.goto('/#/tro-ly');
+  const first = page.getByLabel('Câu hỏi mẫu').getByRole('button').first();
+  await expect(first).toBeVisible();
+  const box = await first.boundingBox();
+  expect((box?.y ?? 0) + 44).toBeLessThanOrEqual(page.viewportSize()?.height ?? 0);
+});
+
 test('the first example question leads on to the comparison with the field type it names', async ({ page }) => {
   await page.goto('/#/tro-ly');
   await page.getByLabel('Câu hỏi mẫu').getByRole('button').first().click();
