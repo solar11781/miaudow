@@ -79,3 +79,32 @@ test('the globe page names a grid cell in the reading language', async ({ page }
   await expect(cells.getByRole('radio', { name: '19,0°B 105,625°Đ', exact: true })).toBeVisible();
   await expect(cells).not.toContainText('°N');
 });
+
+// visual audit 2026-11-16: on the flat map the trial site's name ran out of the frame on a phone and lay under a
+// cell button
+test('the flat map keeps its place names inside the frame and over the cells', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/#/khoa-hoc');
+  const flat = page.getByRole('button', { name: '2D', exact: true });
+  const toggle = page.getByRole('button', { name: 'Địa hình (NASA SRTM)' });
+  await flat.or(toggle).first().waitFor();
+  if (await flat.isVisible()) await flat.click();
+  await toggle.waitFor();
+  const names = page.locator('g[class*="place"] text');
+  await expect(names).toHaveCount(2);
+  // retried: the map takes half a second to lie flat after the 2D button
+  await expect(async () => {
+    const frame = await page.locator('svg[class*="plane"] rect[class*="base"]').first().boundingBox();
+    for (const box of await names.evaluateAll((els) => els.map((e) => e.getBoundingClientRect()))) {
+      expect(box.left).toBeGreaterThanOrEqual((frame?.x ?? 0) - 1);
+      expect(box.right).toBeLessThanOrEqual((frame?.x ?? 0) + (frame?.width ?? 0) + 1);
+    }
+  }).toPass({ timeout: 5000 });
+  // drawn after the cell buttons, so a cell never covers a name
+  const after = await names.first().evaluate((el) => {
+    const cells = [...document.querySelectorAll('button[aria-pressed][class*="prism"]')];
+    const last = cells[cells.length - 1];
+    return Boolean(last && last.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(after).toBe(true);
+});

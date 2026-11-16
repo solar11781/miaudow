@@ -197,17 +197,6 @@ export function Grid3D({
                   />
                 );
               })}
-              {MAP_PLACES.map((p) => {
-                const [x, y] = box.px(p.lon, p.lat);
-                return (
-                  <g key={p.id} className={s.place}>
-                    <circle cx={x} cy={y} r={3.2} />
-                    <text x={x + 7} y={y + 4}>
-                      {p.approx ? t.places.approx(t.places[p.name]) : t.places[p.name]}
-                    </text>
-                  </g>
-                );
-              })}
             </svg>
             {geo.grid
               .filter((c) => c.weight > 0)
@@ -291,6 +280,27 @@ export function Grid3D({
                   </button>
                 );
               })}
+            {/* drawn after the cells so no cell covers a name; a name in the right half is written to the left of
+                its point, so it stays inside the frame */}
+            <svg
+              className={`${s.plane} ${s.places}`}
+              viewBox={`-40 -40 ${box.W + 80} ${box.H + 80}`}
+              style={{ left: -40, top: -40, width: box.W + 80, height: box.H + 80 }}
+              aria-hidden="true"
+            >
+              {MAP_PLACES.map((p) => {
+                const [x, y] = box.px(p.lon, p.lat);
+                const left = x > box.W / 2;
+                return (
+                  <g key={p.id} className={s.place}>
+                    <circle cx={x} cy={y} r={3.2} />
+                    <text x={left ? x - 7 : x + 7} y={y + 4} textAnchor={left ? 'end' : 'start'}>
+                      {p.approx ? t.places.approx(t.places[p.name]) : t.places[p.name]}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
           </div>
         </div>
         <p className={s.hint}>{flat ? t.science.flatHint : t.science.dragHint}</p>

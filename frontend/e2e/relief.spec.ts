@@ -62,7 +62,7 @@ test('T15 map-frame the flat map drawing is as wide as its frame, so cells line 
   await flat.or(toggle).first().waitFor();
   if (await flat.isVisible()) await flat.click();
   await toggle.waitFor();
-  const box = await page.locator('svg[class*="plane"]').boundingBox();
+  const box = await page.locator('svg[class*="plane"]').first().boundingBox();
   // viewBox is (W + 80) x (H + 80) = 476.4 x 416 for the 2.5 x 2 degree frame
   expect((box?.width ?? 0) / (box?.height ?? 1)).toBeCloseTo(476.4 / 416, 1);
 });
