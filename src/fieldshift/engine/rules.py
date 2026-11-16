@@ -44,6 +44,7 @@ SOIL_WETNESS = "soil_wetness.json"
 RISK_TABLE = "risk_table.json"
 METRICS = "metrics.json"
 GATES = "gates.json"
+RAIN_CHECK = "rain_check.json"
 M = TypeVar("M", bound=BaseModel)
 CROP_ROW_PLANS = ("usual", "cc1", "cc2", "cc3", "cc4")  # §4b: no usual_p03 (P-03 reports no dates)
 CROP_ROW_SEASONS = ("spring", "summer_autumn", "autumn_winter")  # §4b: the P-02 crop seasons
@@ -217,6 +218,44 @@ def metrics_file(root: Path) -> MetricsFile:
         return MetricsFile.model_validate(_artifact(root, METRICS))
     except ValidationError as err:
         raise ValueError(f"artifacts/{METRICS}: {err}") from err
+
+
+class RainMonthRow(BaseModel):
+    """One month of artifacts/rain_check.json (05-DATA-CONTRACTS §5c), in mm."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    month: str = Field(pattern=r"^\d{4}-\d{2}$")
+    imerg_mm: float
+    power_mm: float
+
+
+class RainCheckFile(BaseModel):
+    """artifacts/rain_check.json (05-DATA-CONTRACTS §5c): IMERG against POWER monthly rain. No pass or fail field."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: str
+    generated_at: str
+    freeze_commit: str = Field(min_length=1)
+    months: list[RainMonthRow]
+    cc: float = Field(ge=-1, le=1)
+    mean_imerg_mm: float
+    mean_power_mm: float
+    n_months: int = Field(ge=0)
+    n_dropped: int = Field(ge=0)
+    source_ids: list[SourceId] = Field(min_length=1)
+    computed_by: SourceId
+
+
+def rain_check_file(root: Path) -> RainCheckFile | None:
+    """The checked content of artifacts/rain_check.json; None when the check was not run (the file is absent)."""
+    if not (root / "artifacts" / RAIN_CHECK).exists():
+        return None
+    try:
+        return RainCheckFile.model_validate(_artifact(root, RAIN_CHECK))
+    except ValidationError as err:
+        raise ValueError(f"artifacts/{RAIN_CHECK}: {err}") from err
 
 
 def _read_yaml(root: Path, name: str) -> object:

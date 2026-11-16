@@ -415,6 +415,20 @@
     - {vi: "Chúng tôi đọc bản arXiv, không phải bản trên tạp chí.", en: "We read the arXiv version, not the journal version."}
   url: "https://doi.org/10.1016/j.agrformet.2021.108555"
   nso_credit: false
+- id: R-M23
+  citation:
+    vi: "Roversi, G. et al. (2024) The extreme rainfall events of the 2020 typhoon season in Vietnam as seen by seven different precipitation products. Remote Sensing 16(5):805"
+    en: "Roversi, G. et al. (2024) The extreme rainfall events of the 2020 typhoon season in Vietnam as seen by seven different precipitation products. Remote Sensing 16(5):805"
+  study_type: {vi: "Bài báo khoa học trên tạp chí: so sánh bảy sản phẩm mưa với số đo của trạm ở Việt Nam",
+               en: "Journal article: seven rain products compared with Vietnamese gauge measurements"}
+  place_years: {vi: "Việt Nam; mùa bão 2020", en: "Vietnam; the 2020 typhoon season"}
+  read_status: "READ (section 3.3, Table 5)"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi chỉ đọc mục 3.3 và Bảng 5, nơi bài định nghĩa hệ số tương quan Pearson (CC). Bài dùng nó cho các trận mưa cực đoan của một mùa bão; chúng tôi dùng cùng công thức cho tổng mưa từng tháng của 24 năm.",
+       en: "We read only section 3.3 and Table 5, where the paper defines the Pearson correlation coefficient (CC). The paper uses it for the extreme rain events of one typhoon season; we use the same formula for monthly rain totals over 24 years."}
+  url: "https://www.mdpi.com/2072-4292/16/5/805"
+  nso_credit: false
 - id: R-M25
   citation:
     vi: "Lobell, D.B., Burke, M.B. (2010). On the use of statistical models to predict crop yield responses to climate change. Agricultural and Forest Meteorology 150: 1443-1452"
@@ -493,6 +507,19 @@
     - {vi: "Không phải số đo tại ruộng. Chúng tôi đọc thuộc tính của tệp số liệu.",
        en: "Not measured at the field. We read the attributes of the data files."}
   url: "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGM.07/"
+  nso_credit: false
+- id: R-N06
+  citation:
+    vi: "Reichle, R. et al. (2017) Land surface precipitation and hydrology in MERRA-2. Bài trình bày tại Hội nghị quốc tế lần thứ 5 về tái phân tích, Rome (GMAO, NASA)"
+    en: "Reichle, R. et al. (2017) Land surface precipitation and hydrology in MERRA-2. Slides, 5th International Conference on Reanalysis, Rome (GMAO, NASA)"
+  study_type: {vi: "Bài trình bày của nhóm tạo ra tái phân tích MERRA-2 của NASA", en: "Slides from the team that makes NASA's MERRA-2 reanalysis"}
+  place_years: {vi: "Toàn cầu; hội nghị năm 2017", en: "Global; conference of 2017"}
+  read_status: "READ (slides)"
+  full_text_read: false
+  limitations:
+    - {vi: "Chúng tôi đọc các trang trình bày, không đọc bài báo đi kèm (Reichle et al. 2017, J. Climate 30(5)). Các trang nói mưa trên đất liền của MERRA-2 được chỉnh theo sản phẩm dựa trên số đo, trừ ở vĩ độ cao.",
+       en: "We read the slides, not the accompanying paper (Reichle et al. 2017, J. Climate 30(5)). They say MERRA-2 land rain is corrected to observation-based products except at high latitudes."}
+  url: "https://ntrs.nasa.gov/api/citations/20170011571/downloads/20170011571.pdf"
   nso_credit: false
 - id: R-N07
   citation: {vi: "NASA Common Metadata Repository (CMR), siêu dữ liệu của các bộ số liệu (time_start, title)",
