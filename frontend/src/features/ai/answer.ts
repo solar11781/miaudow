@@ -134,13 +134,13 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
   ];
   for (const { p, c } of rows) {
     lines.push({
-      text: `${planLabel(p, t.farmer)} · ${c.variety} · ${c.sow} → ${c.harvest}`,
+      text: [planLabel(p, t.farmer), c.variety, `${c.sow} → ${c.harvest}`].filter(Boolean).join(' · '),
       ref: {
         sourceId: 'p02',
         kind: 'study',
         // million dong per ha as farmers read it (D-190); the detail keeps the paper's thousand values
         value: `${f.n(c.profit / 1000, 1)} ${t.common.millionPerHa}`,
-        label: `${name} ${c.variety}`,
+        label: `${name} ${c.variety}`.trim(),
         detail: t.refs.cropProfitDetail(f.n(c.profit), f.n(c.cost), f.n(c.price)),
       },
     });

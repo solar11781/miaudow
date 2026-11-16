@@ -124,7 +124,8 @@ def pairs() -> list[tuple[str, object, object]]:
         for c, s in zip(crops, y["seasons"], strict=True):
             k = s["crop_key"]
             variety = s["variety"]["vi"] if s["variety"] else None
-            out.append((f"plan.{pid}.{k}.variety", c["variety"], variety))
+            # the frontend writes "no variety" as an empty string
+            out.append((f"plan.{pid}.{k}.variety", c["variety"] or None, variety))
             out.append((f"plan.{pid}.{k}.season", SEASONS[c["season"]], s["season"]))
             out.append((f"plan.{pid}.{k}.sow", c["sow"], s["sow_from"]))
             out.append((f"plan.{pid}.{k}.harvest", c["harvest"], s["harvest_from"]))
@@ -142,9 +143,7 @@ KNOWN = {
     "crop.blackbean.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Đậu đen' vs crops.yaml vi 'Đậu đen xanh lòng'",
     "crop.maize.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Ngô hạt' vs crops.yaml vi 'Ngô thương phẩm'",
     "crop.chili.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Ớt' vs crops.yaml vi 'Ớt chỉ thiên'",
-    "plan.cc2.cc2_spring_chili.variety": "to align (D-191) after the D-190 change: plans.ts 'Chỉ thiên F1' vs rotations.yaml 'F1'",
-    "plan.cc3.cc3_summer_autumn_black_sesame.variety": "to align (D-191) after the D-190 change: plans.ts 'Vừng đen' vs rotations.yaml null",
-    "plan.cc3.cc3_autumn_winter_pumpkin.variety": "to align (D-191) after the D-190 change: plans.ts 'F1 Flato 757' vs rotations.yaml 'F1 Flato 757 - Én vàng'",
+    "plan.cc2.cc2_spring_chili.variety": "intended (D-191 keeps the short crop name 'Ớt'): plans.ts 'Ớt' + 'Chỉ thiên F1' and rotations.yaml 'Ớt chỉ thiên' + 'F1' both read as the paper's 'ớt chỉ thiên F1'",
     "source.R-P02.url": "intended (D-191: a page people can read vs the data address): sources.ts tapchi.vaas.vn article page vs sources.yaml vjol.info.vn download link",
     "source.R-N01.url": "intended (D-191: a page people can read vs the data address): sources.ts https://power.larc.nasa.gov/ vs sources.yaml .../api/temporal/daily/point",
     "source.R-N02.url": "intended (D-191: a page people can read vs the data address): sources.ts doi.org/10.5067/MODIS/MCD12C1.061 vs sources.yaml cmr.earthdata.nasa.gov granules",

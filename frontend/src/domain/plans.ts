@@ -92,6 +92,7 @@ export interface PlanCrop {
   /** Key into the generated hazard and soil data (pipeline/build_data.py). */
   key: string;
   crop: CropId;
+  /** As the paper names it; empty when the paper names none. */
   variety: string;
   season: Season;
   /** MM-DD as reported (sowing, first reported harvest). */
@@ -283,7 +284,7 @@ export const PLANS: Plan[] = [
       {
         key: 'cc3_sesame',
         crop: 'sesame',
-        variety: 'Vừng đen',
+        variety: '',
         season: 'summer',
         sow: '06-10',
         harvest: '09-04',
@@ -295,7 +296,7 @@ export const PLANS: Plan[] = [
       {
         key: 'cc3_pumpkin',
         crop: 'pumpkin',
-        variety: 'F1 Flato 757',
+        variety: 'F1 Flato 757 - Én vàng',
         season: 'autumn',
         sow: '09-05',
         harvest: '11-21',
