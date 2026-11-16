@@ -33,13 +33,12 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { geo, hazards, type RuleCode } from '../../data';
-import { MAP_PLACES } from '../../data/places';
+import { K_LON, MAP_PLACES } from '../../data/places';
 import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
 
 // Real geometry only: the geoBoundaries outline of Nghệ An and the NASA POWER cells at their true centres, in an
 // equirectangular projection scaled by cos(latitude) so a degree of longitude keeps its real ground length.
 export const S = 10; // scene units per degree of latitude
-const K_LON = Math.cos((19.3 * Math.PI) / 180);
 const HALF_LAT = 0.25,
   HALF_LON = 0.3125; // POWER cell half sizes in degrees
 const HMAX = 6.5; // column height for the largest value of the chosen measure, in scene units
@@ -50,15 +49,6 @@ const LON0 = (minLon + maxLon) / 2,
   LAT0 = (minLat + maxLat) / 2;
 const toX = (lon: number) => (lon - LON0) * K_LON * S;
 const toZ = (lat: number) => -(lat - LAT0) * S;
-
-export function hasWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
 
 /** Reads a CSS colour token (e.g. "var(--data-heat)") from an element so the scene uses the design tokens. */
 function cssColor(el: Element, token: string): Color {
