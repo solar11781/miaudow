@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { ApiSourceRef } from '../../domain/provenance';
 import type { Rule, RuleCode, SourceFacts, SourceId, Value } from '../../types';
-import { displayUnit, displayValue } from '../../domain/format';
+import { displayUnit, displayValue, withUnit } from '../../domain/format';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 
 /** Source references for API numbers: the sheet gets the response's own facts for each id (H5). */
@@ -15,7 +15,7 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
     // one display of a Value for the cards and the source sheet: the language's digit grouping and the unit as written
     const number = (v: Value) => displayValue(v.value, lang);
     const unit = (v: Value) => displayUnit(v.value === '1' ? t.common.unitOfOne(pick(v.unit)) : pick(v.unit));
-    const shown = (v: Value) => `${number(v)} ${unit(v)}`.trim();
+    const shown = (v: Value) => withUnit(number(v), unit(v));
     return {
       number,
       unit,

@@ -451,13 +451,15 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
                       refs={refs}
                       note={t.farmer.rows.soilSheetNote}
                     />
-                    <span className="muted small">{t.farmer.soilNormal}</span>
-                    <NumberOr
-                      v={y.soil_wetness.normal}
-                      label={`${t.farmer.soilNormal} · ${pick(c.crop)}`}
-                      refs={refs}
-                      note={t.farmer.rows.soilSheetNote}
-                    />
+                    <span className={s.kvPair}>
+                      <span className="muted small">{t.farmer.soilNormal}</span>
+                      <NumberOr
+                        v={y.soil_wetness.normal}
+                        label={`${t.farmer.soilNormal} · ${pick(c.crop)}`}
+                        refs={refs}
+                        note={t.farmer.rows.soilSheetNote}
+                      />
+                    </span>
                   </span>
                 </li>
               )),

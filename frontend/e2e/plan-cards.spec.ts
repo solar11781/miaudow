@@ -160,3 +160,52 @@ for (const [lang, path] of [
     expect(fits.word).toBeLessThanOrEqual(fits.box);
     expect(await stamp.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(17);
   });
+
+// visual audit 2026-11-16: in the open water row the notes sat above their numbers' baseline, some value groups
+// started at the left edge and others ended at the right, and percent had a space ("55 %") unlike the rest of the app
+test('the water row lines its values up at the right, notes on the numbers baseline, percent as 55%', async ({
+  page,
+}) => {
+  await page.goto(PLANS_URL);
+  await openRow(page, 'cc1', 'water');
+  const row = page.getByTestId('card-cc1-row-water');
+  const lines = await row.locator('ul > li').evaluateAll((items) =>
+    items.map((li) => {
+      // where the text of `el` sits: an empty inline box at its end stands on the baseline
+      const baseline = (el: Element) => {
+        const probe = document.createElement('span');
+        probe.style.cssText = 'display:inline-block;width:0;height:0';
+        el.append(probe);
+        const y = probe.getBoundingClientRect().bottom;
+        probe.remove();
+        return y;
+      };
+      const numbers = [...li.querySelectorAll('button[data-value]')];
+      const notes = [...li.querySelectorAll('span.small')];
+      const rights = [...numbers, ...notes].map((el) => el.getBoundingClientRect().right);
+      return {
+        gap: rights.length ? li.getBoundingClientRect().right - Math.max(...rights) : 0,
+        // a note and the number on its line
+        drift: notes.flatMap((note) => {
+          const box = note.getBoundingClientRect();
+          const beside = numbers.find((n) => {
+            const b = n.getBoundingClientRect();
+            return b.top < box.bottom && b.bottom > box.top;
+          });
+          const figure = beside?.querySelector(':scope > span > span');
+          return figure ? [Math.abs(baseline(note) - baseline(figure))] : [];
+        }),
+        values: numbers.map((n) => n.getAttribute('data-value') ?? ''),
+      };
+    }),
+  );
+  expect(lines.length).toBeGreaterThan(0);
+  for (const line of lines) {
+    // the number button reaches 0.2rem past the edge so its text ends on it (SourceValue)
+    expect(Math.abs(line.gap)).toBeLessThanOrEqual(4);
+    for (const drift of line.drift) expect(drift).toBeLessThanOrEqual(1);
+  }
+  const percents = lines.flatMap((l) => l.values).filter((v) => v.includes('%'));
+  expect(percents.length).toBeGreaterThan(0);
+  for (const value of percents) expect(value).toMatch(/^\d+%$/);
+});

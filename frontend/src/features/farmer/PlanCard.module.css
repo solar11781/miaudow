@@ -332,9 +332,22 @@
   color: var(--fg-2);
 }
 
+/* numbers and their notes stand on one baseline; a group that wraps under its label still ends at the right edge */
 .kvVals {
   display: inline-flex;
   flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 1rem;
+  justify-content: flex-end;
+  margin-left: auto;
+  text-align: right;
+}
+
+/* a note stays on the line of the number it names */
+.kvPair {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   gap: 0.1rem 1rem;
   justify-content: flex-end;
 }

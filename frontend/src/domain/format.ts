@@ -16,6 +16,8 @@ export const displayMeasure = (text: string, lang: Lang) =>
       displayValue(`${head},${tail}`, lang),
     ),
   );
+/** A number with its unit as one text: a space between them, except a percent sign, which joins its number ("55%"). */
+export const withUnit = (number: string, unit: string) => (unit === '%' ? `${number}%` : `${number} ${unit}`.trim());
 
 /** A label such as a season name ("Lúa vụ Mùa", "Spring rice") inside a sentence, or a clause starting one. */
 export const lowerFirst = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);

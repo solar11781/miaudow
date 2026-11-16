@@ -1,7 +1,7 @@
 // The API sends Value strings in English notation (UI-UX-SPEC section 11: the backend rounds, the frontend shows the
 // value as given); on screen Vietnamese uses a dot for thousands and a comma for decimals (review 2026-11-14).
 import { describe, expect, it } from 'vitest';
-import { displayMeasure, displayUnit, displayValue, lowerFirst, upperFirst } from './format';
+import { displayMeasure, displayUnit, displayValue, lowerFirst, upperFirst, withUnit } from './format';
 
 describe('value display', () => {
   it('groups thousands with a dot and decimals with a comma in Vietnamese', () => {
@@ -35,6 +35,12 @@ describe('value display', () => {
     expect(displayMeasure('June 2020 to June 2021 (p. 45); 6,500 m3/ha; 250 m2', 'en')).toBe(
       'June 2020 to June 2021 (p. 45); 6,500 m³/ha; 250 m²',
     );
+  });
+  // the app writes percent with no space ("100%" in the soil label, UI-UX-SPEC section 9); the API sends "%" as a unit
+  it('joins a percent sign to its number and keeps the space before any other unit', () => {
+    expect(withUnit('55', '%')).toBe('55%');
+    expect(withUnit('2.000', 'm³/ha')).toBe('2.000 m³/ha');
+    expect(withUnit('3', '')).toBe('3');
   });
 });
 
