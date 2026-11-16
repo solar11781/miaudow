@@ -229,7 +229,7 @@ describe('money notes', () => {
   };
   const P03_DEF = { vi: 'Lợi nhuận = GR - Tổng chi phí vật chất', en: 'Profit = GR - total material costs' };
   const FLAG = {
-    vi: 'Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau ở mọi cột; bài báo không giải thích điều này.',
+    vi: 'Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen xanh lòng (CC5) giống hệt nhau ở mọi cột; bài báo không giải thích điều này.',
     en: 'In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the paper does not explain this.',
   };
   const money = (planIndex: number, study: 'R-P02' | 'R-P03') => {

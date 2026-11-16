@@ -584,7 +584,7 @@
        en: "The reported sowing and harvest dates overlap in two places."}
     - {vi: "Phần phương pháp liệt kê CC2-CC4 khác với các bảng kết quả.",
        en: "The methods text lists CC2-CC4 differently from the results tables."}
-    - {vi: "Bảng 4 có dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau.",
+    - {vi: "Bảng 4 có dòng đậu xanh (CC1) và dòng đậu đen xanh lòng (CC5) giống hệt nhau.",
        en: "Table 4 has identical rows for CC1 mung bean and CC5 black bean."}
     # research/price-entry-notes.md section 2 (UI-UX-SPEC §12d, D-163)
     - {vi: "Tiêu đề bảng ghi giá bán theo tấn; các phép tính trong bảng chỉ khớp với giá theo kg (chúng tôi kiểm tra).",
