@@ -31,6 +31,15 @@ function scopeCells() {
 }
 
 describe('method page', () => {
+  it.each([
+    [['vi-VN', 'vi'], '/api/figures/nghe_an_grid.vi.svg'],
+    [['en-US', 'en'], '/api/figures/nghe_an_grid.svg'],
+  ])('shows the grid figure in the reading language (%s)', async (languages, src) => {
+    renderPage(languages);
+    const alt = (languages[1] === 'vi' ? vi : en).method.gridAlt;
+    expect((await screen.findByAltText(alt)).getAttribute('src')).toBe(src);
+  });
+
   afterEach(() => {
     cleanup();
     mock.restoreAllMocks();

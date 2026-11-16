@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { api, GRID_FIGURE_URL } from '../../api';
+import { api, gridFigureUrl } from '../../api';
 import { ART } from '../../data/art';
 import { Icon } from '../../design-system/Icon';
 import { PhotoHead } from '../../design-system/PhotoHead';
@@ -11,7 +11,7 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
-import { useFormat, usePick, useT } from '../../app/settings';
+import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import s from '../science/science.module.css';
 
 // metric numbers with 2 decimals (team decision on the method page's display precision, UI-UX-SPEC section 15 item 10)
@@ -213,6 +213,7 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
 
 function Method({ res }: { res: MethodResponse }) {
   const t = useT();
+  const { lang } = useSettings();
   const pick = usePick();
   const refs = useApiRefs(res.sources);
   const seasons = SEASON_CODES.filter((c) => res.metrics.some((m) => m.season === c));
@@ -297,7 +298,7 @@ function Method({ res }: { res: MethodResponse }) {
         <DataLine sources={res.sources} />
         <p>{t.method.farmland}</p>
         <figure className="stack">
-          <img src={GRID_FIGURE_URL} alt={t.method.gridAlt} width={480} height={480} className={s.gridFigure} />
+          <img src={gridFigureUrl(lang)} alt={t.method.gridAlt} width={480} height={480} className={s.gridFigure} />
           <figcaption className="muted small">{t.method.gridCaption}</figcaption>
         </figure>
         <h3 className="h2">{t.method.rainCheck}</h3>
