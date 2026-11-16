@@ -734,8 +734,13 @@ export const vi = {
       'Khi đọc kỹ tài liệu, chúng tôi gặp những chỗ không khớp. Chúng được giữ lại để cán bộ và người đọc tự cân nhắc.',
     dataTitle: 'Bộ dữ liệu và trạng thái nạp',
     dataLead:
-      'Dữ liệu nào đã nạp và kiểm tra, dữ liệu nào mới có hợp đồng, dữ liệu nào bị chặn. Không bộ nào đo trực tiếp trên ruộng.',
-    ingestion: { INGESTED: 'Đã nạp', PARTIAL: 'Nạp một phần', CONTRACT_ONLY: 'Mới có hợp đồng', BLOCKED: 'Bị chặn' },
+      'Dữ liệu nào đã nạp và kiểm tra, dữ liệu nào mới có hợp đồng, dữ liệu nào chưa tải được. Không bộ nào đo trực tiếp trên ruộng.',
+    ingestion: {
+      INGESTED: 'Đã nạp',
+      PARTIAL: 'Nạp một phần',
+      CONTRACT_ONLY: 'Mới có hợp đồng',
+      BLOCKED: 'Chưa tải được',
+    },
     provider: 'Đơn vị cung cấp',
     resolution: 'Độ phân giải',
     coverage: 'Thời gian',

@@ -736,8 +736,13 @@ export const en: Messages = {
       'Reading the documents closely, we found places that do not match. They stay visible so officers and readers can weigh them.',
     dataTitle: 'Datasets and their ingestion state',
     dataLead:
-      'Which data are loaded and checked, which exist only as a contract, which are blocked. None of them is measured on a farm.',
-    ingestion: { INGESTED: 'Loaded', PARTIAL: 'Partly loaded', CONTRACT_ONLY: 'Contract only', BLOCKED: 'Blocked' },
+      'Which data are loaded and checked, which exist only as a contract, which are not downloaded yet. None of them is measured on a farm.',
+    ingestion: {
+      INGESTED: 'Loaded',
+      PARTIAL: 'Partly loaded',
+      CONTRACT_ONLY: 'Contract only',
+      BLOCKED: 'Not downloaded yet',
+    },
     provider: 'Provider',
     resolution: 'Resolution',
     coverage: 'Time span',

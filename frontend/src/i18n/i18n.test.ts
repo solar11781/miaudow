@@ -148,3 +148,14 @@ describe('drought wording', () => {
     expect(en.science.shareOfFarmland).not.toContain('met level 1');
   });
 });
+
+// roleplay audit 2026-11-16 (judge): the evidence page's red "Blocked" read as a broken page; the globe page already
+// says the same state in plain words, and one state has one name
+describe('a dataset that could not be downloaded', () => {
+  it('has the same plain name on the evidence page and the globe page', () => {
+    expect(vi.evidence.ingestion.BLOCKED).toBe(vi.earth.status.blocked);
+    expect(en.evidence.ingestion.BLOCKED).toBe(en.earth.status.blocked);
+    expect(vi.evidence.dataLead).not.toContain('bị chặn');
+    expect(en.evidence.dataLead).not.toContain('blocked');
+  });
+});
