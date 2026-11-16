@@ -6,6 +6,9 @@ time, lon, lat), the GES DISC listing read 2026-11-13 (file names), and the cell
 +-0.25 deg latitude, +-0.3125 deg longitude, lower edge included, upper edge excluded).
 """
 
+import math
+
+import numpy as np
 import pytest
 
 from fieldshift.data import imerg
@@ -78,3 +81,80 @@ def test_check_response_rejects_html_empty_and_wrong_count():
     ):
         with pytest.raises(ValueError, match=r"not the expected 2 x 3 reply"):
             imerg.check_response(bad, BOX)
+
+
+# Parsing and monthly totals (05-DATA-CONTRACTS §5c). Reply layout and fill value: DATA-SOURCES row gpm_imerg_monthly
+# (verified 2026-11-13): one line per longitude, one value per latitude, fill -9999.9, unit mm/hr.
+BOX = (10, 12, 20, 21)  # 3 latitudes x 2 longitudes
+REPLY = """Dataset: x.HDF5
+precipitation[0][0], 0.1, 0.2, 0.3
+precipitation[0][1], 1, -9999.9, 3
+"""
+
+
+def test_parse_monthly_gives_latitude_rows_and_longitude_columns_with_fill_as_nan():
+    grid = imerg.parse_monthly(REPLY, BOX)
+    assert grid.shape == (3, 2)  # (latitudes, longitudes)
+    assert grid[0].tolist() == [0.1, 1.0]  # latitude index 10: the first value of each longitude line
+    assert grid[2].tolist() == [0.3, 3.0]
+    assert math.isnan(grid[1, 1])  # fill -9999.9 is a missing value, never a rain rate
+
+
+def test_parse_monthly_refuses_a_reply_of_the_wrong_shape():
+    with pytest.raises(ValueError, match="2 x 3"):
+        imerg.parse_monthly("precipitation[0][0], 1, 2, 3\n", BOX)
+
+
+@pytest.mark.parametrize(
+    ("year", "month", "days"),
+    [(2023, 1, 31), (2023, 4, 30), (2023, 2, 28), (2024, 2, 29), (2000, 2, 29), (2001, 2, 28)],
+)
+def test_monthly_mm_is_rate_times_24_hours_times_the_days_of_the_month(year, month, days):
+    # 0.5 mm/hr x 24 h x days; the leap rule is the calendar's (2024 and 2000 leap, 2001 and 2023 not)
+    assert imerg.monthly_mm(0.5, year, month) == pytest.approx(0.5 * 24 * days)
+
+
+def test_file_month_reads_year_and_month_from_the_file_name():
+    name = "3B-MO.MS.MRG.3IMERG.20240201-S000000-E235959.02.V07B.HDF5.ascii"  # real file name, 2024-02
+    assert imerg.file_month(name) == (2024, 2)
+
+
+def test_file_month_refuses_another_name():
+    with pytest.raises(ValueError, match="notes.txt"):
+        imerg.file_month("notes.txt")
+
+
+def _lat_index_grid(box):
+    lat0, lat1, lon0, lon1 = box
+    return np.array([[float(i)] * (lon1 - lon0 + 1) for i in range(lat0, lat1 + 1)])
+
+
+def _lon_index_grid(box):
+    lat0, lat1, lon0, lon1 = box
+    return np.array([[float(j) for j in range(lon0, lon1 + 1)] for _ in range(lat0, lat1 + 1)])
+
+
+TWO_CELLS = [(19.0, 105.0), (19.5, 105.0)]  # neighbours: 19.25 is the upper edge of one and the lower edge of the other
+
+
+def test_cell_mean_uses_the_pixels_inside_the_cell_lower_edge_in_upper_edge_out():
+    box = imerg.box_for_cells(TWO_CELLS)
+    grid = _lat_index_grid(box)
+    # cell 19.0: latitude centres 18.75..19.15 = indices 1087..1091, mean 1089 (19.25 = index 1092 is outside)
+    assert imerg.cell_mean(grid, box, 19.0, 105.0) == pytest.approx(1089.0)
+    # cell 19.5: centres 19.25..19.65 = indices 1092..1096, mean 1094 (the lower edge 19.25 is inside)
+    assert imerg.cell_mean(grid, box, 19.5, 105.0) == pytest.approx(1094.0)
+
+
+def test_cell_mean_longitude_band():
+    box = imerg.box_for_cells(TWO_CELLS)
+    # cell 105.0: longitude [104.6875, 105.3125): centres 104.75..105.25 = indices 2847..2852, mean 2849.5
+    assert imerg.cell_mean(_lon_index_grid(box), box, 19.0, 105.0) == pytest.approx(2849.5)
+
+
+def test_cell_mean_is_missing_when_a_pixel_of_the_cell_is_missing_and_ignores_pixels_outside():
+    box = imerg.box_for_cells(TWO_CELLS)
+    grid = _lat_index_grid(box)
+    grid[1092 - box[0], 0] = np.nan  # outside cell 19.0, inside cell 19.5
+    assert imerg.cell_mean(grid, box, 19.0, 105.0) == pytest.approx(1089.0)
+    assert math.isnan(imerg.cell_mean(grid, box, 19.5, 105.0))  # never filled
