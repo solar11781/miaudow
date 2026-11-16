@@ -557,17 +557,19 @@ function Observatory() {
   const t = useT();
   return (
     <section className={`${s.obs} surface-forest`} aria-labelledby="obs-title">
-      <div className={s.obsStage}>
-        <SatelliteScan labels={t.earth.scan} />
-      </div>
-      <div className={`container ${s.obsText}`}>
-        <h2 id="obs-title" className="h1">
-          <Accent text={t.home.obsTitle} />
-        </h2>
-        <p className="lead">{t.home.obsLead}</p>
-        <ButtonLink to="/dai-quan-sat" size="lg" icon="arrowRight">
-          {t.home.obsCta}
-        </ButtonLink>
+      <div className={`container ${s.obsGrid}`}>
+        <div className={s.obsStage}>
+          <SatelliteScan labels={t.earth.scan} />
+        </div>
+        <div className={s.obsText}>
+          <h2 id="obs-title" className="h1">
+            <Accent text={t.home.obsTitle} />
+          </h2>
+          <p className="lead">{t.home.obsLead}</p>
+          <ButtonLink to="/dai-quan-sat" size="lg" icon="arrowRight">
+            {t.home.obsCta}
+          </ButtonLink>
+        </div>
       </div>
     </section>
   );

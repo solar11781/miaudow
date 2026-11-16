@@ -682,28 +682,28 @@
 
 /* ---- observatory: the satellite scene, then the way into the 3D globe ---- */
 .obs {
+  padding-block: var(--s-16);
+}
+/* one page column holds the picture and the text, so neither runs to the window edge */
+.obsGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   align-items: center;
   gap: var(--s-8);
-  padding-block: var(--s-16);
 }
 .obsStage {
   min-width: 0;
-  padding-left: max(var(--gutter-l), calc((100vw - var(--content)) / 2));
 }
 .obsText {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--s-6);
+  min-width: 0;
 }
 @media (max-width: 960px) {
-  .obs {
+  .obsGrid {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .obsStage {
-    padding-inline: var(--gutter-l) var(--gutter-r);
   }
 }
 
