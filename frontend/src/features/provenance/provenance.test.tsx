@@ -65,7 +65,7 @@ describe('api source sheet', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: /ô thử/ }));
     const sheet = document.querySelector('[data-testid="source-sheet"]')?.textContent ?? '';
-    expect(sheet).toContain('1000 m²');
+    expect(sheet).toContain('1.000 m²'); // with the thousands mark, as the evidence page writes it
     expect(sheet).not.toContain('m2');
   });
 });

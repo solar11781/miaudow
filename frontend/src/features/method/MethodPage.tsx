@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { api, GRID_FIGURE_URL } from '../../api';
+import { api, gridFigureUrl } from '../../api';
 import { ART } from '../../data/art';
+import { Icon } from '../../design-system/Icon';
 import { PhotoHead } from '../../design-system/PhotoHead';
 import type { Interval, MethodResponse, MetricRow, SeasonCode } from '../../types';
 import { COVERAGE_AXES, SEASON_CODES } from '../../types';
@@ -10,12 +11,16 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SourceValue } from '../provenance/SourceValue';
 import { useApiRefs, type ApiRefs } from '../provenance/useApiRefs';
-import { useFormat, usePick, useT } from '../../app/settings';
+import { useFormat, usePick, useSettings, useT } from '../../app/settings';
 import s from '../science/science.module.css';
 
 // metric numbers with 2 decimals (team decision on the method page's display precision, UI-UX-SPEC section 15 item 10)
 const DIGITS = 2;
 const SKILLS = ['skill_vs_b0', 'skill_vs_b2', 'skill_vs_bnw'] as const;
+// a row of one province or one region (subset "unit:<id>" or "region:<id>"); all but the study province's fold
+const BREAKDOWN = /^(unit|region):/;
+const OWN_PROVINCE = 'unit:Nghe An';
+const folds = (subset: string) => BREAKDOWN.test(subset) && subset !== OWN_PROVINCE;
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
@@ -57,70 +62,73 @@ function MetricsTable({ rows, all, refs }: { rows: MetricRow[]; all: MetricRow[]
       ? t.common.notAvailable
       : t.method.skillCi(f.n(v.value, DIGITS), f.n(v.ci90_low, DIGITS), f.n(v.ci90_high, DIGITS));
   return (
-    <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.method.metricsTitle}>
-      <table className={s.table}>
-        <thead>
-          <tr>
-            {[
-              t.method.col.model,
-              t.method.col.role,
-              t.method.col.subset,
-              'RMSE',
-              'MAE',
-              'R²',
-              t.method.col.skillB0,
-              t.method.col.skillB2,
-              t.method.col.skillBnw,
-              t.method.col.coverage80,
-              t.method.col.nRows,
-              t.method.col.nTestYears,
-              t.common.source,
-            ].map((h) => (
-              <th key={h} scope="col">
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => {
-            const ref = `metric-row-${all.indexOf(r)}`;
-            const cells = [
-              num(r.rmse),
-              num(r.mae),
-              num(r.r2_oos),
-              ...SKILLS.map((k) => ci(r[k])),
-              num(r.coverage_80),
-              String(r.n_rows),
-              String(r.n_test_years),
-            ];
-            return (
-              <tr key={ref}>
-                <th scope="row">
-                  {t.science.models[r.model_id]}
-                  {r.detail && <span className="muted small"> · {pick(r.detail)}</span>}
+    <div className={s.metricsBox}>
+      <p className={`${s.scrollHint} muted small`}>{t.method.scrollHint}</p>
+      <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.method.metricsTitle}>
+        <table className={`${s.table} ${s.metrics}`}>
+          <thead>
+            <tr>
+              {[
+                t.method.col.model,
+                t.method.col.role,
+                t.method.col.subset,
+                'RMSE',
+                'MAE',
+                'R²',
+                t.method.col.skillB0,
+                t.method.col.skillB2,
+                t.method.col.skillBnw,
+                t.method.col.coverage80,
+                t.method.col.nRows,
+                t.method.col.nTestYears,
+                t.common.source,
+              ].map((h) => (
+                <th key={h} scope="col">
+                  {h}
                 </th>
-                <td>{t.method.role[r.role]}</td>
-                <td>{t.method.subset(r.subset)}</td>
-                {cells.map((c, i) => (
-                  <td key={i} className="num" data-value={c} data-source-ref={ref}>
-                    {c}
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const ref = `metric-row-${all.indexOf(r)}`;
+              const cells = [
+                num(r.rmse),
+                num(r.mae),
+                num(r.r2_oos),
+                ...SKILLS.map((k) => ci(r[k])),
+                num(r.coverage_80),
+                String(r.n_rows),
+                String(r.n_test_years),
+              ];
+              return (
+                <tr key={ref}>
+                  <th scope="row">
+                    {t.science.models[r.model_id]}
+                    {r.detail && <span className="muted small"> · {pick(r.detail)}</span>}
+                  </th>
+                  <td>{t.method.role[r.role]}</td>
+                  <td>{t.method.subsets[r.subset] ?? r.subset.replace(BREAKDOWN, '')}</td>
+                  {cells.map((c, i) => (
+                    <td key={i} className="num" data-value={c} data-source-ref={ref}>
+                      {c}
+                    </td>
+                  ))}
+                  <td data-testid={ref}>
+                    <SourceValue
+                      {...refs.sources(
+                        r.source_ids,
+                        t.common.source,
+                        `${t.science.models[r.model_id]} · ${t.method.seasons[r.season]}`,
+                      )}
+                    />
                   </td>
-                ))}
-                <td data-testid={ref}>
-                  <SourceValue
-                    {...refs.sources(
-                      r.source_ids,
-                      t.common.source,
-                      `${t.science.models[r.model_id]} · ${t.method.seasons[r.season]}`,
-                    )}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -146,18 +154,31 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
   return (
     <div className="stack">
       <h3 className="h2">{t.method.seasons[season]}</h3>
-      {groups(rows).map(([g, list]) => (
-        <div key={g} className="stack">
-          <h4 className="h3">
-            {g === 'main'
-              ? t.method.mainRuns
-              : g === 'spatial_holdout'
-                ? t.method.spatialHoldout
-                : t.method.sensitivity[g as keyof typeof t.method.sensitivity]}
-          </h4>
-          <MetricsTable rows={list} all={res.metrics} refs={refs} />
-        </div>
-      ))}
+      {groups(rows).map(([g, list]) => {
+        const headline = list.filter((r) => !folds(r.subset));
+        const breakdown = list.filter((r) => folds(r.subset));
+        return (
+          <div key={g} className="stack">
+            <h4 className="h3">
+              {g === 'main'
+                ? t.method.mainRuns
+                : g === 'spatial_holdout'
+                  ? t.method.spatialHoldout
+                  : t.method.sensitivity[g as keyof typeof t.method.sensitivity]}
+            </h4>
+            {headline.length > 0 && <MetricsTable rows={headline} all={res.metrics} refs={refs} />}
+            {breakdown.length > 0 && (
+              <details className={`fold-arrow ${s.fold}`}>
+                <summary>
+                  {t.method.breakdown}
+                  <Icon name="chevronDown" size={18} />
+                </summary>
+                <MetricsTable rows={breakdown} all={res.metrics} refs={refs} />
+              </details>
+            )}
+          </div>
+        );
+      })}
       <h4 className="h3">{t.method.resultsChart}</h4>
       <p className="muted small">{t.method.resultsChartAlt}</p>
       {SKILLS.map((k) => {
@@ -194,6 +215,7 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
 
 function Method({ res }: { res: MethodResponse }) {
   const t = useT();
+  const { lang } = useSettings();
   const pick = usePick();
   const refs = useApiRefs(res.sources);
   const seasons = SEASON_CODES.filter((c) => res.metrics.some((m) => m.season === c));
@@ -278,7 +300,7 @@ function Method({ res }: { res: MethodResponse }) {
         <DataLine sources={res.sources} />
         <p>{t.method.farmland}</p>
         <figure className="stack">
-          <img src={GRID_FIGURE_URL} alt={t.method.gridAlt} width={480} height={480} className={s.gridFigure} />
+          <img src={gridFigureUrl(lang)} alt={t.method.gridAlt} width={480} height={480} className={s.gridFigure} />
           <figcaption className="muted small">{t.method.gridCaption}</figcaption>
         </figure>
         <h3 className="h2">{t.method.rainCheck}</h3>

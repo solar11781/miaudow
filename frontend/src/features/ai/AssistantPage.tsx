@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api, type CopilotResponse, type WaterSituation } from '../../api';
 import { answer as localAnswer, type Answer } from './answer';
 import { climateYear } from '../../data/climate';
-import { Button } from '../../design-system/Button';
+import { Button, ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { KindBadge } from '../provenance/KindBadge';
 import { SourceValue } from '../provenance/SourceValue';
@@ -18,12 +18,13 @@ import { ART } from '../../data/art';
 import { BrandEmblem, BrandMark } from '../../app/Brand';
 import s from './assistant.module.css';
 import { useLocalTo } from '../../app/paths';
+import { nextStep, type NextStep } from './nextStep';
 
 type Engine = 'checking' | 'server' | 'browser';
 type Turn =
-  | { id: number; question: string; kind: 'server'; res: CopilotResponse }
-  | { id: number; question: string; kind: 'local'; res: Answer }
-  | { id: number; question: string; kind: 'pending' };
+  | { id: number; question: string; step: NextStep | null; kind: 'server'; res: CopilotResponse }
+  | { id: number; question: string; step: NextStep | null; kind: 'local'; res: Answer }
+  | { id: number; question: string; step: NextStep | null; kind: 'pending' };
 
 const WATERS: WaterSituation[] = ['canal_end', 'high_field', 'water_short', 'reliable'];
 
@@ -64,7 +65,74 @@ function YearCard({ year }: { year: number }) {
   );
 }
 
-export function ServerAnswer({ res, water }: { res: CopilotResponse; water: WaterSituation | null }) {
+function Citations({ citations }: { citations: CopilotResponse['citations'] }) {
+  const t = useT();
+  const pick = usePick();
+  if (citations.length === 0) return null;
+  return (
+    <ul className={s.cites}>
+      {citations.map((c) => (
+        <li key={c.passage_id}>
+          <Icon name="book" size={18} />
+          <span>
+            <strong>{pick(c.title)}</strong>
+            {c.location && <span className={s.loc}> · {c.location}</span>}
+          </span>
+          {c.url && (
+            <a href={c.url} target="_blank" rel="noreferrer" className={s.citeLink}>
+              {t.sheet.link}
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function AnswerHead({ res }: { res: CopilotResponse }) {
+  const t = useT();
+  return (
+    <div className={s.aHead}>
+      <span className={`${s.who} ${s.bot}`}>
+        <BrandMark size={32} />
+        {t.assistant.bot}
+      </span>
+      <span className={s.status} data-status={res.status}>
+        {t.copilot.status[res.status]}
+      </span>
+      <span className={s.engine}>
+        {res.engine === 'claude' ? t.copilot.engineClaude : t.copilot.engineDeterministic}
+      </span>
+    </div>
+  );
+}
+
+function Missing({ items }: { items: CopilotResponse['missing_information'] }) {
+  const t = useT();
+  const pick = usePick();
+  if (items.length === 0) return null;
+  return (
+    <div className={s.missing}>
+      <p>{t.copilot.missing}</p>
+      <ul>
+        {items.slice(0, 5).map((m) => (
+          <li key={m.vi}>{pick(m)}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function ServerAnswer({
+  res,
+  water,
+  voiceNote = true,
+}: {
+  res: CopilotResponse;
+  water: WaterSituation | null;
+  /** The "no Vietnamese voice" note is printed once, under the newest answer. */
+  voiceNote?: boolean;
+}) {
   const t = useT();
   const local = useLocalTo();
   const pick = usePick();
@@ -74,18 +142,7 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
   const years = res.cards.filter((c) => c.kind === 'year');
   return (
     <div className={s.a}>
-      <div className={s.aHead}>
-        <span className={`${s.who} ${s.bot}`}>
-          <BrandMark size={32} />
-          {t.assistant.bot}
-        </span>
-        <span className={s.status} data-status={res.status}>
-          {t.copilot.status[res.status]}
-        </span>
-        <span className={s.engine}>
-          {res.engine === 'claude' ? `Claude · ${res.model ?? ''}` : t.copilot.engineDeterministic}
-        </span>
-      </div>
+      <AnswerHead res={res} />
       <div className={s.answerText}>
         {res.answer.split('\n').map((line, i) => (
           <p key={i}>{line}</p>
@@ -122,34 +179,8 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
           ))}
         </div>
       )}
-      {res.citations.length > 0 && (
-        <ul className={s.cites}>
-          {res.citations.map((c) => (
-            <li key={c.passage_id}>
-              <Icon name="book" size={18} />
-              <span>
-                <strong>{pick(c.title)}</strong>
-                {c.location && <span className={s.loc}> · {c.location}</span>}
-              </span>
-              {c.url && (
-                <a href={c.url} target="_blank" rel="noreferrer" className={s.citeLink}>
-                  {t.sheet.link}
-                </a>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      {res.missing_information.length > 0 && (
-        <div className={s.missing}>
-          <p>{t.copilot.missing}</p>
-          <ul>
-            {res.missing_information.slice(0, 5).map((m) => (
-              <li key={m.vi}>{pick(m)}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Citations citations={res.citations} />
+      <Missing items={res.missing_information} />
       <div className={s.tools}>
         {speech.canSpeak && (
           <button
@@ -162,7 +193,7 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
             {speech.speaking ? t.copilot.stopReading : t.copilot.readAloud}
           </button>
         )}
-        {speech.noVoice && <p className={s.small}>{t.copilot.noVoice}</p>}
+        {voiceNote && speech.noVoice && <p className={s.small}>{t.copilot.noVoice}</p>}
         <details className={s.trace}>
           <summary>{t.copilot.howFound}</summary>
           <ol>
@@ -172,10 +203,25 @@ export function ServerAnswer({ res, water }: { res: CopilotResponse; water: Wate
                 <span className={s.traceIn}>{JSON.stringify(tc.input)}</span>
               </li>
             ))}
+            {res.engine === 'claude' && res.model && <li>{t.copilot.modelUsed(res.model)}</li>}
             <li>{t.copilot.numbersChecked(res.numbers.checked, res.numbers.unverified.length)}</li>
           </ol>
         </details>
       </div>
+    </div>
+  );
+}
+
+function NextStepLink({ step }: { step: NextStep }) {
+  const t = useT();
+  const local = useLocalTo();
+  const to = step.land ? `/nong-dan/nam?${new URLSearchParams({ ruong: step.land }).toString()}` : '/nong-dan/ruong';
+  return (
+    <div className={s.next}>
+      <ButtonLink to={local(to)} icon="arrowRight" block>
+        {step.land ? t.copilot.nextWithLand(t.farmer.lands[step.land].title) : t.copilot.nextNoLand}
+      </ButtonLink>
+      <p className={s.small}>{t.copilot.nextHelp}</p>
     </div>
   );
 }
@@ -262,23 +308,28 @@ export function AssistantPage() {
     setQ('');
     setHeard(false);
     const id = Date.now();
-    const local = () =>
-      localAnswer(text, lang, fmt, { noEvidence: t.assistant.noEvidence, noRanking: t.assistant.noRanking });
+    const step = nextStep(text, water);
+    const local = (): Answer =>
+      step?.kind === 'field'
+        ? { type: 'abstain', lines: [{ text: t.copilot.ownField }], evidence: [], kinds: [] }
+        : localAnswer(text, lang, fmt, { noEvidence: t.assistant.noEvidence, noRanking: t.assistant.noRanking });
     if (engine !== 'server') {
-      setTurns((prev) => [...prev, { id, question: text, kind: 'local', res: local() }]);
+      setTurns((prev) => [...prev, { id, question: text, step, kind: 'local', res: local() }]);
       return;
     }
-    setTurns((prev) => [...prev, { id, question: text, kind: 'pending' }]);
+    setTurns((prev) => [...prev, { id, question: text, step, kind: 'pending' }]);
     inflight.current?.abort();
     const ctrl = new AbortController();
     inflight.current = ctrl;
     try {
       const res = await api.copilot({ question: text, mode, lang, water }, ctrl.signal);
-      setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, kind: 'server', res } : x)));
+      setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, step, kind: 'server', res } : x)));
     } catch {
       if (ctrl.signal.aborted && inflight.current !== ctrl) return;
       setEngine('browser');
-      setTurns((prev) => prev.map((x) => (x.id === id ? { id, question: text, kind: 'local', res: local() } : x)));
+      setTurns((prev) =>
+        prev.map((x) => (x.id === id ? { id, question: text, step, kind: 'local', res: local() } : x)),
+      );
     }
     requestAnimationFrame(() =>
       log.current?.lastElementChild?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }),
@@ -317,41 +368,6 @@ export function AssistantPage() {
       </header>
       <section className={`band ${s.page}`} aria-labelledby="ai-title">
         <div className={`container ${s.grid}`}>
-          <div className={s.intro}>
-            <h2 id="ai-title" className={`h2 ${s.title}`}>
-              {t.copilot.title}
-            </h2>
-            <p className="lead">{t.copilot.lead}</p>
-            <CoreTag core="copilot" />
-            <ol className={s.pipeline} aria-label={t.copilot.pipelineLabel}>
-              {t.copilot.pipeline.map((step, i) => (
-                <li key={step}>
-                  <span>{i + 1}</span>
-                  {step}
-                </li>
-              ))}
-            </ol>
-            <div className={s.statusBox} role="status">
-              <span className={s.statusDot} data-on={engine === 'server'} aria-hidden="true" />
-              <div>
-                <strong>
-                  {engine === 'checking'
-                    ? t.common.loading
-                    : engine === 'server'
-                      ? t.copilot.serverOn
-                      : t.copilot.serverOff}
-                </strong>
-                <p>
-                  {engine === 'server' ? (claude ? t.copilot.claudeOn : t.copilot.claudeOff) : t.copilot.browserHelp}
-                </p>
-              </div>
-            </div>
-            <p className={s.honest}>
-              <Icon name="shield" size={18} />
-              {t.copilot.honest}
-            </p>
-          </div>
-
           <div className={s.chat}>
             <div className={s.controls}>
               <div className={s.seg} role="radiogroup" aria-label={t.copilot.modeLabel}>
@@ -398,12 +414,16 @@ export function AssistantPage() {
                       <p className={s.thinking}>{t.copilot.working}</p>
                     </div>
                   )}
-                  {turn.kind === 'server' && <ServerAnswer res={turn.res} water={water} />}
+                  {turn.kind === 'server' && (
+                    <ServerAnswer res={turn.res} water={water} voiceNote={turn === turns[turns.length - 1]} />
+                  )}
                   {turn.kind === 'local' && <LocalAnswer res={turn.res} />}
+                  {turn.kind !== 'pending' && turn.step && <NextStepLink step={turn.step} />}
                 </li>
               ))}
             </ol>
 
+            {engine === 'server' && claude && <p className={s.privacy}>{t.copilot.privacy}</p>}
             <form className={s.form} onSubmit={onSubmit}>
               <label htmlFor="ask" className="visually-hidden">
                 {t.assistant.inputLabel}
@@ -451,6 +471,41 @@ export function AssistantPage() {
                 {t.assistant.clear}
               </button>
             )}
+          </div>
+
+          <div className={s.intro}>
+            <h2 id="ai-title" className={`h2 ${s.title}`}>
+              {t.copilot.title}
+            </h2>
+            <p className="lead">{t.copilot.lead}</p>
+            <CoreTag core="copilot" />
+            <ol className={s.pipeline} aria-label={t.copilot.pipelineLabel}>
+              {t.copilot.pipeline.map((step, i) => (
+                <li key={step}>
+                  <span>{i + 1}</span>
+                  {step}
+                </li>
+              ))}
+            </ol>
+            <div className={s.statusBox} role="status">
+              <span className={s.statusDot} data-on={engine === 'server'} aria-hidden="true" />
+              <div>
+                <strong>
+                  {engine === 'checking'
+                    ? t.common.loading
+                    : engine === 'server'
+                      ? t.copilot.serverOn
+                      : t.copilot.serverOff}
+                </strong>
+                <p>
+                  {engine === 'server' ? (claude ? t.copilot.claudeOn : t.copilot.claudeOff) : t.copilot.browserHelp}
+                </p>
+              </div>
+            </div>
+            <p className={s.honest}>
+              <Icon name="shield" size={18} />
+              {t.copilot.honest}
+            </p>
           </div>
         </div>
       </section>

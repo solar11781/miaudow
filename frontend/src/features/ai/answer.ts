@@ -30,8 +30,9 @@ export interface Answer {
   kinds: EvidenceKind[];
 }
 
-const RANKING =
-  /\b(nen trong|trong gi|tot nhat|nen chon|chon cay|cay nao|lai nhat|best|should i grow|what to grow|which crop|recommend)\b/;
+/** A question that asks Miaudow to choose a crop or a plan. */
+export const RANKING =
+  /\b(nen trong|trong gi|tot nhat|hay nhat|lai nhat|nen chon|chon giup|chon cay|cay nao|xep hang|best|rank|ranking|should i grow|what to grow|which crop|which plan|recommend)\b/;
 const FORECAST =
   /\b(ngay mai|tuan toi|tuan sau|thang toi|thang sau|mua toi|mua sau|nam toi|nam sau|du bao|tomorrow|next (week|month|season|year)|forecast)\b/;
 const YEAR = /\b(19\d\d|20\d\d)\b/;
@@ -134,13 +135,13 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
   ];
   for (const { p, c } of rows) {
     lines.push({
-      text: `${planLabel(p, t.farmer)} · ${c.variety} · ${c.sow} → ${c.harvest}`,
+      text: [planLabel(p, t.farmer), c.variety, `${c.sow} → ${c.harvest}`].filter(Boolean).join(' · '),
       ref: {
         sourceId: 'p02',
         kind: 'study',
         // million dong per ha as farmers read it (D-190); the detail keeps the paper's thousand values
         value: `${f.n(c.profit / 1000, 1)} ${t.common.millionPerHa}`,
-        label: `${name} ${c.variety}`,
+        label: `${name} ${c.variety}`.trim(),
         detail: t.refs.cropProfitDetail(f.n(c.profit), f.n(c.cost), f.n(c.price)),
       },
     });

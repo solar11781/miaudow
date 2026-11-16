@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../../app/settings';
 import type { CopilotResponse } from '../../api';
 import { ServerAnswer } from './AssistantPage';
+import { vi } from '../../i18n/vi';
 
 const yearAnswer: CopilotResponse = {
   status: 'grounded',
@@ -39,5 +40,16 @@ describe('server copilot answer', () => {
     );
     expect(screen.getByText('• Mưa lớn: 100%')).toBeTruthy();
     expect(screen.getByText('Thực nghiệm E-019 của nhóm')).toBeTruthy();
+  });
+
+  it('says what Claude did: it picked passages, it wrote none', () => {
+    render(
+      <SettingsProvider>
+        <MemoryRouter>
+          <ServerAnswer res={yearAnswer} water={null} />
+        </MemoryRouter>
+      </SettingsProvider>,
+    );
+    expect(screen.getByText(vi.copilot.engineClaude)).toBeTruthy();
   });
 });

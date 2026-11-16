@@ -233,10 +233,13 @@ export function OfficerPage() {
             <p className="lead">{t.officer.deskLead}</p>
           </div>
           <EvidenceDesk />
-          <details className={s.matrixDetails}>
+          <details className={`fold-arrow ${s.matrixDetails}`}>
             <summary>
-              <span className="h3">{t.officer.matrixTitle}</span>
-              <span className="muted">{t.officer.matrixLead}</span>
+              <span className={s.matrixHead}>
+                <span className="h3">{t.officer.matrixTitle}</span>
+                <span className="muted">{t.officer.matrixLead}</span>
+              </span>
+              <Icon name="chevronDown" size={18} />
             </summary>
             <Matrix />
           </details>

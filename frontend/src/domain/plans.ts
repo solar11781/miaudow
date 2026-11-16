@@ -8,6 +8,35 @@ export function planLabel(
   return p.current ? text.current : text.trialShort(p.id.replace(/\D/g, ''));
 }
 
+interface StudyNames {
+  usual: string;
+  usual_p03: string;
+}
+
+/** The study a current-practice plan comes from (F-B2): the control of the trial the four trial plans come from
+ * (`usual`, P-02) or of another study (`usual_p03`, P-03); nothing for a trial plan. */
+export const studyOf = (id: string, names: StudyNames) =>
+  id === 'usual' || id === 'usual_p03' ? names[id] : undefined;
+
+/** The plan's label with, for a current-practice plan, its study. */
+export function planName(
+  p: { id: string; is_usual: boolean },
+  text: { current: string; trialShort: (n: string) => string; currentOf: StudyNames },
+): string {
+  return [planLabel({ id: p.id, current: p.is_usual }, text), studyOf(p.id, text.currentOf)]
+    .filter(Boolean)
+    .join(' · ');
+}
+
+/** The two short lines of a plan's jump-strip chip (F-A7). */
+export function chipLines(
+  id: string,
+  chip: { usual: string[]; usual_p03: string[]; trial: (n: string) => string[] },
+): string[] {
+  if (id === 'usual' || id === 'usual_p03') return chip[id];
+  return chip.trial(id.replace(/\D/g, ''));
+}
+
 // Crop facts as published. Money in thousand VND per hectare (P-02 Table 13, net of labour; costs from Tables 4, 8, 12).
 export type CropFamily = 'rice' | 'legume' | 'maize' | 'root' | 'other';
 export type Season = 'spring' | 'summer' | 'autumn';
@@ -92,6 +121,7 @@ export interface PlanCrop {
   /** Key into the generated hazard and soil data (pipeline/build_data.py). */
   key: string;
   crop: CropId;
+  /** As the paper names it; empty when the paper names none. */
   variety: string;
   season: Season;
   /** MM-DD as reported (sowing, first reported harvest). */
@@ -283,7 +313,7 @@ export const PLANS: Plan[] = [
       {
         key: 'cc3_sesame',
         crop: 'sesame',
-        variety: 'Vừng đen',
+        variety: '',
         season: 'summer',
         sow: '06-10',
         harvest: '09-04',
@@ -295,7 +325,7 @@ export const PLANS: Plan[] = [
       {
         key: 'cc3_pumpkin',
         crop: 'pumpkin',
-        variety: 'F1 Flato 757',
+        variety: 'F1 Flato 757 - Én vàng',
         season: 'autumn',
         sow: '09-05',
         harvest: '11-21',

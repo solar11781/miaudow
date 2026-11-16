@@ -19,7 +19,8 @@ GROUPS: list[tuple[str, str, str]] = [
         "*.json",
         f"Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in {LAMGIANG}, from the "
         "raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 "
-        "by hand (PR #62).",
+        "by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in "
+        "both languages by hand (2026-11-16).",
     ),
     (
         "frontend/src/data/generated",
@@ -45,6 +46,12 @@ GROUPS: list[tuple[str, str, str]] = [
         "*",
         "Copernicus Sentinel-2 L2A images (R-D06): contains modified Copernicus Sentinel data 2020-2024 "
         f"(`data/raw/sentinel2/MANIFEST.json` in {LAMGIANG}).",
+    ),
+    (
+        "frontend/public/media/relief",
+        "*",
+        "NASA SRTM shaded relief (R-N12; Horn 1981, R-M29), built by `scripts/build_relief.py` from the SRTMGL3 tiles "
+        "recorded in `data/MANIFEST.csv`; the json holds the box, citations, sun angles and tile checksums.",
     ),
     (
         "frontend/public/brand",

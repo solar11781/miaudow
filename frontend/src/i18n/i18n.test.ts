@@ -68,8 +68,8 @@ describe('translations', () => {
     expect(ens.filter((s) => /climatology forecast/.test(s))).toEqual([]);
   });
   it('tell the user that the typed question goes to Anthropic when Claude is on (final audit 2026-11-15)', () => {
-    expect(vi.copilot.claudeOn).toMatch(/Anthropic/);
-    expect(en.copilot.claudeOn).toMatch(/Anthropic/);
+    expect(vi.copilot.privacy).toMatch(/Anthropic/);
+    expect(en.copilot.privacy).toMatch(/Anthropic/);
   });
   it('say the copilot model only picks passages, shown word for word, and never words the answer (D-172)', () => {
     expect(en.copilot.claudeOn).toMatch(/word for word/);
@@ -130,5 +130,32 @@ describe('place names in English', () => {
         .map((l) => `${name}: ${l}`),
     );
     expect(bad).toEqual([]);
+  });
+});
+
+// roleplay audit 2026-11-16 (official): Miaudow computes only the rain part of the drought rule of Decision 18/2021
+// (ML-DESIGN: "the surface-water part is not computable"; glossary "drought (rule): rain part only"), so no headline may
+// say that farmland "met drought" or "reached level 1"
+describe('drought wording', () => {
+  it('names the rain part wherever the drought condition is claimed', () => {
+    expect(vi.home.climateTitle(20)).toContain('(phần lượng mưa)');
+    expect(en.home.climateTitle(20)).toContain('(rain part)');
+    expect(vi.home.climateLead).toContain('(phần lượng mưa)');
+    expect(en.home.climateLead).toContain('(rain part)');
+    expect(vi.home.climateLead).toContain('nguồn nước mặt');
+    expect(en.home.climateLead).toContain('surface-water');
+    expect(vi.science.shareOfFarmland).not.toContain('đạt cấp độ 1');
+    expect(en.science.shareOfFarmland).not.toContain('met level 1');
+  });
+});
+
+// roleplay audit 2026-11-16 (judge): the evidence page's red "Blocked" read as a broken page; the globe page already
+// says the same state in plain words, and one state has one name
+describe('a dataset that could not be downloaded', () => {
+  it('has the same plain name on the evidence page and the globe page', () => {
+    expect(vi.evidence.ingestion.BLOCKED).toBe(vi.earth.status.blocked);
+    expect(en.evidence.ingestion.BLOCKED).toBe(en.earth.status.blocked);
+    expect(vi.evidence.dataLead).not.toContain('bị chặn');
+    expect(en.evidence.dataLead).not.toContain('blocked');
   });
 });

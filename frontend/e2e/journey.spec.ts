@@ -166,11 +166,11 @@ test('T1 T31 the Earth observatory walks its eight scenes, keeps them in the lin
   await rail.getByRole('button', { name: /Phân tích/ }).click();
   await expect(page).toHaveURL(/canh=analysis/);
   await page.getByRole('combobox', { name: 'Năm' }).selectOption('2010');
-  const cellRadio = page.getByRole('radio', { name: '18.5°N 105.625°E' });
+  const cellRadio = page.getByRole('radio', { name: '18,5°B 105,625°Đ' });
   await cellRadio.click();
   await expect(cellRadio).toBeChecked();
   const rain = Math.round(canonicalRain('18.5_105.625', 2010)).toLocaleString('vi-VN');
-  await expect(page.getByRole('button', { name: `Mưa cả năm · 2010 · 18.5_105.625: ${rain} mm` })).toBeVisible();
+  await expect(page.getByRole('button', { name: `Mưa cả năm · 2010 · 18,5°B 105,625°Đ: ${rain} mm` })).toBeVisible();
   await expect(page).toHaveURL(/nam=2010/);
   await expect(page).toHaveURL(/o=18\.5_105\.625/);
   // with reduced motion the globe is off and the page says so

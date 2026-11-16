@@ -1,10 +1,28 @@
 import { DATASETS, type IngestionStatus } from '../../data/catalog';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
+import { displayUnit } from '../../domain/format';
 import { usePick, useT } from '../../app/settings';
 import s from './evidence.module.css';
 
 const ORDER: IngestionStatus[] = ['INGESTED', 'PARTIAL', 'CONTRACT_ONLY', 'BLOCKED'];
+const WEB_ADDRESS = /(https?:\/\/[^\s)]+)/;
+
+/** A register value on screen: m² with its sign, and each web address as a short link named by its host, so a long
+ * address never breaks inside a narrow cell. */
+function Fact({ text }: { text: string }) {
+  return displayUnit(text)
+    .split(WEB_ADDRESS)
+    .map((part, i) =>
+      i % 2 ? (
+        <a key={part} href={part} target="_blank" rel="noreferrer">
+          {part.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+        </a>
+      ) : (
+        part
+      ),
+    );
+}
 
 /** Every dataset with its real ingestion state: what is loaded, what is only a contract, what is blocked. */
 export function Datasets() {
@@ -32,13 +50,21 @@ export function Datasets() {
               </div>
               <dl className={s.facts}>
                 <dt>{t.evidence.provider}</dt>
-                <dd>{d.provider}</dd>
+                <dd>
+                  <Fact text={pick(d.provider)} />
+                </dd>
                 <dt>{t.evidence.resolution}</dt>
-                <dd>{d.spatial_resolution}</dd>
+                <dd>
+                  <Fact text={pick(d.spatial_resolution)} />
+                </dd>
                 <dt>{t.evidence.coverage}</dt>
-                <dd>{d.temporal_coverage}</dd>
+                <dd>
+                  <Fact text={pick(d.temporal_coverage)} />
+                </dd>
                 <dt>{t.evidence.licence}</dt>
-                <dd>{d.license}</dd>
+                <dd>
+                  <Fact text={pick(d.license)} />
+                </dd>
                 <dt>{t.evidence.fieldMeasured}</dt>
                 <dd>{d.is_field_measurement ? t.evidence.yes : t.evidence.no}</dd>
               </dl>

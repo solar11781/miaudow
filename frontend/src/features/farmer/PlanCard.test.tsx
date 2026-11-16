@@ -404,24 +404,38 @@ describe('water notes', () => {
   });
 });
 
-// D-170: the per-year share tables of the stability and water rows fold behind "Xem từng năm"; the rows stay open
+// D-170: the per-year share tables of the water row fold behind "Xem từng năm"; the rows stay open
 describe('per-year tables', () => {
   afterEach(cleanup);
-  it('fold behind an accessible button and stay in the page for print', async () => {
+  it('fold behind an accessible button in the water row and stay in the page for print', async () => {
     const id = renderCard();
-    for (const row of ['weather', 'water']) {
-      const box = document.querySelector(`[data-testid="card-${id}-row-${row}"]`);
-      const button = [...(box?.querySelectorAll('button') ?? [])].find((b) => b.textContent === vi.farmer.eachYear);
-      expect(button?.getAttribute('aria-expanded'), row).toBe('false');
-      const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
-      expect(panel?.querySelector('table'), row).not.toBeNull();
-      // D-187: the line that says what the weather shares are sits with the tables it explains
-      if (row === 'weather') expect(panel?.textContent).toContain(vi.farmer.rows.weatherNote);
-      expect(panel?.hasAttribute('hidden'), row).toBe(false); // hidden by screen-only CSS, so print shows it (T35)
-      button?.click();
-      await Promise.resolve();
-      expect(button?.getAttribute('aria-expanded'), row).toBe('true');
-    }
+    const box = document.querySelector(`[data-testid="card-${id}-row-water"]`);
+    const button = [...(box?.querySelectorAll('button') ?? [])].find((b) => b.textContent === vi.farmer.eachYear);
+    expect(button?.getAttribute('aria-expanded')).toBe('false');
+    const panel = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+    expect(panel?.querySelector('table')).not.toBeNull();
+    expect(panel?.hasAttribute('hidden')).toBe(false); // hidden by screen-only CSS, so print shows it (T35)
+    button?.click();
+    await Promise.resolve();
+    expect(button?.getAttribute('aria-expanded')).toBe('true');
+  });
+  // F-B1 (roleplay audit 2026-11-16): the bad-years answer is the first thing the opened weather row shows, and the
+  // line that the crops have no yearly yield data comes after the tables, as their limit
+  it('show at once in the weather row, before the no-yearly-data line', () => {
+    // a plan with no rice, like the four trial plans
+    const id = renderCard(['vi-VN', 'vi'], (plan) => {
+      plan.stability = [];
+    });
+    const body = document.getElementById(`card-${id}-row-weather-body`);
+    expect([...(body?.querySelectorAll('button') ?? [])].some((b) => b.textContent === vi.farmer.eachYear)).toBe(false);
+    expect(body?.querySelector('[aria-expanded]')).toBeNull();
+    const table = body?.querySelector('table');
+    expect(table).not.toBeNull();
+    // D-187: the line that says what the weather shares are sits with the tables it explains
+    expect(body?.textContent).toContain(vi.farmer.rows.weatherNote);
+    const limit = [...(body?.querySelectorAll('p') ?? [])].find((p) => p.textContent?.includes(vi.farmer.rice.noData));
+    expect(limit).toBeDefined();
+    expect(table && limit && table.compareDocumentPosition(limit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
 
@@ -892,5 +906,42 @@ describe('screen check details', () => {
     expect(document.querySelector('[data-testid="card-cc1-priority-line"]')?.textContent).toContain(
       'Trịnh Đức Toàn và cs. 2023',
     );
+  });
+});
+
+// roleplay audit 2026-11-16 (F-A4): crop names were cut inside short bars ("Đậu …"); the list under the bar names each
+// crop, and the bar segment and its list entry carry the same number, so the tie is not by colour alone (H11)
+describe('month bar labels', () => {
+  afterEach(cleanup);
+  it('number each bar segment and its list entry the same, with no crop name cut inside the bar', () => {
+    const id = renderCard();
+    const row = document.querySelector(`[data-testid="card-${id}-row-calendar"]`);
+    const bar = row?.querySelector('figure > div[aria-hidden="true"]');
+    const segments = [...(bar?.children ?? [])].filter((el) => el.textContent);
+    const entries = [...(row?.querySelectorAll('figure ul > li') ?? [])].slice(0, segments.length);
+    expect(segments.length).toBeGreaterThan(0);
+    segments.forEach((seg, i) => {
+      expect(seg.textContent).toBe(String(i + 1));
+      expect(entries[i]?.textContent?.startsWith(String(i + 1))).toBe(true);
+    });
+  });
+});
+
+// rules/rotations.yaml writes the trial plot as "1000 m2"; the card writes it as the evidence and officer pages do
+describe('rulebook sizes', () => {
+  afterEach(cleanup);
+  it('read 1.000 m² in Vietnamese and 1,000 m² in English', () => {
+    const plot = { vi: 'mỗi cây trồng một ô 1000 m2, không lặp lại', en: 'one unreplicated plot of 1000 m2 per crop' };
+    const edit = (plan: Plan) => {
+      plan.why.evidence = plot;
+    };
+    const why = (id: string) => document.querySelector(`[data-testid="card-${id}-row-why"]`)?.textContent ?? '';
+    const id = renderCard(['vi-VN', 'vi'], edit);
+    expect(why(id)).toContain('1.000 m²');
+    expect(why(id)).not.toContain('1000 m2');
+    cleanup();
+    const en = renderCard(['en-GB', 'en'], edit);
+    expect(why(en)).toContain('1,000 m²');
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
   });
 });

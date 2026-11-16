@@ -75,8 +75,12 @@ export function useFormat() {
   const { lang } = useSettings();
   return useMemo(() => {
     const locale = lang === 'vi' ? 'vi-VN' : 'en-GB';
-    const n = (v: number, digits = 0) =>
-      new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(v);
+    const n = (v: number, digits = 0) => {
+      const fmt = new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+      const text = fmt.format(v);
+      // a value that rounds to zero is printed as zero, never as "-0,00"
+      return Number.isFinite(v) && !/[1-9]/.test(text) ? fmt.format(0) : text;
+    };
     return {
       n,
       pct: (share: number, digits = 0) => `${n(share * 100, digits)}%`,

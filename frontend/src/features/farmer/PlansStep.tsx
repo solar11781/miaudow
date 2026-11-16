@@ -2,11 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
+import { CompareStrip } from './CompareStrip';
 import type { OwnState } from './OwnNumbers';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { api, explainOn, SnapshotMissError, type SavedAnswers, type SnapshotEntry } from '../../api';
-import type { CompareRequest, CompareResponse, Plan } from '../../types';
+import type { CompareRequest, CompareResponse, Plan, PlanId } from '../../types';
 import {
   compareRequest,
   NO_OWN,
@@ -21,7 +22,7 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SaveAnswers } from '../account/SaveAnswers';
 import { usePick, useSettings, useT, type Lang } from '../../app/settings';
-import { planLabel } from '../../domain/plans';
+import { chipLines, planLabel, planName } from '../../domain/plans';
 import { pathFor, useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
@@ -86,9 +87,15 @@ function Cards({ res }: { res: CompareResponse }) {
   useEffect(() => {
     const nav = strip.current;
     const link = nav?.querySelector<HTMLElement>('[aria-current="true"]');
-    // the strip scrolls sideways on a phone, so the marked plan is kept in sight
-    if (nav && link) nav.scrollLeft = link.offsetLeft - nav.offsetLeft - 16;
+    // the strip scrolls sideways, so the marked plan is kept in sight, 16 px from the left edge (the sticky strip is
+    // its links' offset parent); with no plan in view (the top of the page) it goes back to its start
+    if (nav) nav.scrollLeft = link ? link.offsetLeft - 16 : 0;
   }, [inView]);
+
+  const jump = (id: PlanId) => {
+    document.getElementById(`the-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    update({ plan: id });
+  };
 
   const share = useCallback(
     async (plan: Plan) => {
@@ -115,6 +122,8 @@ function Cards({ res }: { res: CompareResponse }) {
   return (
     <>
       <DataLine sources={res.sources} className="muted small" />
+      {/* the six plans side by side before any card opens (section 9); it says which card the trial ones compare with */}
+      <CompareStrip res={res} priority={res.request.priority} onJump={jump} />
       <nav className={s.jump} aria-label={t.farmer.jumpTo} ref={strip}>
         {res.plans.map((p) => (
           <a
@@ -123,12 +132,18 @@ function Cards({ res }: { res: CompareResponse }) {
             aria-current={inView.has(`the-${p.id}`) ? 'true' : undefined}
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(`the-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              update({ plan: p.id });
+              jump(p.id);
             }}
           >
-            {planLabel({ id: p.id, current: p.is_usual }, t.farmer)}
-            <span className="muted"> · {p.calendar.map((c) => pick(c.crop)).join(' → ')}</span>
+            {/* short on a phone so several chips show at once; the full name with the crops is the chip's name (F-A7) */}
+            <span aria-hidden="true">
+              {chipLines(p.id, t.farmer.chip).map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </span>
+            <span className="visually-hidden">
+              {planName(p, t.farmer)} · {p.calendar.map((c) => pick(c.crop)).join(' → ')}
+            </span>
           </a>
         ))}
       </nav>

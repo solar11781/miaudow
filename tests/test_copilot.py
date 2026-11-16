@@ -146,9 +146,18 @@ def det(monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi]) -> Te
     return app_client(monkeypatch, "1", None)
 
 
-def test_a_plan_question_lists_every_plan_in_the_study_order_without_ranking(det: TestClient) -> None:
-    out = ask(det, "Ruộng cuối kênh nên trồng gì?")
+# roleplay audit 2026-11-16 (judge): "which is best" was answered "not enough evidence", which is the wrong reason:
+# the app does not rank. It now gets the answer of a plan question: no choice made, every plan in the study's order.
+@pytest.mark.parametrize(
+    "question",
+    ["Ruộng cuối kênh nên trồng gì?", "Cây nào tốt nhất?", "Which plan is best? Just tell me what to plant."],
+)
+def test_a_plan_or_ranking_question_lists_every_plan_in_the_study_order_without_ranking(
+    det: TestClient, question: str
+) -> None:
+    out = ask(det, question)
     assert out["status"] == "grounded"
+    assert "Miaudow không chọn cách trồng thay gia đình bạn" in out["answer"]
     assert [c["ref_id"] for c in out["cards"] if c["kind"] == "plan"] == PLAN_IDS
     plans = yaml.safe_load((REPO / "rules" / "rotations.yaml").read_text(encoding="utf-8"))
     for plan in plans:
@@ -217,8 +226,11 @@ def test_every_citation_is_a_register_source(det: TestClient, question: str) -> 
     assert len({c["passage_id"] for c in out["citations"]}) == len(out["citations"])  # React keys (AssistantPage)
 
 
-@pytest.mark.parametrize("question", ["Công thức nấu phở", "Cây nào tốt nhất?", "Giá lúa hôm nay bao nhiêu?"])
-def test_an_unrelated_ranking_or_price_question_is_not_answered(det: TestClient, question: str) -> None:
+@pytest.mark.parametrize(
+    "question",
+    ["Công thức nấu phở", "Giá lúa hôm nay bao nhiêu?", "Giá lúa tốt nhất hôm nay?", "best price today"],
+)
+def test_an_unrelated_or_price_question_is_not_answered(det: TestClient, question: str) -> None:
     out = ask(det, question)
     assert out["status"] == "insufficient_evidence"
     assert out["citations"] == []
@@ -491,14 +503,21 @@ def test_the_system_prompt_keeps_the_scientific_boundaries() -> None:
         assert phrase in system, phrase
 
 
-@pytest.mark.parametrize("question", ["Năm sau có hạn không?", "Cây nào tốt nhất?", "Giá lúa hôm nay bao nhiêu?"])
+@pytest.mark.parametrize(
+    ("question", "status"),
+    [
+        ("Năm sau có hạn không?", "insufficient_evidence"),
+        ("Cây nào tốt nhất?", "grounded"),
+        ("Giá lúa hôm nay bao nhiêu?", "insufficient_evidence"),
+    ],
+)
 def test_a_forecast_or_guarded_question_never_reaches_the_model(
-    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], question: str
+    monkeypatch: pytest.MonkeyPatch, fake_api: Callable[..., FakeApi], question: str, status: str
 ) -> None:
     api = fake_api()
     out = ask(app_client(monkeypatch), question)
     assert out["engine"] == "deterministic"
-    assert out["status"] == "insufficient_evidence"
+    assert out["status"] == status
     assert api.requests == []
 
 

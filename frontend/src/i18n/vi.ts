@@ -83,6 +83,7 @@ export const vi = {
   sheet: {
     title: 'Nguồn của con số',
     aboutValue: 'Về con số',
+    inPaper: (value: string) => `Trong bài báo: ${value}`,
     from: 'Lấy từ',
     publisher: 'Tác giả, nơi công bố',
     where: 'Ở đâu',
@@ -124,7 +125,8 @@ export const vi = {
   },
   home: {
     titleA: 'Ruộng làng ta,',
-    titleB: 'đọc bằng dữ liệu vũ trụ.',
+    // the no-break space (\u00a0) keeps "vũ trụ" on one line: on a 360 px phone "trụ." stood alone
+    titleB: 'đọc bằng dữ liệu vũ\u00a0trụ.',
     ctaFarmer: 'Tìm hiểu ruộng nhà mình',
     ctaScience: 'Khám phá dữ liệu Nghệ An',
     ctaCopilot: 'Hỏi trợ lý',
@@ -195,9 +197,9 @@ export const vi = {
         where: 'Trợ lý',
       },
     ],
-    climateTitle: (n: number) => `${n} trong 30 năm, hơn nửa đất trồng gặp hạn`,
+    climateTitle: (n: number) => `${n} trong 30 năm, hơn nửa đất trồng gặp điều kiện hạn hán (phần lượng mưa)`,
     climateLead:
-      'Mỗi cột là một năm, 1995–2024: phần đất trồng Nghệ An gặp điều kiện hạn của Quyết định 18/2021, trong lúc có cây trên ruộng.',
+      'Mỗi cột là một năm, 1995–2024: phần đất trồng Nghệ An gặp điều kiện hạn hán (phần lượng mưa) của Quyết định 18/2021, trong lúc có cây trên ruộng. Phần thiếu hụt nguồn nước mặt của quy định không tính được.',
     droughtAxis: 'Phần đất trồng gặp điều kiện',
     evidenceCta: 'Xem bằng chứng',
     stepsTitle: 'Bốn bước, không phải gõ chữ',
@@ -326,6 +328,19 @@ export const vi = {
     jumpTo: 'Đến thẻ',
     current: 'Cách làm hiện nay',
     trialShort: (n: string) => `Cách trồng thử ${n}`,
+    // F-B2: the two current-practice cards by their study (rules/rotations.yaml: usual is P-02's control, usual_p03 P-03's)
+    currentOf: { usual: 'cùng thử nghiệm với 4 cách trồng thử', usual_p03: 'nghiên cứu khác' },
+    stripTitle: 'Sáu cách trồng cạnh nhau',
+    // short labels of the comparison strip's lines; the full labels are said once above the six plans
+    strip: { money: 'Lãi thử nghiệm', water: 'Nước phải tưới' },
+    stripSum: (other: string) => `Số cả năm là phép cộng của chúng tôi; thẻ “${other}” ghi từng vụ như bài báo.`,
+    comparedWith: 'Bốn cách trồng thử được so với thẻ đầu tiên: cách làm hiện nay trong cùng thử nghiệm.',
+    // F-A7: the jump strip's short chips, two short lines each; the full plan name is the chip's accessible name
+    chip: {
+      usual: ['Hiện nay', 'cùng thử nghiệm'],
+      usual_p03: ['Hiện nay', 'nghiên cứu khác'],
+      trial: (n: string) => ['Cách trồng', `thử ${n}`],
+    },
     bare: 'Ruộng trống',
     datesAsReported: 'ngày theo thử nghiệm',
     overlapNote: 'Hai cây nằm trên hai hàng riêng vì ngày ghi trong bài báo trùng nhau.',
@@ -497,6 +512,7 @@ export const vi = {
     fitTitle: 'Với ruộng của gia đình đang hỏi',
     fitLabel: 'Ruộng của họ:',
     askTitle: 'Câu hỏi nên cùng gia đình làm rõ',
+    quotePage: (page: string) => `tr. ${page}`,
     eyebrow: 'Dành cho cán bộ khuyến nông',
     title: 'Bằng chứng phía sau từng thẻ',
     lead: 'Mỗi dòng trên thẻ của bà con đến từ một nguồn cụ thể. Trang này gom chúng lại để cán bộ giải thích, và nói rõ chỗ nào bằng chứng chưa đủ.',
@@ -552,7 +568,7 @@ export const vi = {
       },
     ],
     talkDrought: (year: number, share: string) => ({
-      do: `Nói “năm ${year}, ${share} đất trồng Nghệ An gặp điều kiện hạn hán theo QĐ 18/2021”`,
+      do: `Nói “năm ${year}, ${share} đất trồng Nghệ An gặp điều kiện hạn hán (phần lượng mưa) theo QĐ 18/2021”`,
       dont: 'Không nói “năm tới sẽ hạn”',
     }),
     gapsTitle: 'Chỗ bằng chứng chưa đủ',
@@ -592,12 +608,16 @@ export const vi = {
     realGeometryShort: 'Ranh giới và ô lưới thật',
     cellFootprint: 'khung một ô lưới NASA (≈ 55 × 66 km)',
     heightIs: 'Chiều cao cột',
+    max: 'tối đa',
     readingFor: (y: number) => `Số đọc năm ${y}`,
-    shareOfFarmland: 'đất trồng Nghệ An đạt cấp độ 1 trở lên',
+    shareOfFarmland: 'đất trồng Nghệ An gặp điều kiện này, tính từ cấp độ 1',
     met: 'đạt ngưỡng',
     notMet: 'chưa đạt',
     zeroWeight: 'không có đất trồng',
+    reliefToggle: 'Địa hình (NASA SRTM)',
+    reliefNote: 'Chỉ là độ cao. Không cho biết nước tới được đâu.',
     cell: 'Ô lưới',
+    cellAt: (lat: string, lon: string) => `${lat}°B ${lon}°Đ`,
     weight: 'Trọng số đất trồng',
     measured: 'Đo được',
     ruleMet: 'Theo quy định',
@@ -728,8 +748,13 @@ export const vi = {
       'Khi đọc kỹ tài liệu, chúng tôi gặp những chỗ không khớp. Chúng được giữ lại để cán bộ và người đọc tự cân nhắc.',
     dataTitle: 'Bộ dữ liệu và trạng thái nạp',
     dataLead:
-      'Dữ liệu nào đã nạp và kiểm tra, dữ liệu nào mới có hợp đồng, dữ liệu nào bị chặn. Không bộ nào đo trực tiếp trên ruộng.',
-    ingestion: { INGESTED: 'Đã nạp', PARTIAL: 'Nạp một phần', CONTRACT_ONLY: 'Mới có hợp đồng', BLOCKED: 'Bị chặn' },
+      'Dữ liệu nào đã nạp và kiểm tra, dữ liệu nào mới có hợp đồng, dữ liệu nào chưa tải được. Không bộ nào đo trực tiếp trên ruộng.',
+    ingestion: {
+      INGESTED: 'Đã nạp',
+      PARTIAL: 'Nạp một phần',
+      CONTRACT_ONLY: 'Mới có hợp đồng',
+      BLOCKED: 'Chưa tải được',
+    },
     provider: 'Đơn vị cung cấp',
     resolution: 'Độ phân giải',
     coverage: 'Thời gian',
@@ -818,9 +843,10 @@ export const vi = {
     serverOn: 'Máy chủ trợ lý đang chạy',
     serverOff: 'Đang dùng chế độ ngoại tuyến',
     claudeOn:
-      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời. Câu hỏi bạn gõ được gửi tới Claude (Anthropic) để làm việc này, nên đừng gõ tên hay số điện thoại.',
+      'Claude đã kết nối ở máy chủ. Claude chỉ chọn trong dữ liệu của Miaudow những đoạn trả lời đúng câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết câu nào của câu trả lời.',
     claudeOff:
-      'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu cố định, không dùng mô hình ngôn ngữ.',
+      'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu viết sẵn của Miaudow, không có AI viết.',
+    privacy: 'Câu hỏi bạn gõ được gửi tới Claude (Anthropic) để chọn đoạn trả lời. Đừng gõ tên hay số điện thoại.',
     browserHelp:
       'Không gọi được máy chủ, nên trợ lý tìm trong kho bằng chứng ngay trên trình duyệt. Kết quả ít hơn nhưng vẫn có nguồn.',
     honest: 'Trợ lý không dự báo, không xếp hạng cách trồng và nói rõ khi chưa đủ dữ liệu để kết luận.',
@@ -847,8 +873,15 @@ export const vi = {
       provider_error: 'Claude lỗi, đã dùng dữ liệu',
       not_configured: 'Chưa cấu hình',
     },
-    engineDeterministic: 'Ghép từ kết quả công cụ (không dùng mô hình ngôn ngữ)',
-    engineBrowser: 'Tìm trong trình duyệt (ngoại tuyến)',
+    engineClaude: 'Claude chọn đoạn phù hợp; lời văn lấy từ dữ liệu Miaudow',
+    engineDeterministic: 'Lời văn viết sẵn từ dữ liệu Miaudow, không dùng AI',
+    engineBrowser: 'Tìm ngay trên máy bạn (ngoại tuyến), không dùng AI',
+    modelUsed: (model: string) => `Mô hình chọn đoạn: ${model}`,
+    ownField:
+      'Miaudow không biết ruộng nhà bạn: chỉ có số của nghiên cứu và số theo vùng, nên không chọn cách trồng cho ruộng của bạn. Miaudow có thể đặt các cách trồng cạnh nhau cho loại ruộng bạn nêu. Hãy hỏi thêm cán bộ khuyến nông của xã về ruộng nhà mình.',
+    nextWithLand: (land: string) => `So sánh các cách trồng cho: ${land}`,
+    nextNoLand: 'Chọn loại ruộng và so sánh các cách trồng',
+    nextHelp: 'Bốn bước ngắn, không cần gõ chữ. Bạn tự quyết cùng cán bộ khuyến nông.',
     cardPlan: 'Cách trồng đã thử',
     openPlan: 'Xem thẻ so sánh',
     cardYear: 'Năm đã qua',
@@ -861,7 +894,7 @@ export const vi = {
     howFound: 'Trợ lý đã tìm câu trả lời thế nào',
     numbersChecked: (n: number, bad: number) =>
       bad
-        ? `${n} con số đã kiểm tra; ${bad} số không khớp dữ liệu nên câu trả lời của mô hình đã bị bỏ.`
+        ? `${n} con số đã kiểm tra; ${bad} số chưa khớp với kết quả công cụ.`
         : `${n} con số trong câu trả lời đã được đối chiếu với kết quả công cụ.`,
     speak: 'Nói',
     listening: 'Đang nghe… bấm để dừng',
@@ -1058,6 +1091,8 @@ export const vi = {
     },
     mainRuns: 'Lần chạy chính',
     spatialHoldout: 'Kiểm tra bỏ ra từng vùng',
+    breakdown: 'Kết quả theo từng tỉnh và từng vùng',
+    scrollHint: 'Bảng rộng hơn màn hình: kéo sang ngang để xem hết các cột.',
     sensitivity: {
       no_fao_flagged: 'Bỏ các dòng FAO đánh dấu',
       mae_skill: 'Điểm tính theo MAE',
@@ -1079,12 +1114,20 @@ export const vi = {
       month: 'Tháng',
     },
     role: { primary: 'Chính', secondary: 'Phụ', reference: 'Mốc so sánh' },
-    subset: (raw: string) =>
-      raw === 'national'
-        ? 'Cả nước'
-        : raw === 'na_ht_th'
-          ? 'Nghệ An, Hà Tĩnh, Thanh Hóa'
-          : raw.replace(/^(unit|region):/, ''),
+    // the scope keys of GET /api/method; the six regions as Vietnam's statistics office writes them
+    subsets: {
+      national: 'Cả nước',
+      na_ht_th: 'Nghệ An, Hà Tĩnh, Thanh Hóa',
+      'unit:Nghe An': 'Nghệ An',
+      'unit:Ha Tinh': 'Hà Tĩnh',
+      'unit:Thanh Hoa': 'Thanh Hóa',
+      'region:red_river_delta': 'Đồng bằng sông Hồng',
+      'region:northern_midlands_and_mountain_areas': 'Trung du và miền núi phía Bắc',
+      'region:north_central_and_central_coastal_areas': 'Bắc Trung Bộ và Duyên hải miền Trung',
+      'region:central_highlands': 'Tây Nguyên',
+      'region:south_east': 'Đông Nam Bộ',
+      'region:mekong_river_delta': 'Đồng bằng sông Cửu Long',
+    } as Record<string, string>,
     skillCi: (v: string, lo: string, hi: string) => `${v} (${lo} đến ${hi})`,
     notRun: 'Chưa chạy',
     rangeHidden: 'Khoảng 80% không được hiện trên thẻ cho vụ này vì bài kiểm tra khoảng chưa đạt.',
@@ -1134,6 +1177,9 @@ export const vi = {
     predictionsLabel: 'Ước tính của mô hình cho năm kiểm tra, lúa vụ Mùa, 2016–2024',
     predictionsDetail:
       'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
+    reliefLabel: 'Địa hình Nghệ An (NASA SRTM)',
+    reliefDetail:
+      'Ảnh đổ bóng từ độ cao mặt đất, mặt trời hướng tây bắc (315°, cao 45°). Chỉ là độ cao; không cho biết nước tới được đâu.',
     ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
     ndviDetail:
       'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',

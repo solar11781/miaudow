@@ -5,8 +5,8 @@ import type { SourceFacts } from '../../types';
 import { Icon } from '../../design-system/Icon';
 import { KindBadge } from './KindBadge';
 import { readStatusText } from './readStatus';
-import { displayUnit } from '../../domain/format';
-import { usePick, useT } from '../../app/settings';
+import { displayMeasure } from '../../domain/format';
+import { usePick, useSettings, useT } from '../../app/settings';
 import s from './ProvenanceSheet.module.css';
 
 interface Props {
@@ -111,8 +111,9 @@ export const ProvenanceSheet = forwardRef<HTMLDialogElement, Props>(function Pro
 function FactsBlock({ facts }: { facts: SourceFacts }) {
   const t = useT();
   const pickText = usePick();
-  // the API's text as written on screen: m² and m³ (D-170)
-  const pick = (text: SourceFacts['citation']) => displayUnit(pickText(text));
+  const { lang } = useSettings();
+  // the API's text as written on screen: m² and m³ (D-170), sizes with the language's thousands mark
+  const pick = (text: SourceFacts['citation']) => displayMeasure(pickText(text), lang);
   return (
     <section className={s.block}>
       <dl className={s.facts}>
@@ -168,13 +169,14 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
         <div className={s.headText}>
           <p className={s.label}>{value.label || t.sheet.aboutValue}</p>
           <h2 id="prov-title" className={s.value}>
-            {value.value}
+            {value.shown ?? value.value}
           </h2>
         </div>
         <button type="button" className={s.close} onClick={onClose} aria-label={t.common.close}>
           <Icon name="close" />
         </button>
       </header>
+      {value.shown && <p>{t.sheet.inPaper(value.value)}</p>}
       {value.plain && <p>{value.plain}</p>}
       {value.quote && (
         <section className={s.arith}>

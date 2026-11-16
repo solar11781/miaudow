@@ -23,6 +23,7 @@ from fieldshift.ml.grid_figure import grid_figure_svg
 
 REPO = Path(__file__).resolve().parents[1]
 COMMITTED = REPO / "artifacts" / "figures" / "nghe_an_grid.svg"
+COMMITTED_VI = REPO / "artifacts" / "figures" / "nghe_an_grid.vi.svg"
 WEIGHTS = pd.read_csv(REPO / "data" / "processed" / "cell_weights.csv", float_precision="round_trip")
 NGHE_AN = WEIGHTS[(WEIGHTS["province_nso"] == "Nghe An") & (WEIGHTS["method"] == "farmland_weighted")]
 GEOJSON = REPO / "data" / "raw" / "boundaries" / "geoBoundaries-VNM-ADM1_simplified.geojson"
@@ -153,11 +154,9 @@ def test_svg_is_an_accessible_image_with_a_text_alternative(committed: ET.Elemen
 def test_the_caption_names_the_sources_and_the_drawing_method(committed: ET.Element) -> None:
     text = " ".join(committed.itertext())
     for source in (
-        "R-N01",
-        "R-N02",
-        "D-106",
-        "D-146",
-        "Boundary: geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020; R-D04)",  # REFERENCES R-D04; DATA-SOURCES credit
+        "NASA POWER cells",
+        "NASA MODIS land cover MCD12C1",
+        "Boundary: geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020)",  # DATA-SOURCES credit
         "cos",
         "rounded to 2 decimals",
     ):
@@ -168,14 +167,67 @@ def test_the_text_alternative_and_legend_state_the_pipeline_rule_not_overlap(com
     # the boundary also grazes an 11th cell that holds none of its MODIS pixels, so "overlaps" would be wrong
     text = " ".join(committed.itertext())
     assert "the 10 NASA POWER cells that hold the province's MODIS land pixels" in text
-    assert "Cell with Nghệ An land pixels but farmland weight 0" in text
+    assert "Cell with Nghe An land pixels but farmland weight 0" in text
     assert "overlap" not in text
+
+
+@pytest.fixture(scope="module")
+def committed_vi() -> ET.Element:
+    return _parse(COMMITTED_VI.read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("path", [COMMITTED, COMMITTED_VI])
+def test_no_figure_shows_an_internal_label_or_a_file_path(path: Path) -> None:
+    text = path.read_text(encoding="utf-8")
+    for internal in ("R-N01", "R-N02", "R-D04", "D-106", "D-146", "data/processed", ".csv"):
+        assert internal not in text, internal
+
+
+def test_the_vietnamese_figure_speaks_vietnamese_with_a_decimal_comma(committed_vi: ET.Element) -> None:
+    assert committed_vi[0].text == "Các ô lưới thời tiết NASA POWER phủ Nghệ An, tô theo trọng số đất trồng"
+    text = " ".join(committed_vi.itertext())
+    assert "Ranh giới tỉnh Nghệ An" in text
+    assert "NASA MODIS MCD12C1" in text
+    assert not DECIMAL.findall(text)  # every decimal number is written with a comma
+    assert {f"{w:.2f}".replace(".", ",") for w in NGHE_AN["farmland_weight"]} == set(
+        _label_texts(committed_vi).values()
+    )
+
+
+def test_the_two_languages_draw_the_same_cells_and_the_same_numbers(
+    committed: ET.Element, committed_vi: ET.Element
+) -> None:
+    cells_en, cells_vi = _cells(committed), _cells(committed_vi)
+    assert cells_en.keys() == cells_vi.keys()
+    assert len(cells_en) == 10
+    for cell_id in cells_en:
+        assert [dict(r.attrib) for r in cells_en[cell_id]] == [dict(r.attrib) for r in cells_vi[cell_id]]
+    assert [t.replace(",", ".") for t in _label_texts(committed_vi).values()] == list(_label_texts(committed).values())
+    path_en = next(el for el in committed if el.tag == f"{SVG_NS}path")
+    path_vi = next(el for el in committed_vi if el.tag == f"{SVG_NS}path")
+    assert path_en.get("d") == path_vi.get("d")
+    assert committed_vi.find(f"{SVG_NS}desc").text.count(" độ Bắc, ") == 10
+    assert committed.find(f"{SVG_NS}desc").text.count(" N, ") == 10
+
+
+def test_the_vietnamese_figure_has_no_internal_label_in_its_text_alternative(committed_vi: ET.Element) -> None:
+    desc = committed_vi.find(f"{SVG_NS}desc").text
+    assert "10 ô lưới NASA POWER" in desc
+    for row in NGHE_AN.itertuples():
+        lat, lon, weight = (str(v).replace(".", ",") for v in (row.lat, row.lon, f"{row.farmland_weight:.2f}"))
+        assert f"{lat} độ Bắc, {lon} độ Đông: {weight}" in desc
+
+
+def test_an_unknown_language_is_refused() -> None:
+    with pytest.raises(ValueError, match="lang"):
+        grid_figure_svg(_table([("", 19.0, 105.625, 1.0)]), NO_ZERO, SQUARE, "fr")
 
 
 @pytest.mark.skipif(not GEOJSON.exists(), reason="boundary file not downloaded")
 def test_committed_svg_matches_the_builder_output() -> None:
     boundary = province_geometries(GEOJSON, ADMIN)["Nghe An"]
     assert COMMITTED.read_text(encoding="utf-8") == grid_figure_svg(WEIGHTS, ZERO_TABLE, boundary)
+    assert COMMITTED_VI.read_text(encoding="utf-8") == grid_figure_svg(WEIGHTS, ZERO_TABLE, boundary, "vi")
 
 
 # ---- the builder on a hand-made boundary: two cells side by side, 18.75-19.25 N and 104.6875-105.9375 E

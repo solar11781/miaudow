@@ -108,11 +108,11 @@ const answer: CopilotResponse = {
   numbers: { checked: 0, unverified: [] },
   missing_information: [],
 };
-const view = () =>
+const view = (voiceNote?: boolean) =>
   render(
     <SettingsProvider>
       <MemoryRouter>
-        <ServerAnswer res={answer} water={null} />
+        <ServerAnswer res={answer} water={null} voiceNote={voiceNote} />
       </MemoryRouter>
     </SettingsProvider>,
   );
@@ -123,6 +123,12 @@ describe('read-aloud button', () => {
     view();
     expect(screen.getByText(viText.copilot.noVoice)).toBeTruthy();
     expect(screen.queryByRole('button', { name: viText.copilot.readAloud })).toBeNull();
+  });
+
+  it('shows the install note only where asked, so it is not printed under every answer', () => {
+    voices = [voice('en-US')];
+    view(false);
+    expect(screen.queryByText(viText.copilot.noVoice)).toBeNull();
   });
 
   it('shows the button when a vi voice exists', () => {

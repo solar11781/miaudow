@@ -70,3 +70,96 @@ test.describe('on a phone in light mode', () => {
     expect(Math.min(r, g, b)).toBeGreaterThan(200);
   });
 });
+
+// member A, 2026-11-16: in Vietnamese the bar ran off a 1600 px screen. The bar's column stops growing at 1280 px, so
+// every control must stay inside that column at every width, in both languages, on the site and the farmer header.
+const WIDTHS = [
+  360, 480, 600, 759, 760, 770, 800, 859, 860, 1024, 1259, 1260, 1270, 1280, 1319, 1320, 1366, 1440, 1536, 1600, 1680,
+  1920, 2560,
+];
+for (const route of ['/#/', '/#/nong-dan/ruong', '/#/home', '/#/farmer/field']) {
+  test(`the header's controls stay inside its column at every width (${route})`, async ({ page }, info) => {
+    test.skip(info.project.name !== 'desktop-1440', 'the test sets every width itself');
+    await page.goto(route);
+    await expect(page.locator('header a[class*="brand"]')).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    const over: string[] = [];
+    for (const width of WIDTHS) {
+      await page.setViewportSize({ width, height: 800 });
+      const past = await page.locator('header div[class*="bar"]').evaluate((bar) => {
+        const right = bar.getBoundingClientRect().right - parseFloat(getComputedStyle(bar).paddingRight);
+        const edges = [...bar.querySelectorAll('a, button')]
+          .filter((e) => e.getClientRects().length > 0)
+          .map((e) => e.getBoundingClientRect().right - right);
+        return Math.max(0, ...edges);
+      });
+      if (past > 0.5) over.push(`${width} px: ${Math.round(past)} px past the column`);
+    }
+    expect(over).toEqual([]);
+  });
+}
+
+// the language button showed a bare globe between 1260 and 1500 px
+test('the language button shows the other language next to its icon on a laptop', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop-1440', 'a laptop width');
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto('/#/');
+  const text = page.getByRole('banner').getByRole('button', { name: 'EN · Switch to English' }).locator('span');
+  await expect(text).toHaveText('EN');
+  expect((await text.boundingBox())?.width).toBeGreaterThan(10);
+});
+
+test.describe('in light mode', () => {
+  test.use({ colorScheme: 'light' });
+  // the light theme darkened the ivory wordmark on every header, so on the dark headers it could not be seen
+  test('the wordmark is darkened only on the light header bar', async ({ page }, info) => {
+    test.skip(info.project.name !== 'desktop-1440', 'the phone bar hides the wordmark; its menu is checked below');
+    // the old page's header stays up while the next page loads, so wait for the header this page gives
+    const filter = async (route: string, light: boolean) => {
+      await page.goto(route);
+      await expect(page.locator('header[class*="paper"]')).toHaveCount(light ? 1 : 0);
+      const mark = page.locator('header div[class*="bar"] img[alt="Miaudow"]');
+      await expect(mark).toBeVisible();
+      return mark.evaluate((img) => getComputedStyle(img).filter);
+    };
+    expect(await filter('/#/dai-quan-sat', true)).toContain('brightness'); // paper header
+    expect(await filter('/#/khoa-hoc', false)).toBe('none'); // forest header
+    expect(await filter('/#/', false)).toBe('none'); // over the photograph
+  });
+
+  test('the wordmark stays light in the dark menu sheet', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto('/#/dai-quan-sat');
+    await page.locator('header button[class*="menuBtn"]').click();
+    const mark = page.getByRole('dialog').locator('img[alt="Miaudow"]');
+    await expect(mark).toBeVisible();
+    expect(await mark.evaluate((img) => getComputedStyle(img).filter)).toBe('none');
+  });
+});
+
+// visual audit 2026-11-16: under the wider tagline the wordmark image stretched to the tagline's width (155 x 18 px for
+// a 6:1 image)
+test('the header wordmark keeps its proportions at every width', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop-1440', 'the test sets every width itself');
+  await page.goto('/#/');
+  const mark = page.locator('header div[class*="bar"] img[alt="Miaudow"]');
+  for (const width of [480, 768, 1024, 1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 800 });
+    await expect(mark).toBeVisible();
+    const stretch = await mark.evaluate((img: HTMLImageElement) => {
+      const box = img.getBoundingClientRect();
+      return box.width / box.height / (img.naturalWidth / img.naturalHeight);
+    });
+    expect(stretch, `${width} px`).toBeCloseTo(1, 1);
+  }
+});
+
+// visual audit 2026-11-16: the rule that hides the switch's name in the narrow farmer bar also hid it in the menu sheet
+test('the phone menu names its motion switch in words', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/#/khoa-hoc');
+  await page.locator('header button[class*="menuBtn"]').click();
+  const label = page.getByRole('dialog').getByRole('switch', { name: 'Giảm chuyển động' }).locator('span').last();
+  await expect(label).toHaveText('Giảm chuyển động');
+  expect((await label.boundingBox())?.width).toBeGreaterThan(50);
+});

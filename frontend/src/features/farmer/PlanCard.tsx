@@ -12,11 +12,11 @@ import type {
   WaterFact,
 } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
-import { displayUnit } from '../../domain/format';
+import { displayMeasure } from '../../domain/format';
 import { consideration } from '../../domain/considerations';
 import { cardQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
-import { planLabel } from '../../domain/plans';
+import { planLabel, studyOf } from '../../domain/plans';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { OwnNumbers, type OwnState } from './OwnNumbers';
@@ -63,7 +63,6 @@ function Row({
   target?: boolean;
   children: ReactNode;
 }) {
-  const t = useT();
   const [open, setOpen] = useState(false);
   return (
     <section
@@ -84,12 +83,7 @@ function Row({
           <Icon name={icon} size={18} />
           <span className={s.rowTitle}>
             {title}
-            {highlight && (
-              <span className={s.prioTag}>
-                <Icon name="check" size={14} strokeWidth={2.6} />
-                {t.farmer.yourPriority}
-              </span>
-            )}
+            {highlight && <PrioTag />}
           </span>
           <Icon name="chevronDown" size={18} />
         </button>
@@ -138,7 +132,7 @@ function useSeasonValues(plan: Plan, res: CompareResponse, refs: ApiRefs) {
     const note = sentences(pick(v.words), t.farmer.paperPage(v.page), notes.definition);
     const shown = v.value ? (
       <>
-        <SourceValue {...refs.value(v.value, `${t.farmer.rows.money} · ${label}`, note)}>
+        <SourceValue {...refs.moneyValue(v.value, `${t.farmer.rows.money} · ${label}`, note)}>
           {refs.money(v.value).number}
         </SourceValue>{' '}
         {refs.money(v.value).unit}
@@ -164,7 +158,7 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
         <div className={s.money}>
-          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
+          <SourceValue size="xl" {...refs.moneyValue(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>
           <span className={s.unit}>
@@ -305,41 +299,47 @@ function RiceBlock({ st, refs }: { st: Stability; refs: ApiRefs }) {
   return (
     <div className={s.riceRows}>
       <p className={s.subHead}>{label}</p>
-      {st.per_year.map((y) => (
-        <p key={y.year} className={s.riceLine}>
-          <span className={s.riceSeason}>{y.year}</span>
-          <span className={s.riceVals}>
-            <span className="muted small">{t.farmer.rice.real}</span>
-            <NumberOr v={y.real} label={`${label} · ${y.year}`} refs={refs} />
-            {y.oos_prediction && (
-              <>
-                <span className="muted small">{t.farmer.rice.prediction}</span>
-                <SourceValue {...refs.value(y.oos_prediction, `${t.farmer.rice.prediction} · ${y.year}`)} />
-              </>
-            )}
-            {y.range_80 && (
-              <>
-                <span className="muted small">{t.farmer.rice.range}</span>
-                <SourceValue {...refs.value(y.range_80.low, `${t.farmer.rice.range} · ${y.year}`)} />
-                <SourceValue {...refs.value(y.range_80.high, `${t.farmer.rice.range} · ${y.year}`)} />
-              </>
-            )}
-          </span>
-        </p>
-      ))}
-      {st.summary && (
-        <p className={s.riceLine}>
-          <span className={s.riceVals}>
-            <span className="muted small">{t.farmer.rice.min}</span>
-            <SourceValue {...refs.value(st.summary.min, `${t.farmer.rice.min} · ${label}`)} />
-            <span className="muted small">{t.farmer.rice.median}</span>
-            <SourceValue {...refs.value(st.summary.median, `${t.farmer.rice.median} · ${label}`)} />
-            <span className="muted small">{t.farmer.rice.max}</span>
-            <SourceValue {...refs.value(st.summary.max, `${t.farmer.rice.max} · ${label}`)} />
-          </span>
-          <span className="muted small">{t.farmer.rice.worstYears(st.worst_years.join(', '))}</span>
-        </p>
-      )}
+      {/* one label and value per line, like the other opened rows (F-A3) */}
+      <ul className={s.kv}>
+        {st.per_year.map((y) => (
+          <li key={y.year}>
+            <span>{y.year}</span>
+            <span className={s.kvVals}>
+              <span className="muted small">{t.farmer.rice.real}</span>
+              <NumberOr v={y.real} label={`${label} · ${y.year}`} refs={refs} />
+              {y.oos_prediction && (
+                <>
+                  <span className="muted small">{t.farmer.rice.prediction}</span>
+                  <SourceValue {...refs.value(y.oos_prediction, `${t.farmer.rice.prediction} · ${y.year}`)} />
+                </>
+              )}
+              {y.range_80 && (
+                <>
+                  <span className="muted small">{t.farmer.rice.range}</span>
+                  <SourceValue {...refs.value(y.range_80.low, `${t.farmer.rice.range} · ${y.year}`)} />
+                  <SourceValue {...refs.value(y.range_80.high, `${t.farmer.rice.range} · ${y.year}`)} />
+                </>
+              )}
+            </span>
+          </li>
+        ))}
+        {st.summary &&
+          (
+            [
+              [t.farmer.rice.min, st.summary.min],
+              [t.farmer.rice.median, st.summary.median],
+              [t.farmer.rice.max, st.summary.max],
+            ] as const
+          ).map(([name, v]) => (
+            <li key={name}>
+              <span>{name}</span>
+              <span className={s.kvVals}>
+                <SourceValue {...refs.value(v, `${name} · ${label}`)} />
+              </span>
+            </li>
+          ))}
+      </ul>
+      {st.summary && <p className="muted small">{t.farmer.rice.worstYears(st.worst_years.join(', '))}</p>}
       <p className={s.rowNote}>
         {t.farmer.rice.yearsCount(st.years_count)} · {pick(st.scope)}
       </p>
@@ -362,14 +362,15 @@ function WeatherRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
       highlight={highlight}
       line={line}
     >
+      {/* the bad-years answer shows as soon as the row opens, with no second fold (F-B1) */}
       {plan.exposure.length > 0 && (
-        <YearsFold id={`card-${plan.id}-weather-years`}>
+        <div id={`card-${plan.id}-weather-years`} className={s.fold}>
           {/* drought is a water reading, so the table says where it is (D-58, D-192) */}
           <p className={s.rowNote}>{t.farmer.rows.droughtPointer(t.farmer.rows.water)}</p>
           {/* what the shares are, next to the tables it explains (D-187) */}
           <p className={s.rowNote}>{t.farmer.rows.weatherNote}</p>
           <ShareTable plan={plan} codes={WEATHER_RULES} rules={res.rules} refs={refs} />
-        </YearsFold>
+        </div>
       )}
       {rice.length > 0 && (
         <div className={s.sub}>
@@ -451,7 +452,10 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
                       refs={refs}
                       note={t.farmer.rows.soilSheetNote}
                     />
-                    <span className="muted small">{t.farmer.soilNormal}</span>
+                  </span>
+                  {/* the normal is a second label and value line of its own, so each number stands by its label */}
+                  <span className="muted small">{t.farmer.soilNormal}</span>
+                  <span className={s.kvVals}>
                     <NumberOr
                       v={y.soil_wetness.normal}
                       label={`${t.farmer.soilNormal} · ${pick(c.crop)}`}
@@ -484,93 +488,128 @@ function LandRow({ plan, refs, highlight, line }: Omit<Ctx, 'res'> & Hl) {
       highlight={highlight}
       line={line}
     >
-      <ul className={s.checks}>
+      <ul className={s.kv}>
         <li>
-          {t.farmer.cropsInYear}: <NumberOr v={crops.value} label={t.farmer.cropsInYear} refs={refs} />
-          {why(crops.principle_source_ids, t.farmer.cropsInYear)}
+          <span>{t.farmer.cropsInYear}</span>
+          <span className={s.kvVals}>
+            <NumberOr v={crops.value} label={t.farmer.cropsInYear} refs={refs} />
+            {why(crops.principle_source_ids, t.farmer.cropsInYear)}
+          </span>
         </li>
         <li>
-          {t.farmer.livingDays}: <NumberOr v={days.value} label={t.farmer.livingDays} refs={refs} />
-          {why(days.principle_source_ids, t.farmer.livingDays)}
+          <span>{t.farmer.livingDays}</span>
+          <span className={s.kvVals}>
+            <NumberOr v={days.value} label={t.farmer.livingDays} refs={refs} />
+            {why(days.principle_source_ids, t.farmer.livingDays)}
+          </span>
         </li>
-        <li className={s.legume}>
-          {legume.present ? (
-            <>
-              <Icon name="check" size={16} strokeWidth={2.4} />
-              {t.farmer.legumeYes}: {legume.crops.map(pick).join(', ')}
-            </>
-          ) : (
-            t.farmer.legumeNo
-          )}
-          {why(legume.principle_source_ids, t.farmer.legumeYes)}
+        <li>
+          <span className={s.legume}>
+            {legume.present ? (
+              <>
+                <Icon name="check" size={16} strokeWidth={2.4} />
+                {t.farmer.legumeYes}: {legume.crops.map(pick).join(', ')}
+              </>
+            ) : (
+              t.farmer.legumeNo
+            )}
+          </span>
+          <span className={s.kvVals}>{why(legume.principle_source_ids, t.farmer.legumeYes)}</span>
         </li>
       </ul>
     </Row>
   );
 }
 
-/** The card's money total, or the P-03 money of each season, then per crop the TCVN 8641 water to apply from the
- * lowest to the highest of its rows (D-172, D-175): the money is the money row's own values with their sources; the
- * water range carries the rows' TCVN sources, is labelled by region and planting method because the rows differ in both
- * and the standard does not place Nghệ An (D-68), and leaves FAO out (D-64). */
-function Summary({ plan, res, refs }: Ctx) {
+/** The "your priority" tag, before the line or row heading it marks (H11: a text label, not colour alone). */
+export function PrioTag() {
   const t = useT();
-  const pick = usePick();
+  return (
+    <span className={s.prioTag}>
+      <Icon name="check" size={14} strokeWidth={2.6} />
+      {t.farmer.yourPriority}
+    </span>
+  );
+}
+
+/** The plan's money total, or the P-03 money of each season, as the card head and the comparison strip show it: the
+ * money row's own values with their sources (D-172). `brief` is the strip's form: a short label, the long one and
+ * "whole year, our addition" being said once above the six plans. */
+export function MoneyLine({ plan, res, refs, brief }: Ctx & { brief?: boolean }) {
+  const t = useT();
   const m = plan.money;
   const seasons = useSeasonValues(plan, res, refs);
-  const water = `card-${plan.id}-row-water`;
   const notes = useMoneyNotes(plan);
+  if (!m.total && !seasons.length) return null;
   return (
-    <div className={s.summary}>
+    <p>
+      {brief ? t.farmer.strip.money : t.farmer.rows.money}:{' '}
       {m.total ? (
-        <p>
-          {t.farmer.rows.money}:{' '}
-          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
+        <>
+          <SourceValue {...refs.moneyValue(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>{' '}
-          {refs.money(m.total).unit} · {t.farmer.own.yearSum}
-        </p>
+          {refs.money(m.total).unit}
+          {!brief && <> · {t.farmer.own.yearSum}</>}
+        </>
       ) : (
-        seasons.length > 0 && (
-          <p>
-            {t.farmer.rows.money}:{' '}
-            {seasons.map((v, i) => (
-              <span key={v.season}>
-                {i > 0 && ' · '}
-                {v.label && `${v.label}: `}
-                {v.shown}
-              </span>
-            ))}
-          </p>
-        )
+        seasons.map((v, i) => (
+          <span key={v.season}>
+            {i > 0 && ' · '}
+            {v.label && `${v.label}: `}
+            {v.shown}
+          </span>
+        ))
       )}
-      <p data-testid={`card-${plan.id}-water-line`}>
-        {t.farmer.summaryWaterLabel}:{' '}
-        {plan.calendar.map((c, i) => {
-          const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
-          const range = tcvnRange(facts);
-          // the note's first sentence stays (rice: maintenance irrigation only); the whole note opens with the range
-          const note = range && tcvnSharedNote(facts);
-          return (
-            <span key={c.crop_key}>
-              {i > 0 && ' · '}
-              {pick(c.crop)}:{' '}
-              {range ? (
-                <SourceValue
-                  {...refs.value(
-                    range,
-                    `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`,
-                    sentences(t.farmer.rows.waterNote, t.farmer.summaryWaterNote, note && pick(note)),
-                  )}
-                />
-              ) : (
-                t.farmer.noFigure
-              )}
-              {note && ` (${firstSentence(pick(note))})`}
-            </span>
-          );
-        })}
-      </p>
+    </p>
+  );
+}
+
+/** Per crop the TCVN 8641 water to apply from the lowest to the highest of its rows (D-172, D-175): the range carries
+ * the rows' TCVN sources, is labelled by region and planting method because the rows differ in both and the standard
+ * does not place Nghệ An (D-68), and leaves FAO out (D-64). `hook` is the card head's test hook. */
+export function WaterLine({ plan, refs, hook, brief }: Omit<Ctx, 'res'> & { hook?: string; brief?: boolean }) {
+  const t = useT();
+  const pick = usePick();
+  return (
+    <p data-testid={hook}>
+      {brief ? t.farmer.strip.water : t.farmer.summaryWaterLabel}:{' '}
+      {plan.calendar.map((c, i) => {
+        const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
+        const range = tcvnRange(facts);
+        // the note's first sentence stays (rice: maintenance irrigation only); the whole note opens with the range
+        const note = range && tcvnSharedNote(facts);
+        return (
+          <span key={c.crop_key}>
+            {i > 0 && ' · '}
+            {pick(c.crop)}:{' '}
+            {range ? (
+              <SourceValue
+                {...refs.value(
+                  range,
+                  `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`,
+                  sentences(t.farmer.rows.waterNote, t.farmer.summaryWaterNote, note && pick(note)),
+                )}
+              />
+            ) : (
+              t.farmer.noFigure
+            )}
+            {note && ` (${firstSentence(pick(note))})`}
+          </span>
+        );
+      })}
+    </p>
+  );
+}
+
+/** The card summary under the plan name: the money line, the water line and a link to the water row. */
+function Summary({ plan, res, refs }: Ctx) {
+  const t = useT();
+  const water = `card-${plan.id}-row-water`;
+  return (
+    <div className={s.summary}>
+      <MoneyLine plan={plan} res={res} refs={refs} />
+      <WaterLine plan={plan} refs={refs} hook={`card-${plan.id}-water-line`} />
       <a
         href={`#${water}`}
         className={s.summaryLink}
@@ -599,6 +638,7 @@ function CardHead({ plan, res, refs }: Ctx) {
         <span className={plan.is_usual ? s.currentTag : undefined}>
           {planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}
         </span>
+        {plan.is_usual && <span>{studyOf(plan.id, t.farmer.currentOf)}</span>}
       </p>
       <h2 id={`title-${plan.id}`} className={s.chain}>
         {plan.calendar.map((c, i) => (
@@ -664,7 +704,7 @@ function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: 
         {reply?.status === 'ok' && (
           <div className={s.explainReply}>
             <p className={s.rowNote}>{t.farmer.explain.aiLabel}</p>
-            <p>{displayUnit(reply.text)}</p>
+            <p>{displayMeasure(reply.text, lang)}</p>
           </div>
         )}
         {reply?.status === 'error' && <p className={s.rowNote}>{t.farmer.explain[reply.why]}</p>}
@@ -677,6 +717,7 @@ function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: 
 function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers: CompareRequest; explain: boolean }) {
   const t = useT();
   const pick = usePick();
+  const { lang } = useSettings();
   const { why } = plan;
   const questions = cardQuestions(plan.id);
   return (
@@ -695,7 +736,7 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
               const plain = key ? t.farmer.considerations[key] : null;
               return (
                 <li key={r.text.en}>
-                  <span>{plain ? plain.line : pick(r.text)}</span>
+                  <span>{plain ? plain.line : displayMeasure(pick(r.text), lang)}</span>
                   {plain && <span className="muted small">{plain.source}</span>}
                   {r.source_ids.length > 0 && (
                     <SourceValue
@@ -728,7 +769,7 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
           <div key={k}>
             <p className={s.why}>
               <strong>{t.farmer.whyParts[k]}: </strong>
-              {displayUnit(pick(why[k]))}
+              {displayMeasure(pick(why[k]), lang)}
             </p>
             {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
           </div>

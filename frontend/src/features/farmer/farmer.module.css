@@ -261,7 +261,7 @@
   display: grid;
   place-items: center;
   background: color-mix(in srgb, var(--c-gold-500) 16%, var(--bg-sunk));
-  color: var(--c-gold-300);
+  color: var(--accent-ink);
   margin-bottom: 0.35rem;
 }
 
@@ -425,6 +425,7 @@
   min-height: 52px;
   display: flex;
   align-items: center;
+  gap: 0.6rem;
   cursor: pointer;
   font-weight: 500;
 }
@@ -516,7 +517,7 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0.05rem 0.85rem;
   border-radius: var(--r-pill);
   border: 1px solid var(--line-2);
   background: var(--bg-raised);
@@ -525,6 +526,17 @@
   font-size: var(--t-small);
   font-weight: 500;
   white-space: nowrap;
+}
+
+/* a chip's two short lines (F-A7) */
+.jump a > span[aria-hidden] {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.jump a > span[aria-hidden] > span + span {
+  color: var(--fg-2);
 }
 
 .jump a:hover {
@@ -537,11 +549,76 @@
   font-weight: 700;
 }
 
+/* the comparison strip (UI-UX-SPEC section 9): stacked on a phone, side by side in columns on a wide screen; the
+   API's order, no rank (H3) */
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.stripList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: var(--s-2);
+}
+
+.stripList > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-raised);
+  font-size: var(--t-small);
+  color: var(--fg-2);
+}
+
+/* a number button keeps its 44 px target (H7) without making its line taller, as in the card head */
+.stripList p button {
+  margin-block: -8px;
+  justify-content: center;
+}
+
+.stripLegend {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: var(--t-small);
+  color: var(--fg-2);
+}
+
+.stripLegend li > span:first-child {
+  margin-right: 0.4rem;
+}
+
+/* a phone has room for two lines per plan: the water and land lines show there only as the chosen priority */
+@media (max-width: 700px) {
+  .stripWide {
+    display: none;
+  }
+}
+
+.stripName {
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--fg);
+  text-underline-offset: 3px;
+}
+
+.stripName > span {
+  color: var(--fg-2);
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s-5);
-  align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -777,7 +854,7 @@
 
 .helpIcon {
   background: color-mix(in srgb, var(--c-gold-500) 18%, transparent);
-  color: var(--c-gold-300);
+  color: var(--accent-ink);
 }
 
 .notIcon {
@@ -821,7 +898,7 @@
 }
 
 .startStepNum {
-  color: var(--c-gold-300);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 

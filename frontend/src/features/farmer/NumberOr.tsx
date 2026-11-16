@@ -25,7 +25,7 @@ export function NumberOr({
   if (!v) return <span className="muted">{t.common.notAvailable}</span>;
   const m = money ? refs.money(v) : null;
   return (
-    <SourceValue {...refs.value(v, label, note)} plain={plain}>
+    <SourceValue {...(money ? refs.moneyValue(v, label, note) : refs.value(v, label, note))} plain={plain}>
       {m && `${m.number} ${m.unit}`}
     </SourceValue>
   );

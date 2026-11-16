@@ -13,6 +13,28 @@
     <!-- No image preload: with hash routing there is one HTML file for every route, so a preload would compete for
          bandwidth on all pages (measured: every route got slower on the field-phone profile). -->
     <title>Miaudow · Đồng lúa Nghệ An</title>
+    <!-- the loading line is drawn before the stylesheet arrives (vite.config.ts lateStylesheet), so its few rules
+         sit here, in the dark page colours of tokens.css: the stylesheet is dark until the app's script sets the
+         theme, so a light variant here would put dark text on that dark page -->
+    <style>
+      body {
+        margin: 0;
+        background: #0b1a12;
+      }
+      .boot {
+        margin: 0;
+        padding: 40vh 1rem 0;
+        text-align: center;
+        font:
+          17px/1.6 system-ui,
+          sans-serif;
+        color: #dfe5d9;
+      }
+      .boot span {
+        display: block;
+        color: #b7c2b2;
+      }
+    </style>
   </head>
   <body>
     <!-- shown until the app starts on a slow phone (audit F3, D-187); React replaces it, no script needed -->

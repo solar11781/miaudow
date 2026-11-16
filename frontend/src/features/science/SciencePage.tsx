@@ -4,7 +4,7 @@ import { ART } from '../../data/art';
 import { PhotoHead } from '../../design-system/PhotoHead';
 import { Link, useSearchParams } from 'react-router-dom';
 import { geo, hazards, model, YEARS, type RiceSeason, type RuleCode } from '../../data';
-import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
+import { cellMagnitude, cellMet, magnitudeDigits, RULES, yearShare } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
 // three.js arrives in its own chunk after the page's text and numbers are on screen
@@ -18,6 +18,7 @@ import { RainStrip } from '../charts/RainStrip';
 import { TwoSources } from '../charts/TwoSources';
 import { NdviChart } from '../charts/NdviChart';
 import { useLocalTo } from '../../app/paths';
+import { useCellName } from '../../hooks/useCellName';
 import s from './science.module.css';
 
 const SCIENCE_RULES: RuleCode[] = ['drought_rain_any2', 'drought_rain_consecutive', 'heat', 'heavy_rain', 'cold'];
@@ -27,6 +28,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
   const pick = usePick();
   const f = useFormat();
   const refs = useRefs();
+  const cellName = useCellName();
   const { calm, lang } = useSettings();
   const [rule, setRule] = useState<RuleCode>('drought_rain_any2');
   const [cell, setCell] = useState<string>(hazards.cells.reduce((a, b) => (b.weight > a.weight ? b : a)).id);
@@ -96,14 +98,12 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
             {sel && (
               <dl className={s.cellCard}>
                 <dt>{t.science.cell}</dt>
-                <dd className="mono">
-                  {sel.lat.toFixed(1)}°N {sel.lon.toFixed(3)}°E
-                </dd>
+                <dd className="mono">{cellName(sel.id)}</dd>
                 <dt>{t.science.weight}</dt>
                 <dd className="mono">{f.pct(sel.weight, 1)}</dd>
                 <dt>{t.science.measured}</dt>
                 <dd className="mono">
-                  {f.n(cellMagnitude(info.magnitude, sel.id, year), 1)} {info.unit[lang]}
+                  {f.n(cellMagnitude(info.magnitude, sel.id, year), magnitudeDigits(info.magnitude))} {info.unit[lang]}
                 </dd>
                 <dt>{t.science.ruleMet}</dt>
                 <dd>{cellMet(rule, sel.id, year) ? t.science.met : t.science.notMet}</dd>
@@ -172,7 +172,9 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
               <tr>
                 <th scope="col">{t.science.cell}</th>
                 <th scope="col">{t.science.weight}</th>
-                <th scope="col">{t.science.measured}</th>
+                <th scope="col">
+                  {t.science.measured} ({info.unit[lang]})
+                </th>
                 <th scope="col">{t.science.ruleMet}</th>
               </tr>
             </thead>
@@ -180,10 +182,12 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
               {hazards.cells.map((c) => (
                 <tr key={c.id} aria-selected={c.id === cell} onClick={() => setCell(c.id)}>
                   <th scope="row" className="mono">
-                    {c.lat.toFixed(1)}°N {c.lon.toFixed(3)}°E
+                    {cellName(c.id)}
                   </th>
                   <td className="num">{f.pct(c.weight, 1)}</td>
-                  <td className="num">{f.n(cellMagnitude(info.magnitude, c.id, year), 1)}</td>
+                  <td className="num">
+                    {f.n(cellMagnitude(info.magnitude, c.id, year), magnitudeDigits(info.magnitude))}
+                  </td>
                   <td>
                     {cellMet(rule, c.id, year) ? (
                       <span className={s.yes}>{t.science.yes}</span>
@@ -195,7 +199,9 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
               ))}
             </tbody>
           </table>
-          <SourceValue {...refs.cellTable(rule, year)} />
+          <p className={s.tableSource}>
+            <SourceValue {...refs.cellTable(rule, year)} />
+          </p>
         </div>
       </div>
     </section>
@@ -209,6 +215,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
   const t = useT();
   const local = useLocalTo();
   const refs = useRefs();
+  const cellName = useCellName();
   const [cell, setCell] = useState(CELLS[0] as string);
   const q = new URLSearchParams({ q: t.climate.askYearQ(year), hoi: '1' }).toString();
   return (
@@ -236,7 +243,7 @@ function ClimateSection({ year, setYear }: { year: number; setYear: (y: number) 
               <select value={cell} onChange={(e) => setCell(e.target.value)}>
                 {CELLS.map((c) => (
                   <option key={c} value={c}>
-                    {c.replace('_', '°N ')}°E
+                    {cellName(c)}
                   </option>
                 ))}
               </select>

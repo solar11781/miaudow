@@ -63,7 +63,7 @@ export function YearBars({ years, values, color, selected, onSelect, reference =
                 height={Math.max(1.5, (H - padT - padB) * v)}
                 rx={Math.min(3, bw * 0.2)}
                 fill={color}
-                opacity={isSel ? 1 : strong ? 0.92 : 0.38}
+                opacity={isSel ? 1 : strong ? 0.92 : 0.6}
                 className={isSel ? s.sel : undefined}
                 data-bar
               />

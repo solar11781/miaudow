@@ -334,7 +334,8 @@ and the Back button (`common.back`, which goes to `/ruong`). It has no progress 
 
 Data: `GET /api/past-years?province=nghe_an` (section 11). The layout, from the top:
 1. Title `years.title`; the label `common.notForecast` (H13); the line `common.dataLine` (H19).
-2. Legend: one row per rule in the order of `rules`: its `label` and a "?" button (`data-testid` `legend-<rule code>`,
+2. Legend (drawn after the year list and the picked years' cards since 2026-11-16: the years are the farmer's task,
+   the rule names are reference): one row per rule in the order of `rules`: its `label` and a "?" button (`data-testid` `legend-<rule code>`,
    accessible name `common.sourceFor` with `{name}` = the label). The button opens the source sheet in rule mode
    (section 10): the quoted rule text (QĐ 18/2021 article, R-A01), the values sources (R-N01, R-N02), the computation
    entry and `conditions.computedNote` (H19). Rules (quoted from QĐ 18/2021, R-A01): heavy rain (Art. 44), heat
@@ -402,11 +403,11 @@ Each card has these rows, top to bottom, in this fixed order, which is the same 
 
 | Row key | Heading key | Content | Notes |
 |---|---|---|---|
-| `header` | - | plan `name` and the badge key `plans.usual` on the two local-practice cards (`is_usual`) only; under the name, the card's money total (`money.total`) with its source button and the water line: per crop of the plan, the TCVN 8641 "water to apply" as a range from the lowest to the highest of the standard's own rows for that crop and season, labelled "by region" (the standard does not place Nghệ An), in m³/ha, with the TCVN source button; a crop with no TCVN row says "no figure"; FAO figures stay out of the head. The label says "water to apply, by region"; the standard's name, the range note and the whole shared TCVN note are the closing note of the range's source sheet, and only the first sentence of the shared note stays after the range (rice: maintenance irrigation only). The local-practice P-03 card shows its text-only money as is | no other badges (H3); the target farmer (dry field) compares plans mainly on water; never compare P-03 money with P-02 money |
+| `header` | - | plan `name` and the badge key `plans.usual` on the two local-practice cards (`is_usual`) only, followed by the study it comes from (`farmer.currentOf`: `usual` "cùng thử nghiệm với 4 cách trồng thử", the control of the same P-02 trial as `cc1`..`cc4`; `usual_p03` "nghiên cứu khác", the control of P-03; rules/rotations.yaml, roleplay audit 2026-11-16 F-B2); under the name, the card's money total (`money.total`) with its source button and the water line: per crop of the plan, the TCVN 8641 "water to apply" as a range from the lowest to the highest of the standard's own rows for that crop and season, labelled "by region" (the standard does not place Nghệ An), in m³/ha, with the TCVN source button; a crop with no TCVN row says "no figure"; FAO figures stay out of the head. The label says "water to apply, by region"; the standard's name, the range note and the whole shared TCVN note are the closing note of the range's source sheet, and only the first sentence of the shared note stays after the range (rice: maintenance irrigation only). The local-practice P-03 card shows its text-only money as is | no other badges (H3); the target farmer (dry field) compares plans mainly on water; never compare P-03 money with P-02 money |
 | `warnings` | `row.warnings` | four lines from i18n: `plans.trialNote`; `money.priceYear` with `{year}` = `money.price_year`, or `money.priceYearNotStated` when `price_year` is null; `common.notForecast`; `common.supportNote` | inside the card box (H17); no warning text comes from the API |
 | `calendar` | `row.calendar` | the month bar of section 9a | caption key `calendar.trialDates` ("trial dates 2020-21") |
 | `money` | `row.money` | one line per item of `money.items`: crop, season label, `money.profit` with `profit` and `money.cost` with `cost` (P-02 Tables 4, 8, 12, 13; a null `cost` shows `common.notAvailable`); a `flag` (CC1 mung bean and CC5 black bean: P-02 Table 4 rows identical in every column, both 16,200 thousand đ/ha; the paper does not explain it) closes the source sheet of that crop's profit and cost; then `total` with the short label "whole year, our addition", its sheet closing with the `money.ourSum` wording ("our addition of the profit values, not reported as a sequence"); `definition` from the API (P-02: "lợi nhuận thuần (RVAC) = GR - TVC", labour included), the plain sentence of the study and the table number close the sheet of each money value (D-187: one short label per number on the card, the source notes one tap away). For `usual_p03` (D-191): no item lines and no total; one line per item of `season_values`: the season label and its `value` in the paper's own million đồng/ha unit, unchanged (the D-190 million display applies to thousand values only), or, where the paper gives no number (autumn-winter fallow), the paper's `words` instead of a number; each sheet closes with the paper's `words`, its page (`money.paperPage`) and its `definition` (P-03: "Lợi nhuận = GR - Tổng chi phí vật chất", material costs only); the values are never summed, and the card keeps the one plain line that P-03 money takes off material costs only | never compare P-03 money with P-02 money |
-| `stability` | `row.stability` | per crop of the calendar, in calendar order: (a) for every crop with an `exposure` entry: per picked year, the shares for `heavy_rain`, `heat` and `cold` from `exposure[].per_year[].shares`, each a number button, with the caption key `stability.trialDates` ("if sown on the trial's 2020-21 dates") inside the fold of those tables; (b) for rice crops (a `stability` entry with the same `crop_key`): per picked year `stability.real` with `real` (a null `real` shows `common.notAvailable`); next to it `stability.prediction` with `oos_prediction` only where non-null (2016-2024 only); next to that `stability.range` with `range_80.low` and `range_80.high` only where non-null (G4 passed for that season); then, only when `summary` is non-null, `stability.min`, `stability.median`, `stability.max` with their values and `stability.worstYears` with `worst_years`; then `stability.yearsCount` with `years_count` and the `scope` text (province average, mostly irrigation-served rice); then one model line by `model_status`: `not_modeled` -> `stability.notModeled`, `not_shown` -> `stability.modelNotShown` (the reason is on the method page), `shown` -> none; then `common.nsoCredit` (section 12b). For non-rice crops part (b) shows `stability.noData`, never "no risk" | values from API only; the per-year tables fold (see below the table) |
+| `stability` | `row.stability` | per crop of the calendar, in calendar order: (a) for every crop with an `exposure` entry: per picked year, the shares for `heavy_rain`, `heat` and `cold` from `exposure[].per_year[].shares`, each a number button, with the caption key `stability.trialDates` ("if sown on the trial's 2020-21 dates") above those tables; (b) for rice crops (a `stability` entry with the same `crop_key`): per picked year `stability.real` with `real` (a null `real` shows `common.notAvailable`); next to it `stability.prediction` with `oos_prediction` only where non-null (2016-2024 only); next to that `stability.range` with `range_80.low` and `range_80.high` only where non-null (G4 passed for that season); then, only when `summary` is non-null, `stability.min`, `stability.median`, `stability.max` with their values and `stability.worstYears` with `worst_years`; then `stability.yearsCount` with `years_count` and the `scope` text (province average, mostly irrigation-served rice); then one model line by `model_status`: `not_modeled` -> `stability.notModeled`, `not_shown` -> `stability.modelNotShown` (the reason is on the method page), `shown` -> none; then `common.nsoCredit` (section 12b). For non-rice crops part (b) shows `stability.noData`, never "no risk" | values from API only; the per-year tables show when the row opens (see below the table) |
 | `water` | `row.water` | per crop: the shares for `drought_rain_consecutive` and `drought_rain_any2` per picked year from `exposure` (both readings), each a number button (H19); then each `WaterFact` of the crop on one line: lead key by `measure` (`to_apply` -> `water.toApply`, "nước phải tưới vào ruộng", m3/ha; `crop_uses` -> `water.cropUses`, "nước cây dùng", mm, "rough estimate"; `not_listed` -> `common.notListed`), then `value`, then `scope` (TCVN region, season, method); a non-null `note`, and for `to_apply` the line "seasonal irrigation in TCVN 8641 (m³/ha)", close the source sheet of that value (D-187), so the TCVN and FAO notes never share a sheet, and a note of a fact with no value stays on the row; then, for every crop with an `exposure` entry, per picked year: `water.soilWetness` with `per_year[].soil_wetness.value` and `water.soilNormal` ("1991-2020 average" in meaning) with `per_year[].soil_wetness.normal`, both whole percent of saturation and both number buttons (H5), followed once by the label `water.soilModelled` ("NASA model value, not a field measurement; 100% is soil full of water"), the longer note (MERRA-2, percent of saturation, over the field time) closing the sheet of each soil value; a null value shows `common.notAvailable`; no category word, colour or threshold | never combine or compare the two sources; rice shows every TCVN region row for its own season only (Trung bộ, Bắc bộ), the season taken from the standard's own row label, because the standard does not place Nghệ An; the per-year tables fold (see below the table) |
 | `land` | `row.land` | three lines from `land`: `land.cropsInYear` with `crops_in_year.value`; `land.livingDays` with `living_days.value` (null shows `common.notAvailable`); `land.legume` with `common.yes` and the legume crop names, or `common.no`; after `common.yes` the residue note key `land.residueNote`. The values of `crops_in_year` and `living_days` are number buttons that open their own `source_ids` (H5); each line ends with a "?" button for its `principle_source_ids` | no score |
 | `check` | `row.check` | behind its row button like every row (D-187 item 4): one line per `RiskItem` of `why.risks`, each followed by a source button `common.source` when its `source_ids` is non-empty; a quote that has a plain line in the i18n files (D-187: cost, market, biomass maize contracts, Decree 112/2024 Art. 6.1, 6.4 and 7.1) shows that line and its source in a few words, never claiming more than the quote, and the full quote opens first in the source sheet (`source.quote`); any other quote is shown in full; an empty list shows `check.noneListed`; then the line `check.localReview` ("check these with farmers or agricultural experts where you live before you change" in meaning; challenge page: "risks that would need local review by farmers or agricultural experts"). Risks include, where they apply, the market facts (P-03 p.4 on soybean, sesame and maize selling; R-C13 on biomass maize purchase contracts) and, for plans without rice (CC1-CC4), the legal context of converting rice land quoted from Nghị định 112/2024 (Art. 6.1 c-d, 6.4, 7.1; R-G06, R-G27) | guide, do not pick (team decision); procedure for a farmer's own field: [OPEN, section 15 item 7]; the row ends with `farmer.askOfficer` and the plan's questions for the extension officer, the same list as the officer page (decision text, D-187) |
@@ -416,9 +417,37 @@ Each card has these rows, top to bottom, in this fixed order, which is the same 
 D-187 item 4 (member A, 2026-11-15, built in part): the card face shows the header (plan name and crops, money total
 and water line with their source buttons), the farmer's priority label and line, and the four warnings; every row
 below the header folds behind a full-width heading button of at least 48 px (`aria-expanded`), closed at first, in this
-order; the jump strip marks the card in view (`aria-current`). Inside the `stability` and `water` rows the per-year
-share tables fold once more behind "Xem từng năm" / "Show each year". A card was 7-10 phone screens long and is about 2;
-one screen and the comparison strip are not built. Each card also carries the "explain simply" button
+order; the jump strip marks the card in view (`aria-current`). Each jump-strip chip is short, two lines from
+`farmer.chip` ("Hiện nay / cùng thử nghiệm", "Hiện nay / nghiên cứu khác", "Cách trồng / thử 1"), so several chips show
+at once on a 360 px phone; its accessible name is the full plan name with the study and the crops (roleplay audit
+2026-11-16, F-A7). The line `farmer.comparedWith` says once, above the strip, that the four trial cards are compared
+with the first card, the current practice of the same trial. Inside the `stability` row the per-year share tables
+show as soon as the row opens (no second fold; roleplay audit 2026-11-16, F-B1), and the `stability.noData` line of
+the non-rice crops comes after them as their limit. Inside the `water` row the per-year share tables fold once more
+behind "Xem từng năm" / "Show each year". A card was 7-10 phone screens long; the closed card face
+is now about 1.7 to 2 phone screens at 360 x 740 in Vietnamese (2026-11-16: 1,241 to 1,468 px under a 128 px sticky
+header and strip); one screen is not reachable with the required face content at 17 px (H6).
+
+**Comparison strip** (roleplay audit 2026-11-16): after the page lead and before the jump strip, one block
+`farmer.stripTitle` shows the six plans side by side before any card is opened: a list in exactly the cards' order
+(H3: no sort, rank, score, best mark or colour grading), stacked on a phone and in columns on a wide screen, so the
+page never scrolls sideways at 360 px (H10). It opens with the line `farmer.comparedWith` (the four trial cards are
+compared with the first card, the current practice of the same trial). The long labels are said once, in a short
+list above the six plans: the money label (`row.money`, "profit in the trial, not on your own field") with the
+sentence `farmer.stripSum` ("a whole-year figure is our addition; the 'another study' card gives each season as its
+paper does", so the addition is never said of the P-03 values), the water label ("water to apply, by region") and
+`land.cropsInYear`; the label of the chosen priority (`income` money, `water` water, `land` land; `stability` has no
+line in the strip) starts with `plans.yourPriority` in words (H11). Per plan: the plan's short name from
+`farmer.chip` and its crops, together one link of at least 44 px that jumps to its card (accessible name: the full
+plan name with the study and the crops); the card head's money line and water line under the short labels
+`farmer.strip.money` and `farmer.strip.water`, the same components, values and source buttons as the card head
+(H5, H7), so the strip shows no number, sum or source that the card does not show; for `usual_p03` the plain line
+`farmer.definitionPlain.p03` right after its money, so P-03 money is never lined up as comparable with P-02 money;
+and one land line, the `crops_in_year` number button and `land.legume` yes or no in words. A phone (up to 700 px)
+has room for two lines per plan: it shows the money line and, when the chosen priority is water or land, that
+priority's line; a wider screen shows all three. Measured at 360 x 740 in Vietnamese: about one and a half screens
+for the income priority (the first form, with every label repeated in every plan, was about three and a half); the
+water priority is longer because each crop has its own range. Each card also carries the "explain simply" button
 of FR-15 (SRS.md); its text is marked as AI-generated.
 
 **Priority highlight**: the row that matches the chosen priority (`money` for income, `stability` for stability,
@@ -446,7 +475,10 @@ stay the same.
 - One lane per crop, stacked top to bottom in `calendar` order, so overlapping spans stay visible; reported dates are
   drawn exactly as given, including overlaps. A lane is a segment from `sow_from` to `harvest_to`, with the
   sowing range (`sow_from`..`sow_to`) and the harvest range (`harvest_from`..`harvest_to`) drawn as lighter ends. Under
-  each lane: crop name, variety (P-02) and its dates in the format of section 6d. No crop span crosses 31 December
+  the bar, one line per lane: crop name, variety (P-02) and its dates in the format of section 6d. A lane carries no
+  crop name, since a name cut by a short lane ("Đậu …") cannot be read (roleplay audit 2026-11-16, F-A4): each lane
+  shows its number (1, 2, 3 in `calendar` order) and its line in the list starts with the same number on a key of the
+  lane's colour, so lane and name are tied by text, not by colour alone (H11). No crop span crosses 31 December
   (ML-DESIGN.md §5a: no P-02 window crosses it; `src/api.ts` rejects a span that does).
 - Bare periods (FR-18) are the `bare_periods` from the API (derived by the engine, never hand-entered). They are
   drawn with a hatched pattern and also labelled with `calendar.bare` and their dates (H11). A period with `from`
@@ -481,8 +513,10 @@ to the opener on close. The sheet has no animation (H1). Source facts come from 
 that the current page loaded (section 11).
 
 Modes (routine):
-- **Value mode** (a number button): first the row `source.value` with the tapped value and unit, then one source block
-  per id of the value's `source_ids`, in order.
+- **Value mode** (a number button): first the row `source.value` with the tapped value and unit, as the card shows
+  it, then one source block per id of the value's `source_ids`, in order. A money value the card shows in million
+  đồng/ha (D-190) gives the paper's own value and unit right under it, as `sheet.inPaper` ("Trong bài báo: …" /
+  "In the paper: …"), so the two never read as two different numbers (roleplay audit 2026-11-16, F-A5).
   - Official-condition share: its `source_ids` are the rule's `threshold_source_id`, `values_source_ids` and
     `computed_by`, in that order; the R-A01 block also shows `source.ruleText` with the rule's `rule_text` (from the
     response's `rules`); after the blocks, `conditions.computedNote` (H19).
@@ -822,7 +856,12 @@ item 5):
    `method.col.nRows`, `method.col.nTestYears`. The primary row (M1 ridge, spring rice) is marked with `role.primary`;
    secondary results with `role.secondary`. Each table row ends with a source button (`data-testid`
    `metric-row-<index>`) for its `source_ids`; the numbers in the row carry `data-source-ref` to it (H5). Skill, R2,
-   RMSE and MAE are shown to 2 decimals, and coverage as a whole percent.
+   RMSE and MAE are shown to 2 decimals, and coverage as a whole percent; a value that rounds to zero is written
+   without a minus sign. Within a group, the rows of one province or one region (subset `unit:` / `region:`) fold
+   behind one disclosure (`<details>`, closed at first), except the rows of the study province (`unit:Nghe An`),
+   which stay open: the page opens on the national and Nghe An rows
+   (roleplay audit 2026-11-16: the page was about 40,000 px tall). A table wider than its column scrolls inside its
+   own focusable region, with the line `method.scrollHint` wherever the frame is narrower than the table.
    Then the gate verdicts per season from `gates` (`gate.G1` .. `gate.G4`, `gate.passed` / `gate.failed` /
    `gate.notRun`, `detail`). The claim key `method.weatherClaim` ("NASA weather improves the prediction" in meaning)
    is shown for a season only where `weather_claims` has `made: true` for it; otherwise no claim is shown and the
@@ -881,7 +920,8 @@ item 5):
 4. Data and NASA use: the line `common.dataLine`; the farmland weighting, key `method.farmland` (POWER cells weighted
    by the farmland mask: minimum MODIS cropland percent over 2001-2015, class 12 counted at 80% and class 14 at 50%,
    adapted from Dong et al. 2016, R-K12; ML-DESIGN.md §4). Bonus, built only after the core: the grid figure: the
-   image `artifacts/figures/nghe_an_grid.svg` served by the backend (Nghệ An
+   image `artifacts/figures/nghe_an_grid.svg` (the Vietnamese page uses `nghe_an_grid.vi.svg`, same drawing, served at
+   `GET /api/figures/nghe_an_grid.vi.svg`) served by the backend (Nghệ An
    boundary and its POWER cells shaded by farmland weight, from data/processed/cell_weights.csv and geoBoundaries) with
    alt text key `method.gridAlt` and caption key `method.gridCaption`. Then the satellite rain check from `rain_check`
    (DATA-DICTIONARY.md §5c): heading `method.rainCheck`; a table of the monthly values (columns month,
@@ -924,6 +964,9 @@ item 5):
   page's spec), the province boundary (geoBoundaries), and NASA SRTM elevation if downloaded and cited (the challenge
   page lists SRTM). It MUST show the same source facts (section 10) and MUST NOT show any farm-level prediction
   (CLAUDE.md boundary).
+
+  Status (2026-11-16): the map lives in the data room (`#/khoa-hoc`, Grid3D flat 2D mode), so there is no `/ban-do` route and T15 stays skipped.
+  The SRTM relief layer is built there: toggle `science.reliefToggle`, note `science.reliefNote` (the spec's `map.reliefNote`; the map texts live under `science`), source R-N12 and Horn 1981 (R-M29).
 
 ---
 
@@ -1066,6 +1109,7 @@ section 4.
 | T13 not-forecast | `common.notForecast` visible on `/nam` and `/phuong-an` (H13) | event |
 | T14 no-personal-data | on every page except `/dang-nhap` and `/da-luu`: no cookies set; no localStorage or sessionStorage writes; no requests to third-party hosts (only exceptions: the NASA GIBS map tiles and the NASA Eyes frame on `/dai-quan-sat`; voice input on `/tro-ly` starts only after a tap, with a note that the browser may send the audio to its provider); the farmer routes and the home page make no third-party request; answers and typed prices never appear in any request URL (H14) | now |
 | T15 lazy-map | loading `/phuong-an` does not download the `/ban-do` chunk (section 12) | skipped until `/ban-do` exists |
+| T39 relief-lazy | loading `/phuong-an` never requests the relief picture; the data room requests it only after its switch is on (section 12) | event |
 | T16 card-warnings | each card element contains, inside its own bounding box, the texts of `plans.trialNote`, `money.priceYear` (or `money.priceYearNotStated`), `common.notForecast` and `common.supportNote` (H17) | event |
 | T17 support-note | `common.supportNote` visible on `/` and `/phuong-an` (H18) | event |
 | T18 two-sources | every condition share (card number buttons and legend "?" buttons) opens a sheet with the R-A01 block (with `source.ruleText`), the R-N01 and R-N02 blocks and `conditions.computedNote`; `common.dataLine` visible on `/nam`, `/phuong-an` and in every footer (H19) | event |

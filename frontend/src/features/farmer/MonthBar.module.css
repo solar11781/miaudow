@@ -35,15 +35,21 @@
   border-radius: 7px;
   display: flex;
   align-items: center;
-  padding-left: 0.45rem;
-  font: 600 17px/1.1 var(--font-ui);
+  justify-content: center;
+  font: 700 17px/1 var(--font-ui);
   overflow: hidden;
-  white-space: nowrap;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
-.segName {
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* the lane's number and colour at the start of its line in the list, so each lane is named in full there (H11) */
+.key {
+  flex: none;
+  min-width: 1.6rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid;
+  border-radius: 6px;
+  color: #16201a;
+  font: normal 700 17px/1.1 var(--font-ui);
+  text-align: center;
 }
 .ticks {
   display: grid;
@@ -87,11 +93,11 @@
   flex-direction: column;
   font-size: var(--t-small);
 }
+/* the crop at the left, its dates at the right edge on every line, never wrapped under the name (F-A3) */
 .dates li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
   gap: 0 var(--s-3);
 }
 .dates li + li {

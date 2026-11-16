@@ -105,7 +105,7 @@ export function NdviChart({ year }: { year: number }) {
             key={i}
             points={pts}
             fill="none"
-            stroke="var(--c-paddy-600)"
+            stroke="var(--data-greenness)"
             strokeWidth={2}
             strokeLinejoin="round"
           />
@@ -126,7 +126,7 @@ export function NdviChart({ year }: { year: number }) {
       </svg>
       <div className={s.legend}>
         <span>
-          <i className={s.keyLine} style={{ background: 'var(--c-paddy-600)' }} />
+          <i className={s.keyLine} style={{ background: 'var(--data-greenness)' }} />
           {t.climate.ndviMedian}
         </span>
         <span>

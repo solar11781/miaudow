@@ -491,10 +491,11 @@ async function snapshotCompare(body: CompareRequest, signal?: AbortSignal): Prom
   return fromSnapshot(hit.file, signal);
 }
 
-/** The method page's grid figure (UI-UX-SPEC section 11b item 4), served by our backend. */
-export const GRID_FIGURE_URL = SNAPSHOT_MODE
-  ? `${SNAPSHOT_URL}figures/nghe_an_grid.svg`
-  : '/api/figures/nghe_an_grid.svg';
+/** The method page's grid figure (UI-UX-SPEC section 11b item 4) in the reading language, served by our backend. */
+export function gridFigureUrl(lang: 'vi' | 'en'): string {
+  const file = lang === 'vi' ? 'nghe_an_grid.vi.svg' : 'nghe_an_grid.svg';
+  return SNAPSHOT_MODE ? `${SNAPSHOT_URL}figures/${file}` : `/api/figures/${file}`;
+}
 
 // the past-years response is kept in memory for the life of the page (section 11), never stored in the browser
 let pastYearsOnce: Promise<PastYearsResponse> | null = null;

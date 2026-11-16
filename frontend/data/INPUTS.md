@@ -2,9 +2,9 @@
 
 ## frontend/data/canonical
 
-Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62).
+Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in both languages by hand (2026-11-16).
 
-- `frontend/data/canonical/catalog.json` 3ad4d5ccccd058ff277b28bc3f40b2a7aa0405064c34ec990a0b07fc4aabba08
+- `frontend/data/canonical/catalog.json` b2b31a11f81375baf68054a6deed3003c7b47064a9b79c9fbd21d8af938368d8
 - `frontend/data/canonical/climate.json` b2e3271f202a92b1b6cc12a5e1560ee43edd59456338aab4db764822ca01be0a
 - `frontend/data/canonical/decision.json` 872cba9efed7774acddfbb1e4a46b65a467c24b553c6bcf8856a3f35caf80169
 - `frontend/data/canonical/geo.json` e8cc964118c0fa49653a5432ad06d08b667fbf15e02c618fe472ac14ec2e80b1
@@ -192,6 +192,13 @@ Copernicus Sentinel-2 L2A images (R-D06): contains modified Copernicus Sentinel 
 - `frontend/public/media/sat/spring-2024-ndvi.png` 754f51ccd035461436a526fde499a737926561cc773af4ee6e964bb7c69c4a38
 - `frontend/public/media/sat/summer-autumn-2020-ndvi.png` bf028938917894aecd171375c30825637f85176bcb849934f3c03771a83bb801
 - `frontend/public/media/sat/summer-autumn-2024-ndvi.png` 848618e6b4e58bb9f9d5f560adab311f5c20efad18aa69f461a70b80f227165c
+
+## frontend/public/media/relief
+
+NASA SRTM shaded relief (R-N12; Horn 1981, R-M29), built by `scripts/build_relief.py` from the SRTMGL3 tiles recorded in `data/MANIFEST.csv`; the json holds the box, citations, sun angles and tile checksums.
+
+- `frontend/public/media/relief/nghe-an-relief.json` 8dbb69c3bab5d792b9ec637284bc885f55b71b68f9711ce0c953e096196d7e03
+- `frontend/public/media/relief/nghe-an-relief.webp` 520ad6a0d54e585fb76809fd920b6452516dc4989bfcd03cd3572b64f13f163e
 
 ## frontend/public/brand
 

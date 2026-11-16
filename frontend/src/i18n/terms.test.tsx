@@ -83,13 +83,16 @@ describe('one money unit (F9, D-190)', () => {
     expect(money).toContain(lang === 'vi' ? '26,0' : '26.0');
   });
 
-  it('the source sheet keeps the paper value and unit exactly', () => {
+  // roleplay audit 2026-11-16 (F-A5): the sheet starts with the number the farmer tapped, then the paper's own one
+  it('the source sheet starts with the tapped value and keeps the paper value and unit exactly', () => {
     renderCard('vi');
-    const button = document.querySelector('[data-testid="card-cc1-row-money"] ul button[data-value]');
+    const button = document.querySelector('#card-cc1-row-money-body ul button[data-value]');
     if (!(button instanceof HTMLElement)) throw new Error('no profit button');
     expect(button.getAttribute('data-value')).toBe('25.980 nghìn đồng/ha');
     fireEvent.click(button);
-    expect(document.querySelector('[data-testid="source-sheet"] h2')?.textContent).toBe('25.980 nghìn đồng/ha');
+    const sheet = document.querySelector('[data-testid="source-sheet"]');
+    expect(sheet?.querySelector('h2')?.textContent).toBe('26,0 triệu đồng/ha');
+    expect(sheet?.textContent).toContain(vi.sheet.inPaper('25.980 nghìn đồng/ha'));
   });
 
   it('the plan card names the plan by its label, with the crops under it', () => {

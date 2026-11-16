@@ -237,6 +237,11 @@
   min-width: 560px;
 }
 
+/* the source under the grid table starts on the table's text edge */
+.tableSource {
+  padding: 0 var(--s-4);
+}
+
 .table caption {
   text-align: left;
   padding: var(--s-3) var(--s-4);
@@ -483,4 +488,73 @@
   height: auto;
   border-radius: var(--r-md);
   background: #fff;
+}
+
+/* a long table folded behind its summary button (method page) */
+.fold > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 var(--s-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-2);
+  background: var(--bg-raised);
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold[open] > summary {
+  margin-bottom: var(--s-3);
+}
+
+@media print {
+  /* paper has no button to press: a closed fold prints its table */
+  .fold::details-content {
+    content-visibility: visible;
+  }
+
+  .fold > summary svg {
+    display: none;
+  }
+}
+
+/* the 13-column result table of the method page: headings wrap and cells sit closer, so it fits a desktop frame */
+.metricsBox {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.metrics {
+  min-width: 1080px;
+}
+
+.metrics thead th {
+  white-space: normal;
+  vertical-align: bottom;
+}
+
+.metrics th,
+.metrics td {
+  padding-inline: 0.6rem;
+}
+
+/* the source button keeps its word in one piece */
+.metrics td:last-child {
+  white-space: nowrap;
+}
+
+/* the frame is at least as wide as the table: nothing to scroll, no hint */
+@container (min-width: 1080px) {
+  .scrollHint {
+    display: none;
+  }
 }

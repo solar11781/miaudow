@@ -84,6 +84,7 @@ export const en: Messages = {
   },
   sheet: {
     title: 'Where this number comes from',
+    inPaper: (value: string) => `In the paper: ${value}`,
     aboutValue: 'About the value',
     from: 'From',
     publisher: 'Authors, publisher',
@@ -197,9 +198,9 @@ export const en: Messages = {
         where: 'the Copilot',
       },
     ],
-    climateTitle: (n: number) => `${n} of 30 years, over half the farmland met drought`,
+    climateTitle: (n: number) => `${n} of 30 years, over half the farmland met the drought condition (rain part)`,
     climateLead:
-      'Each bar is one year, 1995–2024: the share of Nghe An farmland that met the drought condition of Decision 18/2021 while crops were in the field.',
+      'Each bar is one year, 1995–2024: the share of Nghe An farmland that met the drought condition (rain part) of Decision 18/2021 while crops were in the field. The rule’s surface-water part cannot be computed.',
     droughtAxis: 'Share of farmland meeting the condition',
     evidenceCta: 'See the evidence',
     stepsTitle: 'Four steps, no typing',
@@ -336,6 +337,17 @@ export const en: Messages = {
     jumpTo: 'Go to card',
     current: 'Current practice',
     trialShort: (n: string) => `Trial way of farming ${n}`,
+    currentOf: { usual: 'same trial as the 4 trial ways', usual_p03: 'another study' },
+    stripTitle: 'The six ways side by side',
+    strip: { money: 'Trial profit', water: 'Water to apply' },
+    stripSum: (other: string) =>
+      `A whole-year figure is our addition; the “${other}” card gives each season as its paper does.`,
+    comparedWith: 'The four trial ways are compared with the first card: current practice in the same trial.',
+    chip: {
+      usual: ['Current', 'same trial'],
+      usual_p03: ['Current', 'another study'],
+      trial: (n: string) => ['Trial way', `of farming ${n}`],
+    },
     bare: 'Bare field',
     datesAsReported: 'dates as reported',
     overlapNote: 'Two crops sit on separate lanes because the reported dates overlap.',
@@ -504,6 +516,7 @@ export const en: Messages = {
     fitTitle: 'For the family’s own field',
     fitLabel: 'Their field:',
     askTitle: 'Questions to clear up with the family',
+    quotePage: (page: string) => `p. ${page}`,
     eyebrow: 'For extension officers',
     title: 'The evidence behind every card',
     lead: 'Each row on a farmer’s card comes from a specific source. This page gathers them so officers can explain, and says plainly where the evidence is thin.',
@@ -555,7 +568,7 @@ export const en: Messages = {
       { do: 'Say “the plots were in Luu Son; your field may differ”', dont: 'Do not say “this plan suits your field”' },
     ],
     talkDrought: (year: number, share: string) => ({
-      do: `Say “in ${year}, ${share} of Nghe An farmland met the drought condition of Decision 18/2021”`,
+      do: `Say “in ${year}, ${share} of Nghe An farmland met the drought condition (rain part) of Decision 18/2021”`,
       dont: 'Do not say “next year will be dry”',
     }),
     gapsTitle: 'Where the evidence is thin',
@@ -595,12 +608,16 @@ export const en: Messages = {
     realGeometryShort: 'Real border and grid',
     cellFootprint: 'outline of one NASA grid cell (≈ 55 × 66 km)',
     heightIs: 'Column height',
+    max: 'max',
     readingFor: (y: number) => `Reading for ${y}`,
-    shareOfFarmland: 'of Nghe An farmland met level 1 or higher',
+    shareOfFarmland: 'of Nghe An farmland met this condition, counted from level 1',
     met: 'met',
     notMet: 'not met',
     zeroWeight: 'no farmland',
+    reliefToggle: 'Terrain (NASA SRTM)',
+    reliefNote: 'Height only. It says nothing about where water reaches.',
     cell: 'Grid cell',
+    cellAt: (lat: string, lon: string) => `${lat}°N ${lon}°E`,
     weight: 'Farmland weight',
     measured: 'Measured',
     ruleMet: 'Rule',
@@ -731,8 +748,13 @@ export const en: Messages = {
       'Reading the documents closely, we found places that do not match. They stay visible so officers and readers can weigh them.',
     dataTitle: 'Datasets and their ingestion state',
     dataLead:
-      'Which data are loaded and checked, which exist only as a contract, which are blocked. None of them is measured on a farm.',
-    ingestion: { INGESTED: 'Loaded', PARTIAL: 'Partly loaded', CONTRACT_ONLY: 'Contract only', BLOCKED: 'Blocked' },
+      'Which data are loaded and checked, which exist only as a contract, which are not downloaded yet. None of them is measured on a farm.',
+    ingestion: {
+      INGESTED: 'Loaded',
+      PARTIAL: 'Partly loaded',
+      CONTRACT_ONLY: 'Contract only',
+      BLOCKED: 'Not downloaded yet',
+    },
     provider: 'Provider',
     resolution: 'Resolution',
     coverage: 'Time span',
@@ -821,9 +843,11 @@ export const en: Messages = {
     serverOn: 'The copilot server is running',
     serverOff: 'Running in offline mode',
     claudeOn:
-      'Claude is connected on the server: it only picks which passages from Miaudow’s data answer the question. They are shown word for word with their sources; Claude writes no part of the answer. The question you type is sent to Claude (Anthropic) for this, so do not type names or phone numbers.',
+      'Claude is connected on the server. Claude only picks, from Miaudow’s data, the passages that answer the question. They are shown word for word with their sources; Claude writes no sentence of the answer.',
     claudeOff:
-      'Claude is not connected. Answers are assembled from tool results with fixed sentences; no language model is used.',
+      'Claude is not connected. Answers are assembled from tool results with Miaudow’s own ready-written sentences; no AI writes them.',
+    privacy:
+      'The question you type is sent to Claude (Anthropic) to pick the passages. Do not type names or phone numbers.',
     browserHelp:
       'The server cannot be reached, so the copilot searches the evidence library in your browser. Fewer results, still with sources.',
     honest:
@@ -851,8 +875,15 @@ export const en: Messages = {
       provider_error: 'Claude failed, data used',
       not_configured: 'Not configured',
     },
-    engineDeterministic: 'Assembled from tool results (no language model)',
-    engineBrowser: 'Searched in the browser (offline)',
+    engineClaude: 'Claude picks the passages; the wording comes from Miaudow’s data',
+    engineDeterministic: 'Ready-written wording from Miaudow’s data, no AI',
+    engineBrowser: 'Searched on your device (offline), no AI',
+    modelUsed: (model: string) => `Model that picked the passages: ${model}`,
+    ownField:
+      'Miaudow does not know your field: it has only study values and regional values, so it does not choose a plan for your field. It can put the plans side by side for the field type you name. Please also ask the commune’s extension officer about your own field.',
+    nextWithLand: (land: string) => `Compare the plans for: ${land}`,
+    nextNoLand: 'Pick your field type and compare the plans',
+    nextHelp: 'Four short steps, nothing to type. You decide, together with the extension officer.',
     cardPlan: 'Tested plan',
     openPlan: 'Open the comparison card',
     cardYear: 'Past year',
@@ -865,7 +896,7 @@ export const en: Messages = {
     howFound: 'How the copilot found this',
     numbersChecked: (n: number, bad: number) =>
       bad
-        ? `${n} numbers checked; ${bad} did not match the data, so the model's answer was discarded.`
+        ? `${n} numbers checked; ${bad} did not match the tool results.`
         : `${n} numbers in the answer were checked against the tool results.`,
     speak: 'Speak',
     listening: 'Listening… press to stop',
@@ -1062,6 +1093,8 @@ export const en: Messages = {
     },
     mainRuns: 'Main runs',
     spatialHoldout: 'Leave-one-region-out test',
+    breakdown: 'Results for each province and each region',
+    scrollHint: 'This table is wider than the screen: scroll sideways to see every column.',
     sensitivity: {
       no_fao_flagged: 'Without FAO-flagged rows',
       mae_skill: 'Skill from MAE',
@@ -1083,12 +1116,19 @@ export const en: Messages = {
       month: 'Month',
     },
     role: { primary: 'Primary', secondary: 'Secondary', reference: 'Reference' },
-    subset: (raw: string) =>
-      raw === 'national'
-        ? 'Nationwide'
-        : raw === 'na_ht_th'
-          ? 'Nghe An, Ha Tinh, Thanh Hoa'
-          : raw.replace(/^(unit|region):/, ''),
+    subsets: {
+      national: 'Nationwide',
+      na_ht_th: 'Nghe An, Ha Tinh, Thanh Hoa',
+      'unit:Nghe An': 'Nghe An',
+      'unit:Ha Tinh': 'Ha Tinh',
+      'unit:Thanh Hoa': 'Thanh Hoa',
+      'region:red_river_delta': 'Red River Delta',
+      'region:northern_midlands_and_mountain_areas': 'Northern midlands and mountain areas',
+      'region:north_central_and_central_coastal_areas': 'North Central and Central coastal areas',
+      'region:central_highlands': 'Central Highlands',
+      'region:south_east': 'South East',
+      'region:mekong_river_delta': 'Mekong River Delta',
+    } as Record<string, string>,
     skillCi: (v: string, lo: string, hi: string) => `${v} (${lo} to ${hi})`,
     notRun: 'Not run',
     rangeHidden: 'The 80% range is not shown on the cards for this season because the range test did not pass.',
@@ -1137,6 +1177,9 @@ export const en: Messages = {
     predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',
     predictionsDetail:
       'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
+    reliefLabel: 'Nghe An terrain (NASA SRTM)',
+    reliefDetail:
+      'A shaded picture made from ground height, sun from the north-west (315°, altitude 45°). Height only; it says nothing about where water reaches.',
     ndviLabel: 'NDVI greenness around Luu Son',
     ndviDetail:
       'Median and middle half (25th–75th percentile) of the reliable 250 m pixels on each 16-day date; a date without a reliable pixel is left empty.',

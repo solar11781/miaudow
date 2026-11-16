@@ -6,6 +6,7 @@ import {
   ContractError,
   explainOn,
   explainSimply,
+  gridFigureUrl,
   SNAPSHOT_MODE,
   sourceIdsIn,
   validateCompare,
@@ -15,6 +16,13 @@ import {
 } from './api';
 import { PLAN_IDS } from './types';
 import { body, compare, facts, method, moneyItem, pastYears, rule, shares, text, value } from './tests/fixtures';
+
+describe('grid figure address', () => {
+  it('is the English figure for English and the Vietnamese figure for Vietnamese, from our own backend', () => {
+    expect(gridFigureUrl('en')).toBe('/api/figures/nghe_an_grid.svg');
+    expect(gridFigureUrl('vi')).toBe('/api/figures/nghe_an_grid.vi.svg');
+  });
+});
 
 describe('past years check', () => {
   it('accepts a response of the contract', () => {
@@ -370,7 +378,8 @@ describe('snapshot mode (npm run build:snapshot only)', () => {
     await expect(snap.api.pastYears()).resolves.toMatchObject({ province: 'nghe_an' });
     await expect(snap.api.snapshot()).resolves.toMatchObject({ made_at: index.made_at });
     await expect(snap.api.method()).rejects.toThrow(snap.ContractError);
-    expect(snap.GRID_FIGURE_URL).toMatch(/snapshot\/figures\/nghe_an_grid\.svg$/);
+    expect(snap.gridFigureUrl('en')).toMatch(/snapshot\/figures\/nghe_an_grid\.svg$/);
+    expect(snap.gridFigureUrl('vi')).toMatch(/snapshot\/figures\/nghe_an_grid\.vi\.svg$/);
   });
   it('rejects an index whose file is outside the compare folder', async () => {
     serve({ 'index.json': { ...index, compare: [{ ...saved[0], file: '../secret.json' }] } });

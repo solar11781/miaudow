@@ -8,12 +8,12 @@ export type IngestionStatus = 'INGESTED' | 'PARTIAL' | 'CONTRACT_ONLY' | 'BLOCKE
 export interface DatasetInfo {
   dataset_id: string;
   title: Bilingual;
-  provider: string;
+  provider: Bilingual;
   source_id: string;
   source_url: string | null;
-  license: string;
-  temporal_coverage: string;
-  spatial_resolution: string;
+  license: Bilingual;
+  temporal_coverage: Bilingual;
+  spatial_resolution: Bilingual;
   ingestion_status: IngestionStatus;
   is_field_measurement: boolean;
   notes: Bilingual[];

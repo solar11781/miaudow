@@ -12,16 +12,31 @@
     border-color var(--d-slow) var(--ease-out);
 }
 
+/* the head, the rows and the foot of the cards in one row of the page share their heights, so the two cards' rows
+   line up (the page's card grid is in farmer.module.css); a browser without subgrid keeps the column above */
+@supports (grid-template-rows: subgrid) {
+  .card {
+    display: grid;
+    /* the column never grows past the card, so long words wrap at 200% zoom instead of being cut (H9) */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    row-gap: 0;
+  }
+}
+
 .focused {
   border-color: var(--c-gold-500);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-gold-500) 40%, transparent);
 }
 
+/* the card face fits as close to one phone screen as its required content allows (F1): tight paddings, no type under
+   17 px (H6) */
 .head {
-  padding: var(--s-5) var(--s-5) var(--s-4);
+  padding: var(--s-3) var(--s-4);
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
+  gap: var(--s-1);
   position: relative;
   overflow: hidden;
 }
@@ -47,7 +62,7 @@
 
 .chain {
   text-wrap: balance;
-  font: var(--w-head) clamp(1.75rem, 1.5rem + 0.8vw, 2.1rem)/1.1 var(--font-display);
+  font: var(--w-head) clamp(1.4rem, 1.25rem + 0.6vw, 1.9rem)/1.1 var(--font-display);
   letter-spacing: -0.01em;
   display: flex;
   flex-wrap: wrap;
@@ -84,10 +99,9 @@
 }
 
 .body {
-  padding: var(--s-5);
+  padding: 0 var(--s-4);
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
 }
 
 .noCal {
@@ -139,7 +153,7 @@
 .rowButton {
   width: 100%;
   min-height: 48px;
-  padding: var(--s-1) 0;
+  padding: 0.15rem 0;
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -288,40 +302,22 @@
   gap: 0.2rem;
 }
 
-.riceLine {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2rem 0.8rem;
-  font-size: var(--t-small);
-}
-
-.riceSeason {
-  color: var(--fg-2);
-  min-width: 6.5rem;
-}
-
-.riceVals {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.1rem 0.7rem;
-}
-
 .kv {
   list-style: none;
   display: flex;
   flex-direction: column;
 }
 
+/* each line reads label at the left and its value at the right edge, the same on every line and every card (F-A3):
+   a long label wraps in its own column, so a value never drops under it to the left */
 .kv li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(45%, 1fr) minmax(0, auto);
+  align-items: baseline;
   gap: 0.2rem var(--s-3);
   font-size: var(--t-small);
   min-height: 44px;
+  padding-block: 0.15rem;
 }
 
 .kv li + li {
@@ -332,40 +328,25 @@
   color: var(--fg-2);
 }
 
+/* a value group: numbers and their notes on one baseline, ending at the right edge even when they wrap */
 .kvVals {
   display: inline-flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 0.1rem 1rem;
   justify-content: flex-end;
-}
-
-.checks {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-}
-
-.checks li {
-  background: var(--bg-sunk);
-  border-radius: var(--r-sm);
-  padding: 0 0.5rem;
-  font-size: var(--t-small);
-  display: inline-flex;
-  align-items: center;
-}
-
-/* below the 360 px phone (200% zoom, H9) the 44 px value and "why" buttons go under the label */
-@media (max-width: 359px) {
-  .checks li {
-    flex-wrap: wrap;
-  }
+  text-align: right;
 }
 
 .legume {
+  display: inline-flex;
+  align-items: baseline;
   gap: 0.4rem;
-  min-height: 44px;
-  padding-inline: 0.8rem !important;
+}
+
+.legume svg {
+  flex: none;
+  align-self: center;
 }
 
 .bullets {
@@ -392,14 +373,16 @@
   font-size: var(--t-small);
 }
 
+/* the four warnings as one tight block (H17), each still its own line of text */
 .foot {
   margin-top: auto;
-  padding: var(--s-4) var(--s-5) var(--s-5);
+  padding: var(--s-3) var(--s-4);
   background: var(--bg-sunk);
   display: flex;
   flex-direction: column;
-  gap: var(--s-3);
+  gap: 0.3rem;
   font-size: var(--t-micro);
+  line-height: 1.35;
   color: var(--fg-3);
 }
 
@@ -411,7 +394,7 @@
 }
 
 .share {
-  min-height: 48px;
+  min-height: 44px;
   padding: 0 1.1rem;
   border-radius: var(--r-md);
   border: 1px solid var(--line-2);
@@ -452,251 +435,6 @@
 
 .where {
   color: var(--fg-3);
-}
-
-.wTable td {
-  text-align: left;
-  padding: 0.1rem 0.35rem;
-  vertical-align: middle;
-}
-
-.wTable thead th {
-  font: 500 var(--t-micro)/1.3 var(--font-ui);
-  color: var(--fg-3);
-  padding-bottom: 0.25rem;
-}
-
-.wTable tbody th {
-  font-weight: 500;
-  color: var(--fg-2);
-}
-
-.wTable tbody tr + tr {
-  border-top: 1px solid var(--line);
-}
-
-.sub {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  padding-top: var(--s-2);
-}
-
-.subHead {
-  font: 500 var(--t-micro)/1.3 var(--font-ui);
-  color: var(--fg-3);
-}
-
-.riceRows {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.riceLine {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2rem 0.8rem;
-  font-size: var(--t-small);
-}
-
-.riceSeason {
-  color: var(--fg-2);
-  min-width: 6.5rem;
-}
-
-.riceVals {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.1rem 0.7rem;
-}
-
-.kv {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-}
-
-.kv li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.2rem var(--s-3);
-  font-size: var(--t-small);
-  min-height: 44px;
-}
-
-.kv li + li {
-  border-top: 1px dashed var(--line);
-}
-
-.kv li > span:first-child {
-  color: var(--fg-2);
-}
-
-.kvVals {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.1rem 1rem;
-  justify-content: flex-end;
-}
-
-.checks {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-}
-
-.checks li {
-  background: var(--bg-sunk);
-  border-radius: var(--r-sm);
-  padding: 0 0.5rem;
-  font-size: var(--t-small);
-  display: inline-flex;
-  align-items: center;
-}
-
-/* below the 360 px phone (200% zoom, H9) the 44 px value and "why" buttons go under the label */
-@media (max-width: 359px) {
-  .checks li {
-    flex-wrap: wrap;
-  }
-}
-
-.legume {
-  gap: 0.4rem;
-  min-height: 44px;
-  padding-inline: 0.8rem !important;
-}
-
-.bullets {
-  padding-left: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  color: var(--fg);
-  font-size: var(--t-small);
-}
-
-.why {
-  color: var(--fg-2);
-  font-size: var(--t-small);
-}
-
-.questions {
-  padding-left: 1.3rem;
-  overflow-wrap: anywhere;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  color: var(--fg-2);
-  font-size: var(--t-small);
-}
-
-.foot {
-  margin-top: auto;
-  padding: var(--s-4) var(--s-5) var(--s-5);
-  background: var(--bg-sunk);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  font-size: var(--t-micro);
-  color: var(--fg-3);
-}
-
-.shareRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-3);
-}
-
-.share {
-  min-height: 48px;
-  padding: 0 1.1rem;
-  border-radius: var(--r-md);
-  border: 1px solid var(--line-2);
-  background: var(--bg-raised);
-  color: var(--fg);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  font-size: var(--t-small);
-}
-
-.share:hover {
-  border-color: var(--fg-3);
-}
-
-.shareMsg {
-  color: var(--ok);
-  font-weight: 500;
-}
-
-.risks {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-}
-
-.risks li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  padding: var(--s-3);
-  background: var(--bg-raised);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-}
-
-.where {
-  color: var(--fg-3);
-}
-
-.more {
-  border-radius: var(--r-md);
-  background: var(--bg-sunk);
-}
-
-.more > summary {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0 var(--s-4);
-  cursor: pointer;
-  list-style: none;
-  font-weight: 600;
-  color: var(--fg);
-}
-
-.more > summary::-webkit-details-marker {
-  display: none;
-}
-
-.more > summary svg:last-child {
-  margin-left: auto;
-  transition: transform var(--d-med) var(--ease-out);
-}
-
-.more[open] > summary svg:last-child {
-  transform: rotate(180deg);
-}
-
-.more > :not(summary) {
-  padding: 0 var(--s-4) var(--s-3);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .more > summary svg:last-child {
-    transition: none;
-  }
 }
 
 .wTable td {
@@ -746,9 +484,16 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--s-1);
+  gap: 0.15rem;
   font-size: var(--t-small);
   color: var(--fg-2);
+}
+
+/* a number button keeps its 44 px target (H7) without making its line taller than a plain one: the target reaches
+   8 px into the lines above and below. A number narrower than 44 px sits in the middle, so no gap opens after it. */
+.summary p button {
+  margin-block: -8px;
+  justify-content: center;
 }
 
 .summaryLink {

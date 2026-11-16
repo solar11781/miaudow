@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { vi } from '../src/i18n/vi';
 
 // D-187 (roleplay audit 2026-11-15, F2): the source notes move from the cards into the source sheets; the card keeps
@@ -40,7 +40,7 @@ test('D-187 a note that left the card opens in the source sheet of its number', 
   await expect(money).not.toContainText('Bảng 13');
   await expect(money).not.toContainText('RVAC');
   await openRow(page, 'cc1', 'money');
-  await money.locator('ul [data-value]').first().click();
+  await money.locator('[id$="-row-money-body"] ul [data-value]').first().click();
   const sheet = page.getByTestId('source-sheet');
   await expect(sheet).toBeVisible();
   await expect(sheet).toContainText(vi.farmer.profitTable);
@@ -91,15 +91,19 @@ test('D-190 each plan has one name and its money is in million dong per hectare'
   await expect(jump).not.toContainText(/\bCC\d\b/i);
   const head = page.getByTestId('card-cc1-row-header');
   await expect(head.locator('p').first()).toHaveText(vi.farmer.trialShort('1'));
-  await expect(page.getByTestId('card-usual-row-header').locator('p').first()).toHaveText(vi.farmer.current);
+  await expect(page.getByTestId('card-usual-row-header').locator('p').first()).toContainText(vi.farmer.current);
   await openRow(page, 'cc1', 'money');
   const money = page.getByTestId('card-cc1-row-money');
-  const button = money.locator('ul [data-value]').first();
+  const button = money.locator('[id$="-row-money-body"] ul [data-value]').first();
   await expect(button).toContainText(vi.common.millionPerHa);
   const exact = await button.getAttribute('data-value');
   expect(exact).toMatch(/^[\d.]+ nghìn đồng\/ha$/);
   await button.click();
-  await expect(page.getByTestId('source-sheet').locator('h2')).toHaveText(exact ?? '');
+  // F-A5: the sheet starts with the number as the card shows it, then the paper's own value and unit
+  const sheet = page.getByTestId('source-sheet');
+  await expect(sheet.locator('h2')).toHaveText((await button.locator(':scope > span > span').textContent()) ?? '');
+  await expect(sheet.locator('h2')).toContainText(vi.common.millionPerHa);
+  await expect(sheet).toContainText(vi.sheet.inPaper(exact ?? ''));
 });
 
 // D-187 item 4 (F1): the jump strip marks the card in view (on a wide screen, the row of two cards in view)
@@ -143,4 +147,309 @@ test('D-187 the water shortcut and the jump strip land below the strip', async (
     .toBe(true);
   expect(last).toBeGreaterThanOrEqual(0);
   await expect(card.locator('h2')).toBeInViewport();
+});
+
+// visual audit 2026-11-16: the stamp's word ran out of its box and touched the title
+for (const [lang, path] of [
+  ['vi', '/#/nong-dan/phuong-an'],
+  ['en', '/#/farmer/plans'],
+] as const)
+  test(`the source sheet's stamp holds its word (${lang})`, async ({ page }) => {
+    await page.goto(`${path}?ruong=water_short&nam=2010&uutien=income`);
+    await openRow(page, 'cc1', 'money');
+    await page.locator('#card-cc1-row-money-body ul [data-value]').first().click();
+    const stamp = page.getByTestId('source-sheet').locator('header > span[aria-hidden="true"]');
+    await expect(stamp).toBeVisible();
+    const fits = await stamp.evaluate((el) => ({ word: el.scrollWidth, box: el.clientWidth }));
+    expect(fits.word).toBeLessThanOrEqual(fits.box);
+    expect(await stamp.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(17);
+  });
+
+// visual audit 2026-11-16: in the open water row the notes sat above their numbers' baseline, some value groups
+// started at the left edge and others ended at the right, and percent had a space ("55 %") unlike the rest of the app
+test('the water row lines its values up at the right, notes on the numbers baseline, percent as 55%', async ({
+  page,
+}) => {
+  await page.goto(PLANS_URL);
+  await openRow(page, 'cc1', 'water');
+  const row = page.getByTestId('card-cc1-row-water');
+  const lines = await row.locator('ul > li').evaluateAll((items) =>
+    items.map((li) => {
+      // where the text of `el` sits: an empty inline box at its end stands on the baseline
+      const baseline = (el: Element) => {
+        const probe = document.createElement('span');
+        probe.style.cssText = 'display:inline-block;width:0;height:0';
+        el.append(probe);
+        const y = probe.getBoundingClientRect().bottom;
+        probe.remove();
+        return y;
+      };
+      const numbers = [...li.querySelectorAll('button[data-value]')];
+      const notes = [...li.querySelectorAll('span.small')];
+      const rights = [...numbers, ...notes].map((el) => el.getBoundingClientRect().right);
+      return {
+        gap: rights.length ? li.getBoundingClientRect().right - Math.max(...rights) : 0,
+        // a note and the number on its line
+        drift: notes.flatMap((note) => {
+          const box = note.getBoundingClientRect();
+          const beside = numbers.find((n) => {
+            const b = n.getBoundingClientRect();
+            return b.top < box.bottom && b.bottom > box.top;
+          });
+          const figure = beside?.querySelector(':scope > span > span');
+          return figure ? [Math.abs(baseline(note) - baseline(figure))] : [];
+        }),
+        values: numbers.map((n) => n.getAttribute('data-value') ?? ''),
+      };
+    }),
+  );
+  expect(lines.length).toBeGreaterThan(0);
+  for (const line of lines) {
+    // the number button reaches 0.2rem past the edge so its text ends on it (SourceValue)
+    expect(Math.abs(line.gap)).toBeLessThanOrEqual(4);
+    for (const drift of line.drift) expect(drift).toBeLessThanOrEqual(1);
+  }
+  const percents = lines.flatMap((l) => l.values).filter((v) => v.includes('%'));
+  expect(percents.length).toBeGreaterThan(0);
+  for (const value of percents) expect(value).toMatch(/^\d+%$/);
+});
+
+// visual audit 2026-11-16: back at the top of the page the strip stayed scrolled sideways, its first plans cut off
+test('the jump strip shows the plan in view from its left edge and goes back to its start at the top', async ({
+  page,
+}) => {
+  await page.goto(PLANS_URL);
+  const jump = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  // how far a chip starts after the strip's left edge
+  const startOf = (chip: Locator) =>
+    chip.evaluate((el) => el.getBoundingClientRect().left - (el.parentElement?.getBoundingClientRect().left ?? 0));
+  await page.getByTestId('card-cc2').evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(jump.locator('a[href="#the-cc2"]')).toHaveAttribute('aria-current', 'true');
+  // the first marked chip is whole in the strip: not cut on the left, not pushed off to the right (with short chips
+  // (F-A7) a wide screen shows all six, so the strip has nothing to scroll)
+  const marked = jump.locator('a[aria-current="true"]').first();
+  await expect.poll(() => startOf(marked)).toBeGreaterThanOrEqual(0);
+  expect(
+    await marked.evaluate(
+      (el) => (el.parentElement?.getBoundingClientRect().right ?? 0) - el.getBoundingClientRect().right,
+    ),
+  ).toBeGreaterThanOrEqual(0);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(jump.locator('a[aria-current="true"]')).toHaveCount(0);
+  await expect.poll(() => startOf(jump.locator('a').first())).toBeGreaterThanOrEqual(0);
+});
+
+// visual audit 2026-11-16: in the card heads a line with a number button was taller than a plain line, a short number
+// ("1,16") left a gap before its unit, and the two cards of a desktop row ended at different heights
+test('the card heads keep one line height, and the cards of a row end together', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const heads = await page.locator('article[id^="the-"] header div > p').evaluateAll((lines) =>
+    lines.map((p) => ({
+      // how far the paragraph's height is from a whole number of its lines
+      uneven: Math.abs(
+        ((p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight) + 0.5) % 1) - 0.5,
+      ),
+      buttons: [...p.querySelectorAll('button')].map((b) => {
+        const box = b.getBoundingClientRect();
+        const text = b.querySelector(':scope > span > span')?.getBoundingClientRect() ?? box;
+        return { width: box.width, height: box.height, offCentre: text.left - box.left - (box.right - text.right) };
+      }),
+    })),
+  );
+  expect(heads.length).toBe(12);
+  for (const line of heads) {
+    expect(line.uneven).toBeLessThan(0.05);
+    for (const button of line.buttons) {
+      // still a 44 x 44 px target (H7), its number in the middle so no gap opens on one side
+      expect(button.width).toBeGreaterThanOrEqual(44);
+      expect(button.height).toBeGreaterThanOrEqual(44);
+      expect(Math.abs(button.offCentre)).toBeLessThanOrEqual(1);
+    }
+  }
+  // the cards of one row: their heads end together, so the rows under them line up, and the cards end together
+  const cards = await page.locator('article[id^="the-"]').evaluateAll((els) =>
+    els.map((el) => ({
+      top: el.getBoundingClientRect().top,
+      bottom: el.getBoundingClientRect().bottom,
+      head: el.querySelector('header')?.getBoundingClientRect().bottom ?? 0,
+    })),
+  );
+  for (const card of cards)
+    for (const other of cards.filter((c) => c.top === card.top)) {
+      expect(other.head).toBeCloseTo(card.head, 0);
+      expect(other.bottom).toBeCloseTo(card.bottom, 0);
+    }
+});
+
+// roleplay audit 2026-11-16 (F-A3): at 360 px the opened rows zig-zagged: some values sat at the right, others wrapped
+// under their label at the left, so a number could not be told to its label. Every line now reads label at the left,
+// value at the right edge, on every card.
+test('the opened rows keep each value at the right of its line, on every card', async ({ page }, info) => {
+  test.skip(info.project.name !== 'phone-360', 'the zig-zag is a phone layout');
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const bad: string[] = [];
+  for (const id of IDS) {
+    for (const row of ['calendar', 'weather', 'water', 'land']) await openRow(page, id, row);
+    const lines = page.locator(
+      [
+        `[data-testid="card-${id}-row-calendar"] ul > li`,
+        `[data-testid="card-${id}-row-weather"] ul > li`,
+        `[data-testid="card-${id}-row-water"] ul > li`,
+        `[data-testid="card-${id}-row-land"] ul > li`,
+        `[data-testid="card-${id}-priority-line"] li`,
+      ].join(', '),
+    );
+    bad.push(
+      ...(await lines.evaluateAll(
+        (items, card) =>
+          items.flatMap((li) => {
+            const box = li.getBoundingClientRect();
+            const buttons = [...li.querySelectorAll('button[data-value]')].map((b) => b.getBoundingClientRect());
+            if (!buttons.length) return [];
+            const name = `${card}: ${li.textContent?.slice(0, 40)}`;
+            const out: string[] = [];
+            // the last value ends at the right edge (the button reaches 0.2rem past its text, SourceValue)
+            if (Math.abs(box.right - Math.max(...buttons.map((b) => b.right))) > 4)
+              out.push(`${name} not at the right`);
+            // no value starts at the left edge, where the labels are
+            if (buttons.some((b) => b.left - box.left < 24)) out.push(`${name} at the left`);
+            return out;
+          }),
+        id,
+      )),
+    );
+  }
+  expect(bad).toEqual([]);
+});
+
+// roleplay audit 2026-11-16 (F-A7): one 500 px chip filled the phone screen; chips are short, several show at once,
+// and each chip's accessible name is the full plan name with its crops, in the fixed order (H3)
+test('the jump strip chips are short on a phone and keep the full plan name as their name', async ({ page }, info) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const chips = page.getByRole('navigation', { name: vi.farmer.jumpTo }).locator('a');
+  await expect(chips).toHaveCount(6);
+  expect(await chips.evaluateAll((as) => as.map((a) => a.getAttribute('href')))).toEqual(IDS.map((id) => `#the-${id}`));
+  const widths = await chips.evaluateAll((as) => as.map((a) => a.getBoundingClientRect().width));
+  if (info.project.name === 'phone-360') {
+    for (const w of widths) expect(w).toBeLessThanOrEqual(180);
+    const fully = await chips.evaluateAll((as) => as.filter((a) => a.getBoundingClientRect().right <= 360).length);
+    expect(fully).toBeGreaterThanOrEqual(2);
+  }
+  for (const id of IDS) {
+    const crops = await page.getByTestId(`card-${id}`).locator('h2').innerText();
+    const name = await page.locator(`nav a[href="#the-${id}"]`).evaluate((a) => a.textContent ?? '');
+    for (const crop of crops.split('→').map((c) => c.trim())) expect(name, id).toContain(crop);
+  }
+});
+
+// roleplay audit 2026-11-16 (F-B2): two cards said "Cách làm hiện nay"; rules/rotations.yaml: `usual` is the control of
+// the same trial as the four trial plans (P-02), `usual_p03` the control of another study (P-03)
+test('the two current-practice cards say which study they come from and which one the trial cards are compared with', async ({
+  page,
+}) => {
+  await page.goto(PLANS_URL);
+  const kicker = (id: string) => page.getByTestId(`card-${id}-row-header`).locator('p').first();
+  await expect(kicker('usual')).toContainText(vi.farmer.current);
+  await expect(kicker('usual')).toContainText(vi.farmer.currentOf.usual);
+  await expect(kicker('usual_p03')).toContainText(vi.farmer.current);
+  await expect(kicker('usual_p03')).toContainText(vi.farmer.currentOf.usual_p03);
+  const jump = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  await expect(jump.locator('[href="#the-usual"]')).toContainText(vi.farmer.chip.usual[1]);
+  await expect(jump.locator('[href="#the-usual_p03"]')).toContainText(vi.farmer.chip.usual_p03[1]);
+  await expect(page.getByText(vi.farmer.comparedWith, { exact: true })).toBeVisible();
+});
+
+// F1 (D-187 item 4, roleplay audit 2026-11-16): the closed card comes as close to one phone screen as its required
+// content allows; the four warnings stay inside the card as one tight block of 17 px text (H17, H6)
+test('the card warnings are one tight block inside the card', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  for (const id of IDS) {
+    const lines = [vi.farmer.trialNote, vi.farmer.priceYear('2020-21'), vi.common.notForecast, vi.common.support];
+    const boxes = [];
+    for (const line of lines) {
+      const el = page.getByTestId(`card-${id}`).getByText(line, { exact: true });
+      await expect(el, `${id}: ${line}`).toBeVisible();
+      expect(await el.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(17);
+      boxes.push(await el.boundingBox());
+    }
+    for (let i = 1; i < boxes.length; i++) {
+      const [a, b] = [boxes[i - 1], boxes[i]];
+      expect((b?.y ?? 0) - ((a?.y ?? 0) + (a?.height ?? 0)), id).toBeLessThanOrEqual(8);
+    }
+  }
+});
+
+// UI-UX-SPEC section 9 comparison strip: the six plans side by side before any card opens, in the cards' order, with
+// the card heads' own values and sources only (H3, H5); the chosen priority's line says so in words (H11)
+test('the comparison strip shows the six plans in the card order with the card heads values', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const strip = page.getByRole('region', { name: vi.farmer.stripTitle });
+  await expect(strip).toBeVisible();
+  const first = await page.getByTestId('card-usual').boundingBox();
+  expect((await strip.boundingBox())?.y ?? Infinity).toBeLessThan(first?.y ?? 0);
+  const items = strip.locator('ol > li');
+  await expect(items).toHaveCount(6);
+  for (const [i, id] of IDS.entries()) {
+    const item = items.nth(i);
+    await expect(item.locator('a').first()).toHaveAttribute('href', `#the-${id}`);
+    // the same values as the card head (money and water lines), each a source button
+    const head = await page
+      .getByTestId(`card-${id}-row-header`)
+      .locator('button[data-value]')
+      .evaluateAll((bs) => bs.map((b) => b.getAttribute('data-value')));
+    const shown = await item
+      .locator('button[data-value]')
+      .evaluateAll((bs) => bs.map((b) => b.getAttribute('data-value')));
+    expect(shown.slice(0, head.length), id).toEqual(head);
+    for (const b of await item.locator('a, button').filter({ visible: true }).all()) {
+      const box = await b.boundingBox();
+      expect(box?.height ?? 0, id).toBeGreaterThanOrEqual(44);
+      expect(box?.width ?? 0, id).toBeGreaterThanOrEqual(44);
+    }
+  }
+  // the long labels are said once above the six plans; priority income: the money label carries the label in words
+  const legend = strip.locator('ul').first();
+  await expect(legend).toContainText(vi.farmer.rows.money);
+  // "our addition" belongs to the whole-year figures only: the other study's card gives each season as its paper does
+  await expect(legend).toContainText(vi.farmer.stripSum(vi.farmer.currentOf.usual_p03));
+  await expect(legend).not.toContainText(vi.farmer.own.yearSum);
+  await expect(strip.getByText(vi.farmer.yourPriority)).toHaveCount(1);
+  await expect(legend.locator('li', { hasText: vi.farmer.rows.money })).toContainText(vi.farmer.yourPriority);
+  await expect(items.first()).not.toContainText(vi.farmer.rows.money);
+  // P-03 money is from another study and takes off material costs only: the strip says so next to it
+  await expect(items.nth(1)).toContainText(vi.farmer.definitionPlain.p03);
+  await expect(strip).not.toContainText(/tốt nhất|tốt hơn|xếp hạng|điểm/i);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    await page.evaluate(() => window.innerWidth),
+  );
+  await items.nth(4).locator('a').first().click();
+  await expect(page.getByTestId('card-cc3').locator('h2')).toBeInViewport();
+});
+
+// roleplay walkthrough 2026-11-16 (farmer, 360 x 740): the first strip repeated every long label in each plan and was
+// about 3.5 screens long, so the six plans could not be taken in together
+test('on a phone the comparison strip is short, and shows the line of the chosen priority', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) > 700, 'a phone finding');
+  await page.goto(PLANS_URL);
+  const strip = page.getByRole('region', { name: vi.farmer.stripTitle });
+  await expect(strip.locator('ol > li')).toHaveCount(6);
+  // UI-UX-SPEC section 9: at most two phone screens
+  expect((await strip.boundingBox())?.height ?? Infinity).toBeLessThanOrEqual(740 * 2);
+  await expect(strip.getByText(vi.farmer.strip.money).first()).toBeVisible();
+  await expect(strip.getByText(vi.farmer.strip.water).first()).toBeHidden();
+  await expect(strip.getByText(vi.farmer.legumeYes).first()).toBeHidden();
+  await page.goto(PLANS_URL.replace('uutien=income', 'uutien=water'));
+  const water = page.getByRole('region', { name: vi.farmer.stripTitle });
+  await expect(water.locator('ol > li')).toHaveCount(6);
+  for (const item of await water.locator('ol > li').all())
+    await expect(item.getByText(vi.farmer.strip.water).first()).toBeVisible();
+  await expect(water.locator('ul').first().locator('li', { hasText: vi.farmer.summaryWaterLabel })).toContainText(
+    vi.farmer.yourPriority,
+  );
 });

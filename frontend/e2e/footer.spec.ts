@@ -18,6 +18,21 @@ test('the footer holds the brand, the reminder, two links and the team line, not
     expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
 });
 
+// roleplay audit 2026-11-16: the notice is one page, Vietnamese first; the English site opens it at its English part
+test('the English footer opens the privacy notice at its English part', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/#/home');
+  const link = page.locator('footer').getByRole('link', { name: 'Privacy', exact: true });
+  await expect(link).toHaveAttribute('href', '/quyen-rieng-tu#en');
+  await link.click();
+  await expect(page.getByRole('heading', { level: 2 })).toBeInViewport();
+  await page.goto('/#/');
+  await expect(page.locator('footer').getByRole('link', { name: 'Quyền riêng tư', exact: true })).toHaveAttribute(
+    'href',
+    '/quyen-rieng-tu',
+  );
+});
+
 // the CC BY and CC BY-SA licences ask for each photo's author and licence; they moved to the sources page
 test('the evidence page lists every photograph with its licence', async ({ page }) => {
   await page.goto('/#/bang-chung');
@@ -25,3 +40,16 @@ test('the evidence page lists every photograph with its licence', async ({ page 
   await expect(credits.getByRole('heading', { name: 'Ảnh và giấy phép' })).toBeVisible();
   await expect(credits.getByRole('link', { name: /^Giấy phép: / }).first()).toBeVisible();
 });
+
+// visual audit 2026-11-16: on a short page the footer ended above the bottom of the window, a pale band under it
+for (const path of ['/#/da-luu', '/#/dang-nhap'])
+  test(`the footer of the short page ${path} reaches the bottom of the window`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(path);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    const footer = await page.locator('footer').evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
+    const sizes = await page.evaluate(() => ({ window: window.innerHeight, height: document.body.scrollHeight }));
+    expect(footer).toBeGreaterThanOrEqual(sizes.window - 1);
+    // the footer is the end of the page: nothing under it
+    expect(footer).toBeGreaterThanOrEqual(sizes.height - 1);
+  });

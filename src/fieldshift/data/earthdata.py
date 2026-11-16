@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import http.cookiejar
 import os
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -41,3 +43,18 @@ def earthdata_opener() -> urllib.request.OpenerDirector:
     if token:
         handlers.insert(0, _Bearer(token))
     return urllib.request.build_opener(*handlers)
+
+
+def fetch(opener: urllib.request.OpenerDirector, url: str, timeout: float, retries: int = 4) -> bytes:
+    """The body of url; a failed try is repeated after a growing wait (5, 10, 20, 40 s), then the error is raised."""
+    delay = 5.0
+    for attempt in range(retries + 1):
+        try:
+            with opener.open(url, timeout=timeout) as resp:
+                return resp.read()
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
+            if attempt == retries:
+                raise
+        time.sleep(delay)
+        delay *= 2
+    raise RuntimeError("unreachable")

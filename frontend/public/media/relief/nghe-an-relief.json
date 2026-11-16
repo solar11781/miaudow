@@ -1,0 +1,66 @@
+{
+  "bbox": {
+    "west": 103.4375,
+    "south": 18.25,
+    "east": 105.9375,
+    "north": 20.25
+  },
+  "size_px": {
+    "width": 900,
+    "height": 763
+  },
+  "dataset": "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 3 arc second V003 [SRTMGL3]. NASA Land Processes Distributed Active Archive Center. doi:10.5067/MEaSUREs/SRTM/SRTMGL3.003",
+  "method": "Horn, B.K.P. (1981). Hill shading and the reflectance map. Proceedings of the IEEE 69(1): 14-47. doi:10.1109/PROC.1981.11918",
+  "sun": {
+    "azimuth_deg": 315.0,
+    "altitude_deg": 45.0
+  },
+  "earth_radius_m": 6371008.7714,
+  "tiles": {
+    "N18E103": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N18E103.SRTMGL3.hgt/N18E103.SRTMGL3.hgt.zip",
+      "bytes": 1571907,
+      "sha256": "370f12ea7068b4e1dfb9808de2640203cc266419c22daefc89bd714173643a12"
+    },
+    "N18E104": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N18E104.SRTMGL3.hgt/N18E104.SRTMGL3.hgt.zip",
+      "bytes": 1949018,
+      "sha256": "79b14a9db23332e99b06f7b9870e77e215483dc1b72899bc693e3f17953442bb"
+    },
+    "N18E105": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N18E105.SRTMGL3.hgt/N18E105.SRTMGL3.hgt.zip",
+      "bytes": 1478085,
+      "sha256": "4efb5d2c6c732b1f168513d193ba9b29d7b5b07747fd217e6e4ab3a6f8bb0bef"
+    },
+    "N19E103": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N19E103.SRTMGL3.hgt/N19E103.SRTMGL3.hgt.zip",
+      "bytes": 2020166,
+      "sha256": "e8852403fd5e4e2433fba5c97d9e56a84dda18309a60028d36220eb3833465fa"
+    },
+    "N19E104": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N19E104.SRTMGL3.hgt/N19E104.SRTMGL3.hgt.zip",
+      "bytes": 2093502,
+      "sha256": "082fd7606aa0135dd670970312391751259072822ce9e577671a241193670066"
+    },
+    "N19E105": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N19E105.SRTMGL3.hgt/N19E105.SRTMGL3.hgt.zip",
+      "bytes": 1294688,
+      "sha256": "6138cf0d34f27a76570957339e2cd4e6aba392f7d536f07a9c499118730b9793"
+    },
+    "N20E103": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N20E103.SRTMGL3.hgt/N20E103.SRTMGL3.hgt.zip",
+      "bytes": 2050359,
+      "sha256": "c661980909c1855a8881eb18700322a2ba068106469bfe0534dd2fb9d266e70c"
+    },
+    "N20E104": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N20E104.SRTMGL3.hgt/N20E104.SRTMGL3.hgt.zip",
+      "bytes": 2057304,
+      "sha256": "8c3a5ac15c2254defe8b385a01ce3e9577ffc1501223a13fefd8855c01ae4c3c"
+    },
+    "N20E105": {
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL3.003/N20E105.SRTMGL3.hgt/N20E105.SRTMGL3.hgt.zip",
+      "bytes": 1650924,
+      "sha256": "7d1893ccf74d95030f0c4916c43c70b8638d96b929979741777666c1986ca1d9"
+    }
+  }
+}

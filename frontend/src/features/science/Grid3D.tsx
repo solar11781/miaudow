@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { geo, hazards, type RuleCode } from '../../data';
 import { MAP_PLACES } from '../../data/places';
-import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
+import { cellMagnitude, cellMet, magnitudeDigits, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
+import { useCellName } from '../../hooks/useCellName';
+import { SourceValue } from '../provenance/SourceValue';
+import { useRefs } from '../provenance/useRefs';
 import s from './Grid3D.module.css';
 
 const PX_PER_DEG = 168;
 const K_LON = Math.cos((19.3 * Math.PI) / 180);
 const HMAX = 115;
+const RELIEF_URL = `${import.meta.env.BASE_URL}media/relief/nghe-an-relief.webp`;
 const DEFAULT_VIEW = { rx: 55, rz: -24 };
 
 export function Grid3D({
@@ -26,10 +30,13 @@ export function Grid3D({
 }) {
   const t = useT();
   const f = useFormat();
+  const cellName = useCellName();
+  const refs = useRefs();
   const { calm, lang } = useSettings();
   const [view3d, setView3d] = useState(true);
   const [rot, setRot] = useState(DEFAULT_VIEW);
   const [scale, setScale] = useState(1);
+  const [relief, setRelief] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; rx: number; rz: number; moved: boolean } | null>(null);
   const flat = !view3d || calm || forceFlat;
@@ -162,6 +169,17 @@ export function Grid3D({
                 </pattern>
               </defs>
               <rect x={-40} y={-40} width={box.W + 80} height={box.H + 80} rx={26} className={s.base} />
+              {flat && relief && (
+                <image
+                  href={RELIEF_URL}
+                  x={0}
+                  y={0}
+                  width={box.W}
+                  height={box.H}
+                  preserveAspectRatio="none"
+                  className={s.relief}
+                />
+              )}
               {outline.map((pts, i) => (
                 <polygon key={i} points={pts} className={s.land} />
               ))}
@@ -177,17 +195,6 @@ export function Grid3D({
                     className={s.cellLine}
                     fill={c.weight > 0 ? 'none' : 'url(#hatch)'}
                   />
-                );
-              })}
-              {MAP_PLACES.map((p) => {
-                const [x, y] = box.px(p.lon, p.lat);
-                return (
-                  <g key={p.id} className={s.place}>
-                    <circle cx={x} cy={y} r={3.2} />
-                    <text x={x + 7} y={y + 4}>
-                      {p.approx ? t.places.approx(t.places[p.name]) : t.places[p.name]}
-                    </text>
-                  </g>
                 );
               })}
             </svg>
@@ -213,7 +220,7 @@ export function Grid3D({
                       if (!drag.current?.moved) onSelect(c.id);
                     }}
                     aria-pressed={selected === c.id}
-                    aria-label={`${t.science.cell} ${c.lat}°N ${c.lon}°E: ${f.n(v, 1)} ${RULES[rule].unit[lang]}, ${met ? t.science.met : t.science.notMet}`}
+                    aria-label={`${t.science.cell} ${cellName(c.id)}: ${f.n(v, magnitudeDigits(RULES[rule].magnitude))} ${RULES[rule].unit[lang]}, ${met ? t.science.met : t.science.notMet}`}
                   >
                     <span
                       className={s.face}
@@ -273,6 +280,27 @@ export function Grid3D({
                   </button>
                 );
               })}
+            {/* drawn after the cells so no cell covers a name; a name in the right half is written to the left of
+                its point, so it stays inside the frame */}
+            <svg
+              className={`${s.plane} ${s.places}`}
+              viewBox={`-40 -40 ${box.W + 80} ${box.H + 80}`}
+              style={{ left: -40, top: -40, width: box.W + 80, height: box.H + 80 }}
+              aria-hidden="true"
+            >
+              {MAP_PLACES.map((p) => {
+                const [x, y] = box.px(p.lon, p.lat);
+                const left = x > box.W / 2;
+                return (
+                  <g key={p.id} className={s.place}>
+                    <circle cx={x} cy={y} r={3.2} />
+                    <text x={left ? x - 7 : x + 7} y={y + 4} textAnchor={left ? 'end' : 'start'}>
+                      {p.approx ? t.places.approx(t.places[p.name]) : t.places[p.name]}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
           </div>
         </div>
         <p className={s.hint}>{flat ? t.science.flatHint : t.science.dragHint}</p>
@@ -294,6 +322,19 @@ export function Grid3D({
           {t.science.measured}: {RULES[rule].unit[lang]}
         </span>
       </div>
+      {flat && (
+        <div className={s.reliefRow}>
+          <button type="button" className={s.reliefBtn} aria-pressed={relief} onClick={() => setRelief((v) => !v)}>
+            {t.science.reliefToggle}
+          </button>
+          {relief && (
+            <>
+              <p className={s.reliefNote}>{t.science.reliefNote}</p>
+              <SourceValue {...refs.reliefSeries()} />
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

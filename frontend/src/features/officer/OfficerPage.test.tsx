@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
 import { SettingsProvider } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
-import { Matrix } from './OfficerPage';
+import { Matrix, OfficerPage } from './OfficerPage';
 import { vi } from '../../i18n/vi';
 
 function rows() {
@@ -41,5 +41,18 @@ describe('officer evidence matrix', () => {
       expect(m).toContain(vi.farmer.definitionPlain.p02);
       expect(m).not.toContain(vi.farmer.definitionPlain.p03);
     }
+  });
+  // visual audit 2026-11-16: the closed table looked like an empty section; the fold shows the plan cards' chevron
+  it('marks the fold of the evidence table with a chevron', () => {
+    render(
+      <SettingsProvider>
+        <ProvenanceProvider>
+          <OfficerPage />
+        </ProvenanceProvider>
+      </SettingsProvider>,
+    );
+    const fold = document.querySelector('table')?.closest('details');
+    expect(fold?.open).toBe(false);
+    expect(fold?.querySelector(':scope > summary > svg:last-child')).not.toBeNull();
   });
 });

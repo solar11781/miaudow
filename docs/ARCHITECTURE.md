@@ -224,7 +224,7 @@ data/processed/           tidy CSV tables (gitignored, reproducible; cell_weight
                           cell_weights.csv, training_table.csv with the season climate columns (DATA-DICTIONARY
                           §2-§4c)
 artifacts/                small app inputs, committed: risk_table.json, hazard_labels.json, metrics.json, gates.json,
-                          soil_wetness.json, rain_check.json, figures/nghe_an_grid.svg (DATA-DICTIONARY §4d, §5c)
+                          soil_wetness.json, rain_check.json, figures/nghe_an_grid.svg and nghe_an_grid.vi.svg (DATA-DICTIONARY §4d, §5c)
 tests/                    pytest
 ```
 
@@ -273,7 +273,8 @@ def health() -> HealthResponse: ...
 ```
 
 The endpoints are `GET /api/past-years?province=nghe_an`, `POST /api/compare` (JSON body `CompareRequest`: province,
-land, years, priority), `GET /api/method` and `GET /api/health` (UI-UX-SPEC §11). Invalid input gets HTTP 422
+land, years, priority), `GET /api/method`, `GET /api/health` (UI-UX-SPEC §11) and the grid figure `GET /api/figures/nghe_an_grid.svg` (English) with
+`GET /api/figures/nghe_an_grid.vi.svg` (Vietnamese), both read once at start. Invalid input gets HTTP 422
 (routine): an unknown province, land or priority, an empty years list, or years that are not strictly ascending or fall
 outside 1995-2024. Source ids are either REFERENCES ids (`R-` ids, e.g. `R-P02`) or, for our own computations,
 computation ids (`E-` followed by three digits and an optional lowercase letter), and each has its entry in

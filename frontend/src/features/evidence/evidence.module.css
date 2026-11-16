@@ -330,6 +330,10 @@
 .facts dd {
   overflow-wrap: anywhere;
 }
+/* a link inside a sentence: the padding makes the tap target 44 px tall without moving the lines (UI-UX-SPEC H7) */
+.facts dd a {
+  padding-block: 0.8rem;
+}
 .dsNote {
   color: var(--fg-2);
   border-left: 2px solid var(--line-2);

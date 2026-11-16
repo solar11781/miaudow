@@ -7,16 +7,19 @@
 }
 .pair {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2rem 1rem;
+  flex-direction: column;
 }
-.name {
-  flex-basis: 100%;
+.sides {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
 }
-.side {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
+.sides li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+.sides li > button {
+  justify-self: end;
 }

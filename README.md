@@ -106,6 +106,7 @@ Full citations, links and terms: `rules/sources.yaml` and the app's evidence pag
 | NASA Eyes (eyes.nasa.gov)                                                                                                                                                          | Framed on the observatory page, visual context only                                                                                                                      | [eyes.nasa.gov](https://eyes.nasa.gov/)                                                                                            |
 | NASA CMR collection metadata                                                                                                                                                       | Start dates and titles in the "datasets considered and not used" list (ECOSTRESS, Landsat, VIIRS, HLS Sentinel-2, GLDAS, GRACE)                                          | [CMR search](https://cmr.earthdata.nasa.gov/search/)                                                                               |
 | GPM IMERG Final monthly V07                                                                                                                                                        | Planned satellite rain check against POWER. The download stopped at 194 of 288 monthly files (NASA servers mostly down), so the check is not run and the app shows none. | [NASA CMR record](https://cmr.earthdata.nasa.gov/search/concepts/C2723754851-GES_DISC.html)                                        |
+| NASA SRTM Global 3 arc second V003 (SRTMGL3), ground height, about 90 m, 9 tiles of 1° over the Nghe An map frame | Optional terrain layer under the flat data-room map: a grey hill-shaded picture (Horn 1981, sun at 315° and 45°), off by default, labelled "height only"; no number comes from it | [NASA SRTM record](https://doi.org/10.5067/MEaSUREs/SRTM/SRTMGL3.003) |
 
 **Other data**
 
@@ -288,7 +289,7 @@ download step only), pillow 13.0.0 (MIT-CMU; encoded the field-step AVIF copies)
 GitHub Actions checkout v4, setup-python v5, setup-node v4 and cache v4, pinned by commit. Base images: node 22.23.5-slim and python 3.13.18-slim,
 pinned in the `Dockerfile`.
 
-**Data and papers.** NASA POWER, MODIS MCD12C1, MOD13Q1, GPM IMERG, GIBS and CMR are NASA open data (no restriction
+**Data and papers.** NASA POWER, MODIS MCD12C1, MOD13Q1, GPM IMERG, SRTM (Data Use Policy, no access restrictions in its CMR record), GIBS and CMR are NASA open data (no restriction
 on reuse; cite the source; no NASA endorsement implied). National Statistics Office data: copyright of the office,
 cited with the credit line above, raw files not redistributed. geoBoundaries: province outline Public Domain in its
 record, CC BY 4.0 with acknowledgement on its site; district outline CC BY 3.0 IGO; credit "geoBoundaries". CHIRPS v3:

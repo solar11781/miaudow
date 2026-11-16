@@ -12,6 +12,7 @@ import type { Globe, Overlay } from './globe';
 import { cellYear } from './cellClimate';
 import s from './earth.module.css';
 import { useLocalTo } from '../../app/paths';
+import { useCellName } from '../../hooks/useCellName';
 
 const EYES = eyesJson as unknown as { links: { id: string; url: string }[] };
 const eyesUrl = (id: string) => EYES.links.find((l) => l.id === id)?.url;
@@ -533,6 +534,7 @@ function CellMetric({
 }) {
   const t = useT();
   const local = useLocalTo();
+  const cellName = useCellName();
   const f = useFormat();
   const v = cellYear(cell, year);
   const ask = new URLSearchParams({ q: t.earth.askQ(year), hoi: '1', nam: String(year) }).toString();
@@ -562,7 +564,7 @@ function CellMetric({
         {CELLS.map((c) => (
           <label key={c} className={s.radio}>
             <input type="radio" name="cell" value={c} checked={cell === c} onChange={() => onCell(c)} />
-            <span className="mono">{c.replace('_', '°N ')}°E</span>
+            <span className="mono">{cellName(c)}</span>
           </label>
         ))}
       </fieldset>
@@ -575,7 +577,7 @@ function CellMetric({
               sourceId="nasa-power"
               kind="derived"
               value={`${f.n(v.rain)} mm`}
-              label={`${t.earth.annualRain} · ${year} · ${cell}`}
+              label={`${t.earth.annualRain} · ${year} · ${cellName(cell)}`}
               detail={t.earth.rainDetail}
               chain={['nasa-power']}
             />
@@ -587,7 +589,7 @@ function CellMetric({
               sourceId="nasa-power"
               kind="derived"
               value={f.signedPct(v.anomaly, 0)}
-              label={`${t.earth.vsNormal} · ${year} · ${cell}`}
+              label={`${t.earth.vsNormal} · ${year} · ${cellName(cell)}`}
               detail={t.earth.anomalyDetail}
               chain={['nasa-power']}
             />
