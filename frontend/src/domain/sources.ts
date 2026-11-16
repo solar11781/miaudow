@@ -201,8 +201,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       en: 'Climate Hazards Center, UC Santa Barbara',
     },
     where: {
-      vi: 'Các điểm ảnh 0,05° thuộc Nghệ An trong 5 ô lưới NASA POWER, và điểm ảnh ở Lưu Sơn',
-      en: 'The 0.05° Nghe An pixels inside the 5 NASA POWER cells, and the Luu Son pixel',
+      vi: 'Các điểm ảnh 0,05° thuộc Nghệ An trong 5 ô lưới NASA POWER, và điểm ảnh ở Lưu Sơn (cũ)',
+      en: 'The 0.05° Nghe An pixels inside the 5 NASA POWER cells, and the former Luu Son pixel',
     },
     period: {
       vi: '1991–2024, theo tháng, bản cuối (không dùng bản sơ bộ)',

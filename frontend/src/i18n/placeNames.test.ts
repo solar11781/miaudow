@@ -21,6 +21,11 @@ const ownWords = (lang: 'vi' | 'en') => [
   ...texts(lang === 'vi' ? vi : en),
   ...PASSAGES.flatMap((p) => [p.title[lang], p.text[lang]]),
   ...MISSIONS.map((m) => m.statusNote[lang]),
+  // a data source's fields describe our use of it; a study's place is the study's own, and the resolution's list of
+  // merged communes is the law's own wording
+  ...Object.values(SOURCES)
+    .filter((s) => s.kind !== 'study' && s.id !== 'nq1678')
+    .flatMap((s) => [s.where[lang], s.method[lang], s.caveat[lang]]),
 ];
 
 describe('place names after 2025 (D-198)', () => {

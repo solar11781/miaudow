@@ -41,6 +41,11 @@ def test_the_assistant_passages_call_luu_son_the_former_commune() -> None:
     assert _unmarked(texts) == []
 
 
+def test_the_method_page_texts_call_luu_son_the_former_commune() -> None:
+    method = yaml.safe_load((REPO / "rules" / "method.yaml").read_text(encoding="utf-8"))
+    assert _unmarked(_texts(method)) == []
+
+
 def test_the_studys_own_place_stays_as_the_study_wrote_it() -> None:
     plans = yaml.safe_load((REPO / "rules" / "rotations.yaml").read_text(encoding="utf-8"))
     assert {plan["site"] for plan in plans} == {"Lưu Sơn, Đô Lương"}

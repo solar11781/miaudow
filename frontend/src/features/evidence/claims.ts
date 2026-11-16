@@ -314,8 +314,8 @@ export function useClaims(): Claim[] {
           en: 'Sentinel-2 L2A: loaded, seasonal 20 m NDVI composites of Do Luong (2020–21 and 2024), shown on the Earth observatory. NASA HLS: blocked, needs an Earthdata Login.',
         },
         method: {
-          vi: 'Cần ranh giới chính xác của khu vực nghiên cứu; geoBoundaries không có lớp ranh giới xã nên Lưu Sơn chỉ là một điểm.',
-          en: 'Needs an exact study-area boundary; geoBoundaries has no commune layer, so Luu Son is only a marker point.',
+          vi: 'Cần ranh giới chính xác của khu vực nghiên cứu; geoBoundaries không có lớp ranh giới xã nên Lưu Sơn (cũ) chỉ là một điểm.',
+          en: 'Needs an exact study-area boundary; geoBoundaries has no commune layer, so former Luu Son is only a marker point.',
         },
         appliesTo: { vi: 'Cả ứng dụng.', en: 'The whole app.' },
         notProve: {
@@ -388,7 +388,7 @@ export const CONFLICTS: { id: string; title: Bilingual; body: Bilingual; source:
     id: 'usual-practice',
     title: { vi: 'Hai bài báo, hai “cách làm quen”', en: 'Two papers, two “usual practices”' },
     body: {
-      vi: 'Cùng nhóm tác giả, cùng xã Lưu Sơn: một bài ghi người dân trồng lúa – đậu đen – khoai lang, bài kia ghi lúa – lúa – bỏ hoang. Miaudow hiện cả hai.',
+      vi: 'Cùng nhóm tác giả, cùng xã Lưu Sơn (cũ): một bài ghi người dân trồng lúa – đậu đen – khoai lang, bài kia ghi lúa – lúa – bỏ hoang. Miaudow hiện cả hai.',
       en: 'Same authors, same commune: one paper records rice – black bean – sweet potato as the usual practice, the other rice – rice – fallow. Miaudow shows both.',
     },
     source: { vi: 'Trịnh Đức Toàn và cs. (2023), hai bài', en: 'Trịnh Đức Toàn et al. (2023), both papers' },
