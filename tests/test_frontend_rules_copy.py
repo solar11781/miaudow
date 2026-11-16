@@ -149,6 +149,7 @@ KNOWN = {
     "source.R-N02.url": "intended (D-191: a page people can read vs the data address): sources.ts doi.org/10.5067/MODIS/MCD12C1.061 vs sources.yaml cmr.earthdata.nasa.gov granules",
     "source.R-D05.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-D05 credits data bundled in the frontend and is in docs/REFERENCES.md",
     "source.R-N11.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-N11 credits data bundled in the frontend and is in docs/REFERENCES.md",
+    "source.R-N12.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-N12 credits the relief picture bundled in the frontend and is in docs/REFERENCES.md",
     "source.R-D04.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-D04 credits data bundled in the frontend and is in docs/REFERENCES.md",
 }
 
@@ -170,4 +171,4 @@ def test_every_crop_plan_and_source_was_read() -> None:
     # Counts read off the two TS files by hand, so a regex that silently stops matching fails here.
     assert len(ts_crops()) == 11
     assert {k: len(v) for k, v in ts_plans().items()} == {"cc5": 3, "p03": 0, "cc1": 3, "cc2": 3, "cc3": 3, "cc4": 3}
-    assert len(ts_sources()) == 15
+    assert len(ts_sources()) == 16
