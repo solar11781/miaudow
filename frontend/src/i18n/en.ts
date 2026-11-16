@@ -877,9 +877,6 @@ export const en: Messages = {
     engineDeterministic: 'Ready-written wording from Miaudow’s data, no AI',
     engineBrowser: 'Searched on your device (offline), no AI',
     modelUsed: (model: string) => `Model that picked the passages: ${model}`,
-    rankingStatus: 'Miaudow does not rank',
-    noRankingReason:
-      'Miaudow compares plans; it does not rank them or choose for you. That is the app’s rule, not a lack of data. Look at the plans side by side, then talk to the commune’s extension officer.',
     ownField:
       'Miaudow does not know your field: it has only study values and regional values, so it does not choose a plan for your field. It can put the plans side by side for the field type you name. Please also ask the commune’s extension officer about your own field.',
     nextWithLand: (land: string) => `Compare the plans for: ${land}`,

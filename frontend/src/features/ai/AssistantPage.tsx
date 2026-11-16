@@ -89,7 +89,7 @@ function Citations({ citations }: { citations: CopilotResponse['citations'] }) {
   );
 }
 
-function AnswerHead({ res, refusal }: { res: CopilotResponse; refusal: boolean }) {
+function AnswerHead({ res }: { res: CopilotResponse }) {
   const t = useT();
   return (
     <div className={s.aHead}>
@@ -97,8 +97,8 @@ function AnswerHead({ res, refusal }: { res: CopilotResponse; refusal: boolean }
         <BrandMark size={32} />
         {t.assistant.bot}
       </span>
-      <span className={s.status} data-status={refusal ? 'reference_only' : res.status}>
-        {refusal ? t.copilot.rankingStatus : t.copilot.status[res.status]}
+      <span className={s.status} data-status={res.status}>
+        {t.copilot.status[res.status]}
       </span>
       <span className={s.engine}>
         {res.engine === 'claude' ? t.copilot.engineClaude : t.copilot.engineDeterministic}
@@ -126,13 +126,10 @@ function Missing({ items }: { items: CopilotResponse['missing_information'] }) {
 export function ServerAnswer({
   res,
   water,
-  noRank = false,
   voiceNote = true,
 }: {
   res: CopilotResponse;
   water: WaterSituation | null;
-  /** The question asked Miaudow to choose a plan: a fixed "not enough evidence" is replaced by the real reason. */
-  noRank?: boolean;
   /** The "no Vietnamese voice" note is printed once, under the newest answer. */
   voiceNote?: boolean;
 }) {
@@ -143,12 +140,11 @@ export function ServerAnswer({
   const speech = useSpeech(lang, () => undefined);
   const plans = res.cards.filter((c) => c.kind === 'plan');
   const years = res.cards.filter((c) => c.kind === 'year');
-  const refusal = noRank && res.status === 'insufficient_evidence';
   return (
     <div className={s.a}>
-      <AnswerHead res={res} refusal={refusal} />
+      <AnswerHead res={res} />
       <div className={s.answerText}>
-        {(refusal ? t.copilot.noRankingReason : res.answer).split('\n').map((line, i) => (
+        {res.answer.split('\n').map((line, i) => (
           <p key={i}>{line}</p>
         ))}
       </div>
@@ -419,12 +415,7 @@ export function AssistantPage() {
                     </div>
                   )}
                   {turn.kind === 'server' && (
-                    <ServerAnswer
-                      res={turn.res}
-                      water={water}
-                      noRank={turn.step?.kind === 'ranking'}
-                      voiceNote={turn === turns[turns.length - 1]}
-                    />
+                    <ServerAnswer res={turn.res} water={water} voiceNote={turn === turns[turns.length - 1]} />
                   )}
                   {turn.kind === 'local' && <LocalAnswer res={turn.res} />}
                   {turn.kind !== 'pending' && turn.step && <NextStepLink step={turn.step} />}

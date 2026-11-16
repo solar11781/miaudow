@@ -879,9 +879,6 @@ export const vi = {
     engineDeterministic: 'Lời văn viết sẵn từ dữ liệu Miaudow, không dùng AI',
     engineBrowser: 'Tìm ngay trên máy bạn (ngoại tuyến), không dùng AI',
     modelUsed: (model: string) => `Mô hình chọn đoạn: ${model}`,
-    rankingStatus: 'Miaudow không xếp hạng',
-    noRankingReason:
-      'Miaudow so sánh các cách trồng, không xếp hạng và không chọn thay bạn. Đây là nguyên tắc của ứng dụng, không phải vì thiếu dữ liệu. Hãy xem các cách trồng cạnh nhau rồi bàn với cán bộ khuyến nông của xã.',
     ownField:
       'Miaudow không biết ruộng nhà bạn: chỉ có số của nghiên cứu và số theo vùng, nên không chọn cách trồng cho ruộng của bạn. Miaudow có thể đặt các cách trồng cạnh nhau cho loại ruộng bạn nêu. Hãy hỏi thêm cán bộ khuyến nông của xã về ruộng nhà mình.',
     nextWithLand: (land: string) => `So sánh các cách trồng cho: ${land}`,

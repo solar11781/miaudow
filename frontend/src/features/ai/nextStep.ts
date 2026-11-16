@@ -1,4 +1,5 @@
 import type { WaterSituation } from '../../api';
+import { RANKING } from './answer';
 import { normalize } from './normalize';
 
 export interface NextStep {
@@ -7,9 +8,8 @@ export interface NextStep {
   land: WaterSituation | null;
 }
 
-// the same questions the server answers with a fixed text (src/fieldshift/api/copilot.py GUARD and OWN_FIELD), matched without accents
-const RANKING =
-  /\b(nen trong|trong gi|trong cay gi|tot nhat|hay nhat|loi nhat|nen chon|chon giup|chon cay|cay nao|xep hang|best|rank|ranking|should i grow|what to grow|what to plant|which crop|which plan|recommend)\b/;
+// a question about the asker's own field, matched without accents; close to the server's OWN_FIELD
+// (src/fieldshift/api/copilot.py), which gives such a question its fixed answer
 const OWN_FIELD =
   /\b(ruong (nha |cua )?(toi|minh|em)|nha (toi|minh|em)|(toi|em|minh) trong|my (own )?(field|farm|plot|land|paddy)s?|if i|will i|i (plant|grow|earn))\b/;
 const LANDS: [RegExp, WaterSituation][] = [

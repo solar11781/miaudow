@@ -52,26 +52,4 @@ describe('server copilot answer', () => {
     );
     expect(screen.getByText(vi.copilot.engineClaude)).toBeTruthy();
   });
-
-  it('explains a refusal to rank with the product rule, not with missing evidence', () => {
-    const refused: CopilotResponse = {
-      ...yearAnswer,
-      status: 'insufficient_evidence',
-      engine: 'deterministic',
-      model: null,
-      answer: 'Chưa đủ dữ liệu để kết luận.',
-      citations: [],
-      tool_trace: [],
-    };
-    render(
-      <SettingsProvider>
-        <MemoryRouter>
-          <ServerAnswer res={refused} water={null} noRank />
-        </MemoryRouter>
-      </SettingsProvider>,
-    );
-    expect(screen.getByText(vi.copilot.noRankingReason)).toBeTruthy();
-    expect(screen.queryByText('Chưa đủ dữ liệu để kết luận.')).toBeNull();
-    expect(screen.queryByText(vi.copilot.status.insufficient_evidence)).toBeNull();
-  });
 });
