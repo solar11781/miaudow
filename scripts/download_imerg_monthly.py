@@ -1,7 +1,7 @@
 """Download (or reuse the cache of) GPM IMERG Final monthly V07 for a box around the Nghệ An POWER cells, 2001-2024.
 
 Usage: PYTHONPATH=src python scripts/download_imerg_monthly.py
-Set FIELDSHIFT_SKIP_IMERG=1 to skip this stage while the rain check is not built (team, 2026-11-14).
+Set FIELDSHIFT_SKIP_IMERG=1 to skip this stage when the files are already cached (team, 2026-11-14).
 Raw OPeNDAP ASCII replies go unchanged to data/raw/imerg_monthly/ (gitignored); each new file gets a row in
 data/MANIFEST.csv. Needs an Earthdata user token in EARTHDATA_TOKEN (sent only to NASA Earthdata hosts over https,
 fieldshift.data.earthdata). Failures are reported,

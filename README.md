@@ -66,7 +66,7 @@ costs for each crop in million VND/ha, the unit every money number shows (one de
 VND/ha). The phone works out revenue (the study yield times the typed price) and, once a cost is typed, revenue minus
 cost, shown in million VND/ha. Both are labelled as the farmer's own numbers, and the trial's money row stays as it was.
 
-**Phone checks**: browser acceptance tests (`frontend/e2e/acceptance.spec.ts`) check 22 pages at 200% zoom of a
+**Phone checks**: browser acceptance tests (`frontend/e2e/acceptance.spec.ts`) check 21 pages at 200% zoom of a
 360 x 740 phone (no text cut off, every control reachable), 44 x 44 px tap targets on the plans page, and no sliders.
 
 **Other pages** (Vietnamese path, English path):
@@ -76,7 +76,7 @@ cost, shown in million VND/ha. Both are labelled as the farmer's own numbers, an
 | Home           | `#/`, `#/home`                                     | A "What does this app do?" box and the four steps with one start button; below, for extension officers, the trial, 30 years of drought, the AI cores and the model test.                                            |
 | Officer        | `#/can-bo`, `#/officer`                            | The evidence behind every card row, with the points where evidence is thin.                                                                                                                                         |
 | Science        | `#/khoa-hoc`, `#/science`                          | Nghe An over 30 seasons: the NASA POWER grid, rice yield against normal, two rain sources (NASA POWER and CHIRPS), MODIS NDVI around the trial site.                                                                |
-| Method         | `#/phuong-phap`, `#/method`                        | Model test results and pass or fail checks (from `artifacts/`), which data exist for each crop, the terms explained, datasets not used, limitations.                                                                |
+| Method         | `#/phuong-phap`, `#/method`                        | Model test results and pass or fail checks (from `artifacts/`), which data exist for each crop, the NASA grid figure, the satellite rain check, the terms explained, datasets not used, limitations.                                                                |
 | Observatory    | `#/dai-quan-sat`, `#/observatory`                  | From space down to Nghe An: a 3D globe with NASA GIBS layers that labels Hoang Sa, Truong Sa and Phu Quoc (Wikidata points), six Sentinel-2 greenness images of the former Do Luong district, NASA Eyes in a frame. |
 | Evidence       | `#/bang-chung`, `#/evidence`                       | Every conclusion with its source, where the sources disagree, and the state of each dataset.                                                                                                                        |
 | Assistant      | `#/tro-ly`, `#/assistant`                          | The copilot (see below).                                                                                                                                                                                            |
@@ -285,7 +285,7 @@ The licences of the frontend bundle are also written at build time to `THIRD-PAR
 
 Pipeline, models and tests only (`requirements-dev.lock`, not shipped): scikit-learn 1.9.1 (BSD-3-Clause), scipy
 1.18.1 (BSD License), lightgbm 4.7.0 (MIT), pytest 9.2.0 (MIT), httpx 0.28.1 (BSD License), pyhdf 0.11.7 (MIT; MODIS
-download step only), pillow 13.0.0 (MIT-CMU; encoded the field-step AVIF copies). CI tools: ruff 0.17.4 (MIT), pip-audit 2.10.1 (Apache-2.0), gitleaks 8.30.1 (MIT), npm audit;
+download step only), pillow 13.0.0 (MIT-CMU; encoded the field-step AVIF copies and writes the SRTM relief picture, `scripts/build_relief.py`). CI tools: ruff 0.17.4 (MIT), pip-audit 2.10.1 (Apache-2.0), gitleaks 8.30.1 (MIT), npm audit;
 GitHub Actions checkout v4, setup-python v5, setup-node v4 and cache v4, pinned by commit. Base images: node 22.23.5-slim and python 3.13.18-slim,
 pinned in the `Dockerfile`.
 
@@ -298,7 +298,7 @@ open access (Regulation (EU) No 377/2014), "Contains modified Copernicus Sentine
 licence is stated, so its records are only counted, never shown or committed. Trial papers: journal copyright, values
 quoted with citation, PDFs not redistributed. TCVN 8641:2011: values quoted with source, text not redistributed. FAO:
 FAO copyright, values quoted with acknowledgement. Vietnamese legal texts (Decision 18/2021/QĐ-TTg, Decree
-112/2024/NĐ-CP): quoted with their article, the text not redistributed. Wikidata: the Luu Son commune marker
+112/2024/NĐ-CP, Resolution 1678/NQ-UBTVQH15): quoted with their article, the text not redistributed. Wikidata: the Luu Son commune marker
 (Q10788283) that places the trial site on the maps, CC0. Full citations and links: the evidence page of the app,
 `rules/sources.yaml` and `docs/REFERENCES.md`.
 
