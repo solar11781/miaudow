@@ -138,8 +138,8 @@ time. No internal labels without saying what they mean. Use the `ste` skill for 
   checks locally before pushing (listed in the `task` skill).
 - Connectors in `.mcp.json` (approve each once on first start): Playwright (headless browser at 360 x 740),
   Chrome DevTools (slow-network emulation such as Slow 3G, Lighthouse and performance checks), Context7 (current docs
-  for the exact pinned library versions; use it before writing code against a library API, for example Tailwind 3,
-  not 4), Railway (deploy, environment, logs; each person signs in once).
+  for the exact pinned library versions; use it before writing code against a library API, for example React 19 or
+  react-router 7), Railway (deploy, environment, logs; each person signs in once).
 - Playwright screenshots: save them without a file name (they go to `.playwright-mcp/`, ignored by git), or delete them before a
   commit.
 - Safety hook (`.claude/settings.json`, `.claude/hooks/guard.mjs`): blocks pushing to `main`, local merges into
