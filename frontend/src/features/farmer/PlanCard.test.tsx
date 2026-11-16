@@ -908,3 +908,21 @@ describe('screen check details', () => {
     );
   });
 });
+
+// roleplay audit 2026-11-16 (F-A4): crop names were cut inside short bars ("Đậu …"); the list under the bar names each
+// crop, and the bar segment and its list entry carry the same number, so the tie is not by colour alone (H11)
+describe('month bar labels', () => {
+  afterEach(cleanup);
+  it('number each bar segment and its list entry the same, with no crop name cut inside the bar', () => {
+    const id = renderCard();
+    const row = document.querySelector(`[data-testid="card-${id}-row-calendar"]`);
+    const bar = row?.querySelector('figure > div[aria-hidden="true"]');
+    const segments = [...(bar?.children ?? [])].filter((el) => el.textContent);
+    const entries = [...(row?.querySelectorAll('figure ul > li') ?? [])].slice(0, segments.length);
+    expect(segments.length).toBeGreaterThan(0);
+    segments.forEach((seg, i) => {
+      expect(seg.textContent).toBe(String(i + 1));
+      expect(entries[i]?.textContent?.startsWith(String(i + 1))).toBe(true);
+    });
+  });
+});

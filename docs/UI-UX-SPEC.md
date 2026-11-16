@@ -449,7 +449,10 @@ stay the same.
 - One lane per crop, stacked top to bottom in `calendar` order, so overlapping spans stay visible; reported dates are
   drawn exactly as given, including overlaps. A lane is a segment from `sow_from` to `harvest_to`, with the
   sowing range (`sow_from`..`sow_to`) and the harvest range (`harvest_from`..`harvest_to`) drawn as lighter ends. Under
-  each lane: crop name, variety (P-02) and its dates in the format of section 6d. No crop span crosses 31 December
+  the bar, one line per lane: crop name, variety (P-02) and its dates in the format of section 6d. A lane carries no
+  crop name, since a name cut by a short lane ("Đậu …") cannot be read (roleplay audit 2026-11-16, F-A4): each lane
+  shows its number (1, 2, 3 in `calendar` order) and its line in the list starts with the same number on a key of the
+  lane's colour, so lane and name are tied by text, not by colour alone (H11). No crop span crosses 31 December
   (ML-DESIGN.md §5a: no P-02 window crosses it; `src/api.ts` rejects a span that does).
 - Bare periods (FR-18) are the `bare_periods` from the API (derived by the engine, never hand-entered). They are
   drawn with a hatched pattern and also labelled with `calendar.bare` and their dates (H11). A period with `from`

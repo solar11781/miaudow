@@ -27,6 +27,8 @@ export const CROP_FAMILY: Record<string, keyof typeof FAMILY_FILL> = {
   black_sesame: 'other',
 };
 
+const fill = (cropId: string) => FAMILY_FILL[CROP_FAMILY[cropId] ?? 'other'] ?? ['#ddd', '#555'];
+
 /** Twelve-month field calendar from the API plan (UI-UX-SPEC section 9a). Overlapping reported dates go on separate
  * lanes; bare periods are the engine's, hatched and labelled; every date opens the plan's calendar sources (H5). */
 export function MonthBar({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
@@ -50,8 +52,8 @@ export function MonthBar({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
             />
           )),
         )}
-        {segs.map((seg) => {
-          const [bg, ink] = FAMILY_FILL[CROP_FAMILY[seg.span.crop_id] ?? 'other'] ?? ['#ddd', '#555'];
+        {segs.map((seg, i) => {
+          const [bg, ink] = fill(seg.span.crop_id);
           return (
             <span
               key={seg.span.crop_key}
@@ -66,7 +68,8 @@ export function MonthBar({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
                 borderColor: ink,
               }}
             >
-              <span className={s.segName}>{pick(seg.span.crop)}</span>
+              {/* a crop name does not fit a short lane, so the lane carries its line's number in the list below */}
+              {i + 1}
             </span>
           );
         })}
@@ -80,12 +83,18 @@ export function MonthBar({ plan, refs }: { plan: Plan; refs: ApiRefs }) {
         {t.farmer.monthAxis}
       </p>
       <ul className={s.dates} aria-label={t.farmer.datesAsReported}>
-        {segs.map(({ span }) => {
+        {segs.map(({ span }, i) => {
+          const [bg, ink] = fill(span.crop_id);
           const shown = `${dateRange(span.sow_from ?? '', span.sow_to ?? '')} → ${dateRange(span.harvest_from ?? '', span.harvest_to ?? '')}`;
           const name = [pick(span.crop), span.variety ? pick(span.variety) : ''].filter(Boolean).join(' ');
           return (
             <li key={span.crop_key}>
-              <span>{name}</span>
+              <span>
+                <i className={s.key} style={{ background: bg, borderColor: ink }} aria-hidden="true">
+                  {i + 1}
+                </i>
+                {name}
+              </span>
               <SourceValue {...refs.sources(span.source_ids, shown, `${name} · ${t.farmer.datesAsReported}`)} />
             </li>
           );
