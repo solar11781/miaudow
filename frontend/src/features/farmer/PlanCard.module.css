@@ -17,6 +17,8 @@
 @supports (grid-template-rows: subgrid) {
   .card {
     display: grid;
+    /* the column never grows past the card, so long words wrap at 200% zoom instead of being cut (H9) */
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: subgrid;
     grid-row: span 3;
     row-gap: 0;
