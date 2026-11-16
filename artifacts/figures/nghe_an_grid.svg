@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="617" viewBox="0 0 400 617" role="img" aria-labelledby="grid-figure-title grid-figure-desc" font-family="sans-serif" font-size="14" fill="#1a1a1a">
-<title id="grid-figure-title">NASA POWER weather cells over Nghệ An, shaded by farmland weight</title>
-<desc id="grid-figure-desc">The Nghệ An boundary drawn over the 10 NASA POWER cells that hold the province's MODIS land pixels. Farmland weight of each cell, by its centre: 18.5 N, 105.625 E: 0.20; 19.0 N, 105.0 E: 0.14; 19.0 N, 105.625 E: 0.47; 19.5 N, 105.0 E: 0.04; 19.5 N, 105.625 E: 0.16; cells with farmland weight 0: 18.5 N, 105.0 E; 19.0 N, 104.375 E; 19.5 N, 103.75 E; 19.5 N, 104.375 E; 20.0 N, 105.0 E; Sources: NASA POWER cells of 0.5 x 0.625 degrees (R-N01). Farmland weights from NASA MODIS land cover MCD12C1 with the fixed farmland mask (R-N02; D-106, D-146), data/processed/cell_weights.csv. Boundary: geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020; R-D04). Drawn as plain longitude and latitude, longitude scaled by cos(latitude) at the middle latitude; no base map. Weights rounded to 2 decimals, so the printed values may not sum to exactly 1.</desc>
-<rect width="400" height="617" fill="#ffffff"/>
-<text x="16.0" y="28.0" font-size="18" font-weight="bold">NASA POWER weather cells over Nghệ An,</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600" role="img" aria-labelledby="grid-figure-title grid-figure-desc" font-family="sans-serif" font-size="14" fill="#1a1a1a">
+<title id="grid-figure-title">NASA POWER weather cells over Nghe An, shaded by farmland weight</title>
+<desc id="grid-figure-desc">The Nghe An boundary drawn over the 10 NASA POWER cells that hold the province's MODIS land pixels. Farmland weight of each cell, by its centre: 18.5 N, 105.625 E: 0.20; 19.0 N, 105.0 E: 0.14; 19.0 N, 105.625 E: 0.47; 19.5 N, 105.0 E: 0.04; 19.5 N, 105.625 E: 0.16; cells with farmland weight 0: 18.5 N, 105.0 E; 19.0 N, 104.375 E; 19.5 N, 103.75 E; 19.5 N, 104.375 E; 20.0 N, 105.0 E; Sources: NASA POWER cells of 0.5 x 0.625 degrees. Farmland weights from NASA MODIS land cover MCD12C1 with the fixed farmland mask. Boundary: geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020). Drawn as plain longitude and latitude, longitude scaled by cos(latitude) at the middle latitude; no base map. Weights rounded to 2 decimals, so the printed values may not sum to exactly 1.</desc>
+<rect width="400" height="600" fill="#ffffff"/>
+<text x="16.0" y="28.0" font-size="18" font-weight="bold">NASA POWER weather cells over Nghe An,</text>
 <text x="16.0" y="52.0" font-size="18" font-weight="bold">shaded by farmland weight</text>
 <g data-cell="18.5_105.0"><rect x="200.0" y="289.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
 <g data-cell="19.0_104.375"><rect x="111.5" y="214.0" width="88.5" height="75.0" fill="none" stroke="#595959" stroke-dasharray="5 4"/></g>
@@ -21,18 +21,17 @@
 <g data-label="19.5_105.0"><rect x="222.3" y="166.0" width="44" height="21" rx="3" fill="#ffffff"/><text x="244.3" y="182.5" font-size="17" font-weight="bold" text-anchor="middle">0.04</text></g>
 <g data-label="19.5_105.625"><rect x="310.8" y="166.0" width="44" height="21" rx="3" fill="#ffffff"/><text x="332.8" y="182.5" font-size="17" font-weight="bold" text-anchor="middle">0.16</text></g>
 <rect x="16" y="380" width="22" height="14" fill="#1f4e79" fill-opacity="0.425" stroke="#595959"/>
-<text x="46.0" y="392.0" font-size="13">Farmland weight, printed in the cell; darker is larger</text>
 <rect x="16" y="402" width="22" height="14" fill="none" stroke="#595959" stroke-dasharray="5 4"/>
-<text x="46.0" y="414.0" font-size="13">Cell with Nghệ An land pixels but farmland weight 0</text>
 <line x1="16" y1="431" x2="38" y2="431" stroke="#1a1a1a" stroke-width="2"/>
-<text x="46.0" y="436.0" font-size="13">Nghệ An boundary</text>
-<text x="16.0" y="464.0" font-size="12">Sources: NASA POWER cells of 0.5 x 0.625 degrees</text>
-<text x="16.0" y="481.0" font-size="12">(R-N01). Farmland weights from NASA MODIS land cover</text>
-<text x="16.0" y="498.0" font-size="12">MCD12C1 with the fixed farmland mask (R-N02; D-106,</text>
-<text x="16.0" y="515.0" font-size="12">D-146), data/processed/cell_weights.csv. Boundary:</text>
-<text x="16.0" y="532.0" font-size="12">geoBoundaries gbOpen VNM ADM1 (Runfola et al. 2020;</text>
-<text x="16.0" y="549.0" font-size="12">R-D04). Drawn as plain longitude and latitude, longitude</text>
-<text x="16.0" y="566.0" font-size="12">scaled by cos(latitude) at the middle latitude; no base</text>
-<text x="16.0" y="583.0" font-size="12">map. Weights rounded to 2 decimals, so the printed</text>
-<text x="16.0" y="600.0" font-size="12">values may not sum to exactly 1.</text>
+<text x="46.0" y="392.0" font-size="13">Farmland weight, printed in the cell; darker is larger</text>
+<text x="46.0" y="414.0" font-size="13">Cell with Nghe An land pixels but farmland weight 0</text>
+<text x="46.0" y="436.0" font-size="13">Nghe An boundary</text>
+<text x="16.0" y="464.0" font-size="12">Sources: NASA POWER cells of 0.5 x 0.625 degrees.</text>
+<text x="16.0" y="481.0" font-size="12">Farmland weights from NASA MODIS land cover MCD12C1 with</text>
+<text x="16.0" y="498.0" font-size="12">the fixed farmland mask. Boundary: geoBoundaries gbOpen</text>
+<text x="16.0" y="515.0" font-size="12">VNM ADM1 (Runfola et al. 2020). Drawn as plain longitude</text>
+<text x="16.0" y="532.0" font-size="12">and latitude, longitude scaled by cos(latitude) at the</text>
+<text x="16.0" y="549.0" font-size="12">middle latitude; no base map. Weights rounded to 2</text>
+<text x="16.0" y="566.0" font-size="12">decimals, so the printed values may not sum to exactly</text>
+<text x="16.0" y="583.0" font-size="12">1.</text>
 </svg>
