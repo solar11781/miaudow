@@ -144,3 +144,19 @@ test('D-187 the water shortcut and the jump strip land below the strip', async (
   expect(last).toBeGreaterThanOrEqual(0);
   await expect(card.locator('h2')).toBeInViewport();
 });
+
+// visual audit 2026-11-16: the stamp's word ran out of its box and touched the title
+for (const [lang, path] of [
+  ['vi', '/#/nong-dan/phuong-an'],
+  ['en', '/#/farmer/plans'],
+] as const)
+  test(`the source sheet's stamp holds its word (${lang})`, async ({ page }) => {
+    await page.goto(`${path}?ruong=water_short&nam=2010&uutien=income`);
+    await openRow(page, 'cc1', 'money');
+    await page.getByTestId('card-cc1-row-money').locator('ul [data-value]').first().click();
+    const stamp = page.getByTestId('source-sheet').locator('header > span[aria-hidden="true"]');
+    await expect(stamp).toBeVisible();
+    const fits = await stamp.evaluate((el) => ({ word: el.scrollWidth, box: el.clientWidth }));
+    expect(fits.word).toBeLessThanOrEqual(fits.box);
+    expect(await stamp.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(17);
+  });

@@ -90,8 +90,11 @@
 }
 .stamp {
   flex: none;
-  width: 58px;
+  /* as wide as its word in either language, never narrower than it is tall */
+  min-width: 58px;
   height: 58px;
+  padding-inline: 0.4rem;
+  white-space: nowrap;
   display: grid;
   place-items: center;
   border: 2px solid var(--seal);
