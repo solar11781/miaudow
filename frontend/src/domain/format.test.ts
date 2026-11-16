@@ -1,7 +1,7 @@
 // The API sends Value strings in English notation (UI-UX-SPEC section 11: the backend rounds, the frontend shows the
 // value as given); on screen Vietnamese uses a dot for thousands and a comma for decimals (review 2026-11-14).
 import { describe, expect, it } from 'vitest';
-import { displayUnit, displayValue, lowerFirst, upperFirst } from './format';
+import { displayMeasure, displayUnit, displayValue, lowerFirst, upperFirst } from './format';
 
 describe('value display', () => {
   it('groups thousands with a dot and decimals with a comma in Vietnamese', () => {
@@ -25,6 +25,16 @@ describe('value display', () => {
     expect(displayUnit('m2')).toBe('m²');
     expect(displayUnit('one 1000 m2 plot per crop; 6,500 m3/ha')).toBe('one 1000 m² plot per crop; 6,500 m³/ha');
     expect(displayUnit('R-M2 and mm2x stay')).toBe('R-M2 and mm2x stay');
+  });
+  // rules/rotations.yaml writes the P-02 plot as "1000 m2"; the text files write "1.000 m²" and "1,000 m²" (D-170)
+  it('writes the thousands mark of the language in a size before m² or m³, and nowhere else', () => {
+    expect(displayMeasure('Mỗi cây một ô 1000 m2, không lặp lại', 'vi')).toBe('Mỗi cây một ô 1.000 m², không lặp lại');
+    expect(displayMeasure('One unreplicated 1000 m2 plot per crop', 'en')).toBe(
+      'One unreplicated 1,000 m² plot per crop',
+    );
+    expect(displayMeasure('June 2020 to June 2021 (p. 45); 6,500 m3/ha; 250 m2', 'en')).toBe(
+      'June 2020 to June 2021 (p. 45); 6,500 m³/ha; 250 m²',
+    );
   });
 });
 

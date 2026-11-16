@@ -6,7 +6,8 @@ import { decisionPlan, rulebookPlan } from '../../data/rulebook';
 import { Icon } from '../../design-system/Icon';
 import { SourceValue } from '../provenance/SourceValue';
 import { useRefs } from '../provenance/useRefs';
-import { usePick, useT } from '../../app/settings';
+import { displayMeasure } from '../../domain/format';
+import { usePick, useSettings, useT } from '../../app/settings';
 import s from './officer.module.css';
 
 /**
@@ -54,6 +55,7 @@ export function EvidenceDesk() {
 function Ladder({ plan }: { plan: Plan }) {
   const t = useT();
   const pick = usePick();
+  const { lang } = useSettings();
   const refs = useRefs();
   const rb = rulebookPlan(plan.id);
   const total = planProfitMillion(plan);
@@ -106,10 +108,10 @@ function Ladder({ plan }: { plan: Plan }) {
       </li>
       <li>
         <span className={s.step}>{t.officer.ladder[4]}</span>
-        {rb?.why && <p>{pick(rb.why.evidence)}</p>}
+        {rb?.why && <p>{displayMeasure(pick(rb.why.evidence), lang)}</p>}
         <ul className={s.limits}>
           {(rb?.limitations ?? []).map((l) => (
-            <li key={l.vi}>{pick(l)}</li>
+            <li key={l.vi}>{displayMeasure(pick(l), lang)}</li>
           ))}
         </ul>
       </li>
