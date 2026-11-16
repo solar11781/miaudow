@@ -13,7 +13,7 @@ for (const [lang, path, t] of [
   test.describe(`method tables (${lang})`, () => {
     test.use({ locale: lang });
 
-    test('T10 result-tables every column of every result table fits a 1440 px screen', async ({ page }) => {
+    test('every column of every result table fits a 1440 px screen', async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.goto(path);
       await expect(page.locator(tables).first()).toBeVisible({ timeout: 30_000 });
@@ -25,7 +25,7 @@ for (const [lang, path, t] of [
       await expect(page.getByText(t.method.scrollHint).first()).toBeHidden();
     });
 
-    test('T10 result-tables on a phone the table scrolls inside its frame and says so', async ({ page }) => {
+    test('on a phone the result table scrolls inside its frame and says so', async ({ page }) => {
       await page.setViewportSize({ width: 360, height: 740 });
       await page.goto(path);
       const first = page.locator(tables).first();
@@ -44,3 +44,13 @@ for (const [lang, path, t] of [
     });
   });
 }
+
+// UI-UX-SPEC section 11b item 1: the page opens on the national and Nghe An rows; the other provinces and the regions
+// fold (spec review of the branch: the fold had taken Nghe An's own rows with it)
+test('the method page shows the rows of Nghệ An before any fold is opened', async ({ page }) => {
+  await page.goto('/#/phuong-phap');
+  const first = page.locator(tables).first();
+  await expect(first).toBeVisible({ timeout: 30_000 });
+  await expect(first.getByRole('cell', { name: vi.method.subsets['unit:Nghe An'], exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('cell', { name: vi.method.subsets['unit:Ha Tinh'], exact: true }).first()).toBeHidden();
+});

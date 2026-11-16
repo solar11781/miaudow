@@ -17,8 +17,10 @@ import s from '../science/science.module.css';
 // metric numbers with 2 decimals (team decision on the method page's display precision, UI-UX-SPEC section 15 item 10)
 const DIGITS = 2;
 const SKILLS = ['skill_vs_b0', 'skill_vs_b2', 'skill_vs_bnw'] as const;
-// a row of one province or one region (subset "unit:<id>" or "region:<id>"), not a headline row
+// a row of one province or one region (subset "unit:<id>" or "region:<id>"); all but the study province's fold
 const BREAKDOWN = /^(unit|region):/;
+const OWN_PROVINCE = 'unit:Nghe An';
+const folds = (subset: string) => BREAKDOWN.test(subset) && subset !== OWN_PROVINCE;
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
@@ -153,8 +155,8 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
     <div className="stack">
       <h3 className="h2">{t.method.seasons[season]}</h3>
       {groups(rows).map(([g, list]) => {
-        const headline = list.filter((r) => !BREAKDOWN.test(r.subset));
-        const breakdown = list.filter((r) => BREAKDOWN.test(r.subset));
+        const headline = list.filter((r) => !folds(r.subset));
+        const breakdown = list.filter((r) => folds(r.subset));
         return (
           <div key={g} className="stack">
             <h4 className="h3">

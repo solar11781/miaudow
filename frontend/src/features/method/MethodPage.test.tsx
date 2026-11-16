@@ -104,18 +104,22 @@ describe('method page', () => {
     expect(scopeCells()).toContain('new_area');
   });
   // visual audit of the method page: about 40,000 px tall; the per-province and per-region rows fold, closed at first
-  it('folds the per-province and per-region rows and keeps the headline rows open', async () => {
+  it('folds the rows of the other provinces and of the regions, and keeps the headline and Nghệ An rows open', async () => {
     renderPage();
     await screen.findByRole('heading', { level: 2, name: vi.method.metricsTitle });
     const folds = [...document.querySelectorAll<HTMLDetailsElement>('#main details')].filter(
       (d) => d.querySelector('summary')?.textContent === vi.method.breakdown,
     );
     expect(folds).toHaveLength(2); // spring and winter rice
-    const headline = new Set([vi.method.subsets.national, vi.method.subsets.na_ht_th]);
+    const headline = new Set([
+      vi.method.subsets.national,
+      vi.method.subsets.na_ht_th,
+      vi.method.subsets['unit:Nghe An'],
+    ]);
     for (const fold of folds) {
       expect(fold.open).toBe(false);
       const scopes = [...fold.querySelectorAll('tbody tr > td:nth-of-type(2)')].map((c) => c.textContent ?? '');
-      expect(scopes).toHaveLength(36); // 4 models x (3 provinces + 6 regions)
+      expect(scopes).toHaveLength(32); // 4 models x (2 other provinces + 6 regions)
       expect(scopes.filter((c) => headline.has(c))).toEqual([]);
     }
     const open = [...document.querySelectorAll('[data-testid^="metric-row-"]')].flatMap((cell) => {
