@@ -350,7 +350,7 @@ feeds the API `Rule`.
 ```yaml
 # Format example only (P-02 structure CC1). The final values come from the P-02 full text (Table 13 and the dates).
 - id: cc1                  # canonical plan ids: usual (CC5), usual_p03, cc1..cc4 (UI-UX-SPEC §11)
-  name: {vi: "Lạc L20 - Đậu xanh D22 - Ngô hạt VN5885", en: "Peanut L20 - mung bean D22 - grain maize VN5885"}
+  name: {vi: "Lạc L20 - Đậu xanh D22 - Ngô thương phẩm VN5885", en: "Peanut L20 - mung bean D22 - grain maize VN5885"}
   is_usual: false          # true for usual and usual_p03
   land_archetypes: [drought_prone_paddy]   # the land type the study tested; documents scope, not used to filter
   provinces_studied: [VN-NA]
