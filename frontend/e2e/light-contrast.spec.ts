@@ -46,7 +46,7 @@ test('H8 the start page step labels and help icons read on the light theme', asy
     expect(await contrast(icon)).toBeGreaterThanOrEqual(3);
 });
 
-test('H8 the priority tile icons read on the light theme, chosen or not', async ({ page }) => {
+test('the priority tile icons read on the light theme, chosen or not', async ({ page }) => {
   await page.goto('/#/nong-dan/uu-tien?ruong=water_short&nam=2010');
   const tiles = page.getByRole('radio');
   await expect(tiles).toHaveCount(4);

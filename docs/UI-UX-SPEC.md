@@ -1108,6 +1108,7 @@ section 4.
 | T13 not-forecast | `common.notForecast` visible on `/nam` and `/phuong-an` (H13) | event |
 | T14 no-personal-data | on every page except `/dang-nhap` and `/da-luu`: no cookies set; no localStorage or sessionStorage writes; no requests to third-party hosts (only exceptions: the NASA GIBS map tiles and the NASA Eyes frame on `/dai-quan-sat`; voice input on `/tro-ly` starts only after a tap, with a note that the browser may send the audio to its provider); the farmer routes and the home page make no third-party request; answers and typed prices never appear in any request URL (H14) | now |
 | T15 lazy-map | loading `/phuong-an` does not download the `/ban-do` chunk (section 12) | skipped until `/ban-do` exists |
+| T15 relief-lazy | loading `/phuong-an` never requests the relief picture; the data room requests it only after its switch is on (section 12) | event |
 | T16 card-warnings | each card element contains, inside its own bounding box, the texts of `plans.trialNote`, `money.priceYear` (or `money.priceYearNotStated`), `common.notForecast` and `common.supportNote` (H17) | event |
 | T17 support-note | `common.supportNote` visible on `/` and `/phuong-an` (H18) | event |
 | T18 two-sources | every condition share (card number buttons and legend "?" buttons) opens a sheet with the R-A01 block (with `source.ruleText`), the R-N01 and R-N02 blocks and `conditions.computedNote`; `common.dataLine` visible on `/nam`, `/phuong-an` and in every footer (H19) | event |

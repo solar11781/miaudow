@@ -53,9 +53,7 @@ test('T15 relief-lazy the data room loads the relief picture only after the terr
 
 // the shared svg rule max-width: 100% shrank the map's drawing to the width of its frame, so the NASA cells and the
 // boundary no longer lined up with the cell buttons laid over them
-test('T15 map-frame the flat map drawing is as wide as its frame, so cells line up with their buttons', async ({
-  page,
-}) => {
+test('the flat map drawing is as wide as its frame, so cells line up with their buttons', async ({ page }) => {
   await page.goto('/#/khoa-hoc');
   const flat = page.getByRole('button', { name: '2D', exact: true });
   const toggle = page.getByRole('button', { name: 'Địa hình (NASA SRTM)' });
