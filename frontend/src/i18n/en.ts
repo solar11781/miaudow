@@ -3,7 +3,6 @@ import type { Messages } from './vi';
 // English mirrors the Vietnamese structure exactly (the type makes a missing key a build error).
 export const en: Messages = {
   meta: {
-    code: 'en',
     locale: 'en-GB',
     other: 'VI',
     otherLabel: 'Chuyển sang tiếng Việt',
@@ -48,16 +47,11 @@ export const en: Messages = {
     /** The singular of an API unit after the number 1 (D-192). */
     unitOfOne: (unit: string) => (unit === 'crops' ? 'crop' : unit),
     sourceFor: (name: string) => `See the source: ${name}`,
-    open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',
     perKg: 'VND/kg',
     notListed: 'Not listed in the source',
     noData: 'No data yet',
-    farmland: 'farmland',
-    percentOfFarmland: (v: string) => `${v} of farmland`,
-    yearsCount: (n: number) => `${n} years`,
-    sample: 'Illustration',
     loading: 'Loading…',
     error: 'The data could not be loaded.',
     retry: 'Try again',
@@ -83,7 +77,6 @@ export const en: Messages = {
     illustration: 'An image, not data.',
   },
   sheet: {
-    title: 'Where this number comes from',
     inPaper: (value: string) => `In the paper: ${value}`,
     aboutValue: 'About the value',
     from: 'From',
@@ -129,7 +122,6 @@ export const en: Messages = {
     titleA: 'Our village fields,',
     titleB: 'read with data from space.',
     ctaFarmer: 'Understand my field',
-    ctaScience: 'Explore Nghe An data',
     ctaCopilot: 'Ask the copilot',
     pause: 'Pause photos',
     aboutTitle: 'What does this app do?',
@@ -256,7 +248,6 @@ export const en: Messages = {
       'R-P03': 'Trịnh Đức Toàn et al. (2023)',
     } as Record<string, string>,
     stepOf: (n: number) => `Step ${n}/4`,
-    startEyebrow: 'Water-short rice land in Nghe An',
     startTitle: 'Your field: what to grow next season?',
     startLead:
       'Four short steps. No typing. At the end you have 6 cards to compare with your family and the extension officer.',
@@ -371,9 +362,6 @@ export const en: Messages = {
       rice: 'Province rice against normal',
     },
     crop: 'Crop',
-    drought: 'Drought',
-    heat: 'Heat',
-    rain: 'Heavy rain',
     cropsInYear: 'Different crops in the year',
     livingDays: 'Days with a living crop',
     principle: 'Why this check',
@@ -517,10 +505,8 @@ export const en: Messages = {
     fitLabel: 'Their field:',
     askTitle: 'Questions to clear up with the family',
     quotePage: (page: string) => `p. ${page}`,
-    eyebrow: 'For extension officers',
     title: 'The evidence behind every card',
     lead: 'Each row on a farmer’s card comes from a specific source. This page gathers them so officers can explain, and says plainly where the evidence is thin.',
-    scopeTitle: 'Scope of the evidence',
     scope: [
       {
         label: 'Trial site',
@@ -592,7 +578,6 @@ export const en: Messages = {
     price: 'Price',
   },
   science: {
-    eyebrow: 'Data room · for researchers',
     title: 'Nghe An across 30 seasons',
     lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline and NSO rice yields.',
     globeCta: 'See it on the 3D globe, from space down to the fields',
@@ -642,9 +627,6 @@ export const en: Messages = {
     notModeled: 'Too little data to model this season; only real values are shown.',
     toMethod: 'See the model test results on the Method page',
     skillTitle: 'Does the model beat simple guesses?',
-    skillLead:
-      'Skill against the multi-year average (B0) on the test years 2016–2024. Above 0 is better than B0. Bars are 90% confidence intervals.',
-    skillVsBnw: 'The deciding test: the model with weather against the same model without weather (BNW)',
     models: {
       m1_ridge: 'M1 · ridge + NASA weather',
       m2_lgbm: 'M2 · LightGBM (secondary)',
@@ -653,8 +635,6 @@ export const en: Messages = {
       b2: 'B2 · like last year',
       b0: 'B0 · climatology',
     },
-    subsets: { national: 'Nationwide', na_ht_th: 'Nghe An, Ha Tinh, Thanh Hoa', nghe_an: 'Nghe An only' },
-    gatesTitle: 'Four gates before a model estimate is shown',
     gateNames: {
       G1: 'Enough data',
       G2: 'Beats B0 and BNW',
@@ -663,50 +643,23 @@ export const en: Messages = {
     },
     passed: 'Passed',
     failed: 'Failed',
-    gateCol: 'Gate',
-    seasonCol: 'Season',
-    resultCol: 'Result',
-    detailCol: 'Detail',
     reportsTitle: 'Method notes',
     claimMade: 'May say “NASA weather improves the prediction”',
     claimNotMade: 'May not say “NASA weather improves the prediction”',
     limitsTitle: 'Known limits',
-    limits: [
-      'Cells of about 55 × 66 km smooth out extremes (Zhang et al., 2011).',
-      'Heavy rain uses the 24-hour branch only; the 12-hour branch is not computable from daily data.',
-      'Official warnings weigh humidity, wind and duration; this is a mechanical reading of the tables.',
-      'Yields are province averages, mostly irrigated rice, not water-short fields.',
-    ],
-    freeze: (c: string) => `Results frozen at commit ${c}`,
   },
   assistant: {
-    eyebrow: 'Evidence assistant',
-    title: 'Ask, and get answers with sources',
-    lead: 'The assistant searches Miaudow’s evidence base and the real data already computed. It does not invent numbers: if there is no evidence, it says so.',
-    honest: 'No large language model is used. Answers are assembled from checked evidence passages and data look-ups.',
     placeholder: 'For example: Was 2010 a drought year?',
     inputLabel: 'Your question',
     ask: 'Ask',
-    examples: [
-      'Was 2010 a drought year?',
-      'How much does peanut earn?',
-      'What should I grow on my field?',
-      'What is the NASA data?',
-      'Is the spring rice model any good?',
-      'How much water does rice need?',
-    ],
     examplesLabel: 'Example questions',
-    pipeline: ['Question', 'Find evidence', 'Look up data', 'Answer with sources', 'You decide'],
     noEvidence:
       'Miaudow has no evidence for this question yet. Please ask the extension officer or the commune extension station.',
     noRanking:
       'Miaudow does not choose a plan for you. The evidence covers one year and one plot per crop, which is not enough to rank. This is what each plan shows:',
-    evidenceFrom: 'Evidence',
-    matchScore: 'match',
     you: 'You',
     bot: 'Assistant',
     clear: 'Clear the conversation',
-    exampleTag: 'Example',
   },
   evidence: {
     photosTitle: 'Photographs and licences',
@@ -714,7 +667,6 @@ export const en: Messages = {
       'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghe An.',
     photoLicence: 'Licence',
     photoSource: 'Original file page',
-    eyebrow: 'Evidence library',
     title: 'Every conclusion has a place to check it',
     lead: 'What Miaudow relies on, linked to the number, the calculation and the page of the original document. Where a source is unclear or contradicts itself, we say so instead of hiding it.',
     ladderLabel: 'How to read one piece of evidence',
@@ -749,7 +701,6 @@ export const en: Messages = {
     notProve: 'Does not prove',
     moreClaims: (n: number) => `Show ${n} more claims`,
     sourceDetails: 'Place, period, how it was read and caveats',
-    conflictsEyebrow: 'Plainly',
     conflictsTitle: 'Where the sources disagree or are unclear',
     conflictsLead:
       'Reading the documents closely, we found places that do not match. They stay visible so officers and readers can weigh them.',
@@ -782,7 +733,6 @@ export const en: Messages = {
     trialSeason: 'Trial year 2020–21',
     ndviGaps: (n: number, total: number) =>
       `${n}/${total} passes had no reliable pixel (cloud): left empty, never filled`,
-    sectionEyebrow: 'Climate and vegetation',
     sectionTitle: 'One year, three views',
     sectionLead:
       'Pick a year anywhere on this page: the 3D map, the rain strip, the two rain sources and the greenness all follow the same year.',
@@ -833,12 +783,8 @@ export const en: Messages = {
   },
   media: {
     illustration: 'AI-generated, not a photograph',
-    photo: 'Photograph',
-    pause: 'Pause the image motion',
-    play: 'Play the image motion',
   },
   copilot: {
-    eyebrow: 'MIAUDOW copilot',
     title: 'Ask in your own words, get answers with sources',
     lead: 'The copilot uses Miaudow’s three engines: climate look-up, evidence search and plan comparison. Every number in an answer is checked against the data before it is shown.',
     greeting: 'Hello, neighbours!',
@@ -915,7 +861,6 @@ export const en: Messages = {
     noMic: 'This browser has no speech input; you can still type.',
   },
   quality: {
-    eyebrow: 'Automatic checks on every data build',
     title: 'Data quality',
     lead: (n: number) =>
       `Every time the data is rebuilt, ${n} checks run: file hashes, units and value ranges, dates, map boundaries and licences. The results are shown here as they are, warnings included.`,
@@ -952,7 +897,6 @@ export const en: Messages = {
     satPlay: 'Fly satellites',
     flagshipNote:
       'The two large satellites are illustrations: one flies the flag of Vietnam, the other is NASA’s Terra (source of the MODIS farmland data) with the US flag. Their orbits are drawn to pass over Nghe An, not their real positions.',
-    eyebrow: 'Earth observatory',
     title: 'From space down to the rice fields of Nghe An',
     scenes: {
       cosmos: {
