@@ -229,3 +229,46 @@ test('the jump strip shows the plan in view from its left edge and goes back to 
   await expect(jump.locator('a[aria-current="true"]')).toHaveCount(0);
   await expect.poll(() => startOf(jump.locator('a').first())).toBeGreaterThanOrEqual(0);
 });
+
+// visual audit 2026-11-16: in the card heads a line with a number button was taller than a plain line, a short number
+// ("1,16") left a gap before its unit, and the two cards of a desktop row ended at different heights
+test('the card heads keep one line height, and the cards of a row end together', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const heads = await page.locator('article[id^="the-"] header div > p').evaluateAll((lines) =>
+    lines.map((p) => ({
+      // how far the paragraph's height is from a whole number of its lines
+      uneven: Math.abs(
+        ((p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight) + 0.5) % 1) - 0.5,
+      ),
+      buttons: [...p.querySelectorAll('button')].map((b) => {
+        const box = b.getBoundingClientRect();
+        const text = b.querySelector(':scope > span > span')?.getBoundingClientRect() ?? box;
+        return { width: box.width, height: box.height, offCentre: text.left - box.left - (box.right - text.right) };
+      }),
+    })),
+  );
+  expect(heads.length).toBe(12);
+  for (const line of heads) {
+    expect(line.uneven).toBeLessThan(0.05);
+    for (const button of line.buttons) {
+      // still a 44 x 44 px target (H7), its number in the middle so no gap opens on one side
+      expect(button.width).toBeGreaterThanOrEqual(44);
+      expect(button.height).toBeGreaterThanOrEqual(44);
+      expect(Math.abs(button.offCentre)).toBeLessThanOrEqual(1);
+    }
+  }
+  // the cards of one row: their heads end together, so the rows under them line up, and the cards end together
+  const cards = await page.locator('article[id^="the-"]').evaluateAll((els) =>
+    els.map((el) => ({
+      top: el.getBoundingClientRect().top,
+      bottom: el.getBoundingClientRect().bottom,
+      head: el.querySelector('header')?.getBoundingClientRect().bottom ?? 0,
+    })),
+  );
+  for (const card of cards)
+    for (const other of cards.filter((c) => c.top === card.top)) {
+      expect(other.head).toBeCloseTo(card.head, 0);
+      expect(other.bottom).toBeCloseTo(card.bottom, 0);
+    }
+});

@@ -12,6 +12,17 @@
     border-color var(--d-slow) var(--ease-out);
 }
 
+/* the head, the rows and the foot of the cards in one row of the page share their heights, so the two cards' rows
+   line up (the page's card grid is in farmer.module.css); a browser without subgrid keeps the column above */
+@supports (grid-template-rows: subgrid) {
+  .card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    row-gap: 0;
+  }
+}
+
 .focused {
   border-color: var(--c-gold-500);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-gold-500) 40%, transparent);
@@ -557,6 +568,13 @@
   gap: var(--s-1);
   font-size: var(--t-small);
   color: var(--fg-2);
+}
+
+/* a number button keeps its 44 px target (H7) without making its line taller than a plain one: the target reaches
+   8 px into the lines above and below. A number narrower than 44 px sits in the middle, so no gap opens after it. */
+.summary p button {
+  margin-block: -8px;
+  justify-content: center;
 }
 
 .summaryLink {
