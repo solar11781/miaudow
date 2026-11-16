@@ -1,21 +1,6 @@
 .page {
   background: var(--bg);
 }
-.hero {
-  padding-bottom: var(--s-10);
-  background-image: var(--g-morning-mist);
-}
-.heroGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: clamp(2rem, 1rem + 4vw, 5rem);
-  align-items: end;
-}
-@media (max-width: 900px) {
-  .heroGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 .title {
   font-size: var(--t-h1);
 }
@@ -253,11 +238,6 @@
 .conflicts p {
   color: var(--fg-2);
   margin-top: 0.4rem;
-}
-.conflictNum {
-  font: 700 2.2rem/1 var(--font-display);
-  color: var(--c-gold-500);
-  flex: none;
 }
 .conflictSrc {
   color: var(--fg-3) !important;

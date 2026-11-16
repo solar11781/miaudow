@@ -93,9 +93,6 @@
   color: #f4f0e5;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
 }
-.head :global(.eyebrow) {
-  color: var(--c-gold-300);
-}
 .title {
   font: 700 clamp(1.9rem, 1.4rem + 1.6vw, 3rem)/1.1 var(--font-display);
   letter-spacing: -0.01em;
