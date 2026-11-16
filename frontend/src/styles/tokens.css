@@ -160,6 +160,7 @@
   --bad-bg: #42201a;
 
   --data-rain: #85c0e6;
+  --data-rain-second: var(--c-gold-550);
   --data-heat: #f29676;
   --data-drought: #e9c15e;
   --data-drought-strong: #d6a43f;
@@ -225,6 +226,7 @@
   --bad: #962f1f;
   --bad-bg: #f4ddd5;
   --data-rain: #2b6a94;
+  --data-rain-second: var(--c-gold-700);
   --data-heat: #ad4129;
   --data-drought: #b0801a;
   --data-drought-strong: #85560a;
@@ -274,6 +276,7 @@
   --bad: #f4a690;
   --bad-bg: #42201a;
   --data-rain: #85c0e6;
+  --data-rain-second: var(--c-gold-550);
   --data-heat: #f29676;
   --data-drought: #e9c15e;
   --data-drought-strong: #d6a43f;

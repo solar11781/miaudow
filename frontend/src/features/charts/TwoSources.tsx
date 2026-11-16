@@ -81,7 +81,7 @@ export function TwoSources({ year, cell }: { year: number; cell: string }) {
                   width={bw}
                   height={H - padB - y(cv)}
                   rx={2}
-                  fill="var(--c-gold-550)"
+                  fill="var(--data-rain-second)"
                 >
                   <title>{`CHIRPS v3 ${m + 1}/${year}: ${f.n(cv)} mm`}</title>
                 </rect>
@@ -101,7 +101,7 @@ export function TwoSources({ year, cell }: { year: number; cell: string }) {
           NASA POWER
         </span>
         <span>
-          <i className={s.key} style={{ background: 'var(--c-gold-550)' }} />
+          <i className={s.key} style={{ background: 'var(--data-rain-second)' }} />
           CHIRPS v3
         </span>
       </div>
