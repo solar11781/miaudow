@@ -577,7 +577,7 @@ function CellMetric({
               sourceId="nasa-power"
               kind="derived"
               value={`${f.n(v.rain)} mm`}
-              label={`${t.earth.annualRain} · ${year} · ${cell}`}
+              label={`${t.earth.annualRain} · ${year} · ${cellName(cell)}`}
               detail={t.earth.rainDetail}
               chain={['nasa-power']}
             />
@@ -589,7 +589,7 @@ function CellMetric({
               sourceId="nasa-power"
               kind="derived"
               value={f.signedPct(v.anomaly, 0)}
-              label={`${t.earth.vsNormal} · ${year} · ${cell}`}
+              label={`${t.earth.vsNormal} · ${year} · ${cellName(cell)}`}
               detail={t.earth.anomalyDetail}
               chain={['nasa-power']}
             />
