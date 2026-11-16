@@ -172,7 +172,9 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
               <tr>
                 <th scope="col">{t.science.cell}</th>
                 <th scope="col">{t.science.weight}</th>
-                <th scope="col">{t.science.measured}</th>
+                <th scope="col">
+                  {t.science.measured} ({info.unit[lang]})
+                </th>
                 <th scope="col">{t.science.ruleMet}</th>
               </tr>
             </thead>

@@ -108,3 +108,10 @@ test('the flat map keeps its place names inside the frame and over the cells', a
   });
   expect(after).toBe(true);
 });
+
+// roleplay audit 2026-11-16 (official): the cell table's "Đo được" column gave bare numbers with no unit
+test('the cell table names the unit of its measured column', async ({ page }) => {
+  await page.goto('/#/khoa-hoc');
+  const table = page.getByRole('table', { name: /Bảng số liệu các ô lưới/ });
+  await expect(table.getByRole('columnheader', { name: /^Đo được \(.+\)$/ })).toBeVisible();
+});
