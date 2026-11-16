@@ -37,6 +37,8 @@ def test_past_years_and_method_equal_the_api(client: TestClient) -> None:
     assert json.loads((SNAPSHOT / "method.json").read_text(encoding="utf-8")) == client.get("/api/method").json()
     figure = client.get("/api/figures/nghe_an_grid.svg").content
     assert (SNAPSHOT / "figures" / "nghe_an_grid.svg").read_bytes() == figure
+    figure_vi = client.get("/api/figures/nghe_an_grid.vi.svg").content
+    assert (SNAPSHOT / "figures" / "nghe_an_grid.vi.svg").read_bytes() == figure_vi
 
 
 def test_every_saved_compare_equals_the_api(client: TestClient, index: dict) -> None:

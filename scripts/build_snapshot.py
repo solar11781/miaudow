@@ -3,7 +3,7 @@ demo video, D-151).
 
 Usage: PYTHONPATH=src python scripts/build_snapshot.py
 Loads the API in-process (FastAPI TestClient on create_app, as tests/test_api.py does; no network) and writes
-frontend/snapshot/ (copied into the build only by `npm run build:snapshot`): past-years.json, method.json, figures/nghe_an_grid.svg, one compare/<land>-<priority>-<years>.json
+frontend/snapshot/ (copied into the build only by `npm run build:snapshot`): past-years.json, method.json, figures/nghe_an_grid.svg and nghe_an_grid.vi.svg, one compare/<land>-<priority>-<years>.json
 per demo answer set, and index.json (the saved answer sets, the commit and the time made). tests/test_build_snapshot.py fails when a file differs from what the API answers now.
 
 Demo answer set, chosen from the past-years response with no threshold of our own:
@@ -71,9 +71,8 @@ def build(out: Path = OUT) -> list[dict]:
     _write_json(out / "past-years.json", past)
     _write_json(out / "method.json", client.get("/api/method").raise_for_status().json())
     (out / "figures").mkdir(parents=True)
-    (out / "figures" / "nghe_an_grid.svg").write_bytes(
-        client.get("/api/figures/nghe_an_grid.svg").raise_for_status().content
-    )
+    for figure in ("nghe_an_grid.svg", "nghe_an_grid.vi.svg"):
+        (out / "figures" / figure).write_bytes(client.get(f"/api/figures/{figure}").raise_for_status().content)
     saved = demo_set(past)
     for entry in saved:
         body = {"province": "nghe_an", "land": entry["land"], "years": entry["years"], "priority": entry["priority"]}
