@@ -46,7 +46,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
       vi: 'Trịnh Đức Toàn và cộng sự (2023), Đặc san KH&CN Nghệ An, số 2/2023',
       en: 'Trịnh Đức Toàn et al. (2023), Nghệ An Science & Technology special issue 2/2023',
     },
-    where: { vi: 'Xã Lưu Sơn, Đô Lương, Nghệ An', en: 'Luu Son commune, Do Luong, Nghe An' },
+    where: { vi: 'Xã Lưu Sơn, huyện Đô Lương (cũ), Nghệ An', en: 'Luu Son commune, former Do Luong district, Nghe An' },
     period: { vi: 'Tháng 6/2020 – tháng 6/2021', en: 'June 2020 – June 2021' },
     method: {
       vi: 'Một thử nghiệm đồng ruộng, mỗi cây một ô 1.000 m², không lặp lại; cách tính lãi khác bài báo thứ nhất của cùng nhóm',

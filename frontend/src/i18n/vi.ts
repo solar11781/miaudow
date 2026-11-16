@@ -287,7 +287,7 @@ export const vi = {
     cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
       'Mỗi số là trung bình của một vùng rộng, nên một trận mưa rất to hay một đợt nắng rất gắt ở một nơi có thể không hiện ra. Ruộng nhà bạn không được đo trực tiếp.',
-      'Cảnh báo chính thức của nhà nước còn xét thêm yếu tố khác. Ở đây chỉ so số liệu với các bảng của Quyết định 18/2021, nên không phải thông báo chính thức.',
+      'Cảnh báo chính thức của nhà nước còn xét thêm yếu tố khác. Ở đây chỉ so số liệu với các bảng của Quyết định 18/2021, nên đây không phải số liệu chính thức.',
       'Tổng mưa theo ngày có thể sót trận mưa lớn kéo qua nửa đêm.',
       'Một đợt nắng nóng hay rét hại mà các ngày ở những mức nhiệt khác nhau của Quyết định thì không được đếm.',
     ],

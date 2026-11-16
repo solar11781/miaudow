@@ -30,8 +30,8 @@ Updated 2026-11-17 to the app as built: the team's web app became the product fr
   cast once, where it is read).
 - Function components and hooks; a shared custom hook lives in `src/hooks/use<Name>.ts`.
 - Styling with CSS modules built from the visual tokens of `src/styles/tokens.css` (spec section 5); shared rules in
-  `src/styles/global.css`. An inline `style` only sets a value computed at run time (a position, a size, a CSS
-  variable). No new colours.
+  `src/styles/global.css`. A new inline `style` only sets a value computed at run time (a position, a size, a CSS
+  variable); a few static ones remain from the integration. No new colours.
 - The hard rules of spec section 4 apply to every component (44 x 44 px targets, contrast, 200% zoom, no
   horizontal scroll at 360 px, meaning never by colour alone).
 - Test hooks: the `data-testid` values and data attributes of spec section 14a.

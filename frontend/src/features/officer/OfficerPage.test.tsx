@@ -31,6 +31,8 @@ describe('officer evidence matrix', () => {
     const money = rows();
     const p03 = money.filter((m) => m.includes('1,16'));
     expect(p03).toHaveLength(1);
+    // rules/rotations.yaml usual_p03: spring 2021 "5.36" and summer-autumn 2020 "1.16"; the farmer card shows both
+    expect(p03[0]).toContain('5,36');
     expect(p03[0]).toContain(vi.officer.p03Money);
     expect(p03[0]).toContain(vi.farmer.definitionPlain.p03);
     expect(p03[0]).not.toContain(vi.farmer.definitionPlain.p02);

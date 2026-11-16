@@ -289,10 +289,10 @@
   read_status: "READ"
   full_text_read: true
   limitations:
-    - {vi: "Một nguyên tắc chung, không đo trên đất thử nghiệm ở Nghệ An.",
-       en: "A general principle, not measured on the Nghe An trial land."}
+    - {vi: "Một nghiên cứu ở Uganda, không đo trên đất thử nghiệm ở Nghệ An.",
+       en: "One study in Uganda, not measured on the Nghe An trial land."}
     - {vi: "Bài báo nghiên cứu cây lạc. Cân bằng đạm của ruộng là phép tính ước lượng cho một vụ, không phải số đo đạm trong đất.",
-       en: "The paper studies groundnut. Its field nitrogen balance is an estimate for one season, not a measured soil value."}
+       en: "The paper studies peanut (groundnut). Its field nitrogen balance is an estimate for one season, not a measured soil value."}
   url: "https://doi.org/10.3389/fsufs.2021.691786"
   nso_credit: false
 - id: R-E12

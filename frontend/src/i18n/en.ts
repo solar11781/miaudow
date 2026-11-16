@@ -367,7 +367,7 @@ export const en: Messages = {
     principle: 'Why this check',
     legumeYes: 'Includes a legume',
     legumeNo: 'No legume',
-    legumeNote: 'In one groundnut study, the field gained nitrogen only when stems and leaves stayed on the field.',
+    legumeNote: 'In one peanut study, the field gained nitrogen only when stems and leaves stayed on the field.',
     p03NoCalendar: 'The second paper gives no sowing dates, so there is no 12-month calendar and no weather per crop.',
     soilNormal: '1991–2020 average',
     waterLead: { to_apply: 'Water to apply to the field', crop_uses: 'Water the crop uses (rough estimate)' },
@@ -639,7 +639,7 @@ export const en: Messages = {
     gateNames: {
       G1: 'Enough data',
       G2: 'Beats B0 and BNW',
-      G3: 'Not worse than B2 (same as last year) in Nghe An, Ha Tinh, Thanh Hoa',
+      G3: 'Not worse than B2 (like last year) in Nghe An, Ha Tinh, Thanh Hoa',
       G4: '80% range holds the actual value in 70–90% of test years',
     },
     passed: 'Passed',

@@ -4,7 +4,7 @@
 
 Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in both languages by hand (2026-11-16). The GPM IMERG monthly entry was set to loaded by hand (2026-11-17), when the rain check was built from it.
 
-- `frontend/data/canonical/catalog.json` be71ce94f8c8a82b100ed5e0c843e0307625b769195bcdb55c0f41a05fde721e
+- `frontend/data/canonical/catalog.json` e7dbac92fc2f08db98ee66be750aaac2890629cfe38705cad87490760c64f3dd
 - `frontend/data/canonical/climate.json` b2e3271f202a92b1b6cc12a5e1560ee43edd59456338aab4db764822ca01be0a
 - `frontend/data/canonical/decision.json` 872cba9efed7774acddfbb1e4a46b65a467c24b553c6bcf8856a3f35caf80169
 - `frontend/data/canonical/geo.json` e8cc964118c0fa49653a5432ad06d08b667fbf15e02c618fe472ac14ec2e80b1

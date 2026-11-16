@@ -231,7 +231,8 @@ tests/                    pytest
 This was the planned layout, and the built code differs from it: `ml/` holds evaluation.py, export.py, figures.py,
 fold_features.py, grid_figure.py, normal.py, primary_test.py, reports.py, results_chart.py and runner.py, `data/` has
 no admin.py and also holds boundaries.py, desinventar.py, earthdata.py, imerg.py, manifest.py, power_batch.py,
-relief.py and series.py, the rain check's logic is in `features/rain_check.py`, and `artifacts/figures/` also holds results_chart.svg. The modules of `engine/` and `api/`
+relief.py and series.py, `features/` also holds farmland_weights.py, hazard_labels.py, hazards.py and soil_wetness.py,
+the rain check's logic is in `features/rain_check.py`, and `artifacts/figures/` also holds results_chart.svg. The modules of `engine/` and `api/`
 are the ones in the folders today.
 
 The TCVN text and the FAO .CRO files are never committed; we quote individual values with their source. There is no

@@ -19,7 +19,7 @@ describe('governed plan text', () => {
       }
     }
   });
-  it('the decision text never ranks and always lists what the app cannot know', () => {
+  it('the decision text never ranks', () => {
     const all = JSON.stringify(PLANS.map((p) => decisionPlan(p.id))).toLowerCase();
     for (const w of ['tốt nhất', 'nên chọn', 'the best', 'we recommend']) expect(all).not.toContain(w);
   });
