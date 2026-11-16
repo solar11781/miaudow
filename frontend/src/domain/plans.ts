@@ -80,7 +80,7 @@ export const CROPS = {
     ],
     fao: '450–700',
   },
-  blackbean: { name: { vi: 'Đậu đen', en: 'Black bean' }, family: 'legume', legume: true },
+  blackbean: { name: { vi: 'Đậu đen xanh lòng', en: 'Black bean' }, family: 'legume', legume: true },
   sweetpotato: {
     name: { vi: 'Khoai lang', en: 'Sweet potato' },
     family: 'root',
@@ -96,13 +96,13 @@ export const CROPS = {
   },
   mung: { name: { vi: 'Đậu xanh', en: 'Mung bean' }, family: 'legume', legume: true },
   maize: {
-    name: { vi: 'Ngô hạt', en: 'Grain maize' },
+    name: { vi: 'Ngô thương phẩm', en: 'Grain maize' },
     family: 'maize',
     legume: false,
     tcvn: tcvn('2.000–2.500', '2,000–2,500'),
     fao: '500–800',
   },
-  chili: { name: { vi: 'Ớt', en: 'Chili' }, family: 'other', legume: false },
+  chili: { name: { vi: 'Ớt chỉ thiên', en: 'Chili' }, family: 'other', legume: false },
   soy: {
     name: { vi: 'Đậu tương', en: 'Soybean' },
     family: 'legume',
@@ -257,7 +257,7 @@ export const PLANS: Plan[] = [
       {
         key: 'cc2_chili',
         crop: 'chili',
-        variety: 'Chỉ thiên F1',
+        variety: 'F1',
         season: 'spring',
         sow: '01-17',
         harvest: '06-25',
