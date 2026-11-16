@@ -1059,6 +1059,7 @@ export const vi = {
     mainRuns: 'Lần chạy chính',
     spatialHoldout: 'Kiểm tra bỏ ra từng vùng',
     breakdown: 'Kết quả theo từng tỉnh và từng vùng',
+    scrollHint: 'Bảng rộng hơn màn hình: kéo sang ngang để xem hết các cột.',
     sensitivity: {
       no_fao_flagged: 'Bỏ các dòng FAO đánh dấu',
       mae_skill: 'Điểm tính theo MAE',

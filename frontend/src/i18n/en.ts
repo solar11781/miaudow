@@ -1063,6 +1063,7 @@ export const en: Messages = {
     mainRuns: 'Main runs',
     spatialHoldout: 'Leave-one-region-out test',
     breakdown: 'Results for each province and each region',
+    scrollHint: 'This table is wider than the screen: scroll sideways to see every column.',
     sensitivity: {
       no_fao_flagged: 'Without FAO-flagged rows',
       mae_skill: 'Skill from MAE',

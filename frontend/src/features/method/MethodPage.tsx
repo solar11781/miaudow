@@ -60,70 +60,73 @@ function MetricsTable({ rows, all, refs }: { rows: MetricRow[]; all: MetricRow[]
       ? t.common.notAvailable
       : t.method.skillCi(f.n(v.value, DIGITS), f.n(v.ci90_low, DIGITS), f.n(v.ci90_high, DIGITS));
   return (
-    <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.method.metricsTitle}>
-      <table className={s.table}>
-        <thead>
-          <tr>
-            {[
-              t.method.col.model,
-              t.method.col.role,
-              t.method.col.subset,
-              'RMSE',
-              'MAE',
-              'R²',
-              t.method.col.skillB0,
-              t.method.col.skillB2,
-              t.method.col.skillBnw,
-              t.method.col.coverage80,
-              t.method.col.nRows,
-              t.method.col.nTestYears,
-              t.common.source,
-            ].map((h) => (
-              <th key={h} scope="col">
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => {
-            const ref = `metric-row-${all.indexOf(r)}`;
-            const cells = [
-              num(r.rmse),
-              num(r.mae),
-              num(r.r2_oos),
-              ...SKILLS.map((k) => ci(r[k])),
-              num(r.coverage_80),
-              String(r.n_rows),
-              String(r.n_test_years),
-            ];
-            return (
-              <tr key={ref}>
-                <th scope="row">
-                  {t.science.models[r.model_id]}
-                  {r.detail && <span className="muted small"> · {pick(r.detail)}</span>}
+    <div className={s.metricsBox}>
+      <p className={`${s.scrollHint} muted small`}>{t.method.scrollHint}</p>
+      <div className={s.tableWrap} tabIndex={0} role="region" aria-label={t.method.metricsTitle}>
+        <table className={`${s.table} ${s.metrics}`}>
+          <thead>
+            <tr>
+              {[
+                t.method.col.model,
+                t.method.col.role,
+                t.method.col.subset,
+                'RMSE',
+                'MAE',
+                'R²',
+                t.method.col.skillB0,
+                t.method.col.skillB2,
+                t.method.col.skillBnw,
+                t.method.col.coverage80,
+                t.method.col.nRows,
+                t.method.col.nTestYears,
+                t.common.source,
+              ].map((h) => (
+                <th key={h} scope="col">
+                  {h}
                 </th>
-                <td>{t.method.role[r.role]}</td>
-                <td>{t.method.subsets[r.subset] ?? r.subset.replace(BREAKDOWN, '')}</td>
-                {cells.map((c, i) => (
-                  <td key={i} className="num" data-value={c} data-source-ref={ref}>
-                    {c}
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const ref = `metric-row-${all.indexOf(r)}`;
+              const cells = [
+                num(r.rmse),
+                num(r.mae),
+                num(r.r2_oos),
+                ...SKILLS.map((k) => ci(r[k])),
+                num(r.coverage_80),
+                String(r.n_rows),
+                String(r.n_test_years),
+              ];
+              return (
+                <tr key={ref}>
+                  <th scope="row">
+                    {t.science.models[r.model_id]}
+                    {r.detail && <span className="muted small"> · {pick(r.detail)}</span>}
+                  </th>
+                  <td>{t.method.role[r.role]}</td>
+                  <td>{t.method.subsets[r.subset] ?? r.subset.replace(BREAKDOWN, '')}</td>
+                  {cells.map((c, i) => (
+                    <td key={i} className="num" data-value={c} data-source-ref={ref}>
+                      {c}
+                    </td>
+                  ))}
+                  <td data-testid={ref}>
+                    <SourceValue
+                      {...refs.sources(
+                        r.source_ids,
+                        t.common.source,
+                        `${t.science.models[r.model_id]} · ${t.method.seasons[r.season]}`,
+                      )}
+                    />
                   </td>
-                ))}
-                <td data-testid={ref}>
-                  <SourceValue
-                    {...refs.sources(
-                      r.source_ids,
-                      t.common.source,
-                      `${t.science.models[r.model_id]} · ${t.method.seasons[r.season]}`,
-                    )}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

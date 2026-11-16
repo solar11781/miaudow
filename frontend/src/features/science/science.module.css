@@ -528,3 +528,37 @@
     display: none;
   }
 }
+
+/* the 13-column result table of the method page: headings wrap and cells sit closer, so it fits a desktop frame */
+.metricsBox {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.metrics {
+  min-width: 1080px;
+}
+
+.metrics thead th {
+  white-space: normal;
+  vertical-align: bottom;
+}
+
+.metrics th,
+.metrics td {
+  padding-inline: 0.6rem;
+}
+
+/* the source button keeps its word in one piece */
+.metrics td:last-child {
+  white-space: nowrap;
+}
+
+/* the frame is at least as wide as the table: nothing to scroll, no hint */
+@container (min-width: 1080px) {
+  .scrollHint {
+    display: none;
+  }
+}
