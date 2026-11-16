@@ -150,6 +150,7 @@ KNOWN = {
     "source.R-D05.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-D05 credits data bundled in the frontend and is in docs/REFERENCES.md",
     "source.R-N11.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-N11 credits data bundled in the frontend and is in docs/REFERENCES.md",
     "source.R-N12.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-N12 credits the relief picture bundled in the frontend and is in docs/REFERENCES.md",
+    "source.R-V10.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-V10 sources the trial site's current commune on the officer page and is in docs/REFERENCES.md",
     "source.R-D04.registered": "intended (spec section 8): rules/sources.yaml lists only the sources of API values; R-D04 credits data bundled in the frontend and is in docs/REFERENCES.md",
 }
 

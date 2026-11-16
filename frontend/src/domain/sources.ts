@@ -87,6 +87,32 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     url: 'https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc',
   },
+  // REFERENCES R-V10 (read 2026-11-17, D-198): where the trial commune is now
+  nq1678: {
+    id: 'nq1678',
+    registerId: 'R-V10',
+    kind: 'standard',
+    short: { vi: 'NQ 1678/NQ-UBTVQH15', en: 'NQ 1678/NQ-UBTVQH15' },
+    title: {
+      vi: 'Nghị quyết 1678/NQ-UBTVQH15 về việc sắp xếp các đơn vị hành chính cấp xã của tỉnh Nghệ An năm 2025',
+      en: 'Resolution 1678/NQ-UBTVQH15 on the arrangement of commune-level units of Nghe An province in 2025',
+    },
+    publisher: { vi: 'Ủy ban Thường vụ Quốc hội', en: 'Standing Committee of the National Assembly' },
+    where: { vi: 'Tỉnh Nghệ An', en: 'Nghe An province' },
+    period: { vi: 'Thông qua ngày 16/6/2025', en: 'Adopted 16 June 2025' },
+    method: {
+      vi: 'Điều 1, khoản 20: các xã Bắc Sơn, Nam Sơn, Đà Sơn, Đặng Sơn, Lưu Sơn, Thịnh Sơn, Văn Sơn, Yên Sơn và thị trấn Đô Lương thành xã Đô Lương',
+      en: 'Article 1, item 20: the communes Bac Son, Nam Son, Da Son, Dang Son, Luu Son, Thinh Son, Van Son, Yen Son and Do Luong town become Do Luong commune',
+    },
+    howRead: {
+      vi: 'Đã đọc toàn văn trên Cổng dịch vụ công Nghệ An ngày 17/11/2026',
+      en: 'Full text read on the Nghe An public service portal on 17 Nov 2026',
+    },
+    caveat: {
+      vi: 'Thử nghiệm làm năm 2020–21, khi Lưu Sơn còn là một xã; bài báo ghi tên cũ.',
+      en: 'The trial ran in 2020–21, when Luu Son was still a commune; the paper uses the old names.',
+    },
+  },
   tcvn8641: {
     id: 'tcvn8641',
     registerId: 'R-W15',

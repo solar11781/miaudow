@@ -213,7 +213,13 @@ export function OfficerPage() {
               {t.officer.scope.map((x) => (
                 <div key={x.label}>
                   <dt>{x.label}</dt>
-                  <dd>{x.value}</dd>
+                  <dd>
+                    {x.source ? (
+                      <SourceValue sourceId={x.source} kind="standard" value={x.value} label={x.label} />
+                    ) : (
+                      x.value
+                    )}
+                  </dd>
                 </div>
               ))}
             </dl>
