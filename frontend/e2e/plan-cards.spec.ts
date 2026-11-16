@@ -383,3 +383,44 @@ test('the card warnings are one tight block inside the card', async ({ page }) =
     }
   }
 });
+
+// UI-UX-SPEC section 9 comparison strip: the six plans side by side before any card opens, in the cards' order, with
+// the card heads' own values and sources only (H3, H5); the chosen priority's line says so in words (H11)
+test('the comparison strip shows the six plans in the card order with the card heads values', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const strip = page.getByRole('region', { name: vi.farmer.stripTitle });
+  await expect(strip).toBeVisible();
+  const first = await page.getByTestId('card-usual').boundingBox();
+  expect((await strip.boundingBox())?.y ?? Infinity).toBeLessThan(first?.y ?? 0);
+  const items = strip.locator('ol > li');
+  await expect(items).toHaveCount(6);
+  for (const [i, id] of IDS.entries()) {
+    const item = items.nth(i);
+    await expect(item.locator('a').first()).toHaveAttribute('href', `#the-${id}`);
+    // the same values as the card head (money and water lines), each a source button
+    const head = await page
+      .getByTestId(`card-${id}-row-header`)
+      .locator('button[data-value]')
+      .evaluateAll((bs) => bs.map((b) => b.getAttribute('data-value')));
+    const shown = await item
+      .locator('button[data-value]')
+      .evaluateAll((bs) => bs.map((b) => b.getAttribute('data-value')));
+    expect(shown.slice(0, head.length), id).toEqual(head);
+    // priority income: the money line carries the label in words
+    await expect(item.getByText(vi.farmer.yourPriority), id).toBeVisible();
+    for (const b of await item.locator('a, button').all()) {
+      const box = await b.boundingBox();
+      expect(box?.height ?? 0, id).toBeGreaterThanOrEqual(44);
+      expect(box?.width ?? 0, id).toBeGreaterThanOrEqual(44);
+    }
+  }
+  // P-03 money is from another study and takes off material costs only: the strip says so next to it
+  await expect(items.nth(1)).toContainText(vi.farmer.definitionPlain.p03);
+  await expect(strip).not.toContainText(/tốt nhất|tốt hơn|xếp hạng|điểm/i);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    await page.evaluate(() => window.innerWidth),
+  );
+  await items.nth(4).locator('a').first().click();
+  await expect(page.getByTestId('card-cc3').locator('h2')).toBeInViewport();
+});

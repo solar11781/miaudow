@@ -333,6 +333,7 @@ export const vi = {
       string,
       string
     >,
+    stripTitle: 'Sáu cách trồng cạnh nhau',
     comparedWith: 'Bốn cách trồng thử được so với thẻ đầu tiên: cách làm hiện nay trong cùng thử nghiệm.',
     // F-A7: the jump strip's short chips, two short lines each; the full plan name is the chip's accessible name
     chip: {

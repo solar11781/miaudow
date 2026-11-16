@@ -566,6 +566,52 @@
   font-weight: 700;
 }
 
+/* the comparison strip (UI-UX-SPEC section 9): stacked on a phone, side by side in columns on a wide screen; the
+   API's order, no rank (H3) */
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.stripList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--s-2);
+}
+
+.stripList > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-raised);
+  font-size: var(--t-small);
+  color: var(--fg-2);
+}
+
+/* a number button keeps its 44 px target (H7) without making its line taller, as in the card head */
+.stripList p button {
+  margin-block: -8px;
+  justify-content: center;
+}
+
+.stripName {
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--fg);
+  text-underline-offset: 3px;
+}
+
+.stripName > span {
+  color: var(--fg-2);
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -2,11 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepShell, useFarmer } from './FarmerLayout';
 import { PlanCard } from './PlanCard';
+import { CompareStrip } from './CompareStrip';
 import type { OwnState } from './OwnNumbers';
 import { ButtonLink } from '../../design-system/Button';
 import { Icon } from '../../design-system/Icon';
 import { api, explainOn, SnapshotMissError, type SavedAnswers, type SnapshotEntry } from '../../api';
-import type { CompareRequest, CompareResponse, Plan } from '../../types';
+import type { CompareRequest, CompareResponse, Plan, PlanId } from '../../types';
 import {
   compareRequest,
   NO_OWN,
@@ -91,6 +92,11 @@ function Cards({ res }: { res: CompareResponse }) {
     if (nav) nav.scrollLeft = link ? link.offsetLeft - 16 : 0;
   }, [inView]);
 
+  const jump = (id: PlanId) => {
+    document.getElementById(`the-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    update({ plan: id });
+  };
+
   const share = useCallback(
     async (plan: Plan) => {
       // the farmer's own price and costs never go into a shared link (D-163, D-180)
@@ -116,8 +122,8 @@ function Cards({ res }: { res: CompareResponse }) {
   return (
     <>
       <DataLine sources={res.sources} className="muted small" />
-      {/* the two current-practice cards come from two studies; the trial cards are compared with the same trial's (F-B2) */}
-      <p className="small">{t.farmer.comparedWith}</p>
+      {/* the six plans side by side before any card opens (section 9); it says which card the trial ones compare with */}
+      <CompareStrip res={res} priority={res.request.priority} onJump={jump} />
       <nav className={s.jump} aria-label={t.farmer.jumpTo} ref={strip}>
         {res.plans.map((p) => (
           <a
@@ -126,8 +132,7 @@ function Cards({ res }: { res: CompareResponse }) {
             aria-current={inView.has(`the-${p.id}`) ? 'true' : undefined}
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(`the-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              update({ plan: p.id });
+              jump(p.id);
             }}
           >
             {/* short on a phone so several chips show at once; the full name with the crops is the chip's name (F-A7) */}

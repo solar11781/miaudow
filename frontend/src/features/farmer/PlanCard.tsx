@@ -63,7 +63,6 @@ function Row({
   target?: boolean;
   children: ReactNode;
 }) {
-  const t = useT();
   const [open, setOpen] = useState(false);
   return (
     <section
@@ -84,12 +83,7 @@ function Row({
           <Icon name={icon} size={18} />
           <span className={s.rowTitle}>
             {title}
-            {highlight && (
-              <span className={s.prioTag}>
-                <Icon name="check" size={14} strokeWidth={2.6} />
-                {t.farmer.yourPriority}
-              </span>
-            )}
+            {highlight && <PrioTag />}
           </span>
           <Icon name="chevronDown" size={18} />
         </button>
@@ -527,68 +521,95 @@ function LandRow({ plan, refs, highlight, line }: Omit<Ctx, 'res'> & Hl) {
   );
 }
 
-/** The card's money total, or the P-03 money of each season, then per crop the TCVN 8641 water to apply from the
- * lowest to the highest of its rows (D-172, D-175): the money is the money row's own values with their sources; the
- * water range carries the rows' TCVN sources, is labelled by region and planting method because the rows differ in both
- * and the standard does not place Nghệ An (D-68), and leaves FAO out (D-64). */
-function Summary({ plan, res, refs }: Ctx) {
+/** The "your priority" tag, before the line or row heading it marks (H11: a text label, not colour alone). */
+export function PrioTag() {
   const t = useT();
-  const pick = usePick();
+  return (
+    <span className={s.prioTag}>
+      <Icon name="check" size={14} strokeWidth={2.6} />
+      {t.farmer.yourPriority}
+    </span>
+  );
+}
+
+/** The plan's money total, or the P-03 money of each season, as the card head and the comparison strip show it: the
+ * money row's own values with their sources (D-172). */
+export function MoneyLine({ plan, res, refs, marked }: Ctx & { marked?: boolean }) {
+  const t = useT();
   const m = plan.money;
   const seasons = useSeasonValues(plan, res, refs);
-  const water = `card-${plan.id}-row-water`;
   const notes = useMoneyNotes(plan);
+  if (!m.total && !seasons.length) return null;
   return (
-    <div className={s.summary}>
+    <p>
+      {marked && <PrioTag />}
+      {t.farmer.rows.money}:{' '}
       {m.total ? (
-        <p>
-          {t.farmer.rows.money}:{' '}
+        <>
           <SourceValue {...refs.moneyValue(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>{' '}
           {refs.money(m.total).unit} · {t.farmer.own.yearSum}
-        </p>
+        </>
       ) : (
-        seasons.length > 0 && (
-          <p>
-            {t.farmer.rows.money}:{' '}
-            {seasons.map((v, i) => (
-              <span key={v.season}>
-                {i > 0 && ' · '}
-                {v.label && `${v.label}: `}
-                {v.shown}
-              </span>
-            ))}
-          </p>
-        )
+        seasons.map((v, i) => (
+          <span key={v.season}>
+            {i > 0 && ' · '}
+            {v.label && `${v.label}: `}
+            {v.shown}
+          </span>
+        ))
       )}
-      <p data-testid={`card-${plan.id}-water-line`}>
-        {t.farmer.summaryWaterLabel}:{' '}
-        {plan.calendar.map((c, i) => {
-          const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
-          const range = tcvnRange(facts);
-          // the note's first sentence stays (rice: maintenance irrigation only); the whole note opens with the range
-          const note = range && tcvnSharedNote(facts);
-          return (
-            <span key={c.crop_key}>
-              {i > 0 && ' · '}
-              {pick(c.crop)}:{' '}
-              {range ? (
-                <SourceValue
-                  {...refs.value(
-                    range,
-                    `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`,
-                    sentences(t.farmer.rows.waterNote, t.farmer.summaryWaterNote, note && pick(note)),
-                  )}
-                />
-              ) : (
-                t.farmer.noFigure
-              )}
-              {note && ` (${firstSentence(pick(note))})`}
-            </span>
-          );
-        })}
-      </p>
+    </p>
+  );
+}
+
+/** Per crop the TCVN 8641 water to apply from the lowest to the highest of its rows (D-172, D-175): the range carries
+ * the rows' TCVN sources, is labelled by region and planting method because the rows differ in both and the standard
+ * does not place Nghệ An (D-68), and leaves FAO out (D-64). `hook` is the card head's test hook. */
+export function WaterLine({ plan, refs, hook, marked }: Omit<Ctx, 'res'> & { hook?: string; marked?: boolean }) {
+  const t = useT();
+  const pick = usePick();
+  return (
+    <p data-testid={hook}>
+      {marked && <PrioTag />}
+      {t.farmer.summaryWaterLabel}:{' '}
+      {plan.calendar.map((c, i) => {
+        const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
+        const range = tcvnRange(facts);
+        // the note's first sentence stays (rice: maintenance irrigation only); the whole note opens with the range
+        const note = range && tcvnSharedNote(facts);
+        return (
+          <span key={c.crop_key}>
+            {i > 0 && ' · '}
+            {pick(c.crop)}:{' '}
+            {range ? (
+              <SourceValue
+                {...refs.value(
+                  range,
+                  `${t.farmer.summaryWaterLabel} · ${pick(c.crop)}`,
+                  sentences(t.farmer.rows.waterNote, t.farmer.summaryWaterNote, note && pick(note)),
+                )}
+              />
+            ) : (
+              t.farmer.noFigure
+            )}
+            {note && ` (${firstSentence(pick(note))})`}
+          </span>
+        );
+      })}
+    </p>
+  );
+}
+
+/** The card summary under the plan name: the money line, the water line and a link to the water row. */
+function Summary({ plan, res, refs }: Ctx) {
+  const t = useT();
+  const water = `card-${plan.id}-row-water`;
+  return (
+    <div className={s.summary}>
+      <MoneyLine plan={plan} res={res} refs={refs} />
+      <WaterLine plan={plan} refs={refs} hook={`card-${plan.id}-water-line`} />
       <a
         href={`#${water}`}
         className={s.summaryLink}

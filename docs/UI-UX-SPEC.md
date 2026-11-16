@@ -424,8 +424,22 @@ at once on a 360 px phone; its accessible name is the full plan name with the st
 with the first card, the current practice of the same trial. Inside the `stability` row the per-year share tables
 show as soon as the row opens (no second fold; roleplay audit 2026-11-16, F-B1), and the `stability.noData` line of
 the non-rice crops comes after them as their limit. Inside the `water` row the per-year share tables fold once more
-behind "Xem từng năm" / "Show each year". A card was 7-10 phone screens long and is about 2;
-one screen and the comparison strip are not built. Each card also carries the "explain simply" button
+behind "Xem từng năm" / "Show each year". A card was 7-10 phone screens long; the closed card face
+is now about 1.7 to 2 phone screens at 360 x 740 in Vietnamese (2026-11-16: 1,241 to 1,468 px under a 128 px sticky
+header and strip); one screen is not reachable with the required face content at 17 px (H6).
+
+**Comparison strip** (roleplay audit 2026-11-16): after the page lead and before the jump strip, one block
+`farmer.stripTitle` shows the six plans side by side before any card is opened: a list in exactly the cards' order
+(H3: no sort, rank, score, best mark or colour grading), stacked on a phone and in columns on a wide screen, so the
+page never scrolls sideways at 360 px (H10). It opens with the line `farmer.comparedWith` (the four trial cards are
+compared with the first card, the current practice of the same trial). Per plan: the plan's short name from
+`farmer.chip` and its crops, together one link of at least 44 px that jumps to its card (accessible name: the full
+plan name with the study and the crops); the card head's money line and water line, the same components, values and
+source buttons as the card head (H5, H7), so the strip shows no new number, sum or source; for `usual_p03` the plain
+line `farmer.definitionPlain.p03` right after its money, so P-03 money is never lined up as comparable with P-02
+money; and one land line, `land.cropsInYear` with its number button and `land.legume` yes or no in words. The line
+of the chosen priority (`income` money, `water` water, `land` land; `stability` has no line in the strip) starts with
+the label `plans.yourPriority` in words (H11). Each card also carries the "explain simply" button
 of FR-15 (SRS.md); its text is marked as AI-generated.
 
 **Priority highlight**: the row that matches the chosen priority (`money` for income, `stability` for stability,
