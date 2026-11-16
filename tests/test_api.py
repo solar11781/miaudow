@@ -110,6 +110,14 @@ def test_the_grid_figure_is_served_as_svg(client: TestClient) -> None:
     assert r.content == (REPO / "artifacts" / "figures" / "nghe_an_grid.svg").read_bytes()
 
 
+def test_the_vietnamese_grid_figure_is_served_as_svg_beside_the_english_one(client: TestClient) -> None:
+    r = client.get("/api/figures/nghe_an_grid.vi.svg")
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "image/svg+xml"
+    assert "Các ô lưới thời tiết NASA POWER phủ Nghệ An" in r.content.decode("utf-8")
+    assert r.content == (REPO / "artifacts" / "figures" / "nghe_an_grid.vi.svg").read_bytes()
+
+
 def test_health_lists_each_artifact_with_version_and_time(client: TestClient) -> None:
     r = client.get("/api/health")
     assert r.status_code == 200
@@ -314,6 +322,7 @@ def test_endpoints_read_no_file_after_startup(tmp_path: Path) -> None:
     assert c.get("/api/method").status_code == 200
     assert c.get("/api/health").status_code == 200
     assert c.get("/api/figures/nghe_an_grid.svg").status_code == 200
+    assert c.get("/api/figures/nghe_an_grid.vi.svg").status_code == 200
 
 
 def test_an_artifact_without_schema_version_stops_the_start_naming_the_file(tmp_path: Path) -> None:
@@ -335,6 +344,13 @@ def test_a_missing_figure_stops_the_start_naming_the_file(tmp_path: Path) -> Non
     root = copy_root(tmp_path)
     (root / "artifacts" / "figures" / "nghe_an_grid.svg").unlink()
     with pytest.raises(FileNotFoundError, match=r"nghe_an_grid\.svg"):
+        create_app(root=root)
+
+
+def test_a_missing_vietnamese_figure_stops_the_start_naming_the_file(tmp_path: Path) -> None:
+    root = copy_root(tmp_path)
+    (root / "artifacts" / "figures" / "nghe_an_grid.vi.svg").unlink()
+    with pytest.raises(FileNotFoundError, match=r"nghe_an_grid\.vi\.svg"):
         create_app(root=root)
 
 
@@ -440,6 +456,7 @@ def test_api_and_privacy_routes_win_over_the_frontend(tmp_path: Path) -> None:
     c = built_frontend(tmp_path)
     assert c.get("/api/health").json()["status"] == "ok"
     assert c.get("/api/figures/nghe_an_grid.svg").headers["content-type"].startswith("image/svg+xml")
+    assert c.get("/api/figures/nghe_an_grid.vi.svg").headers["content-type"].startswith("image/svg+xml")
     assert "<html>app</html>" not in c.get("/quyen-rieng-tu").text
 
 

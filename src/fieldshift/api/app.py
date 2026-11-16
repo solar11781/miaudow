@@ -1,7 +1,7 @@
 """FastAPI service (D-25, D-76, D-80; UI-UX-SPEC §11; 04-TECH-DESIGN §3). Reads precomputed artifacts only (NFR-01).
 
 It serves GET /api/past-years, POST /api/compare, GET /api/method, GET /api/health, the method page's grid figure
-GET /api/figures/nghe_an_grid.svg (UI-UX-SPEC §11b item 4), the privacy notice of the optional sign-in at
+GET /api/figures/nghe_an_grid.svg and its Vietnamese twin nghe_an_grid.vi.svg (UI-UX-SPEC §11b item 4), the privacy notice of the optional sign-in at
 /quyen-rieng-tu (UI-UX-SPEC §12c), and that sign-in under /api/account (accounts.py; 503 while it is off). The rules
 files and artifacts are read once when the app is created, so a broken or missing file stops the start instead of
 failing a farmer's request, and no request reads a file. POST /api/explain, the "explain simply" call to the Claude API
@@ -467,6 +467,7 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     method_body = _json(method(base))
     privacy_body = _privacy_page(load_privacy_texts(base))
     grid_figure = (base / "artifacts" / "figures" / "nghe_an_grid.svg").read_bytes()
+    grid_figure_vi = (base / "artifacts" / "figures" / "nghe_an_grid.vi.svg").read_bytes()
     compare_data = load_compare_data(base)
     _read_every_year_row(compare_data)
     claude = claude_client(os.environ)
@@ -511,6 +512,10 @@ def create_app(root: Path | str | None = None, frontend_dir: Path | str | None =
     @app.get("/api/figures/nghe_an_grid.svg")
     def grid_figure_route() -> Response:
         return Response(grid_figure, media_type="image/svg+xml")
+
+    @app.get("/api/figures/nghe_an_grid.vi.svg")
+    def grid_figure_vi_route() -> Response:
+        return Response(grid_figure_vi, media_type="image/svg+xml")
 
     _add_privacy_routes(app, privacy_body)
     app.state.accounts = accounts_from(os.environ, base)  # None while sign-in is off
