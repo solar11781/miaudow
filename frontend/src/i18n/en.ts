@@ -504,6 +504,7 @@ export const en: Messages = {
     fitTitle: 'For the family’s own field',
     fitLabel: 'Their field:',
     askTitle: 'Questions to clear up with the family',
+    quotePage: (page: string) => `p. ${page}`,
     eyebrow: 'For extension officers',
     title: 'The evidence behind every card',
     lead: 'Each row on a farmer’s card comes from a specific source. This page gathers them so officers can explain, and says plainly where the evidence is thin.',

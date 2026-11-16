@@ -497,6 +497,7 @@ export const vi = {
     fitTitle: 'Với ruộng của gia đình đang hỏi',
     fitLabel: 'Ruộng của họ:',
     askTitle: 'Câu hỏi nên cùng gia đình làm rõ',
+    quotePage: (page: string) => `tr. ${page}`,
     eyebrow: 'Dành cho cán bộ khuyến nông',
     title: 'Bằng chứng phía sau từng thẻ',
     lead: 'Mỗi dòng trên thẻ của bà con đến từ một nguồn cụ thể. Trang này gom chúng lại để cán bộ giải thích, và nói rõ chỗ nào bằng chứng chưa đủ.',

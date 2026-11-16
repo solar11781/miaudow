@@ -148,7 +148,12 @@ function DeskSide({ plan, land, setLand }: { plan: Plan; land: Land; setLand: (l
             {rb.risk_lines.map((r) => (
               <li key={r.quote}>
                 <span>{pick(r.text)}</span>
-                <span className={s.riskWhere}>{r.location}</span>
+                {/* the rulebook writes a page the Vietnamese way, "tr. 48" */}
+                <span className={s.riskWhere}>
+                  {r.location_precision === 'page'
+                    ? t.officer.quotePage(r.location.replace(/^tr\.\s*/, ''))
+                    : r.location}
+                </span>
               </li>
             ))}
           </ul>
