@@ -602,6 +602,8 @@ export const en: Messages = {
     met: 'met',
     notMet: 'not met',
     zeroWeight: 'no farmland',
+    reliefToggle: 'Terrain (NASA SRTM)',
+    reliefNote: 'Height only. It says nothing about where water reaches.',
     cell: 'Grid cell',
     cellAt: (lat: string, lon: string) => `${lat}°N ${lon}°E`,
     weight: 'Farmland weight',
@@ -1149,6 +1151,9 @@ export const en: Messages = {
     predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',
     predictionsDetail:
       'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
+    reliefLabel: 'Nghe An terrain (NASA SRTM)',
+    reliefDetail:
+      'A shaded picture made from ground height, sun from the north-west (315°, altitude 45°). Height only; it says nothing about where water reaches.',
     ndviLabel: 'NDVI greenness around Luu Son',
     ndviDetail:
       'Median and middle half (25th–75th percentile) of the reliable 250 m pixels on each 16-day date; a date without a reliable pixel is left empty.',

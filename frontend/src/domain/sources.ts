@@ -230,6 +230,40 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     url: 'https://doi.org/10.5067/MODIS/MOD13Q1.061',
     licence: { vi: 'Dữ liệu mở của NASA', en: 'NASA open data' },
   },
+  // REFERENCES R-N12 (data, CMR record read 2026-11-16) and R-M29 (the shading method)
+  'nasa-srtm': {
+    id: 'nasa-srtm',
+    registerId: 'R-N12',
+    kind: 'data',
+    short: { vi: 'NASA SRTM', en: 'NASA SRTM' },
+    title: {
+      vi: 'NASA Shuttle Radar Topography Mission Global 3 arc second V003 (SRTMGL3) – độ cao mặt đất, khoảng 90 m',
+      en: 'NASA Shuttle Radar Topography Mission Global 3 arc second V003 (SRTMGL3) – ground height, about 90 m',
+    },
+    publisher: {
+      vi: 'NASA JPL (2013); NASA Land Processes DAAC',
+      en: 'NASA JPL (2013); NASA Land Processes DAAC',
+    },
+    where: { vi: 'Khung bản đồ Nghệ An: 9 ô 1° × 1°', en: 'The Nghe An map frame: nine 1° × 1° tiles' },
+    period: { vi: 'Phiên bản V003, phát hành 20/11/2013', en: 'Version V003, released 20 Nov 2013' },
+    method: {
+      vi: 'Đổ bóng địa hình theo Horn (1981, R-M29): độ dốc từ 3 × 3 điểm quanh mỗi điểm, mặt trời hướng 315° cao 45°; ô lưới tính bằng mét tại vĩ độ này',
+      en: 'Hill shading after Horn (1981, R-M29): slope from the 3 × 3 heights around each point, sun at azimuth 315° and altitude 45°; cell size in metres at this latitude',
+    },
+    howRead: {
+      vi: 'Tải qua Earthdata ngày 16/11/2026; mã sha256 của từng ô ghi trong data/MANIFEST.csv',
+      en: 'Downloaded through Earthdata on 16 Nov 2026; the sha256 of each tile is in data/MANIFEST.csv',
+    },
+    caveat: {
+      vi: 'Chỉ là độ cao. Không cho biết nước tới được đâu; không phải nước, đất hay năng suất.',
+      en: 'Height only. It says nothing about where water reaches, and it is not water, soil or yield.',
+    },
+    url: 'https://doi.org/10.5067/MEaSUREs/SRTM/SRTMGL3.003',
+    licence: {
+      vi: 'Chính sách sử dụng dữ liệu NASA Earthdata (không hạn chế truy cập), cần trích dẫn',
+      en: 'NASA Earthdata data use policy (no access restrictions), citation requested',
+    },
+  },
   // REFERENCES R-D06; facts from data/canonical/catalog.json sentinel2_l2a_do_luong_vi
   sentinel2: {
     id: 'sentinel2',

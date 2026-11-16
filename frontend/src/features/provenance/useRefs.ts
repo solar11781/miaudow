@@ -80,6 +80,15 @@ export function useRefs() {
           detail: r.ndviDetail,
         };
       },
+      reliefSeries(): SourceRef {
+        return {
+          sourceId: 'nasa-srtm',
+          kind: 'data',
+          value: pick(SOURCES['nasa-srtm'].short),
+          label: r.reliefLabel,
+          detail: r.reliefDetail,
+        };
+      },
       cropProfit(c: PlanCrop): SourceRef {
         return {
           sourceId: 'p02',

@@ -5,11 +5,14 @@ import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
 import { useCellName } from '../../hooks/useCellName';
+import { SourceValue } from '../provenance/SourceValue';
+import { useRefs } from '../provenance/useRefs';
 import s from './Grid3D.module.css';
 
 const PX_PER_DEG = 168;
 const K_LON = Math.cos((19.3 * Math.PI) / 180);
 const HMAX = 115;
+const RELIEF_URL = `${import.meta.env.BASE_URL}media/relief/nghe-an-relief.webp`;
 const DEFAULT_VIEW = { rx: 55, rz: -24 };
 
 export function Grid3D({
@@ -28,10 +31,12 @@ export function Grid3D({
   const t = useT();
   const f = useFormat();
   const cellName = useCellName();
+  const refs = useRefs();
   const { calm, lang } = useSettings();
   const [view3d, setView3d] = useState(true);
   const [rot, setRot] = useState(DEFAULT_VIEW);
   const [scale, setScale] = useState(1);
+  const [relief, setRelief] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; rx: number; rz: number; moved: boolean } | null>(null);
   const flat = !view3d || calm || forceFlat;
@@ -164,6 +169,17 @@ export function Grid3D({
                 </pattern>
               </defs>
               <rect x={-40} y={-40} width={box.W + 80} height={box.H + 80} rx={26} className={s.base} />
+              {flat && relief && (
+                <image
+                  href={RELIEF_URL}
+                  x={0}
+                  y={0}
+                  width={box.W}
+                  height={box.H}
+                  preserveAspectRatio="none"
+                  className={s.relief}
+                />
+              )}
               {outline.map((pts, i) => (
                 <polygon key={i} points={pts} className={s.land} />
               ))}
@@ -296,6 +312,19 @@ export function Grid3D({
           {t.science.measured}: {RULES[rule].unit[lang]}
         </span>
       </div>
+      {flat && (
+        <div className={s.reliefRow}>
+          <button type="button" className={s.reliefBtn} aria-pressed={relief} onClick={() => setRelief((v) => !v)}>
+            {t.science.reliefToggle}
+          </button>
+          {relief && (
+            <>
+              <p className={s.reliefNote}>{t.science.reliefNote}</p>
+              <SourceValue {...refs.reliefSeries()} />
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

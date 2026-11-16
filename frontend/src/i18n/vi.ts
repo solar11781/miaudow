@@ -600,6 +600,8 @@ export const vi = {
     met: 'đạt ngưỡng',
     notMet: 'chưa đạt',
     zeroWeight: 'không có đất trồng',
+    reliefToggle: 'Địa hình (NASA SRTM)',
+    reliefNote: 'Chỉ là độ cao. Không cho biết nước tới được đâu.',
     cell: 'Ô lưới',
     cellAt: (lat: string, lon: string) => `${lat}°B ${lon}°Đ`,
     weight: 'Trọng số đất trồng',
@@ -1148,6 +1150,9 @@ export const vi = {
     predictionsLabel: 'Ước tính của mô hình cho năm kiểm tra, lúa vụ Mùa, 2016–2024',
     predictionsDetail:
       'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
+    reliefLabel: 'Địa hình Nghệ An (NASA SRTM)',
+    reliefDetail:
+      'Ảnh đổ bóng từ độ cao mặt đất, mặt trời hướng tây bắc (315°, cao 45°). Chỉ là độ cao; không cho biết nước tới được đâu.',
     ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
     ndviDetail:
       'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',

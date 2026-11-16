@@ -27,6 +27,7 @@ export type SourceId =
   | 'zhang2011'
   | 'chirps-v3'
   | 'modis-ndvi'
+  | 'nasa-srtm'
   | 'sentinel2';
 
 export interface SourceRecord {
