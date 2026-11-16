@@ -16,6 +16,7 @@ export type SourceId =
   | 'p02'
   | 'p03'
   | 'qd18'
+  | 'nq1678'
   | 'tcvn8641'
   | 'fao-tm3'
   | 'nasa-power'

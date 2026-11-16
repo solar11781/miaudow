@@ -44,8 +44,8 @@ export const MISSIONS: Mission[] = [
     },
     status: 'ingested',
     statusNote: {
-      vi: 'Đã nạp: 10 năm NDVI quanh Lưu Sơn (2015–2024).',
-      en: 'Loaded: ten years of NDVI around Luu Son (2015–2024).',
+      vi: 'Đã nạp: 10 năm NDVI quanh Lưu Sơn (cũ) (2015–2024).',
+      en: 'Loaded: ten years of NDVI around former Luu Son (2015–2024).',
     },
     eyesId: 'sc_terra',
     source: 'https://terra.nasa.gov/about',
