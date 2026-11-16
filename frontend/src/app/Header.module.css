@@ -356,21 +356,27 @@
   gap: 8px;
 }
 
-/* the wordmark never shrinks; on narrow phones the simple-mode switch keeps its name for screen readers only */
+/* the wordmark never shrinks */
 .wordmark {
   flex-shrink: 0;
   min-width: max-content;
+}
+
+/* above a wider tagline the wordmark keeps its own width (the column would stretch it) */
+.word .wordmark {
+  align-self: flex-start;
 }
 
 .brand {
   flex-shrink: 0;
 }
 
+/* in the narrow farmer bar the switch keeps its name for screen readers only; the menu sheet has room for it */
 @media (max-width: 480px) {
-  .switch {
+  .settingsFarmer .switch {
     padding-inline: 0.55rem;
   }
-  .switch > span:last-child {
+  .settingsFarmer .switch > span:last-child {
     position: absolute;
     width: 1px;
     height: 1px;

@@ -136,3 +136,30 @@ test.describe('in light mode', () => {
     expect(await mark.evaluate((img) => getComputedStyle(img).filter)).toBe('none');
   });
 });
+
+// visual audit 2026-11-16: under the wider tagline the wordmark image stretched to the tagline's width (155 x 18 px for
+// a 6:1 image)
+test('the header wordmark keeps its proportions at every width', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop-1440', 'the test sets every width itself');
+  await page.goto('/#/');
+  const mark = page.locator('header div[class*="bar"] img[alt="Miaudow"]');
+  for (const width of [480, 768, 1024, 1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 800 });
+    await expect(mark).toBeVisible();
+    const stretch = await mark.evaluate((img: HTMLImageElement) => {
+      const box = img.getBoundingClientRect();
+      return box.width / box.height / (img.naturalWidth / img.naturalHeight);
+    });
+    expect(stretch, `${width} px`).toBeCloseTo(1, 1);
+  }
+});
+
+// visual audit 2026-11-16: the rule that hides the switch's name in the narrow farmer bar also hid it in the menu sheet
+test('the phone menu names its motion switch in words', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/#/khoa-hoc');
+  await page.locator('header button[class*="menuBtn"]').click();
+  const label = page.getByRole('dialog').getByRole('switch', { name: 'Giảm chuyển động' }).locator('span').last();
+  await expect(label).toHaveText('Giảm chuyển động');
+  expect((await label.boundingBox())?.width).toBeGreaterThan(50);
+});
