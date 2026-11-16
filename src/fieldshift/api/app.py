@@ -209,6 +209,8 @@ def _privacy_page(texts: PrivacyTexts) -> bytes:
     parts = [
         '<!doctype html><html lang="vi"><head><meta charset="utf-8">',
         '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        # the app's own icon (frontend/index.html), or a browser asks for /favicon.ico, which does not exist
+        '<link rel="icon" type="image/png" sizes="48x48" href="/brand/icon-48.png">',
         f"<title>{html.escape(texts.title['vi'])}</title><style>{_PRIVACY_STYLE}</style></head><body><main>",
         f'<nav><a href="/" lang="vi">{html.escape(texts.back["vi"])}</a>',
         f'<a href="/#/home" lang="en">{html.escape(texts.back["en"])}</a></nav>',

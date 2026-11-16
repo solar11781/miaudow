@@ -616,7 +616,24 @@ def test_privacy_notice_has_the_app_look_a_way_home_and_no_draft_line(client: Te
     assert "prefers-color-scheme: light" in text
     assert "#f1f3ee" in text  # --c-paper-100, the light theme's --bg
     assert "<script" not in text
-    assert "<link" not in text
+    assert text.count("<link") == 1  # only the icon below: no stylesheet, nothing from another site
+
+
+def test_privacy_notice_names_the_app_icon_so_no_browser_asks_for_a_missing_favicon(tmp_path: Path) -> None:
+    # visual audit 2026-11-16: with no icon link a browser asks for /favicon.ico, which is not there (a 404 in the
+    # console). The page names the icon the app's own index.html names, a file the build copies from frontend/public
+    icon = "brand/icon-48.png"
+    assert f'href="./{icon}"' in (REPO / "frontend" / "index.html").read_text(encoding="utf-8")
+    assert (REPO / "frontend" / "public" / icon).is_file()
+    dist = tmp_path / "dist"
+    (dist / "brand").mkdir(parents=True)
+    (dist / "index.html").write_text("<html>app</html>", encoding="utf-8")
+    (dist / icon).write_bytes(b"png")
+    c = TestClient(create_app(root=REPO, frontend_dir=dist))
+    assert f'<link rel="icon" type="image/png" sizes="48x48" href="/{icon}">' in c.get("/quyen-rieng-tu").text
+    served = c.get(f"/{icon}")
+    assert served.status_code == 200
+    assert served.content == b"png"
 
 
 def test_privacy_notice_is_served_with_sign_in_off(tmp_path: Path) -> None:
