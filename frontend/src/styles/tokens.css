@@ -232,7 +232,7 @@
   --data-drought-strong: #85560a;
   --data-cold: #33807a;
   --data-actual: var(--c-forest-700);
-  --data-predicted: var(--c-gold-600);
+  --data-predicted: var(--c-gold-700);
   --data-greenness: var(--c-paddy-600);
   --data-grid: rgba(15, 21, 17, 0.09);
   --kind-data: var(--c-water-600);
