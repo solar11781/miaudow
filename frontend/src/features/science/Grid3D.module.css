@@ -74,6 +74,7 @@
 .plane {
   position: absolute;
   overflow: visible;
+  max-width: none; /* the shared svg rule would shrink the drawing off the cell buttons */
 }
 .base {
   fill: rgba(9, 22, 13, 0.6);
