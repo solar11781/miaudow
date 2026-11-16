@@ -374,6 +374,15 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* the two columns differ in length by plan: the shorter one keeps its end at the bottom of the window while the
+   longer one scrolls on, so no column is empty beside the other */
+@media (min-width: 960.02px) {
+  .deskPanel > * {
+    position: sticky;
+    bottom: var(--s-4);
+    align-self: end;
+  }
+}
 .ladder {
   list-style: none;
   display: flex;
