@@ -166,6 +166,7 @@
   --data-cold: #80d0c7;
   --data-actual: #c9e6a8;
   --data-predicted: var(--c-gold-500);
+  --data-greenness: var(--c-paddy-300);
   --data-grid: rgba(244, 242, 234, 0.09);
 
   --kind-data: #85c0e6;
@@ -230,6 +231,7 @@
   --data-cold: #33807a;
   --data-actual: var(--c-forest-700);
   --data-predicted: var(--c-gold-600);
+  --data-greenness: var(--c-paddy-600);
   --data-grid: rgba(15, 21, 17, 0.09);
   --kind-data: var(--c-water-600);
   --kind-derived: var(--c-paddy-600);
@@ -278,6 +280,7 @@
   --data-cold: #80d0c7;
   --data-actual: #c9e6a8;
   --data-predicted: var(--c-gold-500);
+  --data-greenness: var(--c-paddy-300);
   --data-grid: rgba(244, 242, 234, 0.09);
   --kind-data: #85c0e6;
   --kind-derived: #bcd987;
