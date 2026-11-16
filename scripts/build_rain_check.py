@@ -33,7 +33,11 @@ if missing:
 power_mm = {c: rain_check.power_monthly_totals(cells[c]["PRECTOTCORR"]) for c in weights}
 
 box = imerg.box_for_cells(weights)
-texts = {imerg.file_month(f.name): f.read_text(encoding="utf-8") for f in sorted(IMERG_DIR.glob("*.ascii"))}
+files = sorted(IMERG_DIR.glob("*.ascii"))
+texts = {imerg.file_month(f.name): f.read_text(encoding="utf-8") for f in files}
+if len(texts) != len(files):
+    raise SystemExit(f"two IMERG files for one month in {IMERG_DIR}: {len(files)} files, {len(texts)} months")
+print(f"IMERG monthly files read: {len(files)}")
 imerg_mm = rain_check.imerg_cell_months(texts, box, weights)
 
 months = rain_check.months_between(rain_check.FIRST_YEAR, rain_check.LAST_YEAR)

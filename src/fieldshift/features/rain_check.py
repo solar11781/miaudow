@@ -16,7 +16,7 @@ from fieldshift.data import imerg
 from fieldshift.features.soil_wetness import weighted_mean
 
 SOURCE_IDS = ["R-N05", "R-N01", "R-N02", "R-M23", "R-N06"]  # §5c: IMERG, POWER, MODIS farmland, Pearson CC, POWER rain
-COMPUTED_BY = "E-021"  # assumed next free experiment id: the register is in the planning repo (to confirm)
+COMPUTED_BY = "E-021"  # the satellite rain check in the team's experiment register (queue item 45)
 FIRST_YEAR, LAST_YEAR = 2001, 2024  # §5c: the months 2001-01..2024-12
 MIN_MONTHS = 2  # a correlation needs at least two points
 

@@ -85,7 +85,7 @@ def test_check_response_rejects_html_empty_and_wrong_count():
 
 # Parsing and monthly totals (05-DATA-CONTRACTS §5c). Reply layout and fill value: DATA-SOURCES row gpm_imerg_monthly
 # (verified 2026-11-13): one line per longitude, one value per latitude, fill -9999.9, unit mm/hr.
-BOX = (10, 12, 20, 21)  # 3 latitudes x 2 longitudes
+PARSE_BOX = (10, 12, 20, 21)  # 3 latitudes x 2 longitudes
 REPLY = """Dataset: x.HDF5
 precipitation[0][0], 0.1, 0.2, 0.3
 precipitation[0][1], 1, -9999.9, 3
@@ -93,7 +93,7 @@ precipitation[0][1], 1, -9999.9, 3
 
 
 def test_parse_monthly_gives_latitude_rows_and_longitude_columns_with_fill_as_nan():
-    grid = imerg.parse_monthly(REPLY, BOX)
+    grid = imerg.parse_monthly(REPLY, PARSE_BOX)
     assert grid.shape == (3, 2)  # (latitudes, longitudes)
     assert grid[0].tolist() == [0.1, 1.0]  # latitude index 10: the first value of each longitude line
     assert grid[2].tolist() == [0.3, 3.0]
@@ -102,7 +102,7 @@ def test_parse_monthly_gives_latitude_rows_and_longitude_columns_with_fill_as_na
 
 def test_parse_monthly_refuses_a_reply_of_the_wrong_shape():
     with pytest.raises(ValueError, match="2 x 3"):
-        imerg.parse_monthly("precipitation[0][0], 1, 2, 3\n", BOX)
+        imerg.parse_monthly("precipitation[0][0], 1, 2, 3\n", PARSE_BOX)
 
 
 @pytest.mark.parametrize(

@@ -205,7 +205,8 @@ def test_rain_check_is_served_from_the_artifact_in_whole_mm_and_a_two_decimal_cc
     assert first["imerg"] == {"value": "42", "unit": MM, "source_ids": RAIN_IDS}
     assert first["power"] == {"value": "29", "unit": MM, "source_ids": RAIN_IDS}
     assert (last["imerg"]["value"], last["power"]["value"]) == ("42", "42")
-    # the same file: cc 0.9697, mean IMERG 168.92 mm, mean POWER 152.48 mm
+    # these pin the committed artifact (its arithmetic is checked by hand in tests/test_rain_check.py):
+    # cc 0.9697, mean IMERG 168.92 mm, mean POWER 152.48 mm
     assert rc["cc"] == {"value": "0.97", "unit": {"vi": "", "en": ""}, "source_ids": RAIN_IDS}
     assert rc["mean_imerg"]["value"] == "169"
     assert rc["mean_power"]["value"] == "152"

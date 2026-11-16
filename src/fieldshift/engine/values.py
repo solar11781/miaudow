@@ -18,11 +18,10 @@ def whole_percent(fraction: float | Decimal) -> str:
 
     An exact Decimal (a median of two values, D-156) is rounded once here; a result of minus zero is shown as "0".
     """
-    shown = (Decimal(str(fraction)) * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP)
-    return str(abs(shown) if shown == 0 else shown)
+    return half_up(Decimal(str(fraction)) * 100, 0)
 
 
-def half_up(number: float, places: int) -> str:
+def half_up(number: float | Decimal, places: int) -> str:
     """A number rounded half up (decimal.ROUND_HALF_UP, D-102) to `places` decimals; str() keeps binary drift out."""
     shown = Decimal(str(number)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
     return str(abs(shown) if shown == 0 else shown)
