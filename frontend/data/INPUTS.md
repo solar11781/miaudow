@@ -2,9 +2,9 @@
 
 ## frontend/data/canonical
 
-Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in both languages by hand (2026-11-16).
+Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in both languages by hand (2026-11-16). The GPM IMERG monthly entry was set to loaded by hand (2026-11-17), when the rain check was built from it.
 
-- `frontend/data/canonical/catalog.json` b2b31a11f81375baf68054a6deed3003c7b47064a9b79c9fbd21d8af938368d8
+- `frontend/data/canonical/catalog.json` e7dbac92fc2f08db98ee66be750aaac2890629cfe38705cad87490760c64f3dd
 - `frontend/data/canonical/climate.json` b2e3271f202a92b1b6cc12a5e1560ee43edd59456338aab4db764822ca01be0a
 - `frontend/data/canonical/decision.json` 872cba9efed7774acddfbb1e4a46b65a467c24b553c6bcf8856a3f35caf80169
 - `frontend/data/canonical/geo.json` e8cc964118c0fa49653a5432ad06d08b667fbf15e02c618fe472ac14ec2e80b1
@@ -15,7 +15,6 @@ Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py`
 - `frontend/data/canonical/ndvi_modis.json` b618233400010fd858685f03c2869fb659ed77d120e528374085638fda3e2ad3
 - `frontend/data/canonical/quality.json` b53495bd762f798a535eb73dfcd49e41d8b3f5afc3be6fe688e4e940ec3c9fba
 - `frontend/data/canonical/rotations.generated.json` 19ae53cfcbe73e67d628794db7142439b51347431d4f5827f30a7f081a3c39c7
-- `frontend/data/canonical/soil.json` 9aac533136379c7df7d54e96810c16481b322be44f29ae817f97a674f94d58ba
 - `frontend/data/canonical/vegetation.json` 8824d80ac93a6a2a4504203965a58ecd0681af1a2de54aa7073061df37096503
 
 ## frontend/src/data/generated

@@ -284,13 +284,15 @@
   citation: {vi: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786",
              en: "Witcombe, A.A., Tiemann, L.K. (2022) Front Sustain Food Syst 5:691786"}
   study_type: {vi: "Bài báo khoa học trên tạp chí", en: "Journal article"}
-  place_years: {vi: "Nơi và năm nghiên cứu chưa được ghi lại; xuất bản năm 2022",
-                en: "Study place and years not recorded; published 2022"}
+  place_years: {vi: "Miền tây Uganda (huyện Kabarole); khảo sát tháng 7/2015; xuất bản năm 2022",
+                en: "Western Uganda (Kabarole district); survey of July 2015; published 2022"}
   read_status: "READ"
   full_text_read: true
   limitations:
-    - {vi: "Một nguyên tắc chung, không đo trên đất thử nghiệm ở Nghệ An.",
-       en: "A general principle, not measured on the Nghe An trial land."}
+    - {vi: "Một nghiên cứu ở Uganda, không đo trên đất thử nghiệm ở Nghệ An.",
+       en: "One study in Uganda, not measured on the Nghe An trial land."}
+    - {vi: "Bài báo nghiên cứu cây lạc. Cân bằng đạm của ruộng là phép tính ước lượng cho một vụ, không phải số đo đạm trong đất.",
+       en: "The paper studies peanut (groundnut). Its field nitrogen balance is an estimate for one season, not a measured soil value."}
   url: "https://doi.org/10.3389/fsufs.2021.691786"
   nso_credit: false
 - id: R-E12
@@ -584,7 +586,7 @@
        en: "The reported sowing and harvest dates overlap in two places."}
     - {vi: "Phần phương pháp liệt kê CC2-CC4 khác với các bảng kết quả.",
        en: "The methods text lists CC2-CC4 differently from the results tables."}
-    - {vi: "Bảng 4 có dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau.",
+    - {vi: "Bảng 4 có dòng đậu xanh (CC1) và dòng đậu đen xanh lòng (CC5) giống hệt nhau.",
        en: "Table 4 has identical rows for CC1 mung bean and CC5 black bean."}
     # research/price-entry-notes.md section 2 (UI-UX-SPEC §12d, D-163)
     - {vi: "Tiêu đề bảng ghi giá bán theo tấn; các phép tính trong bảng chỉ khớp với giá theo kg (chúng tôi kiểm tra).",

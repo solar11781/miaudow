@@ -342,6 +342,7 @@ export function AssistantPage() {
     if (asked.current || engine === 'checking' || params.get('hoi') !== '1' || !params.get('q')) return;
     asked.current = true;
     void ask(params.get('q') ?? '');
+    // ask() and params change every render; the deep link must run once, when the engine check ends
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine]);
 

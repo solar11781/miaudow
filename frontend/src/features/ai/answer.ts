@@ -65,28 +65,16 @@ function passageLines(p: Passage, lang: Lang): AnswerLine[] {
 }
 
 function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
-  const vi = lang === 'vi';
+  const t = (lang === 'vi' ? viText : en).assistant;
   if (!YEARS.includes(year)) {
     return {
       type: 'abstain',
-      lines: [
-        {
-          text: vi
-            ? `Miaudow chỉ có số liệu các năm ${YEARS[0]}–${YEARS[YEARS.length - 1]}.`
-            : `Miaudow only has data for ${YEARS[0]}–${YEARS[YEARS.length - 1]}.`,
-        },
-      ],
+      lines: [{ text: t.yearsOnlyFrom(Math.min(...YEARS), Math.max(...YEARS)) }],
       evidence: [],
       kinds: [],
     };
   }
-  const lines: AnswerLine[] = [
-    {
-      text: vi
-        ? `Năm ${year}, phần đất trồng Nghệ An gặp điều kiện theo QĐ 18/2021, trong thời gian có cây của thử nghiệm Trịnh Đức Toàn và cs. (2023) trên ruộng:`
-        : `In ${year}, share of Nghệ An farmland meeting each Decision 18/2021 condition while the crops of the Trịnh Đức Toàn et al. (2023) trial were in the field:`,
-    },
-  ];
+  const lines: AnswerLine[] = [{ text: t.yearIntro(year) }];
   for (const rule of FARMER_RULES) {
     const v = yearShare(rule, year);
     lines.push({
@@ -103,36 +91,25 @@ function yearAnswer(year: number, lang: Lang, f: Fmt): Answer {
   const rice = riceYear('spring', year);
   if (rice.actual !== null) {
     lines.push({
-      text: vi ? 'Lúa vụ Đông Xuân cả tỉnh so với bình thường' : 'Province spring rice against normal',
+      text: t.springRiceVsNormal,
       ref: {
         sourceId: 'nso',
         kind: 'data',
         value: f.signedPct(rice.actual),
-        label: vi ? `Lúa vụ Đông Xuân ${year}` : `Spring rice ${year}`,
+        label: t.springRiceYear(year),
         chain: ['nso', 'e010'],
       },
     });
   }
-  lines.push({
-    text: vi
-      ? 'Đây là năm đã qua, không phải dự báo. Số liệu từ ô lưới khoảng 55 × 66 km, không đo ruộng nhà bạn.'
-      : 'This is a past year, not a forecast. Values come from cells of about 55 × 66 km, not your field.',
-  });
+  lines.push({ text: t.pastYearNote });
   return { type: 'year', lines, evidence: [], kinds: ['data', 'derived'] };
 }
 
 function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
-  const vi = lang === 'vi';
-  const t = vi ? viText : en;
+  const t = lang === 'vi' ? viText : en;
   const rows = PLANS.flatMap((p) => p.crops.filter((c) => c.crop === crop).map((c) => ({ p, c })));
   const name = CROPS[crop].name[lang];
-  const lines: AnswerLine[] = [
-    {
-      text: vi
-        ? `${name} trong thử nghiệm 2020–21 của Trịnh Đức Toàn và cs. (2023), lãi đã trừ công:`
-        : `${name} in the 2020–21 trial of Trịnh Đức Toàn et al. (2023), profit net of labour:`,
-    },
-  ];
+  const lines: AnswerLine[] = [{ text: t.assistant.cropIntro(name) }];
   for (const { p, c } of rows) {
     lines.push({
       text: [planLabel(p, t.farmer), c.variety, `${c.sow} → ${c.harvest}`].filter(Boolean).join(' · '),
@@ -152,26 +129,19 @@ function cropAnswer(crop: CropId, lang: Lang, f: Fmt): Answer {
     for (const r of tcvnRows) {
       const scope = r.scope ? ` (${r.scope[lang]})` : '';
       lines.push({
-        text: `${vi ? 'Mức tưới theo TCVN 8641' : 'Irrigation in TCVN 8641'}${scope}`,
+        text: `${t.assistant.tcvnIrrigation}${scope}`,
         ref: { sourceId: 'tcvn8641', kind: 'standard', value: `${r.value[lang]} m³/ha`, label: `${name}${scope}` },
       });
     }
   } else {
-    lines.push({
-      text: vi ? 'TCVN 8641 không ghi mức tưới cho cây này.' : 'TCVN 8641 lists no irrigation amount for this crop.',
-    });
+    lines.push({ text: t.assistant.tcvnNoAmount });
   }
-  lines.push({
-    text: vi
-      ? 'Một ô thử, một năm. Giá năm nay có thể khác; hỏi nơi thu mua ở xã.'
-      : 'One plot, one year. Prices may differ this year; ask local buyers.',
-  });
+  lines.push({ text: t.assistant.cropClosing });
   return { type: 'crop', lines, evidence: [], kinds: ['study', 'standard'] };
 }
 
 function rankingAnswer(lang: Lang, f: Fmt, intro: string): Answer {
-  const vi = lang === 'vi';
-  const t = vi ? viText : en;
+  const t = lang === 'vi' ? viText : en;
   const lines: AnswerLine[] = [{ text: intro }];
   for (const p of PLANS) {
     const total = planProfitMillion(p);
@@ -184,17 +154,13 @@ function rankingAnswer(lang: Lang, f: Fmt, intro: string): Answer {
               sourceId: 'p02',
               kind: 'derived',
               value: `${f.n(total, 1)} ${t.common.millionPerHa}`,
-              label: vi ? 'Lãi cả năm' : 'Yearly profit',
+              label: t.assistant.yearlyProfit,
               chain: ['p02'],
             }
-          : { sourceId: 'p03', kind: 'study', value: p.textOnly?.profitNote[lang] ?? '', label: vi ? 'Lãi' : 'Profit' },
+          : { sourceId: 'p03', kind: 'study', value: p.textOnly?.profitNote[lang] ?? '', label: t.assistant.profit },
     });
   }
-  lines.push({
-    text: vi
-      ? 'Hãy so sánh trên các thẻ và bàn với cán bộ khuyến nông; quyết định là của gia đình bạn.'
-      : 'Compare the cards and talk to the extension officer; the decision is your family’s.',
-  });
+  lines.push({ text: t.assistant.rankingClosing });
   return { type: 'no-ranking', lines, evidence: [], kinds: ['study', 'derived'] };
 }
 

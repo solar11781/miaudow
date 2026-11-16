@@ -212,6 +212,7 @@ def test_an_evidence_question_quotes_the_passage_with_its_register_source(det: T
         "Lúa cần bao nhiêu nước tưới?",
         "How much water does peanut need?",
         "Mô hình dự đoán lúa xuân có tốt không?",
+        "Mô hình dự đoán lúa vụ Đông Xuân có tốt không?",
         "Luật nắng nóng tính thế nào?",
         "Lạc lãi bao nhiêu trong thử nghiệm?",
         "Ruộng cuối kênh nên trồng gì?",

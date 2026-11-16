@@ -48,10 +48,6 @@
   line-height: 1.05;
 }
 
-.name {
-  font: 800 1.6rem/1 var(--font-display);
-}
-
 .wordmark {
   margin-bottom: 4px;
 }

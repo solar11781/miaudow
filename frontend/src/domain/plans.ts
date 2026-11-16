@@ -200,8 +200,8 @@ export const PLANS: Plan[] = [
     textOnly: {
       sequence: { vi: 'Lúa vụ Đông Xuân – lúa vụ Hè Thu – bỏ hoang', en: 'Spring rice – summer-autumn rice – fallow' },
       profitNote: {
-        vi: 'Lúa vụ Hè Thu lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận” (tính lãi theo cách khác bài báo thứ nhất của Trịnh Đức Toàn và cs., 2023)',
-        en: 'Summer-autumn rice made 1.16 million VND/ha, “almost no profit” (profit defined differently from the first paper of Trịnh Đức Toàn et al., 2023)',
+        vi: 'Lúa vụ Đông Xuân 2021: 5,36 triệu đồng/ha; lúa vụ Hè Thu 2020: 1,16 triệu đồng/ha, “gần như không có lợi nhuận” (tính lãi theo cách khác bài báo thứ nhất của Trịnh Đức Toàn và cs., 2023)',
+        en: 'Spring rice 2021: 5.36 million VND/ha; summer-autumn rice 2020: 1.16 million VND/ha, “almost no profit” (profit defined differently from the first paper of Trịnh Đức Toàn et al., 2023)',
       },
     },
   },
@@ -380,8 +380,6 @@ export const PLANS: Plan[] = [
     ],
   },
 ];
-
-export const planById = (id: PlanId) => PLANS.find((p) => p.id === id);
 
 /** Sum of the per-crop profits, our arithmetic on Table 13, in million VND/ha. */
 export const planProfitMillion = (plan: Plan): number | null =>

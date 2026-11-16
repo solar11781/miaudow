@@ -37,7 +37,7 @@ export const rule = (code: string) => ({
   values_source_ids: ['R-N01'],
   computed_by: 'E-019',
 });
-export const sources = {
+const sources = {
   'R-A01': facts('R-A01'),
   'R-N01': facts('R-N01'),
   'E-019': facts('E-019'),
@@ -56,8 +56,8 @@ export const pastYears = () => ({
 });
 
 export const body: CompareRequest = { province: 'nghe_an', land: 'dry', years: [2010, 2020], priority: 'income' };
-export const land = { value: value(), principle_source_ids: ['R-P02'] };
-export const plan = (id: string) => ({
+const land = { value: value(), principle_source_ids: ['R-P02'] };
+const plan = (id: string) => ({
   id,
   name: text,
   is_usual: id.startsWith('usual'),

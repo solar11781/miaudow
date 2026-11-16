@@ -43,8 +43,8 @@ const crop = (planId: string, key: string): PlanCrop => {
 };
 
 const TRIAL: Bilingual = {
-  vi: 'Một ô 1.000 m² cho mỗi cây, xã Lưu Sơn, Đô Lương, tháng 6/2020 – 6/2021; giá bán lúc thu hoạch năm đó.',
-  en: 'One 1,000 m² plot per crop, Luu Son commune, Do Luong, June 2020 – June 2021; sale prices at that harvest.',
+  vi: 'Một ô 1.000 m² cho mỗi cây, xã Lưu Sơn (cũ), Đô Lương, tháng 6/2020 – 6/2021; giá bán lúc thu hoạch năm đó.',
+  en: 'One 1,000 m² plot per crop, former Luu Son commune, Do Luong, June 2020 – June 2021; sale prices at that harvest.',
 };
 
 /** Claims of the evidence library, each built from the same data the rest of the app shows (no copy of a number). */
@@ -397,7 +397,7 @@ export const CONFLICTS: { id: string; title: Bilingual; body: Bilingual; source:
     id: 'table4',
     title: { vi: 'Hai dòng giống hệt nhau ở Bảng 4', en: 'Two identical rows in Table 4' },
     body: {
-      vi: 'Dòng đậu xanh (CC1) và dòng đậu đen (CC5) trùng nhau ở mọi cột; bài báo không giải thích. Lãi và chi phí của hai cây này nên đọc thận trọng.',
+      vi: 'Dòng đậu xanh (CC1) và dòng đậu đen xanh lòng (CC5) trùng nhau ở mọi cột; bài báo không giải thích. Lãi và chi phí của hai cây này nên đọc thận trọng.',
       en: 'The mung bean row (CC1) and the black bean row (CC5) match in every column; the paper does not explain why. Read these two crops’ money with care.',
     },
     source: { vi: 'Trịnh Đức Toàn và cs. (2023), Bảng 4', en: 'Trịnh Đức Toàn et al. (2023), Table 4' },

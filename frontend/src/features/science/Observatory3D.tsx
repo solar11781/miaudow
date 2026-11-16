@@ -5,7 +5,8 @@ import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
 import { Grid3D } from './Grid3D';
 import { MAP_PLACES } from '../../data/places';
-import { createObservatory, hasWebGL, WEIGHTED, type Observatory } from './observatoryScene';
+import { hasWebGL } from '../../domain/webgl';
+import { createObservatory, WEIGHTED, type Observatory } from './observatoryScene';
 import s from './Observatory3D.module.css';
 
 /**

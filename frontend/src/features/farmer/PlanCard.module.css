@@ -349,15 +349,6 @@
   align-self: center;
 }
 
-.bullets {
-  padding-left: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  color: var(--fg);
-  font-size: var(--t-small);
-}
-
 .why {
   color: var(--fg-2);
   font-size: var(--t-small);
@@ -431,10 +422,6 @@
   background: var(--bg-raised);
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
-}
-
-.where {
-  color: var(--fg-3);
 }
 
 .wTable td {

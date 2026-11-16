@@ -77,12 +77,3 @@
 .ghost:hover {
   text-decoration-color: currentColor;
 }
-
-.quiet {
-  background: var(--bg-raised);
-  color: var(--fg);
-  border-color: var(--line);
-}
-.quiet:hover {
-  border-color: var(--line-2);
-}

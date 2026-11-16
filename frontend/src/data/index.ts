@@ -3,7 +3,6 @@
 import geoJson from '@data/geo.json';
 import hazardsJson from '@data/hazards.json';
 import modelJson from '@data/model.json';
-import soilJson from '@data/soil.json';
 
 export type RuleCode = 'heavy_rain' | 'heat' | 'drought_rain_consecutive' | 'drought_rain_any2' | 'cold';
 export type Magnitude = 'max_rain_mm' | 'hot_days' | 'cold_days' | 'drought_months';
@@ -26,12 +25,6 @@ export interface HazardData {
   crop_level: Record<string, Record<RuleCode, number[]>>;
   cell_level: Record<RuleCode, Record<string, boolean[]>>;
   magnitudes: Record<Magnitude, Record<string, number[]>>;
-}
-
-export interface SoilData {
-  generated_at: string;
-  years: number[];
-  crops: Record<string, { values: number[]; normal_1991_2020: number }>;
 }
 
 export interface GeoData {
@@ -95,7 +88,6 @@ export interface ModelData {
 }
 
 export const hazards = hazardsJson as unknown as HazardData;
-export const soil = soilJson as unknown as SoilData;
 export const geo = geoJson as unknown as GeoData;
 export const model = modelJson as unknown as ModelData;
 

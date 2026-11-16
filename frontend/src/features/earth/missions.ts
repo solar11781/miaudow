@@ -139,10 +139,10 @@ export const MISSIONS: Mission[] = [
       vi: 'Một nguồn mưa thứ ba để đối chiếu với NASA POWER và CHIRPS.',
       en: 'A third rain source to compare with NASA POWER and CHIRPS.',
     },
-    status: 'visual',
+    status: 'ingested',
     statusNote: {
-      vi: 'Số liệu cần tài khoản Earthdata; chỉ xem được lớp ảnh trực quan từ NASA GIBS.',
-      en: 'The data need an Earthdata login; only the NASA GIBS picture layer can be viewed.',
+      vi: 'Đã nạp: mưa tháng IMERG 2001–2024, dùng cho phép đối chiếu mưa ở trang Phương pháp.',
+      en: 'Loaded: IMERG monthly rain 2001–2024, used for the rain check on the Method page.',
     },
     eyesId: 'sc_gpm',
     source: 'https://gpm.nasa.gov/missions/GPM/core-observatory',

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { geo, hazards, type RuleCode } from '../../data';
-import { MAP_PLACES } from '../../data/places';
+import { K_LON, MAP_PLACES } from '../../data/places';
 import { cellMagnitude, cellMet, magnitudeDigits, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
@@ -10,7 +10,6 @@ import { useRefs } from '../provenance/useRefs';
 import s from './Grid3D.module.css';
 
 const PX_PER_DEG = 168;
-const K_LON = Math.cos((19.3 * Math.PI) / 180);
 const HMAX = 115;
 const RELIEF_URL = `${import.meta.env.BASE_URL}media/relief/nghe-an-relief.webp`;
 const DEFAULT_VIEW = { rx: 55, rz: -24 };

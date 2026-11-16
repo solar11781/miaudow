@@ -1,25 +1,21 @@
-import type { CSSProperties, ElementType, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 /**
  * A plain wrapper. It used to fade every block up on scroll, which reads as a template; the pages now choose one
  * authored GSAP moment each (src/motion). Kept so callers keep their markup.
  */
 export function Reveal({
-  as: Tag = 'div',
   children,
   className,
   style,
-  id,
 }: {
-  as?: ElementType;
   children: ReactNode;
   className?: string;
-  id?: string;
   style?: CSSProperties;
 }) {
   return (
-    <Tag className={className} style={style} id={id}>
+    <div className={className} style={style}>
       {children}
-    </Tag>
+    </div>
   );
 }

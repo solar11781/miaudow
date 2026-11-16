@@ -151,12 +151,6 @@ html {
 p {
   text-wrap: pretty;
 }
-/* A plain line of context; never a tracked kicker with a rule in front. */
-.eyebrow {
-  display: block;
-  font: 500 var(--t-small) / 1.4 var(--font-ui);
-  color: var(--fg-3);
-}
 .mono {
   font-family: var(--font-ui);
   font-variant-numeric: tabular-nums lining-nums;
@@ -256,14 +250,6 @@ p {
 }
 .skip:focus {
   transform: none;
-}
-
-/* a quiet divider */
-.rows-rule {
-  height: 1px;
-  border: 0;
-  margin: 0;
-  background: var(--line);
 }
 
 @media (prefers-reduced-motion: reduce) {

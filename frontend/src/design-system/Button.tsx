@@ -4,7 +4,7 @@ import { useLocalTo } from '../app/paths';
 import { Icon, type IconName } from './Icon';
 import s from './Button.module.css';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'quiet';
+type Variant = 'primary' | 'secondary' | 'ghost';
 type Size = 'md' | 'lg';
 
 interface Common {

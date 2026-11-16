@@ -3,6 +3,7 @@ import { SatelliteScan } from '../cinema/SatelliteScan';
 import { Link, useSearchParams } from 'react-router-dom';
 import eyesJson from '@data/nasa_eyes.json';
 import { geo } from '../../data';
+import { hasWebGL } from '../../domain/webgl';
 import { Icon } from '../../design-system/Icon';
 import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, usePick, useSettings, useT } from '../../app/settings';
@@ -32,15 +33,6 @@ const AUTOPLAY_MS = 9000;
 
 type Eyes = { id: string; name: string };
 type OpenEyes = (id: string, name: string) => void;
-
-function hasWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
 
 /** One page, one shared state in the URL: scene, year, overlay, composite and the selected cell. */
 function useObservatoryState() {

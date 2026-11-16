@@ -1131,7 +1131,7 @@ section 4.
 | T34 api-validation | each validation rule of section 11 rejects a broken fixture variant and the page shows `common.error` with `common.retry` | now |
 | T35 print | with print media emulated, every `Disclosure` content is visible and the share, print, Back, Next and language buttons are hidden | now (components) |
 | T36 soil-wetness | every crop with an `exposure` entry shows, per picked year, the soil wetness value and its 1991-2020 average as number buttons and the `water.soilModelled` label; a null shows `common.notAvailable` | event |
-| T37 priority-line | (bonus item; skipped until the priority line is built) the priority line exists on `cc1`..`cc4` only, inside the highlighted row; for income and land it shows the `usual` card's values from the same response; its text contains none of the words listed in the glossary as banned for it (better, best, should, recommended and their Vietnamese equivalents) | event |
+| T37 priority-line | the priority line exists on `cc1`..`cc4` only, inside the highlighted row; for income and land it shows the `usual` card's values from the same response; its text contains none of the words listed in the glossary as banned for it (better, best, should, recommended and their Vietnamese equivalents) | event |
 | T38 check-row | every card has the `check` row open (no disclosure) between `land` and `why`, with one line per risk and the `check.localReview` line; `why` has no risk lines | event |
 
 ### 14a. Test hooks (routine)
@@ -1150,8 +1150,8 @@ share), `data-highlighted="true"` (the priority row).
 
 1. Final Vietnamese and English copy for every key: written during the event.
 2. Hand-drawn pictures for the choice buttons (Medhi 2011): who draws them and when (during the event). The app's
-   current home and field-step illustrations are AI-generated: [OPEN] they need a watermark and a declaration, or
-   they are dropped (R-H15).
+   five field-step illustrations are AI-generated; each shows the tag `media.illustration` and they are declared in
+   the README (R-H15).
 3. Land-type labels beyond the required official words (section 7): settled as the studies' own Vietnamese phrases
    ("đất lúa kém hiệu quả, thường xuyên khô hạn" from P-02; "đất lúa kém hiệu quả, có nguy cơ thiếu nước" from P-03),
    with a plain English translation.

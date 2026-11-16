@@ -45,7 +45,7 @@
     price_year: "2020-21"  # P-02: "Giá bán theo giá thị trường tại thời điểm thu hoạch", trial 2020-21
     flags:
       usual_summer_autumn_black_bean: &table4_flag
-        vi: "Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau ở mọi cột; bài báo không
+        vi: "Trong Bảng 4 của bài báo, dòng đậu xanh (CC1) và dòng đậu đen xanh lòng (CC5) giống hệt nhau ở mọi cột; bài báo không
           giải thích điều này."
         en: "In Table 4 of the paper, the CC1 mung bean row and the CC5 black bean row are the same in every column; the
           paper does not explain this."
@@ -78,7 +78,7 @@
        en: "Some sowing dates come before the harvest of the season before"}
     - {vi: "Phần phương pháp của bài báo (tr. 44) ghi các cơ cấu CC2-CC4 khác với các bảng kết quả",
        en: "The paper's methods text (p. 44) lists CC2-CC4 differently from the results tables"}
-    - {vi: "Trong Bảng 4, dòng đậu xanh (CC1) và dòng đậu đen (CC5) giống hệt nhau",
+    - {vi: "Trong Bảng 4, dòng đậu xanh (CC1) và dòng đậu đen xanh lòng (CC5) giống hệt nhau",
        en: "In Table 4, the CC1 mung bean row and the CC5 black bean row are identical"}
   source_ids: [R-P02]
 - id: usual_p03

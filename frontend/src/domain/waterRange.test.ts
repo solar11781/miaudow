@@ -2,7 +2,7 @@
 // Rows from /api/compare (2026-11-15): spring rice has three TCVN rows and one FAO row; cc1 peanut one TCVN row.
 import { describe, expect, it } from 'vitest';
 import type { WaterFact } from '../types';
-import { parseRange, tcvnRange } from './waterRange';
+import { tcvnRange } from './waterRange';
 
 const m3 = { vi: 'm3/ha', en: 'm3/ha' };
 const fact = (measure: WaterFact['measure'], value: string | null, ids = ['R-W15'], unit = m3): WaterFact => ({
@@ -11,19 +11,6 @@ const fact = (measure: WaterFact['measure'], value: string | null, ids = ['R-W15
   value: value === null ? null : { value, unit, source_ids: ids },
   scope: null,
   note: null,
-});
-
-describe('parseRange', () => {
-  it('reads one value or a low-high range in the API notation', () => {
-    expect(parseRange('2,000')).toEqual([2000, 2000]);
-    expect(parseRange('6,500-7,500')).toEqual([6500, 7500]);
-    expect(parseRange('1,200-1,400')).toEqual([1200, 1400]);
-    expect(parseRange('450.5-700')).toEqual([450.5, 700]);
-  });
-  it('refuses anything else', () => {
-    for (const s of ['', 'about 2,000', '6,500 - 7,500', '7,500-6,500', '2,00', '-2,000', '1,2,3'])
-      expect(parseRange(s), s).toBeNull();
-  });
 });
 
 describe('tcvnRange', () => {

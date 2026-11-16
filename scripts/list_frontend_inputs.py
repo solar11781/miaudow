@@ -20,7 +20,8 @@ GROUPS: list[tuple[str, str, str]] = [
         f"Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in {LAMGIANG}, from the "
         "raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 "
         "by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in "
-        "both languages by hand (2026-11-16).",
+        "both languages by hand (2026-11-16). The GPM IMERG monthly entry was set to loaded by hand (2026-11-17), when "
+        "the rain check was built from it.",
     ),
     (
         "frontend/src/data/generated",

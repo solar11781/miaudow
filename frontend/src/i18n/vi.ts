@@ -1,7 +1,6 @@
 // Vietnamese is the primary language. Every other language must have the same shape (see en.ts).
 export const vi = {
   meta: {
-    code: 'vi',
     locale: 'vi-VN',
     other: 'EN',
     otherLabel: 'Switch to English',
@@ -46,16 +45,11 @@ export const vi = {
     /** The singular of an API unit after the number 1: Vietnamese nouns have no plural (D-192). */
     unitOfOne: (unit: string) => unit,
     sourceFor: (name: string) => `Xem nguồn: ${name}`,
-    open: 'Mở',
     close: 'Đóng',
     millionPerHa: 'triệu đồng/ha',
     perKg: 'đồng/kg',
     notListed: 'Không có trong nguồn',
     noData: 'Chưa có số liệu',
-    farmland: 'đất trồng',
-    percentOfFarmland: (v: string) => `${v} đất trồng`,
-    yearsCount: (n: number) => `${n} năm`,
-    sample: 'Minh họa',
     loading: 'Đang tải…',
     error: 'Không tải được số liệu.',
     retry: 'Thử lại',
@@ -81,7 +75,6 @@ export const vi = {
     illustration: 'Hình ảnh, không phải số liệu.',
   },
   sheet: {
-    title: 'Nguồn của con số',
     aboutValue: 'Về con số',
     inPaper: (value: string) => `Trong bài báo: ${value}`,
     from: 'Lấy từ',
@@ -128,7 +121,6 @@ export const vi = {
     // the no-break space (\u00a0) keeps "vũ trụ" on one line: on a 360 px phone "trụ." stood alone
     titleB: 'đọc bằng dữ liệu vũ\u00a0trụ.',
     ctaFarmer: 'Tìm hiểu ruộng nhà mình',
-    ctaScience: 'Khám phá dữ liệu Nghệ An',
     ctaCopilot: 'Hỏi trợ lý',
     pause: 'Dừng ảnh',
     aboutTitle: 'Ứng dụng này làm gì?',
@@ -162,7 +154,7 @@ export const vi = {
     cores: [
       {
         name: 'Lõi khí hậu',
-        does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn, nóng, rét, mưa lớn của nhà nước.',
+        does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn hán, nắng nóng, rét hại, mưa lớn của nhà nước.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Quyết định 18/2021',
         gives: 'Thời tiết từng năm và phần đất trồng gặp từng điều kiện của Quyết định 18/2021',
         limit: 'Không dự báo vụ tới. Năm đã qua không phải dự báo.',
@@ -252,7 +244,6 @@ export const vi = {
       'R-P03': 'Trịnh Đức Toàn và cs. (2023)',
     } as Record<string, string>,
     stepOf: (n: number) => `Bước ${n}/4`,
-    startEyebrow: 'Đất lúa thiếu nước ở Nghệ An',
     startTitle: 'Ruộng nhà mình, vụ tới trồng gì?',
     startLead:
       'Bốn bước ngắn. Không phải gõ chữ. Cuối cùng bạn có 6 thẻ so sánh để bàn với gia đình và cán bộ khuyến nông.',
@@ -295,10 +286,10 @@ export const vi = {
     limitsTitle: 'Giới hạn của các con số này',
     cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
-      'Giá trị trên ô lưới làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
-      'Cảnh báo chính thức còn xét thêm yếu tố khác; đây là cách đọc máy móc các bảng của Quyết định.',
+      'Mỗi số là trung bình của một vùng rộng, nên một trận mưa rất to hay một đợt nắng rất gắt ở một nơi có thể không hiện ra. Ruộng nhà bạn không được đo trực tiếp.',
+      'Cảnh báo chính thức của nhà nước còn xét thêm yếu tố khác. Ở đây chỉ so số liệu với các bảng của Quyết định 18/2021, nên đây không phải số liệu chính thức.',
       'Tổng mưa theo ngày có thể sót trận mưa lớn kéo qua nửa đêm.',
-      'Đợt nóng hay rét có ngày rơi vào các bậc nhiệt khác nhau thì không được đếm.',
+      'Một đợt nắng nóng hay rét hại mà các ngày ở những mức nhiệt khác nhau của Quyết định thì không được đếm.',
     ],
     noYears: 'Chọn ít nhất một năm để xem.',
     prioTitle: 'Gia đình quan tâm điều gì nhất?',
@@ -364,15 +355,12 @@ export const vi = {
       rice: 'Lúa cả tỉnh so với bình thường',
     },
     crop: 'Cây',
-    drought: 'Hạn hán',
-    heat: 'Nắng nóng',
-    rain: 'Mưa lớn',
     cropsInYear: 'Số loại cây trong năm',
     livingDays: 'Số ngày có cây sống trong năm',
     principle: 'Vì sao xét',
     legumeYes: 'Có cây họ đậu',
     legumeNo: 'Không có cây họ đậu',
-    legumeNote: 'Cây họ đậu chỉ giữ đạm cho đất khi để lại thân lá trên ruộng.',
+    legumeNote: 'Theo một nghiên cứu về cây lạc: ruộng chỉ được thêm đạm khi để lại thân lá trên ruộng.',
     p03NoCalendar:
       'Bài báo thứ hai không ghi ngày gieo, nên không có lịch 12 tháng và không tính được thời tiết theo cây.',
     soilNormal: 'trung bình 1991–2020',
@@ -386,13 +374,13 @@ export const vi = {
     ourSumNote: 'Chúng tôi cộng tiền lãi của các vụ; bài báo không báo cáo tiền lãi cho cả chuỗi.',
     summaryWaterLabel: 'Nước phải tưới, tùy vùng',
     summaryWaterNote:
-      'Từ thấp nhất đến cao nhất trong các dòng của TCVN 8641 cho cây và vụ này; các dòng khác nhau theo vùng và cách gieo cấy.',
+      'Từ mức thấp nhất đến mức cao nhất mà tiêu chuẩn TCVN 8641 ghi cho cây và vụ này; các mức khác nhau theo vùng và cách gieo cấy.',
     noFigure: 'nguồn không có số',
     summaryWater: (row: string) => `Xem hàng ${row} bên dưới`,
     priceYear: (y: string) => `Giá bán năm ${y}.`,
     priceYearNotStated: 'Nguồn không ghi năm của giá bán.',
     trialNote:
-      'Các cách trồng lấy từ một thử nghiệm không lặp lại ở Lưu Sơn (cũ), Đô Lương (2020–21). Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
+      'Các cách trồng lấy từ một thử nghiệm ở Lưu Sơn (cũ), Đô Lương (2020–21): mỗi cây chỉ trồng thử trên một ô ruộng, không có ô thứ hai để so. Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
     rice: {
       real: 'Số thật',
       prediction: 'Ước tính của mô hình cho năm kiểm tra',
@@ -513,10 +501,8 @@ export const vi = {
     fitLabel: 'Ruộng của họ:',
     askTitle: 'Câu hỏi nên cùng gia đình làm rõ',
     quotePage: (page: string) => `tr. ${page}`,
-    eyebrow: 'Dành cho cán bộ khuyến nông',
     title: 'Bằng chứng phía sau từng thẻ',
     lead: 'Mỗi dòng trên thẻ của bà con đến từ một nguồn cụ thể. Trang này gom chúng lại để cán bộ giải thích, và nói rõ chỗ nào bằng chứng chưa đủ.',
-    scopeTitle: 'Phạm vi bằng chứng',
     scope: [
       {
         label: 'Nơi thử nghiệm',
@@ -533,7 +519,7 @@ export const vi = {
     colPlan: 'Cách trồng',
     colMoney: 'Lãi trong thử nghiệm',
     p03Money:
-      'Chỉ lúa vụ Hè Thu 2020, trong bài báo thứ hai của Trịnh Đức Toàn và cs. (2023); không phải tổng của một năm',
+      'Lúa vụ Đông Xuân 2021 và lúa vụ Hè Thu 2020, từng vụ như bài báo thứ hai của Trịnh Đức Toàn và cs. (2023) ghi; không phải tổng của một năm',
     colWeather: 'Thời tiết',
     colWater: 'Nước tưới',
     colLand: 'Đất',
@@ -547,7 +533,7 @@ export const vi = {
       {
         kind: 'derived',
         title: 'Ngưỡng của Quyết định 18/2021',
-        body: 'So mưa, nắng của từng ô với ngưỡng hạn, nóng, rét, mưa lớn, trong lúc có cây trên ruộng',
+        body: 'So mưa, nắng của từng ô với ngưỡng hạn hán, nắng nóng, rét hại, mưa lớn, trong lúc có cây trên ruộng',
       },
       {
         kind: 'derived',
@@ -589,9 +575,8 @@ export const vi = {
     price: 'Giá bán',
   },
   science: {
-    eyebrow: 'Phòng dữ liệu · dành cho nhà nghiên cứu',
     title: 'Nghệ An qua 30 mùa vụ',
-    lead: 'Mọi con số trên trang này tính từ dữ liệu thật: NASA POWER cho 5 ô lưới có đất trồng, trọng số đất trồng NASA MODIS, ranh giới tỉnh geoBoundaries và năng suất lúa của Cục Thống kê.',
+    lead: 'Mọi con số trên trang này tính từ dữ liệu thật: NASA POWER cho 5 ô lưới có đất trồng, trọng số đất trồng NASA MODIS, ranh giới tỉnh geoBoundaries, năng suất lúa của Cục Thống kê, mưa CHIRPS v3, độ xanh MODIS NDVI và độ cao NASA SRTM. Phần mô hình là ước tính của mô hình cho các năm kiểm tra.',
     globeCta: 'Xem trên quả địa cầu 3D, từ vũ trụ xuống đồng ruộng',
     mapTitle: 'Lưới NASA POWER trên đất Nghệ An',
     mapLead:
@@ -635,13 +620,10 @@ export const vi = {
     actual: 'Số liệu thật',
     predicted: 'Ước tính của mô hình cho năm kiểm tra',
     interval: 'Khoảng 80%',
-    modelHidden: 'Dự đoán không được hiện cho vụ này vì mô hình chưa qua bài kiểm tra.',
+    modelHidden: 'Ước tính của mô hình không được hiện cho vụ này vì mô hình chưa qua bài kiểm tra.',
     notModeled: 'Vụ này không đủ số liệu để mô hình hóa; chỉ hiện số thật.',
     toMethod: 'Xem kết quả kiểm tra mô hình ở trang Phương pháp',
     skillTitle: 'Mô hình có thắng cách đoán đơn giản không?',
-    skillLead:
-      'Mức hơn (skill) so với mức trung bình nhiều năm (B0), trên các năm kiểm tra 2016–2024. Trên 0 là tốt hơn B0. Vạch ngang là khoảng tin cậy 90%.',
-    skillVsBnw: 'Phép thử quyết định: mô hình có thời tiết so với cùng mô hình bỏ thời tiết (BNW)',
     models: {
       m1_ridge: 'M1 · ridge + thời tiết NASA',
       m2_lgbm: 'M2 · LightGBM (mô hình phụ)',
@@ -650,60 +632,43 @@ export const vi = {
       b2: 'B2 · giống năm trước',
       b0: 'B0 · trung bình nhiều năm',
     },
-    subsets: { national: 'Cả nước', na_ht_th: 'Nghệ An, Hà Tĩnh, Thanh Hóa', nghe_an: 'Riêng Nghệ An' },
-    gatesTitle: 'Bốn điều kiện trước khi hiện dự đoán',
     gateNames: {
       G1: 'Đủ số liệu',
       G2: 'Thắng B0 và BNW',
-      G3: 'Ổn định ở Bắc Trung Bộ',
+      G3: 'Không kém B2 (giống năm trước) ở Nghệ An, Hà Tĩnh, Thanh Hóa',
       G4: 'Khoảng 80% chứa số thật ở 70–90% năm kiểm tra',
     },
     passed: 'Đạt',
     failed: 'Không đạt',
-    gateCol: 'Điều kiện',
-    seasonCol: 'Vụ',
-    resultCol: 'Kết quả',
-    detailCol: 'Chi tiết',
     reportsTitle: 'Ghi chú phương pháp',
     claimMade: 'Được phép nói “thời tiết NASA giúp dự đoán tốt hơn”',
     claimNotMade: 'Không được nói “thời tiết NASA giúp dự đoán tốt hơn”',
     limitsTitle: 'Giới hạn đã biết',
-    limits: [
-      'Ô lưới khoảng 55 × 66 km làm mượt cực trị (Zhang và cộng sự, 2011).',
-      'Mưa lớn chỉ tính nhánh 24 giờ; nhánh 12 giờ không tính được từ số liệu ngày.',
-      'Cảnh báo chính thức còn xét độ ẩm, gió và thời gian; đây là cách đọc máy móc các bảng.',
-      'Năng suất là trung bình tỉnh, phần lớn lúa có tưới; không phải ruộng thiếu nước.',
-    ],
-    freeze: (c: string) => `Kết quả được cố định ở commit ${c}`,
   },
   assistant: {
-    eyebrow: 'Trợ lý bằng chứng',
-    title: 'Hỏi, và nhận câu trả lời kèm nguồn',
-    lead: 'Trợ lý tìm trong kho bằng chứng của Miaudow và dữ liệu thật đã tính sẵn. Nó không bịa số: nếu không có bằng chứng, nó nói là không có.',
-    honest:
-      'Không dùng mô hình ngôn ngữ lớn. Câu trả lời được ghép từ các đoạn bằng chứng đã kiểm tra và phép tra số liệu.',
     placeholder: 'Ví dụ: Năm 2010 có hạn không?',
     inputLabel: 'Câu hỏi của bạn',
     ask: 'Hỏi',
-    examples: [
-      'Năm 2010 có hạn không?',
-      'Trồng lạc lãi bao nhiêu?',
-      'Nên trồng gì cho ruộng nhà tôi?',
-      'Dữ liệu NASA là gì?',
-      'Mô hình dự đoán lúa xuân có tốt không?',
-      'Lúa cần bao nhiêu nước?',
-    ],
     examplesLabel: 'Câu hỏi mẫu',
-    pipeline: ['Câu hỏi', 'Tìm bằng chứng', 'Tra số liệu', 'Trả lời kèm nguồn', 'Bạn quyết định'],
     noEvidence: 'Miaudow chưa có bằng chứng cho câu hỏi này. Hãy hỏi cán bộ khuyến nông hoặc trạm khuyến nông của xã.',
     noRanking:
       'Miaudow không chọn cách trồng thay bạn. Bằng chứng chỉ có một năm, một ô cho mỗi cây, nên không đủ để xếp hạng. Đây là điều mỗi cách trồng cho thấy:',
-    evidenceFrom: 'Bằng chứng',
-    matchScore: 'độ khớp',
     you: 'Bạn',
     bot: 'Trợ lý',
     clear: 'Xóa cuộc trò chuyện',
-    exampleTag: 'Ví dụ',
+    yearsOnlyFrom: (first: number, last: number) => `Miaudow chỉ có số liệu các năm ${first}–${last}.`,
+    yearIntro: (year: number) =>
+      `Năm ${year}, phần đất trồng Nghệ An gặp điều kiện theo QĐ 18/2021, trong thời gian có cây của thử nghiệm Trịnh Đức Toàn và cs. (2023) trên ruộng:`,
+    springRiceVsNormal: 'Lúa vụ Đông Xuân cả tỉnh so với bình thường',
+    springRiceYear: (year: number) => `Lúa vụ Đông Xuân ${year}`,
+    pastYearNote: 'Đây là năm đã qua, không phải dự báo. Số liệu từ ô lưới khoảng 55 × 66 km, không đo ruộng nhà bạn.',
+    cropIntro: (name: string) => `${name} trong thử nghiệm 2020–21 của Trịnh Đức Toàn và cs. (2023), lãi đã trừ công:`,
+    tcvnIrrigation: 'Mức tưới theo TCVN 8641',
+    tcvnNoAmount: 'TCVN 8641 không ghi mức tưới cho cây này.',
+    cropClosing: 'Một ô thử, một năm. Giá năm nay có thể khác; hỏi nơi thu mua ở xã.',
+    yearlyProfit: 'Lãi cả năm',
+    profit: 'Lãi',
+    rankingClosing: 'Hãy so sánh trên các thẻ và bàn với cán bộ khuyến nông; quyết định là của gia đình bạn.',
   },
   evidence: {
     photosTitle: 'Ảnh và giấy phép',
@@ -711,7 +676,6 @@ export const vi = {
       'Ảnh thật lấy từ Wikimedia Commons, giữ nguyên tác giả và giấy phép. Ảnh CC BY-SA đã chỉnh màu nhẹ và được chia sẻ lại theo cùng giấy phép. Tranh có nhãn “Do AI tạo” không phải ảnh chụp Nghệ An.',
     photoLicence: 'Giấy phép',
     photoSource: 'Trang ảnh gốc',
-    eyebrow: 'Thư viện bằng chứng',
     title: 'Mỗi kết luận có chỗ để kiểm tra',
     lead: 'Đây là những điều Miaudow dựa vào, nối tới con số, phép tính và trang tài liệu gốc. Chỗ nào nguồn chưa rõ hay mâu thuẫn, chúng tôi ghi ra, không giấu.',
     ladderLabel: 'Cách đọc một bằng chứng',
@@ -746,7 +710,6 @@ export const vi = {
     notProve: 'Không chứng minh được',
     moreClaims: (n: number) => `Xem thêm ${n} nhận định`,
     sourceDetails: 'Nơi, thời gian, cách đọc và giới hạn',
-    conflictsEyebrow: 'Nói thẳng',
     conflictsTitle: 'Chỗ nguồn mâu thuẫn hay chưa rõ',
     conflictsLead:
       'Khi đọc kỹ tài liệu, chúng tôi gặp những chỗ không khớp. Chúng được giữ lại để cán bộ và người đọc tự cân nhắc.',
@@ -779,7 +742,6 @@ export const vi = {
     trialSeason: 'Năm thử nghiệm 2020–21',
     ndviGaps: (n: number, total: number) =>
       `${n}/${total} lần chụp không có điểm ảnh tin cậy (mây): để trống, không điền`,
-    sectionEyebrow: 'Khí hậu và thực vật',
     sectionTitle: 'Một năm, ba cách nhìn',
     sectionLead:
       'Chọn một năm ở bất kỳ đâu trên trang: bản đồ 3D, dải mưa, hai nguồn mưa và độ xanh thực vật đều đổi theo cùng năm đó.',
@@ -830,12 +792,8 @@ export const vi = {
   },
   media: {
     illustration: 'Do AI tạo, không phải ảnh thật',
-    photo: 'Ảnh thật',
-    pause: 'Dừng chuyển động ảnh',
-    play: 'Cho ảnh chuyển động',
   },
   copilot: {
-    eyebrow: 'Trợ lý MIAUDOW',
     title: 'Hỏi bằng lời của mình, nhận câu trả lời có nguồn',
     lead: 'Trợ lý dùng ba bộ máy của Miaudow: tra khí hậu, tìm bằng chứng và so sánh cách trồng. Mọi con số trong câu trả lời đều được đối chiếu với dữ liệu trước khi hiện.',
     greeting: 'Xin chào bà con!',
@@ -862,7 +820,7 @@ export const vi = {
       'Ruộng nhà tôi cuối kênh, mùa hè thường thiếu nước, nên xem những cách trồng nào?',
       'Năm 2010 có hạn không?',
       'Ngưỡng hạn hán trong quyết định 18 là gì?',
-      'Mô hình dự đoán lúa xuân có tốt không?',
+      'Mô hình dự đoán lúa vụ Đông Xuân có tốt không?',
       'Lúa cần tưới bao nhiêu nước?',
       'Năm sau có hạn không?',
       'Năm nào giống năm 2010?',
@@ -910,7 +868,6 @@ export const vi = {
     noMic: 'Trình duyệt này chưa hỗ trợ nói; bạn vẫn gõ câu hỏi được.',
   },
   quality: {
-    eyebrow: 'Kiểm tra tự động mỗi lần dựng dữ liệu',
     title: 'Chất lượng dữ liệu',
     lead: (n: number) =>
       `Mỗi lần dựng lại dữ liệu, máy chạy ${n} phép kiểm tra: mã băm của tệp, đơn vị và khoảng giá trị, ngày tháng, ranh giới bản đồ và giấy phép. Kết quả hiện nguyên ở đây, kể cả cảnh báo.`,
@@ -947,7 +904,6 @@ export const vi = {
     satPlay: 'Cho vệ tinh bay',
     flagshipNote:
       'Hai vệ tinh lớn là hình minh họa: một chiếc mang cờ Việt Nam, một là Terra của NASA (nguồn số liệu đất trồng MODIS) mang cờ Mỹ. Quỹ đạo được vẽ để bay qua Nghệ An, không phải vị trí thật của vệ tinh.',
-    eyebrow: 'Đài quan sát Trái Đất',
     title: 'Từ vũ trụ xuống đồng lúa Nghệ An',
     scenes: {
       cosmos: {
@@ -968,7 +924,7 @@ export const vi = {
       vietnam: {
         title: 'Việt Nam',
         short: 'Việt Nam',
-        body: 'Dải đất hình chữ S. Nghệ An nằm ở Bắc Trung Bộ, nơi mưa tập trung vào mùa thu và hạn hay đến vào hè.',
+        body: 'Dải đất hình chữ S. Nghệ An nằm ở Bắc Trung Bộ.',
       },
       'nghe-an': {
         title: 'Nghệ An',
@@ -1072,10 +1028,8 @@ export const vi = {
     wetter: 'Ướt hơn bình thường',
     cellNote:
       'Một ô NASA POWER rộng khoảng 55 × 66 km, gồm cả đồi và sông, không phải số đo tại ruộng. Chiều cao cột chỉ để so sánh.',
-    plainDry: (year: number, pct: string) =>
-      `Năm ${year}, ô này mưa ít hơn mức bình thường khoảng ${pct}. Ruộng xa kênh dễ thiếu nước hơn.`,
-    plainWet: (year: number, pct: string) =>
-      `Năm ${year}, ô này mưa nhiều hơn mức bình thường khoảng ${pct}. Ruộng trũng dễ bị ngập hơn.`,
+    plainDry: (year: number, pct: string) => `Năm ${year}, ô này mưa ít hơn mức bình thường khoảng ${pct}.`,
+    plainWet: (year: number, pct: string) => `Năm ${year}, ô này mưa nhiều hơn mức bình thường khoảng ${pct}.`,
     plainNormal: (year: number) => `Năm ${year}, ô này mưa gần mức bình thường.`,
     insightLimits: 'Mưa cả năm chưa cho biết mưa rơi vào tháng nào; xem từng tháng ở trang Khoa học.',
     ask: 'Hỏi trợ lý về năm này',
@@ -1180,7 +1134,7 @@ export const vi = {
     riceDetail: (season: string) => `Năng suất thật ÷ trung bình 3 năm trước − 1 (vụ ${season}).`,
     predictionsLabel: 'Ước tính của mô hình cho năm kiểm tra, lúa vụ Mùa, 2016–2024',
     predictionsDetail:
-      'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
+      'Mỗi năm được mô hình ước tính khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
     reliefLabel: 'Địa hình Nghệ An (NASA SRTM)',
     reliefDetail:
       'Ảnh đổ bóng từ độ cao mặt đất, mặt trời hướng tây bắc (315°, cao 45°). Chỉ là độ cao; không cho biết nước tới được đâu.',

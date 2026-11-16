@@ -3,7 +3,6 @@ import type { Messages } from './vi';
 // English mirrors the Vietnamese structure exactly (the type makes a missing key a build error).
 export const en: Messages = {
   meta: {
-    code: 'en',
     locale: 'en-GB',
     other: 'VI',
     otherLabel: 'Chuyển sang tiếng Việt',
@@ -48,16 +47,11 @@ export const en: Messages = {
     /** The singular of an API unit after the number 1 (D-192). */
     unitOfOne: (unit: string) => (unit === 'crops' ? 'crop' : unit),
     sourceFor: (name: string) => `See the source: ${name}`,
-    open: 'Open',
     close: 'Close',
     millionPerHa: 'million VND/ha',
     perKg: 'VND/kg',
     notListed: 'Not listed in the source',
     noData: 'No data yet',
-    farmland: 'farmland',
-    percentOfFarmland: (v: string) => `${v} of farmland`,
-    yearsCount: (n: number) => `${n} years`,
-    sample: 'Illustration',
     loading: 'Loading…',
     error: 'The data could not be loaded.',
     retry: 'Try again',
@@ -83,7 +77,6 @@ export const en: Messages = {
     illustration: 'An image, not data.',
   },
   sheet: {
-    title: 'Where this number comes from',
     inPaper: (value: string) => `In the paper: ${value}`,
     aboutValue: 'About the value',
     from: 'From',
@@ -129,7 +122,6 @@ export const en: Messages = {
     titleA: 'Our village fields,',
     titleB: 'read with data from space.',
     ctaFarmer: 'Understand my field',
-    ctaScience: 'Explore Nghe An data',
     ctaCopilot: 'Ask the copilot',
     pause: 'Pause photos',
     aboutTitle: 'What does this app do?',
@@ -163,7 +155,7 @@ export const en: Messages = {
     cores: [
       {
         name: 'Climate core',
-        does: 'Reads more than 30 years of NASA weather over Nghe An farmland, with the state’s own thresholds for drought, heat, cold and heavy rain.',
+        does: 'Reads more than 30 years of NASA weather over Nghe An farmland, with the state’s own thresholds for drought, heat, damaging cold and heavy rain.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Decision 18/2021',
         gives: 'Weather of each year and the share of farmland meeting each condition of Decision 18/2021',
         limit: 'No forecast of next season. Past years are not a forecast.',
@@ -209,7 +201,7 @@ export const en: Messages = {
       { title: 'What is your field like?', body: 'High field, canal end, or reliable water. One tap.' },
       {
         title: 'What happened in past years?',
-        body: 'Pick the dry or cold years you remember and look back with NASA data.',
+        body: 'Pick the drought years and cold years you remember and look back with NASA data.',
       },
       {
         title: 'What matters most to your family?',
@@ -256,13 +248,12 @@ export const en: Messages = {
       'R-P03': 'Trịnh Đức Toàn et al. (2023)',
     } as Record<string, string>,
     stepOf: (n: number) => `Step ${n}/4`,
-    startEyebrow: 'Water-short rice land in Nghe An',
     startTitle: 'Your field: what to grow next season?',
     startLead:
       'Four short steps. No typing. At the end you have 6 cards to compare with your family and the extension officer.',
     helpsTitle: 'This part helps you',
     helps: [
-      'Look back at the dry, hot and wet years you remember, with NASA weather data.',
+      'Look back at the drought, heat and heavy-rain years you remember, with NASA weather data.',
       'Put 6 ways of farming tested in Do Luong side by side: calendar, profit in the trial, water, soil.',
       'Have questions ready to take to the extension officer.',
     ],
@@ -305,10 +296,10 @@ export const en: Messages = {
     limitsTitle: 'Limits of these numbers',
     cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghe An farmland, each about 55 × 66 km.`,
     limits: [
-      'Grid values smooth out extremes; your own field is not measured.',
-      'Official warnings weigh other factors too; this is a mechanical reading of the Decision’s tables.',
+      'Each value is an average over a wide area, so a very heavy rain or a very hot spell in one place may not show. Your own field is not measured.',
+      'Official warnings weigh other factors too. Here the data are only compared with the tables of Decision 18/2021, so this is not an official record.',
       'Daily totals can miss heavy rain that crosses midnight.',
-      'Heat or cold spells whose days fall in different bands are not counted.',
+      'A heat or damaging-cold spell whose days are at different temperature levels of the Decision is not counted.',
     ],
     noYears: 'Pick at least one year to see it.',
     prioTitle: 'What matters most to your family?',
@@ -371,15 +362,12 @@ export const en: Messages = {
       rice: 'Province rice against normal',
     },
     crop: 'Crop',
-    drought: 'Drought',
-    heat: 'Heat',
-    rain: 'Heavy rain',
     cropsInYear: 'Different crops in the year',
     livingDays: 'Days with a living crop',
     principle: 'Why this check',
     legumeYes: 'Includes a legume',
     legumeNo: 'No legume',
-    legumeNote: 'Legumes leave nitrogen only when stems and leaves stay on the field.',
+    legumeNote: 'In one peanut study, the field gained nitrogen only when stems and leaves stayed on the field.',
     p03NoCalendar: 'The second paper gives no sowing dates, so there is no 12-month calendar and no weather per crop.',
     soilNormal: '1991–2020 average',
     waterLead: { to_apply: 'Water to apply to the field', crop_uses: 'Water the crop uses (rough estimate)' },
@@ -392,13 +380,13 @@ export const en: Messages = {
     ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',
     summaryWaterLabel: 'Water to apply, by region',
     summaryWaterNote:
-      'From the lowest to the highest of the TCVN 8641 rows for this crop and season; the rows differ by region and planting method.',
+      'From the lowest to the highest amount that the standard TCVN 8641 gives for this crop and season; the amounts differ by region and planting method.',
     noFigure: 'no figure in the source',
     summaryWater: (row: string) => `See the ${row} row below`,
     priceYear: (y: string) => `Prices of ${y}.`,
     priceYearNotStated: 'The source does not state the price year.',
     trialNote:
-      'The plans come from one unreplicated trial in former Luu Son, Do Luong (2020–21). Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
+      'The plans come from one trial in former Luu Son, Do Luong (2020–21): each crop was grown on one plot only, with no second plot to compare. Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
     rice: {
       real: 'Actual',
       prediction: 'Model estimate for a test year',
@@ -453,7 +441,7 @@ export const en: Messages = {
     yearHeading: (year: number) => `Year ${year}`,
     eachYear: 'Show each year',
     yourNumbers: 'Work it out with your price and costs',
-    yourNumbersLabel: "The trial's yield with your prices and costs, not your field's harvest.",
+    yourNumbersLabel: 'The trial’s yield with your prices and costs, not your field’s harvest.',
     own: {
       help: 'Type your sale price per kg and your costs per hectare for each crop. Leave a box empty if you do not know it.',
       study: 'In the trial',
@@ -470,9 +458,9 @@ export const en: Messages = {
       needPrice: 'Type a sale price to work it out.',
       yearSum: 'Whole year, our addition',
       costNote:
-        "The trial's costs count materials, labour, energy and interest. If your costs leave out your family's own labour, what is left cannot be compared with the trial's profit.",
+        'The trial’s costs count materials, labour, energy and interest. If your costs leave out your family’s own labour, what is left cannot be compared with the trial’s profit.',
       sheetNote:
-        "The trial's yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.",
+        'The trial’s yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.',
       private: (button: string) =>
         `The numbers you type stay only in this page's address on this phone, unless you sign in and save your answers: then they are saved with them, and deleted when you delete your account. The "${button}" button leaves them out.`,
     },
@@ -507,7 +495,7 @@ export const en: Messages = {
       'Method and limits',
     ],
     conclusion: (seq: string) =>
-      `In the 2020–21 trial in former Luu Son, Do Luong, the sequence ${seq} was grown and each season's profit recorded.`,
+      `In the 2020–21 trial in former Luu Son, Do Luong, the sequence ${seq} was grown and each season’s profit recorded.`,
     meaning:
       'The number shows what this plan once did on one plot, in one year, at that year’s prices. It is not a profit the family asking can count on.',
     whereP02:
@@ -517,10 +505,8 @@ export const en: Messages = {
     fitLabel: 'Their field:',
     askTitle: 'Questions to clear up with the family',
     quotePage: (page: string) => `p. ${page}`,
-    eyebrow: 'For extension officers',
     title: 'The evidence behind every card',
     lead: 'Each row on a farmer’s card comes from a specific source. This page gathers them so officers can explain, and says plainly where the evidence is thin.',
-    scopeTitle: 'Scope of the evidence',
     scope: [
       {
         label: 'Trial site',
@@ -536,7 +522,8 @@ export const en: Messages = {
       'Each cell gives the value, the kind of evidence and the source. An empty cell means the source has no value; Miaudow does not fill it in.',
     colPlan: 'Plan',
     colMoney: 'Profit in the trial',
-    p03Money: 'Summer-autumn rice 2020 only, in the second paper of Trịnh Đức Toàn et al. (2023); not a yearly sum',
+    p03Money:
+      'Spring rice 2021 and summer-autumn rice 2020, each season as the second paper of Trịnh Đức Toàn et al. (2023) gives it; not a yearly sum',
     colWeather: 'Weather',
     colWater: 'Irrigation',
     colLand: 'Soil',
@@ -550,7 +537,7 @@ export const en: Messages = {
       {
         kind: 'derived',
         title: 'Thresholds of Decision 18/2021',
-        body: 'Each cell’s rain and heat compared with the drought, heat, cold and heavy-rain thresholds while crops are in the field',
+        body: 'Each cell’s rain and heat compared with the drought, heat, damaging-cold and heavy-rain thresholds while crops are in the field',
       },
       {
         kind: 'derived',
@@ -592,9 +579,8 @@ export const en: Messages = {
     price: 'Price',
   },
   science: {
-    eyebrow: 'Data room · for researchers',
     title: 'Nghe An across 30 seasons',
-    lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline and NSO rice yields.',
+    lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline, NSO rice yields, CHIRPS v3 rain, MODIS NDVI greenness and NASA SRTM height. The model part shows model estimates for the test years.',
     globeCta: 'See it on the 3D globe, from space down to the fields',
     mapTitle: 'The NASA POWER grid over Nghe An',
     mapLead:
@@ -638,13 +624,10 @@ export const en: Messages = {
     actual: 'Real value',
     predicted: 'Model estimate for a test year',
     interval: '80% range',
-    modelHidden: 'No prediction is shown for this season because the model did not pass its test.',
+    modelHidden: 'No model estimate is shown for this season because the model did not pass its test.',
     notModeled: 'Too little data to model this season; only real values are shown.',
     toMethod: 'See the model test results on the Method page',
     skillTitle: 'Does the model beat simple guesses?',
-    skillLead:
-      'Skill against the multi-year average (B0) on the test years 2016–2024. Above 0 is better than B0. Bars are 90% confidence intervals.',
-    skillVsBnw: 'The deciding test: the model with weather against the same model without weather (BNW)',
     models: {
       m1_ridge: 'M1 · ridge + NASA weather',
       m2_lgbm: 'M2 · LightGBM (secondary)',
@@ -653,60 +636,44 @@ export const en: Messages = {
       b2: 'B2 · like last year',
       b0: 'B0 · climatology',
     },
-    subsets: { national: 'Nationwide', na_ht_th: 'Nghe An, Ha Tinh, Thanh Hoa', nghe_an: 'Nghe An only' },
-    gatesTitle: 'Four gates before a prediction is shown',
     gateNames: {
       G1: 'Enough data',
       G2: 'Beats B0 and BNW',
-      G3: 'Stable in the North Central region',
+      G3: 'Not worse than B2 (like last year) in Nghe An, Ha Tinh, Thanh Hoa',
       G4: '80% range holds the actual value in 70–90% of test years',
     },
     passed: 'Passed',
     failed: 'Failed',
-    gateCol: 'Gate',
-    seasonCol: 'Season',
-    resultCol: 'Result',
-    detailCol: 'Detail',
     reportsTitle: 'Method notes',
     claimMade: 'May say “NASA weather improves the prediction”',
     claimNotMade: 'May not say “NASA weather improves the prediction”',
     limitsTitle: 'Known limits',
-    limits: [
-      'Cells of about 55 × 66 km smooth out extremes (Zhang et al., 2011).',
-      'Heavy rain uses the 24-hour branch only; the 12-hour branch is not computable from daily data.',
-      'Official warnings weigh humidity, wind and duration; this is a mechanical reading of the tables.',
-      'Yields are province averages, mostly irrigated rice, not water-short fields.',
-    ],
-    freeze: (c: string) => `Results frozen at commit ${c}`,
   },
   assistant: {
-    eyebrow: 'Evidence assistant',
-    title: 'Ask, and get answers with sources',
-    lead: 'The assistant searches Miaudow’s evidence base and the real data already computed. It does not invent numbers: if there is no evidence, it says so.',
-    honest: 'No large language model is used. Answers are assembled from checked evidence passages and data look-ups.',
     placeholder: 'For example: Was 2010 a drought year?',
     inputLabel: 'Your question',
     ask: 'Ask',
-    examples: [
-      'Was 2010 a drought year?',
-      'How much does peanut earn?',
-      'What should I grow on my field?',
-      'What is the NASA data?',
-      'Is the spring rice model good?',
-      'How much water does rice need?',
-    ],
     examplesLabel: 'Example questions',
-    pipeline: ['Question', 'Find evidence', 'Look up data', 'Answer with sources', 'You decide'],
     noEvidence:
       'Miaudow has no evidence for this question yet. Please ask the extension officer or the commune extension station.',
     noRanking:
       'Miaudow does not choose a plan for you. The evidence covers one year and one plot per crop, which is not enough to rank. This is what each plan shows:',
-    evidenceFrom: 'Evidence',
-    matchScore: 'match',
     you: 'You',
     bot: 'Assistant',
     clear: 'Clear the conversation',
-    exampleTag: 'Example',
+    yearsOnlyFrom: (first: number, last: number) => `Miaudow only has data for ${first}–${last}.`,
+    yearIntro: (year: number) =>
+      `In ${year}, share of Nghe An farmland meeting each Decision 18/2021 condition while the crops of the Trịnh Đức Toàn et al. (2023) trial were in the field:`,
+    springRiceVsNormal: 'Province spring rice against normal',
+    springRiceYear: (year: number) => `Spring rice ${year}`,
+    pastYearNote: 'This is a past year, not a forecast. Values come from cells of about 55 × 66 km, not your field.',
+    cropIntro: (name: string) => `${name} in the 2020–21 trial of Trịnh Đức Toàn et al. (2023), profit net of labour:`,
+    tcvnIrrigation: 'Irrigation in TCVN 8641',
+    tcvnNoAmount: 'TCVN 8641 lists no irrigation amount for this crop.',
+    cropClosing: 'One plot, one year. Prices may differ this year; ask local buyers.',
+    yearlyProfit: 'Yearly profit',
+    profit: 'Profit',
+    rankingClosing: 'Compare the cards and talk to the extension officer; the decision is your family’s.',
   },
   evidence: {
     photosTitle: 'Photographs and licences',
@@ -714,7 +681,6 @@ export const en: Messages = {
       'Real photographs come from Wikimedia Commons with their authors and licences. CC BY-SA photographs were lightly colour-adjusted and are shared under the same licence. Images labelled “AI-generated” are not photographs of Nghe An.',
     photoLicence: 'Licence',
     photoSource: 'Original file page',
-    eyebrow: 'Evidence library',
     title: 'Every conclusion has a place to check it',
     lead: 'What Miaudow relies on, linked to the number, the calculation and the page of the original document. Where a source is unclear or contradicts itself, we say so instead of hiding it.',
     ladderLabel: 'How to read one piece of evidence',
@@ -749,7 +715,6 @@ export const en: Messages = {
     notProve: 'Does not prove',
     moreClaims: (n: number) => `Show ${n} more claims`,
     sourceDetails: 'Place, period, how it was read and caveats',
-    conflictsEyebrow: 'Plainly',
     conflictsTitle: 'Where the sources disagree or are unclear',
     conflictsLead:
       'Reading the documents closely, we found places that do not match. They stay visible so officers and readers can weigh them.',
@@ -782,7 +747,6 @@ export const en: Messages = {
     trialSeason: 'Trial year 2020–21',
     ndviGaps: (n: number, total: number) =>
       `${n}/${total} passes had no reliable pixel (cloud): left empty, never filled`,
-    sectionEyebrow: 'Climate and vegetation',
     sectionTitle: 'One year, three views',
     sectionLead:
       'Pick a year anywhere on this page: the 3D map, the rain strip, the two rain sources and the greenness all follow the same year.',
@@ -833,12 +797,8 @@ export const en: Messages = {
   },
   media: {
     illustration: 'AI-generated, not a photograph',
-    photo: 'Photograph',
-    pause: 'Pause the image motion',
-    play: 'Play the image motion',
   },
   copilot: {
-    eyebrow: 'MIAUDOW copilot',
     title: 'Ask in your own words, get answers with sources',
     lead: 'The copilot uses Miaudow’s three engines: climate look-up, evidence search and plan comparison. Every number in an answer is checked against the data before it is shown.',
     greeting: 'Hello, neighbours!',
@@ -867,7 +827,7 @@ export const en: Messages = {
       'My field is at the end of the canal and short of water in summer. Which plans should I look at?',
       'Was 2010 a drought year?',
       'What is the drought threshold in Decision 18?',
-      'Is the spring rice prediction model any good?',
+      'Is the spring rice model any good?',
       'How much irrigation does rice need?',
       'Will next year be dry?',
       'Which years were like 2010?',
@@ -915,7 +875,6 @@ export const en: Messages = {
     noMic: 'This browser has no speech input; you can still type.',
   },
   quality: {
-    eyebrow: 'Automatic checks on every data build',
     title: 'Data quality',
     lead: (n: number) =>
       `Every time the data is rebuilt, ${n} checks run: file hashes, units and value ranges, dates, map boundaries and licences. The results are shown here as they are, warnings included.`,
@@ -952,7 +911,6 @@ export const en: Messages = {
     satPlay: 'Fly satellites',
     flagshipNote:
       'The two large satellites are illustrations: one flies the flag of Vietnam, the other is NASA’s Terra (source of the MODIS farmland data) with the US flag. Their orbits are drawn to pass over Nghe An, not their real positions.',
-    eyebrow: 'Earth observatory',
     title: 'From space down to the rice fields of Nghe An',
     scenes: {
       cosmos: {
@@ -973,7 +931,7 @@ export const en: Messages = {
       vietnam: {
         title: 'Vietnam',
         short: 'Vietnam',
-        body: 'The S-shaped country. Nghe An lies in the North Central region, where rain comes mostly in autumn and drought often comes in summer.',
+        body: 'The S-shaped country. Nghe An lies in the North Central region.',
       },
       'nghe-an': {
         title: 'Nghe An',
@@ -1077,10 +1035,8 @@ export const en: Messages = {
     wetter: 'Wetter than normal',
     cellNote:
       'A NASA POWER cell is about 55 × 66 km and includes hills and rivers; it is not a field measurement. Column height is for comparison only.',
-    plainDry: (year: number, pct: string) =>
-      `In ${year} this cell had about ${pct} less rain than normal. Fields far from the canal run short of water more easily.`,
-    plainWet: (year: number, pct: string) =>
-      `In ${year} this cell had about ${pct} more rain than normal. Low-lying fields flood more easily.`,
+    plainDry: (year: number, pct: string) => `In ${year} this cell had about ${pct} less rain than normal.`,
+    plainWet: (year: number, pct: string) => `In ${year} this cell had about ${pct} more rain than normal.`,
     plainNormal: (year: number) => `In ${year} this cell had close to its normal rain.`,
     insightLimits: 'Rain over the year does not tell you which months it fell in; see each month on the Science page.',
     ask: 'Ask the copilot about this year',
@@ -1183,7 +1139,7 @@ export const en: Messages = {
     riceDetail: (season: string) => `Actual yield ÷ mean of the 3 previous years − 1 (${season} season).`,
     predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',
     predictionsDetail:
-      'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
+      'Each year was estimated by the model before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
     reliefLabel: 'Nghe An terrain (NASA SRTM)',
     reliefDetail:
       'A shaded picture made from ground height, sun from the north-west (315°, altitude 45°). Height only; it says nothing about where water reaches.',
@@ -1212,13 +1168,13 @@ export const en: Messages = {
       'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you, the sale prices and costs you typed, if any), so you can open them again on another phone. Saving does not change any number.',
       'We store only your Google account id (a code that Google gives) and the answers you save. No name, email or picture.',
       'This data is kept in a database hosted by Railway, in the Singapore region, until you delete it.',
-      "Google carries out the sign-in itself, under Google's privacy policy. Google's code runs only on this page and the saved answers page, and may set cookies there.",
+      'Google carries out the sign-in itself, under Google’s privacy policy. Google’s code runs only on this page and the saved answers page, and may set cookies there.',
     ],
     noticeFull: 'Read the full privacy notice',
     agree: 'I have read this, sign in with Google',
-    googleLoading: "Opening Google's sign-in button…",
-    googleFailed: "Google's sign-in button did not open. Check your connection and try again.",
-    googleHelp: "Tap Google's button below.",
+    googleLoading: 'Opening Google’s sign-in button…',
+    googleFailed: 'Google’s sign-in button did not open. Check your connection and try again.',
+    googleHelp: 'Tap Google’s button below.',
     notAvailable: 'Signing in is not available right now. Every page still works as usual.',
     signingIn: 'Signing in…',
     signInFailed: 'Signing in did not work. Please try again.',

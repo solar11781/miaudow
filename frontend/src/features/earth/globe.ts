@@ -500,5 +500,3 @@ export function createGlobe(
     },
   };
 }
-
-export const COMPOSITES = VEG.composites;
