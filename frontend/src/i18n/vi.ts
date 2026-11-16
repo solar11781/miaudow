@@ -162,7 +162,7 @@ export const vi = {
     cores: [
       {
         name: 'Lõi khí hậu',
-        does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn, nóng, rét, mưa lớn của nhà nước.',
+        does: 'Đọc hơn 30 năm mưa nắng NASA trên đất trồng Nghệ An, theo đúng ngưỡng hạn hán, nắng nóng, rét hại, mưa lớn của nhà nước.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Quyết định 18/2021',
         gives: 'Thời tiết từng năm và phần đất trồng gặp từng điều kiện của Quyết định 18/2021',
         limit: 'Không dự báo vụ tới. Năm đã qua không phải dự báo.',
@@ -298,7 +298,7 @@ export const vi = {
       'Giá trị trên ô lưới làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
       'Cảnh báo chính thức còn xét thêm yếu tố khác; đây là cách đọc máy móc các bảng của Quyết định.',
       'Tổng mưa theo ngày có thể sót trận mưa lớn kéo qua nửa đêm.',
-      'Đợt nóng hay rét có ngày rơi vào các bậc nhiệt khác nhau thì không được đếm.',
+      'Đợt nắng nóng hay rét hại có ngày rơi vào các bậc nhiệt khác nhau thì không được đếm.',
     ],
     noYears: 'Chọn ít nhất một năm để xem.',
     prioTitle: 'Gia đình quan tâm điều gì nhất?',
@@ -547,7 +547,7 @@ export const vi = {
       {
         kind: 'derived',
         title: 'Ngưỡng của Quyết định 18/2021',
-        body: 'So mưa, nắng của từng ô với ngưỡng hạn, nóng, rét, mưa lớn, trong lúc có cây trên ruộng',
+        body: 'So mưa, nắng của từng ô với ngưỡng hạn hán, nắng nóng, rét hại, mưa lớn, trong lúc có cây trên ruộng',
       },
       {
         kind: 'derived',
@@ -635,7 +635,7 @@ export const vi = {
     actual: 'Số liệu thật',
     predicted: 'Ước tính của mô hình cho năm kiểm tra',
     interval: 'Khoảng 80%',
-    modelHidden: 'Dự đoán không được hiện cho vụ này vì mô hình chưa qua bài kiểm tra.',
+    modelHidden: 'Ước tính của mô hình không được hiện cho vụ này vì mô hình chưa qua bài kiểm tra.',
     notModeled: 'Vụ này không đủ số liệu để mô hình hóa; chỉ hiện số thật.',
     toMethod: 'Xem kết quả kiểm tra mô hình ở trang Phương pháp',
     skillTitle: 'Mô hình có thắng cách đoán đơn giản không?',
@@ -651,7 +651,7 @@ export const vi = {
       b0: 'B0 · trung bình nhiều năm',
     },
     subsets: { national: 'Cả nước', na_ht_th: 'Nghệ An, Hà Tĩnh, Thanh Hóa', nghe_an: 'Riêng Nghệ An' },
-    gatesTitle: 'Bốn điều kiện trước khi hiện dự đoán',
+    gatesTitle: 'Bốn điều kiện trước khi hiện ước tính của mô hình',
     gateNames: {
       G1: 'Đủ số liệu',
       G2: 'Thắng B0 và BNW',
@@ -690,7 +690,7 @@ export const vi = {
       'Trồng lạc lãi bao nhiêu?',
       'Nên trồng gì cho ruộng nhà tôi?',
       'Dữ liệu NASA là gì?',
-      'Mô hình dự đoán lúa xuân có tốt không?',
+      'Mô hình dự đoán lúa vụ Đông Xuân có tốt không?',
       'Lúa cần bao nhiêu nước?',
     ],
     examplesLabel: 'Câu hỏi mẫu',
@@ -862,7 +862,7 @@ export const vi = {
       'Ruộng nhà tôi cuối kênh, mùa hè thường thiếu nước, nên xem những cách trồng nào?',
       'Năm 2010 có hạn không?',
       'Ngưỡng hạn hán trong quyết định 18 là gì?',
-      'Mô hình dự đoán lúa xuân có tốt không?',
+      'Mô hình dự đoán lúa vụ Đông Xuân có tốt không?',
       'Lúa cần tưới bao nhiêu nước?',
       'Năm sau có hạn không?',
       'Năm nào giống năm 2010?',
@@ -1180,7 +1180,7 @@ export const vi = {
     riceDetail: (season: string) => `Năng suất thật ÷ trung bình 3 năm trước − 1 (vụ ${season}).`,
     predictionsLabel: 'Ước tính của mô hình cho năm kiểm tra, lúa vụ Mùa, 2016–2024',
     predictionsDetail:
-      'Mỗi năm được dự đoán khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
+      'Mỗi năm được mô hình ước tính khi mô hình chưa thấy năm đó; vạch là khoảng 80%. Xem lại năm đã qua, không phải dự báo.',
     reliefLabel: 'Địa hình Nghệ An (NASA SRTM)',
     reliefDetail:
       'Ảnh đổ bóng từ độ cao mặt đất, mặt trời hướng tây bắc (315°, cao 45°). Chỉ là độ cao; không cho biết nước tới được đâu.',

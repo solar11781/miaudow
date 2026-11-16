@@ -163,7 +163,7 @@ export const en: Messages = {
     cores: [
       {
         name: 'Climate core',
-        does: 'Reads more than 30 years of NASA weather over Nghe An farmland, with the state’s own thresholds for drought, heat, cold and heavy rain.',
+        does: 'Reads more than 30 years of NASA weather over Nghe An farmland, with the state’s own thresholds for drought, heat, damaging cold and heavy rain.',
         uses: 'NASA POWER, CHIRPS, NASA MODIS, Decision 18/2021',
         gives: 'Weather of each year and the share of farmland meeting each condition of Decision 18/2021',
         limit: 'No forecast of next season. Past years are not a forecast.',
@@ -209,7 +209,7 @@ export const en: Messages = {
       { title: 'What is your field like?', body: 'High field, canal end, or reliable water. One tap.' },
       {
         title: 'What happened in past years?',
-        body: 'Pick the dry or cold years you remember and look back with NASA data.',
+        body: 'Pick the drought years and cold years you remember and look back with NASA data.',
       },
       {
         title: 'What matters most to your family?',
@@ -262,7 +262,7 @@ export const en: Messages = {
       'Four short steps. No typing. At the end you have 6 cards to compare with your family and the extension officer.',
     helpsTitle: 'This part helps you',
     helps: [
-      'Look back at the dry, hot and wet years you remember, with NASA weather data.',
+      'Look back at the drought, heat and heavy-rain years you remember, with NASA weather data.',
       'Put 6 ways of farming tested in Do Luong side by side: calendar, profit in the trial, water, soil.',
       'Have questions ready to take to the extension officer.',
     ],
@@ -308,7 +308,7 @@ export const en: Messages = {
       'Grid values smooth out extremes; your own field is not measured.',
       'Official warnings weigh other factors too; this is a mechanical reading of the Decision’s tables.',
       'Daily totals can miss heavy rain that crosses midnight.',
-      'Heat or cold spells whose days fall in different bands are not counted.',
+      'Heat or damaging-cold spells whose days fall in different bands are not counted.',
     ],
     noYears: 'Pick at least one year to see it.',
     prioTitle: 'What matters most to your family?',
@@ -453,7 +453,7 @@ export const en: Messages = {
     yearHeading: (year: number) => `Year ${year}`,
     eachYear: 'Show each year',
     yourNumbers: 'Work it out with your price and costs',
-    yourNumbersLabel: "The trial's yield with your prices and costs, not your field's harvest.",
+    yourNumbersLabel: 'The trial’s yield with your prices and costs, not your field’s harvest.',
     own: {
       help: 'Type your sale price per kg and your costs per hectare for each crop. Leave a box empty if you do not know it.',
       study: 'In the trial',
@@ -470,9 +470,9 @@ export const en: Messages = {
       needPrice: 'Type a sale price to work it out.',
       yearSum: 'Whole year, our addition',
       costNote:
-        "The trial's costs count materials, labour, energy and interest. If your costs leave out your family's own labour, what is left cannot be compared with the trial's profit.",
+        'The trial’s costs count materials, labour, energy and interest. If your costs leave out your family’s own labour, what is left cannot be compared with the trial’s profit.',
       sheetNote:
-        "The trial's yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.",
+        'The trial’s yield times your sale price, minus your costs. The price and costs are the numbers you typed; nobody has checked them.',
       private: (button: string) =>
         `The numbers you type stay only in this page's address on this phone, unless you sign in and save your answers: then they are saved with them, and deleted when you delete your account. The "${button}" button leaves them out.`,
     },
@@ -507,7 +507,7 @@ export const en: Messages = {
       'Method and limits',
     ],
     conclusion: (seq: string) =>
-      `In the 2020–21 trial in former Luu Son, Do Luong, the sequence ${seq} was grown and each season's profit recorded.`,
+      `In the 2020–21 trial in former Luu Son, Do Luong, the sequence ${seq} was grown and each season’s profit recorded.`,
     meaning:
       'The number shows what this plan once did on one plot, in one year, at that year’s prices. It is not a profit the family asking can count on.',
     whereP02:
@@ -550,7 +550,7 @@ export const en: Messages = {
       {
         kind: 'derived',
         title: 'Thresholds of Decision 18/2021',
-        body: 'Each cell’s rain and heat compared with the drought, heat, cold and heavy-rain thresholds while crops are in the field',
+        body: 'Each cell’s rain and heat compared with the drought, heat, damaging-cold and heavy-rain thresholds while crops are in the field',
       },
       {
         kind: 'derived',
@@ -638,7 +638,7 @@ export const en: Messages = {
     actual: 'Real value',
     predicted: 'Model estimate for a test year',
     interval: '80% range',
-    modelHidden: 'No prediction is shown for this season because the model did not pass its test.',
+    modelHidden: 'No model estimate is shown for this season because the model did not pass its test.',
     notModeled: 'Too little data to model this season; only real values are shown.',
     toMethod: 'See the model test results on the Method page',
     skillTitle: 'Does the model beat simple guesses?',
@@ -654,7 +654,7 @@ export const en: Messages = {
       b0: 'B0 · climatology',
     },
     subsets: { national: 'Nationwide', na_ht_th: 'Nghe An, Ha Tinh, Thanh Hoa', nghe_an: 'Nghe An only' },
-    gatesTitle: 'Four gates before a prediction is shown',
+    gatesTitle: 'Four gates before a model estimate is shown',
     gateNames: {
       G1: 'Enough data',
       G2: 'Beats B0 and BNW',
@@ -692,7 +692,7 @@ export const en: Messages = {
       'How much does peanut earn?',
       'What should I grow on my field?',
       'What is the NASA data?',
-      'Is the spring rice model good?',
+      'Is the spring rice model any good?',
       'How much water does rice need?',
     ],
     examplesLabel: 'Example questions',
@@ -867,7 +867,7 @@ export const en: Messages = {
       'My field is at the end of the canal and short of water in summer. Which plans should I look at?',
       'Was 2010 a drought year?',
       'What is the drought threshold in Decision 18?',
-      'Is the spring rice prediction model any good?',
+      'Is the spring rice model any good?',
       'How much irrigation does rice need?',
       'Will next year be dry?',
       'Which years were like 2010?',
@@ -1183,7 +1183,7 @@ export const en: Messages = {
     riceDetail: (season: string) => `Actual yield ÷ mean of the 3 previous years − 1 (${season} season).`,
     predictionsLabel: 'Model estimate for a test year, winter rice, 2016–2024',
     predictionsDetail:
-      'Each year was predicted before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
+      'Each year was estimated by the model before the model had seen it; the line is the 80% range. A look back at past years, not a forecast.',
     reliefLabel: 'Nghe An terrain (NASA SRTM)',
     reliefDetail:
       'A shaded picture made from ground height, sun from the north-west (315°, altitude 45°). Height only; it says nothing about where water reaches.',
@@ -1212,13 +1212,13 @@ export const en: Messages = {
       'Signing in is only for saving your answers (the type of field, the past years you picked, what matters most to you, the sale prices and costs you typed, if any), so you can open them again on another phone. Saving does not change any number.',
       'We store only your Google account id (a code that Google gives) and the answers you save. No name, email or picture.',
       'This data is kept in a database hosted by Railway, in the Singapore region, until you delete it.',
-      "Google carries out the sign-in itself, under Google's privacy policy. Google's code runs only on this page and the saved answers page, and may set cookies there.",
+      'Google carries out the sign-in itself, under Google’s privacy policy. Google’s code runs only on this page and the saved answers page, and may set cookies there.',
     ],
     noticeFull: 'Read the full privacy notice',
     agree: 'I have read this, sign in with Google',
-    googleLoading: "Opening Google's sign-in button…",
-    googleFailed: "Google's sign-in button did not open. Check your connection and try again.",
-    googleHelp: "Tap Google's button below.",
+    googleLoading: 'Opening Google’s sign-in button…',
+    googleFailed: 'Google’s sign-in button did not open. Check your connection and try again.',
+    googleHelp: 'Tap Google’s button below.',
     notAvailable: 'Signing in is not available right now. Every page still works as usual.',
     signingIn: 'Signing in…',
     signInFailed: 'Signing in did not work. Please try again.',
