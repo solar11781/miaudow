@@ -233,8 +233,8 @@ What the script does, in order:
 3. Downloads NASA POWER daily data for every weighted cell, builds the training table, chooses the normal-yield
    method, runs the model tests, and exports the risk table, the hazard shares, the soil wetness, the secondary
    models, the sensitivity runs, the method page reports and the figures.
-4. Downloads GPM IMERG monthly rain for the rain check. NASA's servers for IMERG were mostly down during the event;
-   set `FIELDSHIFT_SKIP_IMERG=1` to skip this step.
+4. Downloads GPM IMERG monthly rain for the rain check, then builds the check (`artifacts/rain_check.json`). NASA's
+   servers for IMERG are sometimes down; set `FIELDSHIFT_SKIP_IMERG=1` to skip the download.
 5. Rebuilds the saved answers for the offline demo build (`frontend/snapshot/`).
 6. Runs `pytest -q`.
 

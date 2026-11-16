@@ -38,8 +38,9 @@ python scripts/build_results_chart.py   # artifacts/figures/results_chart.svg fo
 python scripts/build_figures.py   # docs/figures: rice yield history and farmland rule shares for the README and submission
 
 # 3b. NASA GPM IMERG Final monthly for the Nghệ An box (Earthdata token; satellite rain check, D-135, 05 §5c).
-#     FIELDSHIFT_SKIP_IMERG=1 skips it while the rain check is not built.
+#     FIELDSHIFT_SKIP_IMERG=1 skips the download; without the 288 files the next step stops.
 python scripts/download_imerg_monthly.py
+python scripts/build_rain_check.py   # artifacts/rain_check.json, IMERG against POWER monthly rain (05 §5c)
 
 # 3c. Static snapshot of real API answers for the offline demo build (frontend/snapshot/, D-150).
 python scripts/build_snapshot.py
