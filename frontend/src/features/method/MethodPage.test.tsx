@@ -94,4 +94,27 @@ describe('method page', () => {
     await screen.findByRole('heading', { level: 2, name: vi.method.metricsTitle });
     expect(scopeCells()).toContain('new_area');
   });
+  // visual audit of the method page: about 40,000 px tall; the per-province and per-region rows fold, closed at first
+  it('folds the per-province and per-region rows and keeps the headline rows open', async () => {
+    renderPage();
+    await screen.findByRole('heading', { level: 2, name: vi.method.metricsTitle });
+    const folds = [...document.querySelectorAll<HTMLDetailsElement>('#main details')].filter(
+      (d) => d.querySelector('summary')?.textContent === vi.method.breakdown,
+    );
+    expect(folds).toHaveLength(2); // spring and winter rice
+    const headline = new Set([vi.method.subsets.national, vi.method.subsets.na_ht_th]);
+    for (const fold of folds) {
+      expect(fold.open).toBe(false);
+      const scopes = [...fold.querySelectorAll('tbody tr > td:nth-of-type(2)')].map((c) => c.textContent ?? '');
+      expect(scopes).toHaveLength(36); // 4 models x (3 provinces + 6 regions)
+      expect(scopes.filter((c) => headline.has(c))).toEqual([]);
+    }
+    const open = [...document.querySelectorAll('[data-testid^="metric-row-"]')].flatMap((cell) => {
+      const row = cell.closest('tr');
+      return row && !row.closest('details') ? [row] : [];
+    });
+    expect(open.length).toBeGreaterThan(0);
+    for (const row of open) expect(headline).toContain(row.querySelector('td:nth-of-type(2)')?.textContent);
+    expect(open.some((r) => r.querySelector('td')?.textContent === vi.method.role.primary)).toBe(true);
+  });
 });

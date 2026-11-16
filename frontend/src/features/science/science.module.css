@@ -484,3 +484,47 @@
   border-radius: var(--r-md);
   background: #fff;
 }
+
+/* a long table folded behind its summary button (method page) */
+.fold > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 var(--s-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-2);
+  background: var(--bg-raised);
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold > summary svg {
+  margin-left: auto;
+  flex: none;
+}
+
+.fold[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.fold[open] > summary {
+  margin-bottom: var(--s-3);
+}
+
+@media print {
+  /* paper has no button to press: a closed fold prints its table */
+  .fold::details-content {
+    content-visibility: visible;
+  }
+
+  .fold > summary svg {
+    display: none;
+  }
+}

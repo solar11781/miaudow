@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { api, GRID_FIGURE_URL } from '../../api';
 import { ART } from '../../data/art';
+import { Icon } from '../../design-system/Icon';
 import { PhotoHead } from '../../design-system/PhotoHead';
 import type { Interval, MethodResponse, MetricRow, SeasonCode } from '../../types';
 import { COVERAGE_AXES, SEASON_CODES } from '../../types';
@@ -16,6 +17,8 @@ import s from '../science/science.module.css';
 // metric numbers with 2 decimals (team decision on the method page's display precision, UI-UX-SPEC section 15 item 10)
 const DIGITS = 2;
 const SKILLS = ['skill_vs_b0', 'skill_vs_b2', 'skill_vs_bnw'] as const;
+// a row of one province or one region (subset "unit:<id>" or "region:<id>"), not a headline row
+const BREAKDOWN = /^(unit|region):/;
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
@@ -101,7 +104,7 @@ function MetricsTable({ rows, all, refs }: { rows: MetricRow[]; all: MetricRow[]
                   {r.detail && <span className="muted small"> · {pick(r.detail)}</span>}
                 </th>
                 <td>{t.method.role[r.role]}</td>
-                <td>{t.method.subsets[r.subset] ?? r.subset.replace(/^(unit|region):/, '')}</td>
+                <td>{t.method.subsets[r.subset] ?? r.subset.replace(BREAKDOWN, '')}</td>
                 {cells.map((c, i) => (
                   <td key={i} className="num" data-value={c} data-source-ref={ref}>
                     {c}
@@ -146,18 +149,31 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
   return (
     <div className="stack">
       <h3 className="h2">{t.method.seasons[season]}</h3>
-      {groups(rows).map(([g, list]) => (
-        <div key={g} className="stack">
-          <h4 className="h3">
-            {g === 'main'
-              ? t.method.mainRuns
-              : g === 'spatial_holdout'
-                ? t.method.spatialHoldout
-                : t.method.sensitivity[g as keyof typeof t.method.sensitivity]}
-          </h4>
-          <MetricsTable rows={list} all={res.metrics} refs={refs} />
-        </div>
-      ))}
+      {groups(rows).map(([g, list]) => {
+        const headline = list.filter((r) => !BREAKDOWN.test(r.subset));
+        const breakdown = list.filter((r) => BREAKDOWN.test(r.subset));
+        return (
+          <div key={g} className="stack">
+            <h4 className="h3">
+              {g === 'main'
+                ? t.method.mainRuns
+                : g === 'spatial_holdout'
+                  ? t.method.spatialHoldout
+                  : t.method.sensitivity[g as keyof typeof t.method.sensitivity]}
+            </h4>
+            {headline.length > 0 && <MetricsTable rows={headline} all={res.metrics} refs={refs} />}
+            {breakdown.length > 0 && (
+              <details className={s.fold}>
+                <summary>
+                  {t.method.breakdown}
+                  <Icon name="chevronDown" size={18} />
+                </summary>
+                <MetricsTable rows={breakdown} all={res.metrics} refs={refs} />
+              </details>
+            )}
+          </div>
+        );
+      })}
       <h4 className="h3">{t.method.resultsChart}</h4>
       <p className="muted small">{t.method.resultsChartAlt}</p>
       {SKILLS.map((k) => {

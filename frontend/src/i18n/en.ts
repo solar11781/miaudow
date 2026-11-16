@@ -1062,6 +1062,7 @@ export const en: Messages = {
     },
     mainRuns: 'Main runs',
     spatialHoldout: 'Leave-one-region-out test',
+    breakdown: 'Results for each province and each region',
     sensitivity: {
       no_fao_flagged: 'Without FAO-flagged rows',
       mae_skill: 'Skill from MAE',
