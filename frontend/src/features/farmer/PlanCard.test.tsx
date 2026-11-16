@@ -926,3 +926,22 @@ describe('month bar labels', () => {
     });
   });
 });
+
+// rules/rotations.yaml writes the trial plot as "1000 m2"; the card writes it as the evidence and officer pages do
+describe('rulebook sizes', () => {
+  afterEach(cleanup);
+  it('read 1.000 m² in Vietnamese and 1,000 m² in English', () => {
+    const plot = { vi: 'mỗi cây trồng một ô 1000 m2, không lặp lại', en: 'one unreplicated plot of 1000 m2 per crop' };
+    const edit = (plan: Plan) => {
+      plan.why.evidence = plot;
+    };
+    const why = (id: string) => document.querySelector(`[data-testid="card-${id}-row-why"]`)?.textContent ?? '';
+    const id = renderCard(['vi-VN', 'vi'], edit);
+    expect(why(id)).toContain('1.000 m²');
+    expect(why(id)).not.toContain('1000 m2');
+    cleanup();
+    const en = renderCard(['en-GB', 'en'], edit);
+    expect(why(en)).toContain('1,000 m²');
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
+  });
+});

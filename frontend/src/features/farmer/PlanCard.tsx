@@ -12,7 +12,7 @@ import type {
   WaterFact,
 } from '../../types';
 import { Icon, type IconName } from '../../design-system/Icon';
-import { displayUnit } from '../../domain/format';
+import { displayMeasure } from '../../domain/format';
 import { consideration } from '../../domain/considerations';
 import { cardQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
@@ -683,7 +683,7 @@ function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: 
         {reply?.status === 'ok' && (
           <div className={s.explainReply}>
             <p className={s.rowNote}>{t.farmer.explain.aiLabel}</p>
-            <p>{displayUnit(reply.text)}</p>
+            <p>{displayMeasure(reply.text, lang)}</p>
           </div>
         )}
         {reply?.status === 'error' && <p className={s.rowNote}>{t.farmer.explain[reply.why]}</p>}
@@ -696,6 +696,7 @@ function ExplainPart({ answers, plan, field }: { answers: CompareRequest; plan: 
 function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers: CompareRequest; explain: boolean }) {
   const t = useT();
   const pick = usePick();
+  const { lang } = useSettings();
   const { why } = plan;
   const questions = cardQuestions(plan.id);
   return (
@@ -714,7 +715,7 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
               const plain = key ? t.farmer.considerations[key] : null;
               return (
                 <li key={r.text.en}>
-                  <span>{plain ? plain.line : pick(r.text)}</span>
+                  <span>{plain ? plain.line : displayMeasure(pick(r.text), lang)}</span>
                   {plain && <span className="muted small">{plain.source}</span>}
                   {r.source_ids.length > 0 && (
                     <SourceValue
@@ -747,7 +748,7 @@ function WhyRows({ plan, refs, answers, explain }: Omit<Ctx, 'res'> & { answers:
           <div key={k}>
             <p className={s.why}>
               <strong>{t.farmer.whyParts[k]}: </strong>
-              {displayUnit(pick(why[k]))}
+              {displayMeasure(pick(why[k]), lang)}
             </p>
             {explain && <ExplainPart answers={answers} plan={plan.id} field={k} />}
           </div>
