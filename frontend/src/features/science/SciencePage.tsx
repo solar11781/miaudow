@@ -195,7 +195,9 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
               ))}
             </tbody>
           </table>
-          <SourceValue {...refs.cellTable(rule, year)} />
+          <p className={s.tableSource}>
+            <SourceValue {...refs.cellTable(rule, year)} />
+          </p>
         </div>
       </div>
     </section>

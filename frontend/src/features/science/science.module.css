@@ -237,6 +237,11 @@
   min-width: 560px;
 }
 
+/* the source under the grid table starts on the table's text edge */
+.tableSource {
+  padding: 0 var(--s-4);
+}
+
 .table caption {
   text-align: left;
   padding: var(--s-3) var(--s-4);
