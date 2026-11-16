@@ -132,3 +132,19 @@ describe('place names in English', () => {
     expect(bad).toEqual([]);
   });
 });
+
+// roleplay audit 2026-11-16 (official): Miaudow computes only the rain part of the drought rule of Decision 18/2021
+// (ML-DESIGN: "the surface-water part is not computable"; glossary "drought (rule): rain part only"), so no headline may
+// say that farmland "met drought" or "reached level 1"
+describe('drought wording', () => {
+  it('names the rain part wherever the drought condition is claimed', () => {
+    expect(vi.home.climateTitle(20)).toContain('(phần lượng mưa)');
+    expect(en.home.climateTitle(20)).toContain('(rain part)');
+    expect(vi.home.climateLead).toContain('(phần lượng mưa)');
+    expect(en.home.climateLead).toContain('(rain part)');
+    expect(vi.home.climateLead).toContain('nguồn nước mặt');
+    expect(en.home.climateLead).toContain('surface-water');
+    expect(vi.science.shareOfFarmland).not.toContain('đạt cấp độ 1');
+    expect(en.science.shareOfFarmland).not.toContain('met level 1');
+  });
+});
