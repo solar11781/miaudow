@@ -117,16 +117,10 @@ def horn_slopes(z: np.ndarray, dx_m: np.ndarray, dy_m: float) -> tuple[np.ndarra
     return p, q
 
 
-def hillshade(
-    z: np.ndarray,
-    dx_m: np.ndarray,
-    dy_m: float,
-    azimuth_deg: float = SUN_AZIMUTH_DEG,
-    altitude_deg: float = SUN_ALTITUDE_DEG,
-) -> np.ndarray:
+def hillshade(z: np.ndarray, dx_m: np.ndarray, dy_m: float) -> np.ndarray:
     """Reflectance 0..1 of the interior (Horn 1981): dot of the surface normal and the unit vector to the sun."""
     p, q = horn_slopes(z.astype(float), dx_m, dy_m)
-    az, alt = math.radians(azimuth_deg), math.radians(altitude_deg)
+    az, alt = math.radians(SUN_AZIMUTH_DEG), math.radians(SUN_ALTITUDE_DEG)
     sx, sy, sz = math.cos(alt) * math.sin(az), math.cos(alt) * math.cos(az), math.sin(alt)
     return np.clip((-p * sx - q * sy + sz) / np.sqrt(1 + p * p + q * q), 0.0, 1.0)
 

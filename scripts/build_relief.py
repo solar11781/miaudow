@@ -9,15 +9,13 @@ script; nothing is filled from another source.
 
 import hashlib
 import json
-import time
-import urllib.error
 from datetime import UTC, datetime
 from pathlib import Path
 
 from PIL import Image
 
 from fieldshift.data import relief
-from fieldshift.data.earthdata import earthdata_opener
+from fieldshift.data.earthdata import earthdata_opener, fetch
 from fieldshift.data.manifest import append_rows
 
 RAW = Path("data/raw/srtm")
@@ -25,27 +23,13 @@ MANIFEST = Path("data/MANIFEST.csv")
 GEO = Path("frontend/data/canonical/geo.json")
 OUT = Path("frontend/public/media/relief")
 IMAGE_WIDTH_PX = 900  # the map is shown at most about 900 px wide (Grid3D stage)
-WEBP_QUALITY = 80
+WEBP_QUALITY = 80  # Pillow's default; the picture stays under the 200 kB the test allows (relief.spec.ts)
+TIMEOUT_S = 180  # one tile is about 1 to 2 MB; three minutes covers a slow link
 
 # the same cell list the data-room map draws (Grid3D.tsx reads it)
 cells = [(c["lat"], c["lon"]) for c in json.loads(GEO.read_text(encoding="utf-8"))["grid"]]
 box = relief.map_box(cells)
 opener = earthdata_opener()
-
-
-def get(url: str, retries: int = 4) -> bytes:
-    delay = 5.0
-    for attempt in range(retries + 1):
-        try:
-            with opener.open(url, timeout=180) as resp:
-                return resp.read()
-        except (urllib.error.URLError, TimeoutError, ConnectionError):
-            if attempt == retries:
-                raise
-        time.sleep(delay)
-        delay *= 2
-    raise RuntimeError("unreachable")
-
 
 RAW.mkdir(parents=True, exist_ok=True)
 tiles = {}
@@ -54,7 +38,7 @@ for name in relief.tiles_for_box(box):
     path = RAW / f"{name}.SRTMGL3.hgt.zip"
     url = relief.tile_url(name)
     if not path.exists():
-        path.write_bytes(get(url))
+        path.write_bytes(fetch(opener, url, TIMEOUT_S))
     raw = path.read_bytes()
     sha = hashlib.sha256(raw).hexdigest()
     row = relief.manifest_row(path.as_posix(), name, url, datetime.now(UTC).date().isoformat(), sha)

@@ -18,7 +18,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fieldshift.data import imerg
-from fieldshift.data.earthdata import earthdata_opener
+from fieldshift.data.earthdata import earthdata_opener, fetch
 from fieldshift.data.manifest import append_rows
 
 OUT = Path("data/raw/imerg_monthly")
@@ -35,18 +35,8 @@ box = imerg.box_for_cells(cells)
 opener = earthdata_opener()
 
 
-def get(url: str, retries: int = 4) -> str:
-    delay = 5.0
-    for attempt in range(retries + 1):
-        try:
-            with opener.open(url, timeout=120) as resp:
-                return resp.read().decode()
-        except (urllib.error.URLError, TimeoutError, ConnectionError):
-            if attempt == retries:
-                raise
-        time.sleep(delay)
-        delay *= 2
-    raise RuntimeError("unreachable")
+def get(url: str) -> str:
+    return fetch(opener, url, timeout=120).decode()
 
 
 OUT.mkdir(parents=True, exist_ok=True)

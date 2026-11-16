@@ -7,10 +7,13 @@ gets it again only when its target is a NASA Earthdata host; without a token the
 login redirect.
 """
 
+import io
+import urllib.error
 import urllib.request
 
 import pytest
 
+from fieldshift.data import earthdata
 from fieldshift.data.earthdata import earthdata_opener, gets_token
 
 SAMPLE = "sample-value-not-real"
@@ -57,3 +60,34 @@ def test_the_opener_adds_the_header_from_the_environment_only(monkeypatch: pytes
     opener = earthdata_opener()
     assert _header(opener) is None
     assert any(isinstance(h, urllib.request.HTTPCookieProcessor) for h in opener.handlers)
+
+
+class _Flaky:
+    """An opener that fails a set number of times, then answers."""
+
+    def __init__(self, failures: int) -> None:
+        self.failures = failures
+        self.calls = 0
+
+    def open(self, url: str, timeout: float) -> io.BytesIO:
+        self.calls += 1
+        if self.calls <= self.failures:
+            raise urllib.error.URLError("no answer")
+        return io.BytesIO(b"tile")
+
+
+def test_a_download_is_tried_again_after_a_failure_with_a_growing_wait(monkeypatch: pytest.MonkeyPatch) -> None:
+    waits: list[float] = []
+    monkeypatch.setattr(earthdata.time, "sleep", waits.append)
+    opener = _Flaky(failures=2)
+    assert earthdata.fetch(opener, "https://data.lpdaac.earthdatacloud.nasa.gov/x", timeout=1) == b"tile"
+    assert opener.calls == 3
+    assert waits == [5.0, 10.0]
+
+
+def test_a_download_that_keeps_failing_raises_after_five_tries(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(earthdata.time, "sleep", lambda _: None)
+    opener = _Flaky(failures=99)
+    with pytest.raises(urllib.error.URLError):
+        earthdata.fetch(opener, "https://data.lpdaac.earthdatacloud.nasa.gov/x", timeout=1)
+    assert opener.calls == 5
