@@ -334,7 +334,8 @@ and the Back button (`common.back`, which goes to `/ruong`). It has no progress 
 
 Data: `GET /api/past-years?province=nghe_an` (section 11). The layout, from the top:
 1. Title `years.title`; the label `common.notForecast` (H13); the line `common.dataLine` (H19).
-2. Legend: one row per rule in the order of `rules`: its `label` and a "?" button (`data-testid` `legend-<rule code>`,
+2. Legend (drawn after the year list and the picked years' cards since 2026-11-16: the years are the farmer's task,
+   the rule names are reference): one row per rule in the order of `rules`: its `label` and a "?" button (`data-testid` `legend-<rule code>`,
    accessible name `common.sourceFor` with `{name}` = the label). The button opens the source sheet in rule mode
    (section 10): the quoted rule text (QĐ 18/2021 article, R-A01), the values sources (R-N01, R-N02), the computation
    entry and `conditions.computedNote` (H19). Rules (quoted from QĐ 18/2021, R-A01): heavy rain (Art. 44), heat

@@ -28,8 +28,8 @@ function response() {
   });
 }
 
-function renderYears() {
-  mock.spyOn(api, 'pastYears').mockResolvedValue(response());
+function renderYears(res = response()) {
+  mock.spyOn(api, 'pastYears').mockResolvedValue(res);
   render(
     <SettingsProvider>
       <ProvenanceProvider>
@@ -75,5 +75,32 @@ describe('years step legend', () => {
     renderYears();
     const summary = (await screen.findByText(text.farmer.limitsTitle)).closest('summary');
     expect(summary?.querySelector('svg:last-child')).not.toBeNull();
+  });
+  // roleplay audit 2026-11-16 (farmer): the years are the task, the rule names are reference; the legend sat above
+  // the years, and after "pick the hardest years" nothing on screen changed
+  it('puts the year buttons before the legend', async () => {
+    renderYears();
+    const legend = (await screen.findAllByTestId(/^legend-/))[0];
+    const year = screen.getByTestId('year-1995');
+    expect(legend && year.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+  it('brings the first picked year on screen after "pick the hardest years for me"', async () => {
+    const scrolled: string[] = [];
+    Element.prototype.scrollIntoView = function scrollIntoView(this: Element) {
+      scrolled.push(this.id);
+    };
+    // 1996 is the year each rule covered the most farmland
+    const res = response();
+    const share = (value: string) => ({ value, unit: { vi: '%', en: '%' }, source_ids: ['R-N01'] });
+    renderYears({
+      ...res,
+      years: res.years.map((y) => ({
+        ...y,
+        shares: Object.fromEntries(RULE_CODES.map((c) => [c, share(y.year === 1996 ? '80' : '10')])),
+      })) as typeof res.years,
+    });
+    fireEvent.click(await screen.findByRole('button', { name: text.farmer.hardYears }));
+    await screen.findByRole('article');
+    expect(scrolled).toContain('year-card-1996');
   });
 });

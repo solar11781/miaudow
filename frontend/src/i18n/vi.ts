@@ -124,7 +124,8 @@ export const vi = {
   },
   home: {
     titleA: 'Ruộng làng ta,',
-    titleB: 'đọc bằng dữ liệu vũ trụ.',
+    // the no-break space (\u00a0) keeps "vũ trụ" on one line: on a 360 px phone "trụ." stood alone
+    titleB: 'đọc bằng dữ liệu vũ\u00a0trụ.',
     ctaFarmer: 'Tìm hiểu ruộng nhà mình',
     ctaScience: 'Khám phá dữ liệu Nghệ An',
     ctaCopilot: 'Hỏi trợ lý',

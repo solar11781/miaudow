@@ -107,7 +107,15 @@ function Years({ res }: { res: PastYearsResponse }) {
   return (
     <>
       <div className={s.hardYears}>
-        <button type="button" className={s.hardYearsButton} onClick={() => update({ years: hardestYears(res) })}>
+        <button
+          type="button"
+          className={s.hardYearsButton}
+          onClick={() => {
+            const years = hardestYears(res);
+            update({ years });
+            setAdded(years[0] ?? null); // the first picked year comes on screen, so the tap is seen to do something
+          }}
+        >
           {t.farmer.hardYears}
         </button>
         <p className="muted small">{t.farmer.hardYearsNote}</p>
@@ -202,8 +210,9 @@ export function YearsStep() {
       {res.status === 'ok' ? (
         <>
           <DataLine sources={res.data.sources} className="muted small" />
-          <Legend res={res.data} />
+          {/* the years are the farmer's task; the rule names are reference and come after them */}
           <Years res={res.data} />
+          <Legend res={res.data} />
         </>
       ) : (
         <LoadState state={res} retry={retry} />
