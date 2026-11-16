@@ -1,4 +1,4 @@
-import { hazards, soil, yearIndex, type Magnitude, type RuleCode } from '../data';
+import { hazards, yearIndex, type Magnitude, type RuleCode } from '../data';
 import type { Bilingual } from './provenance';
 
 export interface RuleInfo {
@@ -103,22 +103,6 @@ const at = (series: number[] | undefined, year: number) => {
 /** Share of Nghệ An farmland where the rule was met in the year, over the joined P-02 field time. */
 export const yearShare = (rule: RuleCode, year: number) => at(hazards.year_level[rule], year);
 
-/** Share for one P-02 crop over its own field time. */
-export const cropShare = (cropKey: string, rule: RuleCode, year: number) =>
-  at(hazards.crop_level[cropKey]?.[rule], year);
-
-export interface Range {
-  min: number;
-  max: number;
-  count: number;
-}
-
-export function cropShareRange(cropKey: string, rule: RuleCode, years: number[]): Range | null {
-  if (!years.length) return null;
-  const vals = years.map((y) => cropShare(cropKey, rule, y));
-  return { min: Math.min(...vals), max: Math.max(...vals), count: vals.length };
-}
-
 export const cellMet = (rule: RuleCode, cellId: string, year: number) => {
   const v = hazards.cell_level[rule]?.[cellId]?.[yearIndex(year)];
   if (v === undefined) throw new Error(`no cell value ${cellId} ${year}`);
@@ -129,15 +113,3 @@ export const cellMagnitude = (m: Magnitude, cellId: string, year: number) => at(
 
 /** Decimals a measured value is written with: days and months are counts, rain is in tenths of a millimetre. */
 export const magnitudeDigits = (m: Magnitude) => (m === 'max_rain_mm' ? 1 : 0);
-
-export interface SoilReading {
-  values: number[];
-  normal: number;
-}
-
-/** NASA root-zone soil wetness (0 dry .. 1 saturated) for a crop in the picked years, and its 1991–2020 normal. */
-export function soilReading(cropKey: string, years: number[]): SoilReading | null {
-  const s = soil.crops[cropKey];
-  if (!s || !years.length) return null;
-  return { values: years.map((y) => at(s.values, y)), normal: s.normal_1991_2020 };
-}

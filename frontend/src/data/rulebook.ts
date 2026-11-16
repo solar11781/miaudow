@@ -57,5 +57,3 @@ export function cardQuestions(id: ApiPlanId): Bilingual[] {
   const all = Object.values(DECISION.plans);
   return officerQuestions(id).filter((q) => !all.every((p) => p.questions_for_officer.some((x) => x.en === q.en)));
 }
-
-export const MISSING_INFORMATION = DECISION.missing_information;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hazards, model, YEARS } from '../data';
-import { bareMonths, dateRange, dayOfYear, periodPieces, segments, spanSegments } from './calendar';
-import { cropShare, cropShareRange, RULES, soilReading, yearShare } from './hazards';
+import { dateRange, dayOfYear, periodPieces, segments, spanSegments } from './calendar';
+import { RULES, yearShare } from './hazards';
 import {
   compareRequest,
   NO_OWN,
@@ -12,14 +12,14 @@ import {
   toggleYear,
   MAX_YEARS,
 } from './farmerState';
-import { planById, planLabel, planProfitMillion, PLANS } from './plans';
-import { riceSummary, riceYear, seasonStatus } from './rice';
+import { planLabel, planProfitMillion, PLANS } from './plans';
+import { riceYear, seasonStatus } from './rice';
 import { SOURCES } from './sources';
 import { en as enText } from '../i18n/en';
 import { vi as viText } from '../i18n/vi';
 
-const plan = (id: Parameters<typeof planById>[0]) => {
-  const p = planById(id);
+const plan = (id: (typeof PLANS)[number]['id']) => {
+  const p = PLANS.find((x) => x.id === id);
   if (!p) throw new Error(id);
   return p;
 };
@@ -35,10 +35,6 @@ describe('calendar', () => {
     expect(Math.max(...segments(plan('cc2')).map((s) => s.lane))).toBe(1); // chili to 25/6, soybean from 10/6
     expect(Math.max(...segments(plan('cc5')).map((s) => s.lane))).toBe(1); // black bean to 25/8, sweet potato from 15/8
     expect(Math.max(...segments(plan('cc4')).map((s) => s.lane))).toBe(0);
-  });
-  it('counts bare months from the trial dates', () => {
-    expect(bareMonths(plan('cc4'))).toEqual([5]);
-    expect(bareMonths(plan('p03'))).toEqual([]);
   });
 });
 
@@ -79,18 +75,6 @@ describe('hazard data', () => {
       expect(r.article.en).toBe(r.article.vi.replace('Điều', 'Art.'));
     }
   });
-  it('summarises a crop over picked years as lowest and highest', () => {
-    const years = [2005, 2010, 2020];
-    const r = cropShareRange('cc1_peanut', 'heat', years);
-    const vals = years.map((y) => cropShare('cc1_peanut', 'heat', y));
-    expect(r).toEqual({ min: Math.min(...vals), max: Math.max(...vals), count: 3 });
-    expect(cropShareRange('cc1_peanut', 'heat', [])).toBeNull();
-  });
-  it('gives soil wetness between 0 and 1 with a normal', () => {
-    const s = soilReading('cc5_rice', [2000, 2020]);
-    expect(s?.values.every((v) => v >= 0 && v <= 1)).toBe(true);
-    expect(s?.normal).toBeGreaterThan(0);
-  });
 });
 
 describe('rice history and model gates', () => {
@@ -105,12 +89,6 @@ describe('rice history and model gates', () => {
       if (y < model.test_years.first) expect(r.predicted).toBeNull();
     }
     expect(riceYear('winter', 2020).predicted).not.toBeNull();
-  });
-  it('summarises from two years with a value, else lists them', () => {
-    expect(riceSummary('spring', [2010]).min).toBeUndefined();
-    const s = riceSummary('spring', [2003, 2010, 2020]);
-    expect(s.min?.actual).toBeLessThanOrEqual(s.max?.actual as number);
-    expect(riceSummary('spring', [1995, 1996]).years).toHaveLength(0); // no normal for the first years
   });
 });
 

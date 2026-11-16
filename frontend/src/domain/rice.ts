@@ -47,26 +47,3 @@ export function riceYear(season: RiceSeason, year: number): RiceYear {
     high80: shown ? (h.oos_high_80[i] ?? null) : null,
   };
 }
-
-export interface RiceSummary {
-  /** Years with a real value, in the picked order. */
-  years: RiceYear[];
-  min?: RiceYear;
-  max?: RiceYear;
-  median?: number;
-}
-
-/**
- * Lowest / middle / highest of the real values with the worst year named, from 2 picked years with a value on
- * (with fewer, each year is shown on its own). No percentile band: a handful of years cannot support one.
- */
-export function riceSummary(season: RiceSeason, picked: number[]): RiceSummary {
-  const years = picked.map((y) => riceYear(season, y)).filter((r) => r.actual !== null);
-  if (years.length < 2) return { years };
-  const sorted = [...years].sort((a, b) => (a.actual as number) - (b.actual as number));
-  const mid = sorted.length / 2;
-  const vals = sorted.map((r) => r.actual as number);
-  const median =
-    sorted.length % 2 ? (vals[Math.floor(mid)] as number) : ((vals[mid - 1] as number) + (vals[mid] as number)) / 2;
-  return { years, min: sorted[0], max: sorted[sorted.length - 1], median };
-}

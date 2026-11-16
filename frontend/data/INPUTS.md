@@ -15,7 +15,6 @@ Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py`
 - `frontend/data/canonical/ndvi_modis.json` b618233400010fd858685f03c2869fb659ed77d120e528374085638fda3e2ad3
 - `frontend/data/canonical/quality.json` b53495bd762f798a535eb73dfcd49e41d8b3f5afc3be6fe688e4e940ec3c9fba
 - `frontend/data/canonical/rotations.generated.json` 19ae53cfcbe73e67d628794db7142439b51347431d4f5827f30a7f081a3c39c7
-- `frontend/data/canonical/soil.json` 9aac533136379c7df7d54e96810c16481b322be44f29ae817f97a674f94d58ba
 - `frontend/data/canonical/vegetation.json` 8824d80ac93a6a2a4504203965a58ecd0681af1a2de54aa7073061df37096503
 
 ## frontend/src/data/generated

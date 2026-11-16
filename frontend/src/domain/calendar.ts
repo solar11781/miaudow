@@ -32,21 +32,6 @@ export function segments(plan: Plan): Segment[] {
   });
 }
 
-/** Calendar months (1..12) without any field day. */
-export function bareMonths(plan: Plan): number[] {
-  if (!plan.crops.length) return [];
-  const used = new Set<number>();
-  for (const c of plan.crops) {
-    const a = dayOfYear(c.sow);
-    const b = dayOfYear(c.harvest);
-    MONTH_START.forEach((start, i) => {
-      const end = MONTH_START[i + 1] ?? 365;
-      if (a <= end && b > start) used.add(i + 1);
-    });
-  }
-  return Array.from({ length: 12 }, (_, i) => i + 1).filter((m) => !used.has(m));
-}
-
 export const formatDayMonth = (mmdd: string) => {
   const [m, d] = mmdd.split('-');
   return `${Number(d)}/${Number(m)}`;

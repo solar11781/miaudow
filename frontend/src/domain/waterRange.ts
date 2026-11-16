@@ -15,12 +15,6 @@ function ends(value: string): [End, End] | null {
   return low.n <= high.n ? [low, high] : null;
 }
 
-/** [low, high] of an API value string such as "2,000" or "6,500-7,500"; null for anything else. */
-export function parseRange(value: string): [number, number] | null {
-  const e = ends(value);
-  return e && [e[0].n, e[1].n];
-}
-
 /** The lowest to the highest of a crop's TCVN 8641 rows (D-175, "by region": D-68), written with the rows' own number
  * strings and carrying all their source ids; FAO rows stay out (D-64). Null when the crop has no TCVN row, a row
  * cannot be read or the rows differ in unit. */

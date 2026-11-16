@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { browserLang } from '../app/settings';
 import { PLANS } from '../domain/plans';
-import { decisionPlan, MISSING_INFORMATION, officerQuestions, RULEBOOK_ID, rulebookPlan } from './rulebook';
+import { decisionPlan, officerQuestions, RULEBOOK_ID, rulebookPlan } from './rulebook';
 
 describe('governed plan text', () => {
   it('every plan has its rulebook entry and decision text', () => {
@@ -20,7 +20,6 @@ describe('governed plan text', () => {
     }
   });
   it('the decision text never ranks and always lists what the app cannot know', () => {
-    expect(MISSING_INFORMATION.length).toBeGreaterThan(2);
     const all = JSON.stringify(PLANS.map((p) => decisionPlan(p.id))).toLowerCase();
     for (const w of ['tốt nhất', 'nên chọn', 'the best', 'we recommend']) expect(all).not.toContain(w);
   });
