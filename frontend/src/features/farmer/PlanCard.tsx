@@ -138,7 +138,7 @@ function useSeasonValues(plan: Plan, res: CompareResponse, refs: ApiRefs) {
     const note = sentences(pick(v.words), t.farmer.paperPage(v.page), notes.definition);
     const shown = v.value ? (
       <>
-        <SourceValue {...refs.value(v.value, `${t.farmer.rows.money} · ${label}`, note)}>
+        <SourceValue {...refs.moneyValue(v.value, `${t.farmer.rows.money} · ${label}`, note)}>
           {refs.money(v.value).number}
         </SourceValue>{' '}
         {refs.money(v.value).unit}
@@ -164,7 +164,7 @@ function MoneyRow({ plan, res, refs, highlight, line, own }: Ctx & Hl & { own: O
     <Row hook={`card-${plan.id}-row-money`} icon="coin" title={t.farmer.rows.money} highlight={highlight} line={line}>
       {m.total && (
         <div className={s.money}>
-          <SourceValue size="xl" {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
+          <SourceValue size="xl" {...refs.moneyValue(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>
           <span className={s.unit}>
@@ -543,7 +543,7 @@ function Summary({ plan, res, refs }: Ctx) {
       {m.total ? (
         <p>
           {t.farmer.rows.money}:{' '}
-          <SourceValue {...refs.value(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
+          <SourceValue {...refs.moneyValue(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>{' '}
           {refs.money(m.total).unit} · {t.farmer.own.yearSum}

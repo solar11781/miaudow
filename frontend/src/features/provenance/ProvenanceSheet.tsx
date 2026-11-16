@@ -168,13 +168,14 @@ function ApiSheet({ value, onClose }: { value: ApiSourceRef; onClose: () => void
         <div className={s.headText}>
           <p className={s.label}>{value.label || t.sheet.aboutValue}</p>
           <h2 id="prov-title" className={s.value}>
-            {value.value}
+            {value.shown ?? value.value}
           </h2>
         </div>
         <button type="button" className={s.close} onClick={onClose} aria-label={t.common.close}>
           <Icon name="close" />
         </button>
       </header>
+      {value.shown && <p>{t.sheet.inPaper(value.value)}</p>}
       {value.plain && <p>{value.plain}</p>}
       {value.quote && (
         <section className={s.arith}>

@@ -487,8 +487,10 @@ to the opener on close. The sheet has no animation (H1). Source facts come from 
 that the current page loaded (section 11).
 
 Modes (routine):
-- **Value mode** (a number button): first the row `source.value` with the tapped value and unit, then one source block
-  per id of the value's `source_ids`, in order.
+- **Value mode** (a number button): first the row `source.value` with the tapped value and unit, as the card shows
+  it, then one source block per id of the value's `source_ids`, in order. A money value the card shows in million
+  đồng/ha (D-190) gives the paper's own value and unit right under it, as `sheet.inPaper` ("Trong bài báo: …" /
+  "In the paper: …"), so the two never read as two different numbers (roleplay audit 2026-11-16, F-A5).
   - Official-condition share: its `source_ids` are the rule's `threshold_source_id`, `values_source_ids` and
     `computed_by`, in that order; the R-A01 block also shows `source.ruleText` with the rule's `rule_text` (from the
     response's `rules`); after the blocks, `conditions.computedNote` (H19).

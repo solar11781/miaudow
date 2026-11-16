@@ -99,7 +99,11 @@ test('D-190 each plan has one name and its money is in million dong per hectare'
   const exact = await button.getAttribute('data-value');
   expect(exact).toMatch(/^[\d.]+ nghìn đồng\/ha$/);
   await button.click();
-  await expect(page.getByTestId('source-sheet').locator('h2')).toHaveText(exact ?? '');
+  // F-A5: the sheet starts with the number as the card shows it, then the paper's own value and unit
+  const sheet = page.getByTestId('source-sheet');
+  await expect(sheet.locator('h2')).toHaveText((await button.locator(':scope > span > span').textContent()) ?? '');
+  await expect(sheet.locator('h2')).toContainText(vi.common.millionPerHa);
+  await expect(sheet).toContainText(vi.sheet.inPaper(exact ?? ''));
 });
 
 // D-187 item 4 (F1): the jump strip marks the card in view (on a wide screen, the row of two cards in view)

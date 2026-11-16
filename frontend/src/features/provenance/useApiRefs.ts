@@ -16,20 +16,32 @@ export function useApiRefs(sources: Record<SourceId, SourceFacts>, rules?: Rule[
     const number = (v: Value) => displayValue(v.value, lang);
     const unit = (v: Value) => displayUnit(v.value === '1' ? t.common.unitOfOne(pick(v.unit)) : pick(v.unit));
     const shown = (v: Value) => withUnit(number(v), unit(v));
+    /** A money Value in thousand dong per ha (P-02) as the farmer reads it, in million dong per ha (D-190); the value
+     * as written when it is in another unit. Its source sheet keeps the exact value (`value`). */
+    const money = (v: Value): { number: string; unit: string } => {
+      const thousands = Number(v.value.replaceAll(',', ''));
+      return /^thousand /.test(v.unit.en) && v.value !== '' && Number.isFinite(thousands)
+        ? { number: f.million(thousands), unit: t.common.millionPerHa }
+        : { number: number(v), unit: unit(v) };
+    };
+    /** A Value as a source button's props; `note` closes its sheet (the source notes kept off the card, D-187). */
+    const value = (v: Value, label: string, note?: string): ApiSourceRef => ({
+      facts: facts(v.source_ids),
+      value: shown(v),
+      label,
+      ...(note ? { note } : {}),
+    });
     return {
       number,
       unit,
-      /** A money Value in thousand dong per ha (P-02) as the farmer reads it, in million dong per ha (D-190); the
-       * value as written when it is in another unit. Its source sheet keeps the exact value (`value`). */
-      money(v: Value): { number: string; unit: string } {
-        const thousands = Number(v.value.replaceAll(',', ''));
-        return /^thousand /.test(v.unit.en) && v.value !== '' && Number.isFinite(thousands)
-          ? { number: f.million(thousands), unit: t.common.millionPerHa }
-          : { number: number(v), unit: unit(v) };
-      },
-      /** A Value as a source button's props; `note` closes its sheet (the source notes kept off the card, D-187). */
-      value(v: Value, label: string, note?: string): ApiSourceRef {
-        return { facts: facts(v.source_ids), value: shown(v), label, ...(note ? { note } : {}) };
+      money,
+      value,
+      /** A money Value as a source button's props: the sheet starts with the value as the card shows it, then the
+       * paper's own (D-190; roleplay audit 2026-11-16, F-A5). */
+      moneyValue(v: Value, label: string, note?: string): ApiSourceRef {
+        const m = money(v);
+        const card = withUnit(m.number, m.unit);
+        return { ...value(v, label, note), ...(card !== shown(v) ? { shown: card } : {}) };
       },
       /** An official-condition share: the rule text and the "our computation" line go with it (H19). */
       share(rule: RuleCode, v: Value, label: string): ApiSourceRef {

@@ -84,6 +84,7 @@ export const en: Messages = {
   },
   sheet: {
     title: 'Where this number comes from',
+    inPaper: (value: string) => `In the paper: ${value}`,
     aboutValue: 'About the value',
     from: 'From',
     publisher: 'Authors, publisher',

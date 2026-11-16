@@ -70,6 +70,9 @@ export interface ApiSourceRef {
   ruleText?: string;
   /** The full quote a plain card line stands for (D-187), shown first. */
   quote?: string;
+  /** The value as the card shows it, when it differs from the paper's own `value` (D-190): the sheet starts with it
+   * and gives the paper's value after it (roleplay audit 2026-11-16, F-A5). */
+  shown?: string;
   /** The value in plain words, right under the number (D-192). */
   plain?: string;
   /** Closing line, e.g. that a share is our computation, not an official record (H19). */

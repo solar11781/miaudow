@@ -83,6 +83,7 @@ export const vi = {
   sheet: {
     title: 'Nguồn của con số',
     aboutValue: 'Về con số',
+    inPaper: (value: string) => `Trong bài báo: ${value}`,
     from: 'Lấy từ',
     publisher: 'Tác giả, nơi công bố',
     where: 'Ở đâu',
