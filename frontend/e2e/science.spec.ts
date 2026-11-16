@@ -70,3 +70,12 @@ for (const colorScheme of ['dark', 'light'] as const) {
     expect(low).toEqual([]);
   });
 }
+
+// visual audit 2026-11-16: the globe page named its cells "19.0°N 105.625°E" in Vietnamese too; a cell is named the
+// same way on every page (north is "B", east is "Đ", decimal comma)
+test('the globe page names a grid cell in the reading language', async ({ page }) => {
+  await page.goto('/#/dai-quan-sat?canh=insight');
+  const cells = page.getByRole('group', { name: 'Chọn ô lưới' });
+  await expect(cells.getByRole('radio', { name: '19,0°B 105,625°Đ', exact: true })).toBeVisible();
+  await expect(cells).not.toContainText('°N');
+});
