@@ -8,6 +8,8 @@ from fieldshift.engine.rules import HazardRow
 from fieldshift.engine.schemas import SourceId, Text, Value
 
 PERCENT: Text = {"vi": "%", "en": "%"}  # unit "%" in both languages (05-DATA-CONTRACTS §4b)
+MM: Text = {"vi": "mm", "en": "mm"}
+NO_UNIT: Text = {"vi": "", "en": ""}  # a correlation has no unit
 ENGINE_ID: SourceId = "E-022"  # engine arithmetic on cited values: sums, counts, min / median / max (D-158)
 
 
@@ -16,7 +18,12 @@ def whole_percent(fraction: float | Decimal) -> str:
 
     An exact Decimal (a median of two values, D-156) is rounded once here; a result of minus zero is shown as "0".
     """
-    shown = (Decimal(str(fraction)) * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP)
+    return half_up(Decimal(str(fraction)) * 100, 0)
+
+
+def half_up(number: float | Decimal, places: int) -> str:
+    """A number rounded half up (decimal.ROUND_HALF_UP, D-102) to `places` decimals; str() keeps binary drift out."""
+    shown = Decimal(str(number)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
     return str(abs(shown) if shown == 0 else shown)
 
 

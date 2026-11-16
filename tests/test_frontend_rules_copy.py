@@ -140,10 +140,6 @@ def pairs() -> list[tuple[str, object, object]]:
 
 # Differences found on 2026-11-15, left for a team decision (field: frontend value vs rules value).
 KNOWN = {
-    "crop.blackbean.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Đậu đen' vs crops.yaml vi 'Đậu đen xanh lòng'",
-    "crop.maize.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Ngô hạt' vs crops.yaml vi 'Ngô thương phẩm'",
-    "crop.chili.name": "intended (D-191: plain crop name for farmers): plans.ts vi 'Ớt' vs crops.yaml vi 'Ớt chỉ thiên'",
-    "plan.cc2.cc2_spring_chili.variety": "intended (D-191 keeps the short crop name 'Ớt'): plans.ts 'Ớt' + 'Chỉ thiên F1' and rotations.yaml 'Ớt chỉ thiên' + 'F1' both read as the paper's 'ớt chỉ thiên F1'",
     "source.R-P02.url": "intended (D-191: a page people can read vs the data address): sources.ts tapchi.vaas.vn article page vs sources.yaml vjol.info.vn download link",
     "source.R-N01.url": "intended (D-191: a page people can read vs the data address): sources.ts https://power.larc.nasa.gov/ vs sources.yaml .../api/temporal/daily/point",
     "source.R-N02.url": "intended (D-191: a page people can read vs the data address): sources.ts doi.org/10.5067/MODIS/MCD12C1.061 vs sources.yaml cmr.earthdata.nasa.gov granules",

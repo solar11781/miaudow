@@ -22,7 +22,7 @@ def _field_day_mean(daily: pd.DataFrame, year: int, field_dates: list) -> float 
     return None if values.isna().any() else float(values.mean())
 
 
-def _weighted(per_cell: dict, weights: dict) -> float | None:
+def weighted_mean(per_cell: dict, weights: dict) -> float | None:
     """Farmland-weighted mean of the cell values; None when any weighted cell has none."""
     if any(per_cell[c] is None for c in weights):
         return None
@@ -48,14 +48,14 @@ def soil_wetness_rows(
             c: None if any(m[y] is None for y in normal_years) else sum(m[y] for y in normal_years) / len(normal_years)
             for c, m in means.items()
         }
-        normal = _weighted(normal_of, weights)
+        normal = weighted_mean(normal_of, weights)
         for year in years:
             rows.append(
                 {
                     **{k: crop[k] for k in ("plan_id", "crop_key", "season")},
                     "field_dates": [list(pair) for pair in dates],
                     "year": year,
-                    "value": _weighted({c: means[c][year] for c in weights}, weights),
+                    "value": weighted_mean({c: means[c][year] for c in weights}, weights),
                     "normal": normal,
                     "n_cells": len(weights),
                     "source_ids": SOURCE_IDS,

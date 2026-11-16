@@ -8,12 +8,18 @@ The responses are stored unchanged; parsing and the monthly totals belong to the
 
 from __future__ import annotations
 
+import calendar
 import re
 from collections.abc import Iterable
+
+import numpy as np
 
 BASE_URL = "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGM.07"
 HALF_DLAT = 0.25  # POWER cell half height (farmland_weights.POWER_DLAT / 2)
 HALF_DLON = 0.3125  # POWER cell half width (farmland_weights.POWER_DLON / 2)
+FILL_VALUE = -9999.9  # file attribute, verified 2026-11-13 (docs/DATA-SOURCES.md row gpm_imerg_monthly)
+HOURS_PER_DAY = 24
+_FILE_MONTH = re.compile(r"3B-MO\.MS\.MRG\.3IMERG\.(\d{4})(\d{2})01-")
 _SCALE = 10_000  # work in 1e-4 degree integers so the edge rule is exact
 
 
@@ -76,3 +82,30 @@ def check_response(text: str, box: tuple[int, int, int, int]) -> None:
         raise ValueError(f"not the expected {lon1 - lon0 + 1} x {lat1 - lat0 + 1} reply: {text.lstrip()[:80]!r}")
     for r in rows:
         [float(v) for v in r]
+
+
+def parse_monthly(text: str, box: tuple[int, int, int, int]) -> np.ndarray:
+    """The rain rates (mm/hr) of one reply as an array [latitude, longitude] over the box; fill values become NaN."""
+    check_response(text, box)
+    rows = [line.split(",")[1:] for line in text.splitlines() if line.startswith("precipitation[0][")]
+    grid = np.array(rows, dtype=float).T  # the reply is one line per longitude
+    return np.where(grid == FILL_VALUE, np.nan, grid)
+
+
+def file_month(name: str) -> tuple[int, int]:
+    """(year, month) of a monthly file name."""
+    found = _FILE_MONTH.search(name)
+    if found is None:
+        raise ValueError(f"not an IMERG monthly file name: {name}")
+    return int(found.group(1)), int(found.group(2))
+
+
+def monthly_mm(rate_mm_per_hr: float, year: int, month: int) -> float:
+    """The month's rain in mm from a mean rate in mm/hr: rate x 24 h x the days of the month (05-DATA-CONTRACTS §5c)."""
+    return rate_mm_per_hr * HOURS_PER_DAY * calendar.monthrange(year, month)[1]
+
+
+def cell_mean(grid: np.ndarray, box: tuple[int, int, int, int], lat: float, lon: float) -> float:
+    """Mean rate over the pixels inside the POWER cell; NaN when any of those pixels is missing (never filled)."""
+    (la0, la1), (lo0, lo1) = cell_pixel_ranges(lat, lon)
+    return float(grid[la0 - box[0] : la1 - box[0] + 1, lo0 - box[2] : lo1 - box[2] + 1].mean())

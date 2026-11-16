@@ -84,8 +84,8 @@ flowchart LR
 ```
 
 Solid arrows show the core flow. Dotted arrows show optional features, which come after the core. The rain check
-(the IMERG input and `rain_check` in A3) was planned and is not in the built code: the IMERG download stopped at 194 of
-288 monthly files, so the check was not run, and `GET /api/method` returns `rain_check` as null. The official
+(the IMERG input and `rain_check` in A3) is built: all 288 IMERG monthly files arrived on 2026-11-16, and
+`scripts/build_rain_check.py` writes `artifacts/rain_check.json` (E-021), served as `rain_check` in `GET /api/method`. The official
 risk-level labels and the soil wetness values are computed for each POWER cell over each crop's P-02 field dates and
 then weighted by farmland (DATA-DICTIONARY §4b, §4d). The season weather features use the calendar months instead
 (DATA-DICTIONARY §6b). At run time the app reads only the precomputed artifacts and the rules files, and it makes
@@ -230,8 +230,7 @@ tests/                    pytest
 
 This was the planned layout, and the built code differs from it: `ml/` holds evaluation.py, export.py, figures.py,
 fold_features.py, grid_figure.py, normal.py, primary_test.py, reports.py, results_chart.py and runner.py, `data/` has
-no admin.py, and there is no `artifacts/rain_check.json`, because the IMERG download stopped at 194 of 288 monthly
-files and the rain check was not run.
+no admin.py, and the rain check's logic is in `features/rain_check.py`.
 
 The TCVN text and the FAO .CRO files are never committed; we quote individual values with their source. There is no
 water-balance module, no water-deficit artifact and no price artifact.

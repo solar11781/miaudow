@@ -191,8 +191,48 @@ def test_the_picsa_sentence_cites_the_picsa_field_manual(resp: dict) -> None:
     assert facts["read_status"] == "READ (licence not checked)"
 
 
-def test_rain_check_is_not_run(resp: dict) -> None:
-    assert resp["rain_check"] is None  # D-135: null = not run (queue item 45 not built)
+MM = {"vi": "mm", "en": "mm"}
+RAIN_IDS = ["R-N05", "R-N01", "R-N02", "R-M23", "R-N06"]  # DATA-DICTIONARY §5c
+
+
+def test_rain_check_is_served_from_the_artifact_in_whole_mm_and_a_two_decimal_cc(resp: dict) -> None:
+    rc = resp["rain_check"]
+    assert rc["source_ids"] == RAIN_IDS
+    assert [m["month"] for m in rc["months"]][::287] == ["2001-01", "2024-12"]
+    assert len(rc["months"]) == 288  # 2001-01..2024-12
+    # real values of artifacts/rain_check.json: 2001-01 IMERG 41.62 mm and POWER 29.00 mm; 2024-12 42.32 and 42.09 mm
+    first, last = rc["months"][0], rc["months"][-1]
+    assert first["imerg"] == {"value": "42", "unit": MM, "source_ids": RAIN_IDS}
+    assert first["power"] == {"value": "29", "unit": MM, "source_ids": RAIN_IDS}
+    assert (last["imerg"]["value"], last["power"]["value"]) == ("42", "42")
+    # these pin the committed artifact (its arithmetic is checked by hand in tests/test_rain_check.py):
+    # cc 0.9697, mean IMERG 168.92 mm, mean POWER 152.48 mm
+    assert rc["cc"] == {"value": "0.97", "unit": {"vi": "", "en": ""}, "source_ids": RAIN_IDS}
+    assert rc["mean_imerg"]["value"] == "169"
+    assert rc["mean_power"]["value"] == "152"
+    assert "passed" not in rc  # §5c: no pass or fail, no source gives a threshold
+
+
+def test_rain_check_rounds_half_up(root: Path) -> None:
+    def change(doc: dict) -> None:
+        doc["months"][0].update(imerg_mm=0.5, power_mm=2.5)  # 0.5 -> 1 and 2.5 -> 3 (round() would give 0 and 2)
+        doc.update(cc=0.125, mean_imerg_mm=1.5)  # 0.125 -> 0.13 (round() would give 0.12), 1.5 -> 2
+
+    edit_json(root, "rain_check.json", change)
+    rc = method(root).model_dump(by_alias=True)["rain_check"]
+    assert (rc["months"][0]["imerg"]["value"], rc["months"][0]["power"]["value"]) == ("1", "3")
+    assert (rc["cc"]["value"], rc["mean_imerg"]["value"]) == ("0.13", "2")
+
+
+def test_rain_check_is_null_when_the_artifact_is_missing(root: Path) -> None:
+    (root / "artifacts" / "rain_check.json").unlink()
+    assert method(root).rain_check is None  # D-135: null = not run
+
+
+def test_a_rain_check_with_an_unknown_field_is_refused(root: Path) -> None:
+    edit_json(root, "rain_check.json", lambda doc: doc.update(passed=True))
+    with pytest.raises(ValueError, match=r"rain_check.json"):
+        method(root)
 
 
 def test_sources_hold_exactly_the_ids_used_and_every_id_traces(resp: dict) -> None:
