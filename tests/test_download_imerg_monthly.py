@@ -1,7 +1,7 @@
 """Tests for scripts/download_imerg_monthly.py, the IMERG stage of scripts/reproduce.sh.
 
-Spec: the satellite rain check (IMERG) is a bonus item; the rebuild check skips the IMERG stage when the rain check is
-not built (D-150; team, 2026-11-14). FIELDSHIFT_SKIP_IMERG=1 means skip: exit 0 with a message, no request and no file
+Spec: the satellite rain check (IMERG) is a bonus item; the rebuild check can skip the IMERG download when NASA's
+servers do not answer (D-150; team, 2026-11-14). FIELDSHIFT_SKIP_IMERG=1 means skip: exit 0 with a message, no request and no file
 written; any other value runs the stage.
 """
 
