@@ -360,7 +360,7 @@ export const vi = {
     principle: 'Vì sao xét',
     legumeYes: 'Có cây họ đậu',
     legumeNo: 'Không có cây họ đậu',
-    legumeNote: 'Cây họ đậu chỉ giữ đạm cho đất khi để lại thân lá trên ruộng.',
+    legumeNote: 'Theo một nghiên cứu về cây lạc: ruộng chỉ được thêm đạm khi để lại thân lá trên ruộng.',
     p03NoCalendar:
       'Bài báo thứ hai không ghi ngày gieo, nên không có lịch 12 tháng và không tính được thời tiết theo cây.',
     soilNormal: 'trung bình 1991–2020',
@@ -519,7 +519,7 @@ export const vi = {
     colPlan: 'Cách trồng',
     colMoney: 'Lãi trong thử nghiệm',
     p03Money:
-      'Chỉ lúa vụ Hè Thu 2020, trong bài báo thứ hai của Trịnh Đức Toàn và cs. (2023); không phải tổng của một năm',
+      'Lúa vụ Đông Xuân 2021 và lúa vụ Hè Thu 2020, từng vụ như bài báo thứ hai của Trịnh Đức Toàn và cs. (2023) ghi; không phải tổng của một năm',
     colWeather: 'Thời tiết',
     colWater: 'Nước tưới',
     colLand: 'Đất',
@@ -576,7 +576,7 @@ export const vi = {
   },
   science: {
     title: 'Nghệ An qua 30 mùa vụ',
-    lead: 'Mọi con số trên trang này tính từ dữ liệu thật: NASA POWER cho 5 ô lưới có đất trồng, trọng số đất trồng NASA MODIS, ranh giới tỉnh geoBoundaries và năng suất lúa của Cục Thống kê.',
+    lead: 'Mọi con số trên trang này tính từ dữ liệu thật: NASA POWER cho 5 ô lưới có đất trồng, trọng số đất trồng NASA MODIS, ranh giới tỉnh geoBoundaries, năng suất lúa của Cục Thống kê, mưa CHIRPS v3, độ xanh MODIS NDVI và độ cao NASA SRTM. Phần mô hình là ước tính của mô hình cho các năm kiểm tra.',
     globeCta: 'Xem trên quả địa cầu 3D, từ vũ trụ xuống đồng ruộng',
     mapTitle: 'Lưới NASA POWER trên đất Nghệ An',
     mapLead:
@@ -635,7 +635,7 @@ export const vi = {
     gateNames: {
       G1: 'Đủ số liệu',
       G2: 'Thắng B0 và BNW',
-      G3: 'Ổn định ở Bắc Trung Bộ',
+      G3: 'Không kém B2 (giống năm trước) ở Nghệ An, Hà Tĩnh, Thanh Hóa',
       G4: 'Khoảng 80% chứa số thật ở 70–90% năm kiểm tra',
     },
     passed: 'Đạt',
@@ -924,7 +924,7 @@ export const vi = {
       vietnam: {
         title: 'Việt Nam',
         short: 'Việt Nam',
-        body: 'Dải đất hình chữ S. Nghệ An nằm ở Bắc Trung Bộ, nơi mưa tập trung vào mùa thu và hạn hay đến vào hè.',
+        body: 'Dải đất hình chữ S. Nghệ An nằm ở Bắc Trung Bộ.',
       },
       'nghe-an': {
         title: 'Nghệ An',
@@ -1028,10 +1028,8 @@ export const vi = {
     wetter: 'Ướt hơn bình thường',
     cellNote:
       'Một ô NASA POWER rộng khoảng 55 × 66 km, gồm cả đồi và sông, không phải số đo tại ruộng. Chiều cao cột chỉ để so sánh.',
-    plainDry: (year: number, pct: string) =>
-      `Năm ${year}, ô này mưa ít hơn mức bình thường khoảng ${pct}. Ruộng xa kênh dễ thiếu nước hơn.`,
-    plainWet: (year: number, pct: string) =>
-      `Năm ${year}, ô này mưa nhiều hơn mức bình thường khoảng ${pct}. Ruộng trũng dễ bị ngập hơn.`,
+    plainDry: (year: number, pct: string) => `Năm ${year}, ô này mưa ít hơn mức bình thường khoảng ${pct}.`,
+    plainWet: (year: number, pct: string) => `Năm ${year}, ô này mưa nhiều hơn mức bình thường khoảng ${pct}.`,
     plainNormal: (year: number) => `Năm ${year}, ô này mưa gần mức bình thường.`,
     insightLimits: 'Mưa cả năm chưa cho biết mưa rơi vào tháng nào; xem từng tháng ở trang Khoa học.',
     ask: 'Hỏi trợ lý về năm này',

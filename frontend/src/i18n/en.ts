@@ -367,7 +367,7 @@ export const en: Messages = {
     principle: 'Why this check',
     legumeYes: 'Includes a legume',
     legumeNo: 'No legume',
-    legumeNote: 'Legumes leave nitrogen only when stems and leaves stay on the field.',
+    legumeNote: 'In one groundnut study, the field gained nitrogen only when stems and leaves stayed on the field.',
     p03NoCalendar: 'The second paper gives no sowing dates, so there is no 12-month calendar and no weather per crop.',
     soilNormal: '1991–2020 average',
     waterLead: { to_apply: 'Water to apply to the field', crop_uses: 'Water the crop uses (rough estimate)' },
@@ -522,7 +522,8 @@ export const en: Messages = {
       'Each cell gives the value, the kind of evidence and the source. An empty cell means the source has no value; Miaudow does not fill it in.',
     colPlan: 'Plan',
     colMoney: 'Profit in the trial',
-    p03Money: 'Summer-autumn rice 2020 only, in the second paper of Trịnh Đức Toàn et al. (2023); not a yearly sum',
+    p03Money:
+      'Spring rice 2021 and summer-autumn rice 2020, each season as the second paper of Trịnh Đức Toàn et al. (2023) gives it; not a yearly sum',
     colWeather: 'Weather',
     colWater: 'Irrigation',
     colLand: 'Soil',
@@ -579,7 +580,7 @@ export const en: Messages = {
   },
   science: {
     title: 'Nghe An across 30 seasons',
-    lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline and NSO rice yields.',
+    lead: 'Every number on this page is computed from real data: NASA POWER for the 5 grid cells with farmland, NASA MODIS farmland weights, the geoBoundaries province outline, NSO rice yields, CHIRPS v3 rain, MODIS NDVI greenness and NASA SRTM height. The model part shows model estimates for the test years.',
     globeCta: 'See it on the 3D globe, from space down to the fields',
     mapTitle: 'The NASA POWER grid over Nghe An',
     mapLead:
@@ -638,7 +639,7 @@ export const en: Messages = {
     gateNames: {
       G1: 'Enough data',
       G2: 'Beats B0 and BNW',
-      G3: 'Stable in the North Central region',
+      G3: 'Not worse than B2 (same as last year) in Nghe An, Ha Tinh, Thanh Hoa',
       G4: '80% range holds the actual value in 70–90% of test years',
     },
     passed: 'Passed',
@@ -930,7 +931,7 @@ export const en: Messages = {
       vietnam: {
         title: 'Vietnam',
         short: 'Vietnam',
-        body: 'The S-shaped country. Nghe An lies in the North Central region, where rain comes mostly in autumn and drought often comes in summer.',
+        body: 'The S-shaped country. Nghe An lies in the North Central region.',
       },
       'nghe-an': {
         title: 'Nghe An',
@@ -1034,10 +1035,8 @@ export const en: Messages = {
     wetter: 'Wetter than normal',
     cellNote:
       'A NASA POWER cell is about 55 × 66 km and includes hills and rivers; it is not a field measurement. Column height is for comparison only.',
-    plainDry: (year: number, pct: string) =>
-      `In ${year} this cell had about ${pct} less rain than normal. Fields far from the canal run short of water more easily.`,
-    plainWet: (year: number, pct: string) =>
-      `In ${year} this cell had about ${pct} more rain than normal. Low-lying fields flood more easily.`,
+    plainDry: (year: number, pct: string) => `In ${year} this cell had about ${pct} less rain than normal.`,
+    plainWet: (year: number, pct: string) => `In ${year} this cell had about ${pct} more rain than normal.`,
     plainNormal: (year: number) => `In ${year} this cell had close to its normal rain.`,
     insightLimits: 'Rain over the year does not tell you which months it fell in; see each month on the Science page.',
     ask: 'Ask the copilot about this year',

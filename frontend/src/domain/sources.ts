@@ -49,8 +49,8 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     where: { vi: 'Xã Lưu Sơn, Đô Lương, Nghệ An', en: 'Luu Son commune, Do Luong, Nghe An' },
     period: { vi: 'Tháng 6/2020 – tháng 6/2021', en: 'June 2020 – June 2021' },
     method: {
-      vi: 'Mô hình trình diễn, không lặp lại; cách tính lãi khác bài báo thứ nhất của cùng nhóm',
-      en: 'Demonstration plots, not replicated; profit defined differently from the same team’s first paper',
+      vi: 'Một thử nghiệm đồng ruộng, mỗi cây một ô 1.000 m², không lặp lại; cách tính lãi khác bài báo thứ nhất của cùng nhóm',
+      en: 'One field trial, one 1,000 m² plot per crop, not replicated; profit defined differently from the same team’s first paper',
     },
     howRead: { vi: 'Đã đọc toàn văn bản PDF do nhóm cung cấp', en: 'Full text read from the PDF supplied by the team' },
     caveat: {
@@ -83,7 +83,7 @@ export const SOURCES: Record<SourceId, SourceRecord> = {
     },
     caveat: {
       vi: 'Cảnh báo chính thức còn xét thêm độ ẩm, gió và thời gian. Đây là cách đọc máy móc các bảng của Quyết định, không phải số liệu chính thức.',
-      en: 'Official warnings also weigh humidity, wind and duration. This is a mechanical reading of the decree’s tables, not an official record.',
+      en: 'Official warnings also weigh humidity, wind and duration. This is a mechanical reading of the Decision’s tables, not an official record.',
     },
     url: 'https://vupc.mae.gov.vn/Data/files/18_2021_QD-TTg.doc',
   },

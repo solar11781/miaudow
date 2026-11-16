@@ -102,11 +102,11 @@ explain_terms:
     title: {vi: "Các loại số liệu", en: "Kinds of data"}
     text:
       vi: "Số liệu ngày của NASA POWER lấy từ tái phân tích MERRA-2. GPM IMERG Final kết hợp ước tính từ vệ tinh với
-        phân tích mưa đo ở trạm của GPCC; chỉ dùng cho phần kiểm tra mưa trên trang này. Không dùng số liệu trạm. Giá
-        trị theo ô lưới làm mượt các giá trị cực đoan."
+        phân tích mưa đo ở trạm của GPCC; chỉ dùng cho phần kiểm tra mưa trên trang này. Không dùng trực tiếp số liệu đo ở
+        trạm. Giá trị theo ô lưới làm mượt các giá trị cực đoan."
       en: "NASA POWER daily values come from the MERRA-2 reanalysis. GPM IMERG Final combines satellite estimates with
-        the GPCC rain-gauge analysis; it is used only for the rain check on this page. No station data is used.
-        Gridded values smooth extremes."
+        the GPCC rain-gauge analysis; it is used only for the rain check on this page. No station measurement is
+        used directly. Gridded values smooth extremes."
     source_ids: [R-N01, R-W12, R-N05, R-A10]
 
 # datasets_not_used: UI-UX-SPEC §11b item 4b (D-165): the dataset, its official facts and why it is not used, from the
