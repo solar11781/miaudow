@@ -120,7 +120,7 @@ def test_file_month_reads_year_and_month_from_the_file_name():
 
 
 def test_file_month_refuses_another_name():
-    with pytest.raises(ValueError, match="notes.txt"):
+    with pytest.raises(ValueError, match=r"notes.txt"):
         imerg.file_month("notes.txt")
 
 
