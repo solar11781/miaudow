@@ -32,13 +32,13 @@ export function Datasets() {
               </div>
               <dl className={s.facts}>
                 <dt>{t.evidence.provider}</dt>
-                <dd>{d.provider}</dd>
+                <dd>{pick(d.provider)}</dd>
                 <dt>{t.evidence.resolution}</dt>
-                <dd>{d.spatial_resolution}</dd>
+                <dd>{pick(d.spatial_resolution)}</dd>
                 <dt>{t.evidence.coverage}</dt>
-                <dd>{d.temporal_coverage}</dd>
+                <dd>{pick(d.temporal_coverage)}</dd>
                 <dt>{t.evidence.licence}</dt>
-                <dd>{d.license}</dd>
+                <dd>{pick(d.license)}</dd>
                 <dt>{t.evidence.fieldMeasured}</dt>
                 <dd>{d.is_field_measurement ? t.evidence.yes : t.evidence.no}</dd>
               </dl>

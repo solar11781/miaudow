@@ -2,9 +2,9 @@
 
 ## frontend/data/canonical
 
-Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62).
+Built by `web/pipeline/build_data.py` and checked by `pipeline/check_quality.py` in member B's `lamgiang/` folder on branch feat/lamgiang-2, from the raw data listed in its `data/raw/*/MANIFEST.json`. The Sentinel-2 entry of `catalog.json` was set to R-D06 by hand (PR #62). The provider, resolution, period and licence of each `catalog.json` entry were written in both languages by hand (2026-11-16).
 
-- `frontend/data/canonical/catalog.json` 3ad4d5ccccd058ff277b28bc3f40b2a7aa0405064c34ec990a0b07fc4aabba08
+- `frontend/data/canonical/catalog.json` b2b31a11f81375baf68054a6deed3003c7b47064a9b79c9fbd21d8af938368d8
 - `frontend/data/canonical/climate.json` b2e3271f202a92b1b6cc12a5e1560ee43edd59456338aab4db764822ca01be0a
 - `frontend/data/canonical/decision.json` 872cba9efed7774acddfbb1e4a46b65a467c24b553c6bcf8856a3f35caf80169
 - `frontend/data/canonical/geo.json` e8cc964118c0fa49653a5432ad06d08b667fbf15e02c618fe472ac14ec2e80b1
