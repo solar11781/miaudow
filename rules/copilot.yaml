@@ -32,17 +32,17 @@ passages:
   - id: p02-design
     source_id: R-P02
     keys: "p02 thu nghiem luu son do luong o 1000 m2 khong lap lai co cau"
-    title: {vi: "Thử nghiệm ở Lưu Sơn được làm thế nào?", en: "How was the Luu Son trial done?"}
+    title: {vi: "Thử nghiệm ở Lưu Sơn (cũ) được làm thế nào?", en: "How was the trial in former Luu Son done?"}
     text:
-      vi: "Thử nghiệm ở xã Lưu Sơn, Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không."
-      en: "The trial ran in Luu Son, Do Luong, from June 2020 to June 2021 on low-return (inefficient) rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence."
+      vi: "Thử nghiệm ở xã Lưu Sơn (cũ), Đô Lương, từ tháng 6/2020 đến tháng 6/2021, trên đất lúa kém hiệu quả, thường xuyên khô hạn. Mỗi cây một ô 1.000 m², không lặp lại. Bài không nói cả chuỗi ba vụ có trồng liền trên một ruộng hay không."
+      en: "The trial ran in former Luu Son, Do Luong, from June 2020 to June 2021 on low-return (inefficient) rice land, often in drought. One 1,000 m² plot per crop, not replicated. The paper does not say whether one field carried each whole sequence."
   - id: p03-summer
     source_id: R-P03
     keys: "p03 lua he thu loi nhuan 1 16 gan nhu khong co bo hoang"
     title: {vi: "Lúa vụ Hè Thu trên ruộng thiếu nước lãi bao nhiêu?", en: "What does summer-autumn rice earn on water-short land?"}
     text:
-      vi: "Bài báo thứ hai của Trịnh Đức Toàn và cs. (2023) ghi lúa vụ Hè Thu năm 2020 ở Lưu Sơn lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác bài báo thứ nhất. Bài này mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”."
-      en: "The second paper of Trịnh Đức Toàn et al. (2023) records 2020 summer-autumn rice profit in Luu Son of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from the first paper. It describes current practice as “rice – rice – fallow”."
+      vi: "Bài báo thứ hai của Trịnh Đức Toàn và cs. (2023) ghi lúa vụ Hè Thu năm 2020 ở Lưu Sơn (cũ) lãi 1,16 triệu đồng/ha, “gần như không có lợi nhuận”. Cách tính lãi khác bài báo thứ nhất. Bài này mô tả cách làm hiện nay là “Lúa – lúa – bỏ hoang”."
+      en: "The second paper of Trịnh Đức Toàn et al. (2023) records 2020 summer-autumn rice profit in former Luu Son of 1.16 million VND/ha, “almost no profit”. Its profit definition differs from the first paper. It describes current practice as “rice – rice – fallow”."
   - id: water-tcvn
     source_id: R-W15
     keys: "nuoc tuoi m3 ha tcvn nhu cau nuoc lua lac ngo"
@@ -69,8 +69,8 @@ passages:
     keys: "can bo khuyen nong hoi ai giup vay von thu mua gia ban"
     title: {vi: "Nên hỏi cán bộ khuyến nông điều gì?", en: "What to ask the extension officer?"}
     text:
-      vi: "Ruộng nhà mình có giống ruộng thử nghiệm ở Lưu Sơn không; ở xã ai thu mua và giá bao nhiêu; cần bao nhiêu vốn và có được vay không. Giá trong thử nghiệm là giá lúc thu hoạch năm 2020–21."
-      en: "Whether your field is like the Luu Son trial field; who buys in your commune and at what price; how much capital is needed and whether you can borrow. Trial prices are 2020–21 harvest prices."
+      vi: "Ruộng nhà mình có giống ruộng thử nghiệm ở Lưu Sơn (cũ) không; ở xã ai thu mua và giá bao nhiêu; cần bao nhiêu vốn và có được vay không. Giá trong thử nghiệm là giá lúc thu hoạch năm 2020–21."
+      en: "Whether your field is like the trial field in former Luu Son; who buys in your commune and at what price; how much capital is needed and whether you can borrow. Trial prices are 2020–21 harvest prices."
 answers:
   insufficient:
     vi: "Chưa đủ dữ liệu để kết luận. Kho bằng chứng của Miaudow chưa có tài liệu đủ liên quan đến câu hỏi này. Hãy hỏi cán bộ khuyến nông của xã."

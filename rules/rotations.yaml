@@ -52,12 +52,12 @@
   risks: []
   why:
     why:
-      vi: "Cơ cấu đối chứng của người dân trong nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
-      en: "The farmers' own control structure in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Luu Son commune, Do Luong district."
+      vi: "Cơ cấu đối chứng của người dân trong nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ)."
+      en: "The farmers' own control structure in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in former Luu Son commune, former Do Luong district."
     evidence: &p02_why_evidence
-      vi: "Một thử nghiệm tại xã Lưu Sơn, huyện Đô Lương, \"từ tháng 6 năm 2020 đến tháng 6 năm 2021\" (tr. 45); mỗi cây
+      vi: "Một thử nghiệm tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ), \"từ tháng 6 năm 2020 đến tháng 6 năm 2021\" (tr. 45); mỗi cây
         trồng một ô 1000 m2 trong một vụ, không lặp lại."
-      en: "One trial in Luu Son commune, Do Luong district, from June 2020 to June 2021 (p. 45); one unreplicated plot of
+      en: "One trial in former Luu Son commune, former Do Luong district, from June 2020 to June 2021 (p. 45); one unreplicated plot of
         1000 m2 per crop and season."
     benefits:
       vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
@@ -123,11 +123,11 @@
     why:
       vi: "Cơ cấu của người dân \"Lúa - lúa - bỏ hoang\" là đối chứng trong nghiên cứu \"Thử nghiệm một số công thức
         luân canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại
-        xã Lưu Sơn, huyện Đô Lương (tr. 2)."
+        xã Lưu Sơn (cũ), huyện Đô Lương (cũ) (tr. 2)."
       en: "The farmers' structure \"rice - rice - fallow\" is the control in the study \"Thử nghiệm một số công thức luân
         canh trên đất lúa kém hiệu quả, có nguy cơ thiếu nước tại tỉnh Nghệ An\" (testing some rotation formulas on
-        low-return (inefficient), water-short rice land in Nghe An province; our translation) by Trịnh Đức Toàn et al., 2023, in Luu
-        Son commune, Do Luong district (p. 2)."
+        low-return (inefficient), water-short rice land in Nghe An province; our translation) by Trịnh Đức Toàn et al., 2023, in former
+        Luu Son commune, former Do Luong district (p. 2)."
     evidence:
       vi: "Một năm, từ tháng 6/2020 đến tháng 6/2021; mỗi cây trồng một ô 1000 m2, không lặp lại (tr. 2)."
       en: "One year, June 2020 to June 2021; one unreplicated plot of 1000 m2 per crop (p. 2)."
@@ -223,8 +223,8 @@
       source_ids: [R-G27]
   why:
     why:
-      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
-      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Luu Son commune, Do Luong district."
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ)."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in former Luu Son commune, former Do Luong district."
     evidence: *p02_why_evidence
     benefits:
       vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
@@ -280,8 +280,8 @@
     - *law_7_1
   why:
     why:
-      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
-      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Luu Son commune, Do Luong district."
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ)."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in former Luu Son commune, former Do Luong district."
     evidence: *p02_why_evidence
     benefits:
       vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
@@ -328,8 +328,8 @@
     - *law_7_1
   why:
     why:
-      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
-      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Luu Son commune, Do Luong district."
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ)."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in former Luu Son commune, former Do Luong district."
     evidence: *p02_why_evidence
     benefits:
       vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."
@@ -376,8 +376,8 @@
     - *law_7_1
   why:
     why:
-      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn, huyện Đô Lương."
-      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in Luu Son commune, Do Luong district."
+      vi: "Một trong bốn cơ cấu thử nghiệm của nghiên cứu \"Kết quả thử nghiệm một số cây trồng trên đất lúa kém hiệu quả, thường xuyên khô hạn tại tỉnh Nghệ An\" (Trịnh Đức Toàn và cs, 2023), tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ)."
+      en: "One of the four structures tested in the study \"Testing of some crops on ineffective, frequent drought rice land in Nghe An province\" (Trịnh Đức Toàn et al., 2023), in former Luu Son commune, former Do Luong district."
     evidence: *p02_why_evidence
     benefits:
       vi: "Lợi nhuận thuần của từng cây có trong Bảng 13 của bài báo (tr. 50); xem dòng tiền ở trên."

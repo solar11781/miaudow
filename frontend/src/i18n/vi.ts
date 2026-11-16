@@ -145,7 +145,7 @@ export const vi = {
     problemTitle: 'Đất lúa kém hiệu quả, thường xuyên khô hạn',
     // rules/rotations.yaml `usual` why.evidence (P-02 tr. 45)
     problemLead:
-      'Một thử nghiệm tại xã Lưu Sơn, huyện Đô Lương, “từ tháng 6 năm 2020 đến tháng 6 năm 2021” (tr. 45); mỗi cây trồng một ô 1.000 m² trong một vụ, không lặp lại.',
+      'Một thử nghiệm tại xã Lưu Sơn (cũ), huyện Đô Lương (cũ), “từ tháng 6 năm 2020 đến tháng 6 năm 2021” (tr. 45); mỗi cây trồng một ô 1.000 m² trong một vụ, không lặp lại.',
     riceSpring: 'lãi lúa vụ Đông Xuân 2021 trên ô thử nghiệm',
     trialNote: 'Một ô ruộng, một năm (2020–2021), giá bán năm đó. Không phải tiền lãi dự kiến của nhà bạn.',
     verseTitle: 'Xứ Nghệ',
@@ -172,7 +172,7 @@ export const vi = {
       {
         name: 'Lõi bằng chứng',
         does: 'Tìm đúng đoạn tài liệu để trả lời một câu hỏi, và nói “chưa có nguồn” khi không tìm thấy.',
-        uses: 'Hai nghiên cứu ở Lưu Sơn, Quyết định 18/2021, TCVN 8641, số liệu Cục Thống kê',
+        uses: 'Hai nghiên cứu ở Lưu Sơn (cũ), Quyết định 18/2021, TCVN 8641, số liệu Cục Thống kê',
         gives: 'Câu trả lời kèm tên tài liệu và số trang',
         limit: 'Tìm theo từ ngữ; câu hỏi nói quá khác tài liệu thì chưa tìm ra.',
         to: '/bang-chung',
@@ -284,7 +284,7 @@ export const vi = {
     wetNote:
       'Các cách trồng trong ứng dụng được thử trên ruộng thiếu nước. Chưa có cách nào được thử cho ruộng chủ động nước, nên ứng dụng không đưa ra so sánh cho loại ruộng này.',
     dryNote:
-      'Thử nghiệm làm trên “đất lúa kém hiệu quả, thường xuyên khô hạn” ở Lưu Sơn, Đô Lương. Ruộng nhà bạn có thể giống loại đất này; hỏi cán bộ khuyến nông để chắc chắn.',
+      'Thử nghiệm làm trên “đất lúa kém hiệu quả, thường xuyên khô hạn” ở Lưu Sơn (cũ), Đô Lương. Ruộng nhà bạn có thể giống loại đất này; hỏi cán bộ khuyến nông để chắc chắn.',
     askNote: 'Bạn vẫn xem tiếp được. Nhớ hỏi cán bộ khuyến nông xem ruộng nhà mình có giống ruộng thử nghiệm không.',
     yearsTitle: 'Những năm trước ra sao?',
     yearsHelp: 'Chọn những năm bạn còn nhớ: năm hạn, năm rét, năm mất mùa. Tối đa 10 năm.',
@@ -392,7 +392,7 @@ export const vi = {
     priceYear: (y: string) => `Giá bán năm ${y}.`,
     priceYearNotStated: 'Nguồn không ghi năm của giá bán.',
     trialNote:
-      'Các cách trồng lấy từ một thử nghiệm không lặp lại ở Lưu Sơn, Đô Lương (2020–21). Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
+      'Các cách trồng lấy từ một thử nghiệm không lặp lại ở Lưu Sơn (cũ), Đô Lương (2020–21). Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
     rice: {
       real: 'Số thật',
       prediction: 'Ước tính của mô hình cho năm kiểm tra',
@@ -482,7 +482,7 @@ export const vi = {
     shareHelp: 'Liên kết mở đúng thẻ này, với các năm và điều bạn quan tâm. Có thể dán vào Zalo.',
     askOfficer: 'Câu hỏi nên mang theo khi gặp cán bộ',
     officerQuestions: [
-      'Ruộng nhà tôi có giống ruộng thử nghiệm ở Lưu Sơn không?',
+      'Ruộng nhà tôi có giống ruộng thử nghiệm ở Lưu Sơn (cũ) không?',
       'Ở xã mình, ai thu mua các cây này, giá bao nhiêu?',
       'Nhà tôi cần bao nhiêu vốn, và có được vay không?',
     ],
@@ -502,7 +502,7 @@ export const vi = {
       'Cách làm và giới hạn',
     ],
     conclusion: (seq: string) =>
-      `Trong thử nghiệm 2020–21 ở Lưu Sơn, Đô Lương, chuỗi ${seq} đã được trồng và ghi lãi từng vụ.`,
+      `Trong thử nghiệm 2020–21 ở Lưu Sơn (cũ), Đô Lương, chuỗi ${seq} đã được trồng và ghi lãi từng vụ.`,
     meaning:
       'Con số cho biết cách trồng này từng làm được gì trên một ô ruộng, trong một năm, với giá năm đó. Nó không phải mức lãi chắc chắn cho ruộng của gia đình đang hỏi.',
     whereP02:
@@ -518,7 +518,11 @@ export const vi = {
     lead: 'Mỗi dòng trên thẻ của bà con đến từ một nguồn cụ thể. Trang này gom chúng lại để cán bộ giải thích, và nói rõ chỗ nào bằng chứng chưa đủ.',
     scopeTitle: 'Phạm vi bằng chứng',
     scope: [
-      { label: 'Nơi thử nghiệm', value: 'Xã Lưu Sơn, Đô Lương, Nghệ An' },
+      {
+        label: 'Nơi thử nghiệm',
+        value: 'Xã Lưu Sơn (cũ), huyện Đô Lương (cũ), nay thuộc xã Đô Lương, Nghệ An',
+        source: 'nq1678' as const,
+      },
       { label: 'Thời gian', value: 'Tháng 6/2020 – tháng 6/2021, một năm' },
       { label: 'Thiết kế', value: 'Mỗi cây một ô 1.000 m², không lặp lại' },
       { label: 'Loại đất', value: 'Đất lúa kém hiệu quả, thường xuyên khô hạn' },
@@ -536,7 +540,7 @@ export const vi = {
     weatherCell: 'Theo từng cây, mọi năm 1995–2024',
     twoStudiesTitle: 'Hai nghiên cứu, hai cách mô tả “cách làm hiện nay”',
     twoStudiesLead:
-      'Cùng xã Lưu Sơn, một bài báo ghi “Lúa – Đậu – Khoai lang”, bài kia ghi “Lúa – lúa – bỏ hoang”. Ứng dụng hiện cả hai, không chọn thay bà con.',
+      'Cùng xã Lưu Sơn (cũ), một bài báo ghi “Lúa – Đậu – Khoai lang”, bài kia ghi “Lúa – lúa – bỏ hoang”. Ứng dụng hiện cả hai, không chọn thay bà con.',
     lineageTitle: 'Đường đi của một con số',
     lineage: [
       { kind: 'data', title: 'NASA POWER', body: 'Mưa và nhiệt độ theo ngày, 1990–2024, 5 ô lưới' },
@@ -563,7 +567,7 @@ export const vi = {
         dont: 'Không nói “trồng lạc sẽ lãi 26 triệu”',
       },
       {
-        do: 'Nói “ô thử nghiệm ở Lưu Sơn, ruộng nhà mình có thể khác”',
+        do: 'Nói “ô thử nghiệm ở Lưu Sơn (cũ), ruộng nhà mình có thể khác”',
         dont: 'Không nói “cách này hợp với ruộng nhà bác”',
       },
     ],
@@ -769,7 +773,7 @@ export const vi = {
   climate: {
     noChirps: 'Chưa có số liệu CHIRPS cho ô này.',
     twoTitle: (y: number) => `Mưa từng tháng năm ${y}: NASA POWER và CHIRPS v3, cùng một ô lưới`,
-    ndviTitle: 'Độ xanh thực vật quanh Lưu Sơn (MODIS NDVI), 2015–2024',
+    ndviTitle: 'Độ xanh thực vật quanh Lưu Sơn (cũ), MODIS NDVI, 2015–2024',
     ndviMedian: 'Trung vị các điểm ảnh',
     ndviBand: 'Một nửa giữa các điểm ảnh',
     trialSeason: 'Năm thử nghiệm 2020–21',
@@ -972,7 +976,7 @@ export const vi = {
         body: 'Viền vàng nhạt là tỉnh Nghệ An; vùng viền trắng là huyện Đô Lương (cũ). Bạn có thể bật một lớp ảnh vệ tinh để xem độ xanh, lượng mưa hoặc độ ẩm đất.',
       },
       'do-luong': {
-        title: 'Đô Lương và Lưu Sơn',
+        title: 'Đô Lương (cũ) và Lưu Sơn (cũ)',
         short: 'Đô Lương',
         body: 'Ảnh Sentinel-2 cho thấy độ xanh của ruộng trong một mùa. Màu xanh đậm là cây nhiều lá, màu nâu là đất trống hoặc nước.',
       },
@@ -1180,7 +1184,7 @@ export const vi = {
     reliefLabel: 'Địa hình Nghệ An (NASA SRTM)',
     reliefDetail:
       'Ảnh đổ bóng từ độ cao mặt đất, mặt trời hướng tây bắc (315°, cao 45°). Chỉ là độ cao; không cho biết nước tới được đâu.',
-    ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn',
+    ndviLabel: 'Độ xanh NDVI quanh Lưu Sơn (cũ)',
     ndviDetail:
       'Trung vị và khoảng giữa (phân vị 25–75) của các điểm ảnh 250 m tin cậy ở mỗi kỳ 16 ngày; ngày không có điểm ảnh tin cậy để trống.',
     cropProfitLabel: (crop: string) => `Lãi ${crop}`,
