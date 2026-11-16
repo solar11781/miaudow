@@ -70,3 +70,31 @@ test.describe('on a phone in light mode', () => {
     expect(Math.min(r, g, b)).toBeGreaterThan(200);
   });
 });
+
+test.describe('in light mode', () => {
+  test.use({ colorScheme: 'light' });
+  // the light theme darkened the ivory wordmark on every header, so on the dark headers it could not be seen
+  test('the wordmark is darkened only on the light header bar', async ({ page }, info) => {
+    test.skip(info.project.name !== 'desktop-1440', 'the phone bar hides the wordmark; its menu is checked below');
+    // the old page's header stays up while the next page loads, so wait for the header this page gives
+    const filter = async (route: string, light: boolean) => {
+      await page.goto(route);
+      await expect(page.locator('header[class*="paper"]')).toHaveCount(light ? 1 : 0);
+      const mark = page.locator('header div[class*="bar"] img[alt="Miaudow"]');
+      await expect(mark).toBeVisible();
+      return mark.evaluate((img) => getComputedStyle(img).filter);
+    };
+    expect(await filter('/#/dai-quan-sat', true)).toContain('brightness'); // paper header
+    expect(await filter('/#/khoa-hoc', false)).toBe('none'); // forest header
+    expect(await filter('/#/', false)).toBe('none'); // over the photograph
+  });
+
+  test('the wordmark stays light in the dark menu sheet', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto('/#/dai-quan-sat');
+    await page.locator('header button[class*="menuBtn"]').click();
+    const mark = page.getByRole('dialog').locator('img[alt="Miaudow"]');
+    await expect(mark).toBeVisible();
+    expect(await mark.evaluate((img) => getComputedStyle(img).filter)).toBe('none');
+  });
+});

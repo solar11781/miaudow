@@ -56,7 +56,8 @@
   margin-bottom: 4px;
 }
 
-:global(:root[data-theme='light']) .wordmark {
+/* the ivory wordmark is darkened only on the light bar: the other headers and the menu sheet stay dark */
+:global(:root[data-theme='light']) .paper .bar .wordmark {
   filter: brightness(0.12);
 }
 
