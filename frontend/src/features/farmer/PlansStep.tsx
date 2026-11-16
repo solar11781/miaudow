@@ -86,8 +86,9 @@ function Cards({ res }: { res: CompareResponse }) {
   useEffect(() => {
     const nav = strip.current;
     const link = nav?.querySelector<HTMLElement>('[aria-current="true"]');
-    // the strip scrolls sideways on a phone, so the marked plan is kept in sight
-    if (nav && link) nav.scrollLeft = link.offsetLeft - nav.offsetLeft - 16;
+    // the strip scrolls sideways, so the marked plan is kept in sight, 16 px from the left edge (the sticky strip is
+    // its links' offset parent); with no plan in view (the top of the page) it goes back to its start
+    if (nav) nav.scrollLeft = link ? link.offsetLeft - 16 : 0;
   }, [inView]);
 
   const share = useCallback(

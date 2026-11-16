@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { vi } from '../src/i18n/vi';
 
 // D-187 (roleplay audit 2026-11-15, F2): the source notes move from the cards into the source sheets; the card keeps
@@ -208,4 +208,24 @@ test('the water row lines its values up at the right, notes on the numbers basel
   const percents = lines.flatMap((l) => l.values).filter((v) => v.includes('%'));
   expect(percents.length).toBeGreaterThan(0);
   for (const value of percents) expect(value).toMatch(/^\d+%$/);
+});
+
+// visual audit 2026-11-16: back at the top of the page the strip stayed scrolled sideways, its first plans cut off
+test('the jump strip shows the plan in view from its left edge and goes back to its start at the top', async ({
+  page,
+}) => {
+  await page.goto(PLANS_URL);
+  const jump = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  // how far a chip starts after the strip's left edge
+  const startOf = (chip: Locator) =>
+    chip.evaluate((el) => el.getBoundingClientRect().left - (el.parentElement?.getBoundingClientRect().left ?? 0));
+  await page.getByTestId('card-cc2').evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(jump.locator('a[href="#the-cc2"]')).toHaveAttribute('aria-current', 'true');
+  // the first marked chip starts at the strip's 16 px gutter: not cut on the left, not pushed off to the right
+  await expect.poll(() => startOf(jump.locator('a[aria-current="true"]').first())).toBeGreaterThanOrEqual(0);
+  expect(await startOf(jump.locator('a[aria-current="true"]').first())).toBeLessThanOrEqual(24);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(jump.locator('a[aria-current="true"]')).toHaveCount(0);
+  await expect.poll(() => startOf(jump.locator('a').first())).toBeGreaterThanOrEqual(0);
 });
