@@ -1,8 +1,8 @@
 // Visual audit 2026-11-16: the data room page mixed number notations in Vietnamese ("19.0°N 105.625°E", "49.9") and
 // showed the internal cell key "19.0_105.0" in a source label. Vietnamese uses a decimal comma on the whole page,
 // English a decimal point, and a cell is named by its centre.
-import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
@@ -20,12 +20,13 @@ async function page(languages: string[]) {
       </ProvenanceProvider>
     </SettingsProvider>,
   );
-  // the map arrives in its own chunk
-  await screen.findAllByRole('button', { pressed: true });
+  await waitFor(() => expect(document.querySelector('button[aria-pressed]')).not.toBeNull());
   return document.body.textContent ?? '';
 }
 
 describe('data room number notation', () => {
+  // the map arrives in its own chunk, with three.js: load it once before the page is drawn
+  beforeAll(() => import('./Observatory3D'), 30_000);
   afterEach(() => {
     cleanup();
     Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
