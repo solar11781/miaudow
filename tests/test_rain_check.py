@@ -5,12 +5,16 @@ months only; both series are farmland-weighted with the §3 weights; a month mis
 both and counted in n_dropped; cc is the Pearson correlation (Roversi et al. 2024, Table 5, R-M23).
 """
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from fieldshift.features import rain_check
 
+REPO = Path(__file__).resolve().parents[1]
 A, B = (19.0, 105.0), (19.5, 105.0)
 WEIGHTS = {A: 0.25, B: 0.75}
 MONTHS = ["2001-01", "2001-02", "2001-03", "2001-04", "2001-05"]
@@ -111,3 +115,24 @@ def test_imerg_cell_months_converts_each_file_to_mm_per_cell():
     lines = "\n".join(f"precipitation[0][{j}], " + ", ".join(["0.5"] * 5) for j in range(6))
     got = rain_check.imerg_cell_months({(2023, 2): lines}, box, [(19.0, 105.0)])
     assert got == {(19.0, 105.0): {"2023-02": pytest.approx(0.5 * 24 * 28)}}  # 0.5 mm/hr x 24 h x 28 days
+
+
+def test_the_built_artifact_has_the_shape_of_the_contract():
+    doc = json.loads((REPO / "artifacts" / "rain_check.json").read_text(encoding="utf-8"))
+    assert set(doc) == {
+        "schema_version",
+        "generated_at",
+        "freeze_commit",
+        "months",
+        "cc",
+        "mean_imerg_mm",
+        "mean_power_mm",
+        "n_months",
+        "n_dropped",
+        "source_ids",
+        "computed_by",
+    }
+    assert doc["n_months"] + doc["n_dropped"] == 288  # 2001-01..2024-12
+    assert doc["n_months"] == len(doc["months"])
+    assert all(set(m) == {"month", "imerg_mm", "power_mm"} for m in doc["months"])
+    assert -1 <= doc["cc"] <= 1  # NaN fails this too
