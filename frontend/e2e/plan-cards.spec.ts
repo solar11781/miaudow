@@ -91,7 +91,7 @@ test('D-190 each plan has one name and its money is in million dong per hectare'
   await expect(jump).not.toContainText(/\bCC\d\b/i);
   const head = page.getByTestId('card-cc1-row-header');
   await expect(head.locator('p').first()).toHaveText(vi.farmer.trialShort('1'));
-  await expect(page.getByTestId('card-usual-row-header').locator('p').first()).toHaveText(vi.farmer.current);
+  await expect(page.getByTestId('card-usual-row-header').locator('p').first()).toContainText(vi.farmer.current);
   await openRow(page, 'cc1', 'money');
   const money = page.getByTestId('card-cc1-row-money');
   const button = money.locator('[id$="-row-money-body"] ul [data-value]').first();
@@ -226,9 +226,15 @@ test('the jump strip shows the plan in view from its left edge and goes back to 
     chip.evaluate((el) => el.getBoundingClientRect().left - (el.parentElement?.getBoundingClientRect().left ?? 0));
   await page.getByTestId('card-cc2').evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await expect(jump.locator('a[href="#the-cc2"]')).toHaveAttribute('aria-current', 'true');
-  // the first marked chip starts at the strip's 16 px gutter: not cut on the left, not pushed off to the right
-  await expect.poll(() => startOf(jump.locator('a[aria-current="true"]').first())).toBeGreaterThanOrEqual(0);
-  expect(await startOf(jump.locator('a[aria-current="true"]').first())).toBeLessThanOrEqual(24);
+  // the first marked chip is whole in the strip: not cut on the left, not pushed off to the right (with short chips
+  // (F-A7) a wide screen shows all six, so the strip has nothing to scroll)
+  const marked = jump.locator('a[aria-current="true"]').first();
+  await expect.poll(() => startOf(marked)).toBeGreaterThanOrEqual(0);
+  expect(
+    await marked.evaluate(
+      (el) => (el.parentElement?.getBoundingClientRect().right ?? 0) - el.getBoundingClientRect().right,
+    ),
+  ).toBeGreaterThanOrEqual(0);
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(jump.locator('a[aria-current="true"]')).toHaveCount(0);
   await expect.poll(() => startOf(jump.locator('a').first())).toBeGreaterThanOrEqual(0);
@@ -317,4 +323,42 @@ test('the opened rows keep each value at the right of its line, on every card', 
     );
   }
   expect(bad).toEqual([]);
+});
+
+// roleplay audit 2026-11-16 (F-A7): one 500 px chip filled the phone screen; chips are short, several show at once,
+// and each chip's accessible name is the full plan name with its crops, in the fixed order (H3)
+test('the jump strip chips are short on a phone and keep the full plan name as their name', async ({ page }, info) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const chips = page.getByRole('navigation', { name: vi.farmer.jumpTo }).locator('a');
+  await expect(chips).toHaveCount(6);
+  expect(await chips.evaluateAll((as) => as.map((a) => a.getAttribute('href')))).toEqual(IDS.map((id) => `#the-${id}`));
+  const widths = await chips.evaluateAll((as) => as.map((a) => a.getBoundingClientRect().width));
+  if (info.project.name === 'phone-360') {
+    for (const w of widths) expect(w).toBeLessThanOrEqual(180);
+    const fully = await chips.evaluateAll((as) => as.filter((a) => a.getBoundingClientRect().right <= 360).length);
+    expect(fully).toBeGreaterThanOrEqual(2);
+  }
+  for (const id of IDS) {
+    const crops = await page.getByTestId(`card-${id}`).locator('h2').innerText();
+    const name = await page.locator(`nav a[href="#the-${id}"]`).evaluate((a) => a.textContent ?? '');
+    for (const crop of crops.split('→').map((c) => c.trim())) expect(name, id).toContain(crop);
+  }
+});
+
+// roleplay audit 2026-11-16 (F-B2): two cards said "Cách làm hiện nay"; rules/rotations.yaml: `usual` is the control of
+// the same trial as the four trial plans (P-02), `usual_p03` the control of another study (P-03)
+test('the two current-practice cards say which study they come from and which one the trial cards are compared with', async ({
+  page,
+}) => {
+  await page.goto(PLANS_URL);
+  const kicker = (id: string) => page.getByTestId(`card-${id}-row-header`).locator('p').first();
+  await expect(kicker('usual')).toContainText(vi.farmer.current);
+  await expect(kicker('usual')).toContainText(vi.farmer.currentOf.usual);
+  await expect(kicker('usual_p03')).toContainText(vi.farmer.current);
+  await expect(kicker('usual_p03')).toContainText(vi.farmer.currentOf.usual_p03);
+  const jump = page.getByRole('navigation', { name: vi.farmer.jumpTo });
+  await expect(jump.locator('[href="#the-usual"]')).toContainText(vi.farmer.chip.usual[1]);
+  await expect(jump.locator('[href="#the-usual_p03"]')).toContainText(vi.farmer.chip.usual_p03[1]);
+  await expect(page.getByText(vi.farmer.comparedWith, { exact: true })).toBeVisible();
 });

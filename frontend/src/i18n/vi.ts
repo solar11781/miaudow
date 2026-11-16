@@ -328,6 +328,18 @@ export const vi = {
     jumpTo: 'Đến thẻ',
     current: 'Cách làm hiện nay',
     trialShort: (n: string) => `Cách trồng thử ${n}`,
+    // F-B2: the two current-practice cards by their study (rules/rotations.yaml: usual is P-02's control, usual_p03 P-03's)
+    currentOf: { usual: 'cùng thử nghiệm với 4 cách trồng thử', usual_p03: 'nghiên cứu khác' } as Record<
+      string,
+      string
+    >,
+    comparedWith: 'Bốn cách trồng thử được so với thẻ đầu tiên: cách làm hiện nay trong cùng thử nghiệm.',
+    // F-A7: the jump strip's short chips, two short lines each; the full plan name is the chip's accessible name
+    chip: {
+      usual: ['Hiện nay', 'cùng thử nghiệm'],
+      usual_p03: ['Hiện nay', 'nghiên cứu khác'],
+      trial: (n: string) => ['Cách trồng', `thử ${n}`],
+    },
     bare: 'Ruộng trống',
     datesAsReported: 'ngày theo thử nghiệm',
     overlapNote: 'Hai cây nằm trên hai hàng riêng vì ngày ghi trong bài báo trùng nhau.',

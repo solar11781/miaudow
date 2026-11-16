@@ -8,6 +8,25 @@ export function planLabel(
   return p.current ? text.current : text.trialShort(p.id.replace(/\D/g, ''));
 }
 
+/** The plan's label with, for a current-practice plan, the study it comes from (F-B2): the two current-practice plans
+ * are the control of the trial the four trial plans come from (`usual`, P-02) and of another study (`usual_p03`, P-03). */
+export function planName(
+  p: { id: string; is_usual: boolean },
+  text: { current: string; trialShort: (n: string) => string; currentOf: Record<string, string> },
+): string {
+  const of = p.is_usual ? text.currentOf[p.id] : undefined;
+  return [planLabel({ id: p.id, current: p.is_usual }, text), of].filter(Boolean).join(' · ');
+}
+
+/** The two short lines of a plan's jump-strip chip (F-A7). */
+export function chipLines(
+  id: string,
+  chip: { usual: string[]; usual_p03: string[]; trial: (n: string) => string[] },
+): string[] {
+  if (id === 'usual' || id === 'usual_p03') return chip[id];
+  return chip.trial(id.replace(/\D/g, ''));
+}
+
 // Crop facts as published. Money in thousand VND per hectare (P-02 Table 13, net of labour; costs from Tables 4, 8, 12).
 export type CropFamily = 'rice' | 'legume' | 'maize' | 'root' | 'other';
 export type Season = 'spring' | 'summer' | 'autumn';

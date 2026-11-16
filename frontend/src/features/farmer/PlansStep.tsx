@@ -21,7 +21,7 @@ import { DataLine } from '../provenance/DataLine';
 import { LoadState } from '../provenance/LoadState';
 import { SaveAnswers } from '../account/SaveAnswers';
 import { usePick, useSettings, useT, type Lang } from '../../app/settings';
-import { planLabel } from '../../domain/plans';
+import { chipLines, planLabel, planName } from '../../domain/plans';
 import { pathFor, useLocalTo } from '../../app/paths';
 import s from './farmer.module.css';
 
@@ -116,6 +116,8 @@ function Cards({ res }: { res: CompareResponse }) {
   return (
     <>
       <DataLine sources={res.sources} className="muted small" />
+      {/* the two current-practice cards come from two studies; the trial cards are compared with the same trial's (F-B2) */}
+      <p className="small">{t.farmer.comparedWith}</p>
       <nav className={s.jump} aria-label={t.farmer.jumpTo} ref={strip}>
         {res.plans.map((p) => (
           <a
@@ -128,8 +130,15 @@ function Cards({ res }: { res: CompareResponse }) {
               update({ plan: p.id });
             }}
           >
-            {planLabel({ id: p.id, current: p.is_usual }, t.farmer)}
-            <span className="muted"> · {p.calendar.map((c) => pick(c.crop)).join(' → ')}</span>
+            {/* short on a phone so several chips show at once; the full name with the crops is the chip's name (F-A7) */}
+            <span aria-hidden="true">
+              {chipLines(p.id, t.farmer.chip).map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </span>
+            <span className="visually-hidden">
+              {planName(p, t.farmer)} · {p.calendar.map((c) => pick(c.crop)).join(' → ')}
+            </span>
           </a>
         ))}
       </nav>

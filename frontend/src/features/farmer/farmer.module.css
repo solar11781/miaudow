@@ -534,7 +534,7 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0.05rem 0.85rem;
   border-radius: var(--r-pill);
   border: 1px solid var(--line-2);
   background: var(--bg-raised);
@@ -543,6 +543,17 @@
   font-size: var(--t-small);
   font-weight: 500;
   white-space: nowrap;
+}
+
+/* a chip's two short lines (F-A7) */
+.jump a > span[aria-hidden] {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.jump a > span[aria-hidden] > span + span {
+  color: var(--fg-2);
 }
 
 .jump a:hover {

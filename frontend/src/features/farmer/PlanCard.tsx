@@ -617,6 +617,7 @@ function CardHead({ plan, res, refs }: Ctx) {
         <span className={plan.is_usual ? s.currentTag : undefined}>
           {planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}
         </span>
+        {plan.is_usual && <span>{t.farmer.currentOf[plan.id]}</span>}
       </p>
       <h2 id={`title-${plan.id}`} className={s.chain}>
         {plan.calendar.map((c, i) => (

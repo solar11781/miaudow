@@ -337,6 +337,13 @@ export const en: Messages = {
     jumpTo: 'Go to card',
     current: 'Current practice',
     trialShort: (n: string) => `Trial way of farming ${n}`,
+    currentOf: { usual: 'same trial as the 4 trial ways', usual_p03: 'another study' } as Record<string, string>,
+    comparedWith: 'The four trial ways are compared with the first card: current practice in the same trial.',
+    chip: {
+      usual: ['Current', 'same trial'],
+      usual_p03: ['Current', 'another study'],
+      trial: (n: string) => ['Trial way', `of farming ${n}`],
+    },
     bare: 'Bare field',
     datesAsReported: 'dates as reported',
     overlapNote: 'Two crops sit on separate lanes because the reported dates overlap.',
