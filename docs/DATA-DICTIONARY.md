@@ -273,8 +273,8 @@ rows of the seasons it shows (UI-UX-SPEC §11).
 
 ## 5c. Satellite rain check: `artifacts/rain_check.json`
 
-This artifact was planned and is not in the built code: the IMERG download stopped at 194 of 288 monthly files, so the
-rain check was not run, and `GET /api/method` returns `rain_check` as null.
+`artifacts/rain_check.json` is built by `scripts/build_rain_check.py` from the 288 cached IMERG monthly files and the
+cached POWER series. `GET /api/method` returns `rain_check` as null only when the file is absent (not run).
 
 The inputs are NASA GPM IMERG Final monthly V07 (GPM_3IMERGM, 0.1 deg, R-N05) for a box around the Nghệ An cells,
 cached in data/raw/imerg_monthly (DATA-SOURCES, MANIFEST), and POWER daily PRECTOTCORR (R-N01) for the same cells, for
