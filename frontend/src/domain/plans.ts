@@ -8,14 +8,24 @@ export function planLabel(
   return p.current ? text.current : text.trialShort(p.id.replace(/\D/g, ''));
 }
 
-/** The plan's label with, for a current-practice plan, the study it comes from (F-B2): the two current-practice plans
- * are the control of the trial the four trial plans come from (`usual`, P-02) and of another study (`usual_p03`, P-03). */
+interface StudyNames {
+  usual: string;
+  usual_p03: string;
+}
+
+/** The study a current-practice plan comes from (F-B2): the control of the trial the four trial plans come from
+ * (`usual`, P-02) or of another study (`usual_p03`, P-03); nothing for a trial plan. */
+export const studyOf = (id: string, names: StudyNames) =>
+  id === 'usual' || id === 'usual_p03' ? names[id] : undefined;
+
+/** The plan's label with, for a current-practice plan, its study. */
 export function planName(
   p: { id: string; is_usual: boolean },
-  text: { current: string; trialShort: (n: string) => string; currentOf: Record<string, string> },
+  text: { current: string; trialShort: (n: string) => string; currentOf: StudyNames },
 ): string {
-  const of = p.is_usual ? text.currentOf[p.id] : undefined;
-  return [planLabel({ id: p.id, current: p.is_usual }, text), of].filter(Boolean).join(' · ');
+  return [planLabel({ id: p.id, current: p.is_usual }, text), studyOf(p.id, text.currentOf)]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 /** The two short lines of a plan's jump-strip chip (F-A7). */

@@ -329,13 +329,11 @@ export const vi = {
     current: 'Cách làm hiện nay',
     trialShort: (n: string) => `Cách trồng thử ${n}`,
     // F-B2: the two current-practice cards by their study (rules/rotations.yaml: usual is P-02's control, usual_p03 P-03's)
-    currentOf: { usual: 'cùng thử nghiệm với 4 cách trồng thử', usual_p03: 'nghiên cứu khác' } as Record<
-      string,
-      string
-    >,
+    currentOf: { usual: 'cùng thử nghiệm với 4 cách trồng thử', usual_p03: 'nghiên cứu khác' },
     stripTitle: 'Sáu cách trồng cạnh nhau',
     // short labels of the comparison strip's lines; the full labels are said once above the six plans
     strip: { money: 'Lãi thử nghiệm', water: 'Nước phải tưới' },
+    stripSum: (other: string) => `Số cả năm là phép cộng của chúng tôi; thẻ “${other}” ghi từng vụ như bài báo.`,
     comparedWith: 'Bốn cách trồng thử được so với thẻ đầu tiên: cách làm hiện nay trong cùng thử nghiệm.',
     // F-A7: the jump strip's short chips, two short lines each; the full plan name is the chip's accessible name
     chip: {

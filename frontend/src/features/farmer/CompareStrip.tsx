@@ -34,7 +34,7 @@ export function CompareStrip({
       <ul className={s.stripLegend}>
         <li>
           {priority === 'income' && <PrioTag />}
-          {t.farmer.rows.money} · {t.farmer.own.yearSum}
+          {t.farmer.rows.money}. {t.farmer.stripSum(t.farmer.currentOf.usual_p03)}
         </li>
         <li className={water}>
           {priority === 'water' && <PrioTag />}

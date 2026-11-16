@@ -16,7 +16,7 @@ import { displayMeasure } from '../../domain/format';
 import { consideration } from '../../domain/considerations';
 import { cardQuestions } from '../../data/rulebook';
 import { moneyStudy } from '../../domain/moneyStudy';
-import { planLabel } from '../../domain/plans';
+import { planLabel, studyOf } from '../../domain/plans';
 import { tcvnRange } from '../../domain/waterRange';
 import { CROP_FAMILY, MonthBar } from './MonthBar';
 import { OwnNumbers, type OwnState } from './OwnNumbers';
@@ -638,7 +638,7 @@ function CardHead({ plan, res, refs }: Ctx) {
         <span className={plan.is_usual ? s.currentTag : undefined}>
           {planLabel({ id: plan.id, current: plan.is_usual }, t.farmer)}
         </span>
-        {plan.is_usual && <span>{t.farmer.currentOf[plan.id]}</span>}
+        {plan.is_usual && <span>{studyOf(plan.id, t.farmer.currentOf)}</span>}
       </p>
       <h2 id={`title-${plan.id}`} className={s.chain}>
         {plan.calendar.map((c, i) => (

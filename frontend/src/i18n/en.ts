@@ -337,9 +337,11 @@ export const en: Messages = {
     jumpTo: 'Go to card',
     current: 'Current practice',
     trialShort: (n: string) => `Trial way of farming ${n}`,
-    currentOf: { usual: 'same trial as the 4 trial ways', usual_p03: 'another study' } as Record<string, string>,
+    currentOf: { usual: 'same trial as the 4 trial ways', usual_p03: 'another study' },
     stripTitle: 'The six ways side by side',
     strip: { money: 'Trial profit', water: 'Water to apply' },
+    stripSum: (other: string) =>
+      `A whole-year figure is our addition; the “${other}” card gives each season as its paper does.`,
     comparedWith: 'The four trial ways are compared with the first card: current practice in the same trial.',
     chip: {
       usual: ['Current', 'same trial'],

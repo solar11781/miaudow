@@ -416,7 +416,9 @@ test('the comparison strip shows the six plans in the card order with the card h
   // the long labels are said once above the six plans; priority income: the money label carries the label in words
   const legend = strip.locator('ul').first();
   await expect(legend).toContainText(vi.farmer.rows.money);
-  await expect(legend).toContainText(vi.farmer.own.yearSum);
+  // "our addition" belongs to the whole-year figures only: the other study's card gives each season as its paper does
+  await expect(legend).toContainText(vi.farmer.stripSum(vi.farmer.currentOf.usual_p03));
+  await expect(legend).not.toContainText(vi.farmer.own.yearSum);
   await expect(strip.getByText(vi.farmer.yourPriority)).toHaveCount(1);
   await expect(legend.locator('li', { hasText: vi.farmer.rows.money })).toContainText(vi.farmer.yourPriority);
   await expect(items.first()).not.toContainText(vi.farmer.rows.money);
