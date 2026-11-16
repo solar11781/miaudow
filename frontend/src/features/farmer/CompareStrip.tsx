@@ -6,11 +6,8 @@ import { MoneyLine, PrioTag, WaterLine } from './PlanCard';
 import { NumberOr } from './NumberOr';
 import s from './farmer.module.css';
 
-/** All six plans side by side before any card is opened (UI-UX-SPEC section 9): in the API's order, with no rank,
- * score or best mark (H3); per plan only the card head's money and water lines and one land fact, the same values and
- * sources as on the card (H5). The long labels are said once above the plans, where the chosen priority's label
- * carries "your priority" in words (H11). A phone has room for two lines per plan: the money line and, when it is
- * water or land, the line of the chosen priority; a wide screen shows all three. */
+/** All six plans side by side before any card is opened, with the card heads' own values and sources and no rank
+ * (UI-UX-SPEC section 9, "Comparison strip", holds the rules). */
 export function CompareStrip({
   res,
   priority,
