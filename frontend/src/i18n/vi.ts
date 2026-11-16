@@ -295,10 +295,10 @@ export const vi = {
     limitsTitle: 'Giới hạn của các con số này',
     cellsNote: (n: number) => `Số liệu lấy từ ${n} ô lưới NASA phủ đất trồng Nghệ An, mỗi ô khoảng 55 × 66 km.`,
     limits: [
-      'Giá trị trên ô lưới làm mượt các đợt cực đoan; ruộng nhà bạn không được đo trực tiếp.',
-      'Cảnh báo chính thức còn xét thêm yếu tố khác; đây là cách đọc máy móc các bảng của Quyết định.',
+      'Mỗi số là trung bình của một vùng rộng, nên một trận mưa rất to hay một đợt nắng rất gắt ở một nơi có thể không hiện ra. Ruộng nhà bạn không được đo trực tiếp.',
+      'Cảnh báo chính thức của nhà nước còn xét thêm yếu tố khác. Ở đây chỉ so số liệu với các bảng của Quyết định 18/2021, nên không phải thông báo chính thức.',
       'Tổng mưa theo ngày có thể sót trận mưa lớn kéo qua nửa đêm.',
-      'Đợt nắng nóng hay rét hại có ngày rơi vào các bậc nhiệt khác nhau thì không được đếm.',
+      'Một đợt nắng nóng hay rét hại mà các ngày ở những mức nhiệt khác nhau của Quyết định thì không được đếm.',
     ],
     noYears: 'Chọn ít nhất một năm để xem.',
     prioTitle: 'Gia đình quan tâm điều gì nhất?',
@@ -386,13 +386,13 @@ export const vi = {
     ourSumNote: 'Chúng tôi cộng tiền lãi của các vụ; bài báo không báo cáo tiền lãi cho cả chuỗi.',
     summaryWaterLabel: 'Nước phải tưới, tùy vùng',
     summaryWaterNote:
-      'Từ thấp nhất đến cao nhất trong các dòng của TCVN 8641 cho cây và vụ này; các dòng khác nhau theo vùng và cách gieo cấy.',
+      'Từ mức thấp nhất đến mức cao nhất mà tiêu chuẩn TCVN 8641 ghi cho cây và vụ này; các mức khác nhau theo vùng và cách gieo cấy.',
     noFigure: 'nguồn không có số',
     summaryWater: (row: string) => `Xem hàng ${row} bên dưới`,
     priceYear: (y: string) => `Giá bán năm ${y}.`,
     priceYearNotStated: 'Nguồn không ghi năm của giá bán.',
     trialNote:
-      'Các cách trồng lấy từ một thử nghiệm không lặp lại ở Lưu Sơn (cũ), Đô Lương (2020–21). Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
+      'Các cách trồng lấy từ một thử nghiệm ở Lưu Sơn (cũ), Đô Lương (2020–21): mỗi cây chỉ trồng thử trên một ô ruộng, không có ô thứ hai để so. Mỗi cây được thử đúng mùa trên loại đất này; chưa biết một ruộng có trồng liền cả năm hay không.',
     rice: {
       real: 'Số thật',
       prediction: 'Ước tính của mô hình cho năm kiểm tra',

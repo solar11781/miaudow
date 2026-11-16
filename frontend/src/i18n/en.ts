@@ -305,10 +305,10 @@ export const en: Messages = {
     limitsTitle: 'Limits of these numbers',
     cellsNote: (n: number) => `Values come from ${n} NASA grid cells over Nghe An farmland, each about 55 × 66 km.`,
     limits: [
-      'Grid values smooth out extremes; your own field is not measured.',
-      'Official warnings weigh other factors too; this is a mechanical reading of the Decision’s tables.',
+      'Each value is an average over a wide area, so a very heavy rain or a very hot spell in one place may not show. Your own field is not measured.',
+      'Official warnings weigh other factors too. Here the data are only compared with the tables of Decision 18/2021, so this is not an official record.',
       'Daily totals can miss heavy rain that crosses midnight.',
-      'Heat or damaging-cold spells whose days fall in different bands are not counted.',
+      'A heat or damaging-cold spell whose days are at different temperature levels of the Decision is not counted.',
     ],
     noYears: 'Pick at least one year to see it.',
     prioTitle: 'What matters most to your family?',
@@ -392,13 +392,13 @@ export const en: Messages = {
     ourSumNote: 'We added up the profit of the seasons; the paper does not report a profit for the whole sequence.',
     summaryWaterLabel: 'Water to apply, by region',
     summaryWaterNote:
-      'From the lowest to the highest of the TCVN 8641 rows for this crop and season; the rows differ by region and planting method.',
+      'From the lowest to the highest amount that the standard TCVN 8641 gives for this crop and season; the amounts differ by region and planting method.',
     noFigure: 'no figure in the source',
     summaryWater: (row: string) => `See the ${row} row below`,
     priceYear: (y: string) => `Prices of ${y}.`,
     priceYearNotStated: 'The source does not state the price year.',
     trialNote:
-      'The plans come from one unreplicated trial in former Luu Son, Do Luong (2020–21). Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
+      'The plans come from one trial in former Luu Son, Do Luong (2020–21): each crop was grown on one plot only, with no second plot to compare. Each crop was tested in its season on this land type; whether one field carried the whole year is not known.',
     rice: {
       real: 'Actual',
       prediction: 'Model estimate for a test year',
