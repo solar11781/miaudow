@@ -593,6 +593,7 @@ export const vi = {
     realGeometryShort: 'Ranh giới và ô lưới thật',
     cellFootprint: 'khung một ô lưới NASA (≈ 55 × 66 km)',
     heightIs: 'Chiều cao cột',
+    max: 'tối đa',
     readingFor: (y: number) => `Số đọc năm ${y}`,
     shareOfFarmland: 'đất trồng Nghệ An đạt cấp độ 1 trở lên',
     met: 'đạt ngưỡng',

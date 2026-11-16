@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../../app/settings';
 import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { SciencePage } from './SciencePage';
+import observatorySource from './Observatory3D.tsx?raw';
 
 async function page(languages: string[]) {
   Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
@@ -63,5 +64,11 @@ describe('data room number notation', () => {
     expect(text).toContain('NASA POWER · 2010 · ô lưới 19,0°B 105,000°Đ');
     cleanup();
     expect(await page(['en-GB', 'en'])).toContain('NASA POWER · 2010 · grid cell 19.0°N 105.000°E');
+  });
+
+  // the 3D map needs WebGL, which the test browser does not have, so this reads the source
+  it('takes the word before the tallest column value from the text files', () => {
+    expect(observatorySource).not.toMatch(/· max \{/);
+    expect(observatorySource).toContain('{t.science.max} {f.n(magMax)}');
   });
 });

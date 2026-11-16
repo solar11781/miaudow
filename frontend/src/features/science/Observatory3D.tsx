@@ -147,7 +147,7 @@ export function Observatory3D({
         </span>
         <span>{t.science.realGeometry}</span>
         <span className="mono">
-          {t.science.heightIs}: {RULES[rule].unit[lang]} · max {f.n(magMax)}
+          {t.science.heightIs}: {RULES[rule].unit[lang]} · {t.science.max} {f.n(magMax)}
         </span>
       </div>
     </div>

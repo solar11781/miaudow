@@ -596,6 +596,7 @@ export const en: Messages = {
     realGeometryShort: 'Real border and grid',
     cellFootprint: 'outline of one NASA grid cell (≈ 55 × 66 km)',
     heightIs: 'Column height',
+    max: 'max',
     readingFor: (y: number) => `Reading for ${y}`,
     shareOfFarmland: 'of Nghe An farmland met level 1 or higher',
     met: 'met',
