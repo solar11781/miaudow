@@ -30,11 +30,13 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-gold-500) 40%, transparent);
 }
 
+/* the card face fits as close to one phone screen as its required content allows (F1): tight paddings, no type under
+   17 px (H6) */
 .head {
-  padding: var(--s-5) var(--s-5) var(--s-4);
+  padding: var(--s-3) var(--s-4);
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
+  gap: var(--s-1);
   position: relative;
   overflow: hidden;
 }
@@ -60,7 +62,7 @@
 
 .chain {
   text-wrap: balance;
-  font: var(--w-head) clamp(1.75rem, 1.5rem + 0.8vw, 2.1rem)/1.1 var(--font-display);
+  font: var(--w-head) clamp(1.4rem, 1.25rem + 0.6vw, 1.9rem)/1.1 var(--font-display);
   letter-spacing: -0.01em;
   display: flex;
   flex-wrap: wrap;
@@ -97,10 +99,9 @@
 }
 
 .body {
-  padding: var(--s-5);
+  padding: 0 var(--s-4);
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
 }
 
 .noCal {
@@ -152,7 +153,7 @@
 .rowButton {
   width: 100%;
   min-height: 48px;
-  padding: var(--s-1) 0;
+  padding: 0.15rem 0;
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -372,14 +373,16 @@
   font-size: var(--t-small);
 }
 
+/* the four warnings as one tight block (H17), each still its own line of text */
 .foot {
   margin-top: auto;
-  padding: var(--s-4) var(--s-5) var(--s-5);
+  padding: var(--s-3) var(--s-4);
   background: var(--bg-sunk);
   display: flex;
   flex-direction: column;
-  gap: var(--s-3);
+  gap: 0.3rem;
   font-size: var(--t-micro);
+  line-height: 1.35;
   color: var(--fg-3);
 }
 
@@ -391,7 +394,7 @@
 }
 
 .share {
-  min-height: 48px;
+  min-height: 44px;
   padding: 0 1.1rem;
   border-radius: var(--r-md);
   border: 1px solid var(--line-2);
@@ -521,7 +524,7 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--s-1);
+  gap: 0.15rem;
   font-size: var(--t-small);
   color: var(--fg-2);
 }

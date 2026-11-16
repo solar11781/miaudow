@@ -362,3 +362,24 @@ test('the two current-practice cards say which study they come from and which on
   await expect(jump.locator('[href="#the-usual_p03"]')).toContainText(vi.farmer.chip.usual_p03[1]);
   await expect(page.getByText(vi.farmer.comparedWith, { exact: true })).toBeVisible();
 });
+
+// F1 (D-187 item 4, roleplay audit 2026-11-16): the closed card comes as close to one phone screen as its required
+// content allows; the four warnings stay inside the card as one tight block of 17 px text (H17, H6)
+test('the card warnings are one tight block inside the card', async ({ page }) => {
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  for (const id of IDS) {
+    const lines = [vi.farmer.trialNote, vi.farmer.priceYear('2020-21'), vi.common.notForecast, vi.common.support];
+    const boxes = [];
+    for (const line of lines) {
+      const el = page.getByTestId(`card-${id}`).getByText(line, { exact: true });
+      await expect(el, `${id}: ${line}`).toBeVisible();
+      expect(await el.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(17);
+      boxes.push(await el.boundingBox());
+    }
+    for (let i = 1; i < boxes.length; i++) {
+      const [a, b] = [boxes[i - 1], boxes[i]];
+      expect((b?.y ?? 0) - ((a?.y ?? 0) + (a?.height ?? 0)), id).toBeLessThanOrEqual(8);
+    }
+  }
+});
