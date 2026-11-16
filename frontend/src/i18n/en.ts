@@ -1083,12 +1083,19 @@ export const en: Messages = {
       month: 'Month',
     },
     role: { primary: 'Primary', secondary: 'Secondary', reference: 'Reference' },
-    subset: (raw: string) =>
-      raw === 'national'
-        ? 'Nationwide'
-        : raw === 'na_ht_th'
-          ? 'Nghe An, Ha Tinh, Thanh Hoa'
-          : raw.replace(/^(unit|region):/, ''),
+    subsets: {
+      national: 'Nationwide',
+      na_ht_th: 'Nghe An, Ha Tinh, Thanh Hoa',
+      'unit:Nghe An': 'Nghe An',
+      'unit:Ha Tinh': 'Ha Tinh',
+      'unit:Thanh Hoa': 'Thanh Hoa',
+      'region:red_river_delta': 'Red River Delta',
+      'region:northern_midlands_and_mountain_areas': 'Northern midlands and mountain areas',
+      'region:north_central_and_central_coastal_areas': 'North Central and Central coastal areas',
+      'region:central_highlands': 'Central Highlands',
+      'region:south_east': 'South East',
+      'region:mekong_river_delta': 'Mekong River Delta',
+    } as Record<string, string>,
     skillCi: (v: string, lo: string, hi: string) => `${v} (${lo} to ${hi})`,
     notRun: 'Not run',
     rangeHidden: 'The 80% range is not shown on the cards for this season because the range test did not pass.',

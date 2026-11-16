@@ -1079,12 +1079,20 @@ export const vi = {
       month: 'Tháng',
     },
     role: { primary: 'Chính', secondary: 'Phụ', reference: 'Mốc so sánh' },
-    subset: (raw: string) =>
-      raw === 'national'
-        ? 'Cả nước'
-        : raw === 'na_ht_th'
-          ? 'Nghệ An, Hà Tĩnh, Thanh Hóa'
-          : raw.replace(/^(unit|region):/, ''),
+    // the scope keys of GET /api/method; the six regions as Vietnam's statistics office writes them
+    subsets: {
+      national: 'Cả nước',
+      na_ht_th: 'Nghệ An, Hà Tĩnh, Thanh Hóa',
+      'unit:Nghe An': 'Nghệ An',
+      'unit:Ha Tinh': 'Hà Tĩnh',
+      'unit:Thanh Hoa': 'Thanh Hóa',
+      'region:red_river_delta': 'Đồng bằng sông Hồng',
+      'region:northern_midlands_and_mountain_areas': 'Trung du và miền núi phía Bắc',
+      'region:north_central_and_central_coastal_areas': 'Bắc Trung Bộ và Duyên hải miền Trung',
+      'region:central_highlands': 'Tây Nguyên',
+      'region:south_east': 'Đông Nam Bộ',
+      'region:mekong_river_delta': 'Đồng bằng sông Cửu Long',
+    } as Record<string, string>,
     skillCi: (v: string, lo: string, hi: string) => `${v} (${lo} đến ${hi})`,
     notRun: 'Chưa chạy',
     rangeHidden: 'Khoảng 80% không được hiện trên thẻ cho vụ này vì bài kiểm tra khoảng chưa đạt.',

@@ -101,7 +101,7 @@ function MetricsTable({ rows, all, refs }: { rows: MetricRow[]; all: MetricRow[]
                   {r.detail && <span className="muted small"> · {pick(r.detail)}</span>}
                 </th>
                 <td>{t.method.role[r.role]}</td>
-                <td>{t.method.subset(r.subset)}</td>
+                <td>{t.method.subsets[r.subset] ?? r.subset.replace(/^(unit|region):/, '')}</td>
                 {cells.map((c, i) => (
                   <td key={i} className="num" data-value={c} data-source-ref={ref}>
                     {c}

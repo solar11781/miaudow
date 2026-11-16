@@ -8,10 +8,12 @@ import { ProvenanceProvider } from '../provenance/ProvenanceProvider';
 import { api, validateMethod } from '../../api';
 import method from '../../../snapshot/method.json';
 import { MethodPage } from './MethodPage';
+import { en } from '../../i18n/en';
 import { vi } from '../../i18n/vi';
 
-function renderPage() {
-  mock.spyOn(api, 'method').mockResolvedValue(validateMethod(method));
+function renderPage(languages: string[] = ['vi-VN', 'vi'], res: unknown = method) {
+  Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true });
+  mock.spyOn(api, 'method').mockResolvedValue(validateMethod(res));
   render(
     <MemoryRouter>
       <SettingsProvider>
@@ -23,10 +25,16 @@ function renderPage() {
   );
 }
 
+/** The scope ("Phạm vi") cell of every result row: the second cell after the row heading. */
+function scopeCells() {
+  return new Set([...document.querySelectorAll('#main tbody tr > td:nth-of-type(2)')].map((c) => c.textContent));
+}
+
 describe('method page', () => {
   afterEach(() => {
     cleanup();
     mock.restoreAllMocks();
+    Object.defineProperty(window.navigator, 'languages', { value: ['vi-VN', 'vi'], configurable: true });
   });
   it('qualifies the winter weather claim as narrow and fragile', async () => {
     renderPage();
@@ -41,5 +49,49 @@ describe('method page', () => {
     const line = await screen.findByText(vi.method.picsa);
     await userEvent.click(within(line.closest('li') as HTMLElement).getByRole('button'));
     expect(document.querySelector('dialog[open]')?.textContent).toContain('PICSA Field Manual');
+  });
+  // visual audit of the method page: data keys ("Nghe An", "red_river_delta") were printed as the scope of a row.
+  // Vietnamese names as the statistics office writes them; English without accent marks (D-186, D-191).
+  it.each([
+    [
+      ['vi-VN', 'vi'],
+      [
+        'Nghệ An',
+        'Hà Tĩnh',
+        'Thanh Hóa',
+        'Đồng bằng sông Hồng',
+        'Trung du và miền núi phía Bắc',
+        'Bắc Trung Bộ và Duyên hải miền Trung',
+        'Tây Nguyên',
+        'Đông Nam Bộ',
+        'Đồng bằng sông Cửu Long',
+      ],
+    ],
+    [
+      ['en-GB', 'en'],
+      [
+        'Nghe An',
+        'Ha Tinh',
+        'Thanh Hoa',
+        'Red River Delta',
+        'Northern midlands and mountain areas',
+        'North Central and Central coastal areas',
+        'Central Highlands',
+        'South East',
+        'Mekong River Delta',
+      ],
+    ],
+  ])('names the provinces and regions in the reading language (%s)', async (languages, names) => {
+    renderPage(languages);
+    await screen.findByRole('heading', { level: 2, name: (languages[1] === 'vi' ? vi : en).method.metricsTitle });
+    const scopes = scopeCells();
+    for (const name of names) expect(scopes).toContain(name);
+    expect([...scopes].filter((c) => c?.includes('_') || (languages[1] === 'vi' && c === 'Nghe An'))).toEqual([]);
+  });
+  it('still shows a scope it has no name for', async () => {
+    const rows = method.metrics.map((r, i) => (i === 0 ? { ...r, subset: 'region:new_area' } : r));
+    renderPage(['vi-VN', 'vi'], { ...method, metrics: rows });
+    await screen.findByRole('heading', { level: 2, name: vi.method.metricsTitle });
+    expect(scopeCells()).toContain('new_area');
   });
 });
