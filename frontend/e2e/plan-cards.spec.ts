@@ -407,14 +407,19 @@ test('the comparison strip shows the six plans in the card order with the card h
       .locator('button[data-value]')
       .evaluateAll((bs) => bs.map((b) => b.getAttribute('data-value')));
     expect(shown.slice(0, head.length), id).toEqual(head);
-    // priority income: the money line carries the label in words
-    await expect(item.getByText(vi.farmer.yourPriority), id).toBeVisible();
-    for (const b of await item.locator('a, button').all()) {
+    for (const b of await item.locator('a, button').filter({ visible: true }).all()) {
       const box = await b.boundingBox();
       expect(box?.height ?? 0, id).toBeGreaterThanOrEqual(44);
       expect(box?.width ?? 0, id).toBeGreaterThanOrEqual(44);
     }
   }
+  // the long labels are said once above the six plans; priority income: the money label carries the label in words
+  const legend = strip.locator('ul').first();
+  await expect(legend).toContainText(vi.farmer.rows.money);
+  await expect(legend).toContainText(vi.farmer.own.yearSum);
+  await expect(strip.getByText(vi.farmer.yourPriority)).toHaveCount(1);
+  await expect(legend.locator('li', { hasText: vi.farmer.rows.money })).toContainText(vi.farmer.yourPriority);
+  await expect(items.first()).not.toContainText(vi.farmer.rows.money);
   // P-03 money is from another study and takes off material costs only: the strip says so next to it
   await expect(items.nth(1)).toContainText(vi.farmer.definitionPlain.p03);
   await expect(strip).not.toContainText(/tốt nhất|tốt hơn|xếp hạng|điểm/i);
@@ -423,4 +428,26 @@ test('the comparison strip shows the six plans in the card order with the card h
   );
   await items.nth(4).locator('a').first().click();
   await expect(page.getByTestId('card-cc3').locator('h2')).toBeInViewport();
+});
+
+// roleplay walkthrough 2026-11-16 (farmer, 360 x 740): the first strip repeated every long label in each plan and was
+// about 3.5 screens long, so the six plans could not be taken in together
+test('on a phone the comparison strip is short, and shows the line of the chosen priority', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) > 700, 'a phone finding');
+  await page.goto(PLANS_URL);
+  const strip = page.getByRole('region', { name: vi.farmer.stripTitle });
+  await expect(strip.locator('ol > li')).toHaveCount(6);
+  // UI-UX-SPEC section 9: at most two phone screens
+  expect((await strip.boundingBox())?.height ?? Infinity).toBeLessThanOrEqual(740 * 2);
+  await expect(strip.getByText(vi.farmer.strip.money).first()).toBeVisible();
+  await expect(strip.getByText(vi.farmer.strip.water).first()).toBeHidden();
+  await expect(strip.getByText(vi.farmer.legumeYes).first()).toBeHidden();
+  await page.goto(PLANS_URL.replace('uutien=income', 'uutien=water'));
+  const water = page.getByRole('region', { name: vi.farmer.stripTitle });
+  await expect(water.locator('ol > li')).toHaveCount(6);
+  for (const item of await water.locator('ol > li').all())
+    await expect(item.getByText(vi.farmer.strip.water).first()).toBeVisible();
+  await expect(water.locator('ul').first().locator('li', { hasText: vi.farmer.summaryWaterLabel })).toContainText(
+    vi.farmer.yourPriority,
+  );
 });

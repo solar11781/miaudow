@@ -334,6 +334,8 @@ export const vi = {
       string
     >,
     stripTitle: 'Sáu cách trồng cạnh nhau',
+    // short labels of the comparison strip's lines; the full labels are said once above the six plans
+    strip: { money: 'Lãi thử nghiệm', water: 'Nước phải tưới' },
     comparedWith: 'Bốn cách trồng thử được so với thẻ đầu tiên: cách làm hiện nay trong cùng thử nghiệm.',
     // F-A7: the jump strip's short chips, two short lines each; the full plan name is the chip's accessible name
     chip: {

@@ -432,14 +432,21 @@ header and strip); one screen is not reachable with the required face content at
 `farmer.stripTitle` shows the six plans side by side before any card is opened: a list in exactly the cards' order
 (H3: no sort, rank, score, best mark or colour grading), stacked on a phone and in columns on a wide screen, so the
 page never scrolls sideways at 360 px (H10). It opens with the line `farmer.comparedWith` (the four trial cards are
-compared with the first card, the current practice of the same trial). Per plan: the plan's short name from
+compared with the first card, the current practice of the same trial). The long labels are said once, in a short
+list above the six plans: the money label (`row.money`, "profit in the trial, not on your own field") with
+`money.ourSum`'s short form ("whole year, our addition"), the water label ("water to apply, by region") and
+`land.cropsInYear`; the label of the chosen priority (`income` money, `water` water, `land` land; `stability` has no
+line in the strip) starts with `plans.yourPriority` in words (H11). Per plan: the plan's short name from
 `farmer.chip` and its crops, together one link of at least 44 px that jumps to its card (accessible name: the full
-plan name with the study and the crops); the card head's money line and water line, the same components, values and
-source buttons as the card head (H5, H7), so the strip shows no new number, sum or source; for `usual_p03` the plain
-line `farmer.definitionPlain.p03` right after its money, so P-03 money is never lined up as comparable with P-02
-money; and one land line, `land.cropsInYear` with its number button and `land.legume` yes or no in words. The line
-of the chosen priority (`income` money, `water` water, `land` land; `stability` has no line in the strip) starts with
-the label `plans.yourPriority` in words (H11). Each card also carries the "explain simply" button
+plan name with the study and the crops); the card head's money line and water line under the short labels
+`farmer.strip.money` and `farmer.strip.water`, the same components, values and source buttons as the card head
+(H5, H7), so the strip shows no new number, sum or source; for `usual_p03` the plain line
+`farmer.definitionPlain.p03` right after its money, so P-03 money is never lined up as comparable with P-02 money;
+and one land line, the `crops_in_year` number button and `land.legume` yes or no in words. A phone (up to 700 px)
+has room for two lines per plan: it shows the money line and, when the chosen priority is water or land, that
+priority's line; a wider screen shows all three. Measured at 360 x 740 in Vietnamese: about one and a half screens
+for the income priority (the first form, with every label repeated in every plan, was about three and a half); the
+water priority is longer because each crop has its own range. Each card also carries the "explain simply" button
 of FR-15 (SRS.md); its text is marked as AI-generated.
 
 **Priority highlight**: the row that matches the chosen priority (`money` for income, `stability` for stability,

@@ -577,7 +577,7 @@
 .stripList {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
   gap: var(--s-2);
 }
 
@@ -597,6 +597,26 @@
 .stripList p button {
   margin-block: -8px;
   justify-content: center;
+}
+
+.stripLegend {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: var(--t-small);
+  color: var(--fg-2);
+}
+
+.stripLegend li > span:first-child {
+  margin-right: 0.4rem;
+}
+
+/* a phone has room for two lines per plan: the water and land lines show there only as the chosen priority */
+@media (max-width: 700px) {
+  .stripWide {
+    display: none;
+  }
 }
 
 .stripName {

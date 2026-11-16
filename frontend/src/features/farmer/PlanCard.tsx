@@ -533,8 +533,9 @@ export function PrioTag() {
 }
 
 /** The plan's money total, or the P-03 money of each season, as the card head and the comparison strip show it: the
- * money row's own values with their sources (D-172). */
-export function MoneyLine({ plan, res, refs, marked }: Ctx & { marked?: boolean }) {
+ * money row's own values with their sources (D-172). `brief` is the strip's form: a short label, the long one and
+ * "whole year, our addition" being said once above the six plans. */
+export function MoneyLine({ plan, res, refs, brief }: Ctx & { brief?: boolean }) {
   const t = useT();
   const m = plan.money;
   const seasons = useSeasonValues(plan, res, refs);
@@ -542,14 +543,14 @@ export function MoneyLine({ plan, res, refs, marked }: Ctx & { marked?: boolean 
   if (!m.total && !seasons.length) return null;
   return (
     <p>
-      {marked && <PrioTag />}
-      {t.farmer.rows.money}:{' '}
+      {brief ? t.farmer.strip.money : t.farmer.rows.money}:{' '}
       {m.total ? (
         <>
           <SourceValue {...refs.moneyValue(m.total, t.farmer.own.yearSum, notes.total)} plain={notes.plain}>
             {refs.money(m.total).number}
           </SourceValue>{' '}
-          {refs.money(m.total).unit} · {t.farmer.own.yearSum}
+          {refs.money(m.total).unit}
+          {!brief && <> · {t.farmer.own.yearSum}</>}
         </>
       ) : (
         seasons.map((v, i) => (
@@ -567,13 +568,12 @@ export function MoneyLine({ plan, res, refs, marked }: Ctx & { marked?: boolean 
 /** Per crop the TCVN 8641 water to apply from the lowest to the highest of its rows (D-172, D-175): the range carries
  * the rows' TCVN sources, is labelled by region and planting method because the rows differ in both and the standard
  * does not place Nghệ An (D-68), and leaves FAO out (D-64). `hook` is the card head's test hook. */
-export function WaterLine({ plan, refs, hook, marked }: Omit<Ctx, 'res'> & { hook?: string; marked?: boolean }) {
+export function WaterLine({ plan, refs, hook, brief }: Omit<Ctx, 'res'> & { hook?: string; brief?: boolean }) {
   const t = useT();
   const pick = usePick();
   return (
     <p data-testid={hook}>
-      {marked && <PrioTag />}
-      {t.farmer.summaryWaterLabel}:{' '}
+      {brief ? t.farmer.strip.water : t.farmer.summaryWaterLabel}:{' '}
       {plan.calendar.map((c, i) => {
         const facts = plan.water.filter((w) => w.crop_key === c.crop_key);
         const range = tcvnRange(facts);
