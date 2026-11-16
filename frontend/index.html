@@ -14,7 +14,8 @@
          bandwidth on all pages (measured: every route got slower on the field-phone profile). -->
     <title>Miaudow · Đồng lúa Nghệ An</title>
     <!-- the loading line is drawn before the stylesheet arrives (vite.config.ts lateStylesheet), so its few rules
-         sit here: the page colours of tokens.css for the device's light or dark setting -->
+         sit here, in the dark page colours of tokens.css: the stylesheet is dark until the app's script sets the
+         theme, so a light variant here would put dark text on that dark page -->
     <style>
       body {
         margin: 0;
@@ -32,17 +33,6 @@
       .boot span {
         display: block;
         color: #b7c2b2;
-      }
-      @media (prefers-color-scheme: light) {
-        body {
-          background: #f1f3ee;
-        }
-        .boot {
-          color: #2f3a32;
-        }
-        .boot span {
-          color: #525d55;
-        }
       }
     </style>
   </head>
