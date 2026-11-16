@@ -25,3 +25,16 @@ test('the evidence page lists every photograph with its licence', async ({ page 
   await expect(credits.getByRole('heading', { name: 'Ảnh và giấy phép' })).toBeVisible();
   await expect(credits.getByRole('link', { name: /^Giấy phép: / }).first()).toBeVisible();
 });
+
+// visual audit 2026-11-16: on a short page the footer ended above the bottom of the window, a pale band under it
+for (const path of ['/#/da-luu', '/#/dang-nhap'])
+  test(`the footer of the short page ${path} reaches the bottom of the window`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(path);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    const footer = await page.locator('footer').evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
+    const sizes = await page.evaluate(() => ({ window: window.innerHeight, height: document.body.scrollHeight }));
+    expect(footer).toBeGreaterThanOrEqual(sizes.window - 1);
+    // the footer is the end of the page: nothing under it
+    expect(footer).toBeGreaterThanOrEqual(sizes.height - 1);
+  });

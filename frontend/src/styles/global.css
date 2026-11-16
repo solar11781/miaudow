@@ -34,6 +34,16 @@ body {
   text-rendering: optimizeLegibility;
   caret-color: var(--c-gold-600);
 }
+/* the page shell (header, page, footer) is at least as tall as the window: on a short page the page grows and the
+   footer sits at the bottom */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+#root > main {
+  flex: 1 0 auto;
+}
 img,
 svg,
 canvas {
