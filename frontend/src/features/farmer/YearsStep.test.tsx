@@ -70,4 +70,10 @@ describe('years step legend', () => {
       expect(sheet.getByText(part)).toBeTruthy();
     expect(sheet.getByText(text.common.computedNote)).toBeTruthy();
   });
+  // visual audit 2026-11-16: the limits fold had no marker; it shows the plan cards' chevron
+  it('marks the limits fold with a chevron', async () => {
+    renderYears();
+    const summary = (await screen.findByText(text.farmer.limitsTitle)).closest('summary');
+    expect(summary?.querySelector('svg:last-child')).not.toBeNull();
+  });
 });

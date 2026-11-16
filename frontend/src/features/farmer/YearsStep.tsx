@@ -154,7 +154,10 @@ function Years({ res }: { res: PastYearsResponse }) {
         <p className={s.note}>{t.farmer.noYears}</p>
       )}
       <details className={s.limits}>
-        <summary>{t.farmer.limitsTitle}</summary>
+        <summary>
+          {t.farmer.limitsTitle}
+          <Icon name="chevronDown" size={18} />
+        </summary>
         <ul>
           <li>{t.farmer.cellsNote(res.n_cells)}</li>
           {t.farmer.limits.map((l) => (

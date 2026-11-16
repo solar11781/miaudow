@@ -506,26 +506,40 @@
   flex-direction: column;
   gap: 0.4rem;
 }
-.matrixDetails {
-  border-top: 1px solid var(--line);
-  padding-top: var(--s-4);
-}
+/* the fold of the plan cards (PlanCard.module.css .more): a boxed summary with a chevron that turns when open */
 .matrixDetails > summary {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: var(--s-3);
   cursor: pointer;
-  min-height: 48px;
+  min-height: 52px;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--bg-sunk);
   list-style: none;
 }
 .matrixDetails > summary::-webkit-details-marker {
   display: none;
 }
+.matrixHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.matrixDetails > summary svg:last-child {
+  flex: none;
+  margin-left: auto;
+  transition: transform var(--d-med) var(--ease-out);
+}
+.matrixDetails[open] > summary svg:last-child {
+  transform: rotate(180deg);
+}
 .matrixDetails[open] > summary {
   margin-bottom: var(--s-4);
 }
 @media (prefers-reduced-motion: reduce) {
-  .deskTab {
+  .deskTab,
+  .matrixDetails > summary svg:last-child {
     transition: none;
   }
 }
