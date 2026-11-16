@@ -18,6 +18,21 @@ test('the footer holds the brand, the reminder, two links and the team line, not
     expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
 });
 
+// roleplay audit 2026-11-16: the notice is one page, Vietnamese first; the English site opens it at its English part
+test('the English footer opens the privacy notice at its English part', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/#/home');
+  const link = page.locator('footer').getByRole('link', { name: 'Privacy', exact: true });
+  await expect(link).toHaveAttribute('href', '/quyen-rieng-tu#en');
+  await link.click();
+  await expect(page.getByRole('heading', { level: 2 })).toBeInViewport();
+  await page.goto('/#/');
+  await expect(page.locator('footer').getByRole('link', { name: 'Quyền riêng tư', exact: true })).toHaveAttribute(
+    'href',
+    '/quyen-rieng-tu',
+  );
+});
+
 // the CC BY and CC BY-SA licences ask for each photo's author and licence; they moved to the sources page
 test('the evidence page lists every photograph with its licence', async ({ page }) => {
   await page.goto('/#/bang-chung');

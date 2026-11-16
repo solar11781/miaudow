@@ -216,7 +216,9 @@ def _privacy_page(texts: PrivacyTexts) -> bytes:
         f'<a href="/#/home" lang="en">{html.escape(texts.back["en"])}</a></nav>',
     ]
     for lang, heading in (("vi", "h1"), ("en", "h2")):
-        parts.append(f'<section lang="{lang}"><{heading}>{html.escape(texts.title[lang])}</{heading}>')
+        # the English site's links open the page at #en
+        anchor = ' id="en"' if lang == "en" else ""
+        parts.append(f'<section lang="{lang}"{anchor}><{heading}>{html.escape(texts.title[lang])}</{heading}>')
         parts += [f"<p>{html.escape(p[lang])}</p>" for p in texts.paragraphs]
         parts.append("</section>")
     parts.append("</main></body></html>")

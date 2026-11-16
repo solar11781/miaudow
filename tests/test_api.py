@@ -619,6 +619,14 @@ def test_privacy_notice_has_the_app_look_a_way_home_and_no_draft_line(client: Te
     assert text.count("<link") == 1  # only the icon below: no stylesheet, nothing from another site
 
 
+def test_privacy_notice_lets_the_english_site_open_it_at_the_english_part(client: TestClient) -> None:
+    # roleplay audit 2026-11-16: "Privacy" on the English site opened a page that starts in Vietnamese; the English
+    # part carries the anchor the English footer link points to
+    text = client.get("/quyen-rieng-tu").text
+    assert '<section lang="en" id="en">' in text
+    assert '<section lang="vi">' in text
+
+
 def test_privacy_notice_names_the_app_icon_so_no_browser_asks_for_a_missing_favicon(tmp_path: Path) -> None:
     # visual audit 2026-11-16: with no icon link a browser asks for /favicon.ico, which is not there (a 404 in the
     # console). The page names the icon the app's own index.html names, a file the build copies from frontend/public
