@@ -858,7 +858,8 @@ item 5):
    `metric-row-<index>`) for its `source_ids`; the numbers in the row carry `data-source-ref` to it (H5). Skill, R2,
    RMSE and MAE are shown to 2 decimals, and coverage as a whole percent; a value that rounds to zero is written
    without a minus sign. Within a group, the rows of one province or one region (subset `unit:` / `region:`) fold
-   behind one disclosure (`<details>`, closed at first), so the page opens on the national and Nghe An rows
+   behind one disclosure (`<details>`, closed at first), except the rows of the study province (`unit:Nghe An`),
+   which stay open: the page opens on the national and Nghe An rows
    (roleplay audit 2026-11-16: the page was about 40,000 px tall). A table wider than its column scrolls inside its
    own focusable region, with the line `method.scrollHint` wherever the frame is narrower than the table.
    Then the gate verdicts per season from `gates` (`gate.G1` .. `gate.G4`, `gate.passed` / `gate.failed` /
@@ -1108,7 +1109,7 @@ section 4.
 | T13 not-forecast | `common.notForecast` visible on `/nam` and `/phuong-an` (H13) | event |
 | T14 no-personal-data | on every page except `/dang-nhap` and `/da-luu`: no cookies set; no localStorage or sessionStorage writes; no requests to third-party hosts (only exceptions: the NASA GIBS map tiles and the NASA Eyes frame on `/dai-quan-sat`; voice input on `/tro-ly` starts only after a tap, with a note that the browser may send the audio to its provider); the farmer routes and the home page make no third-party request; answers and typed prices never appear in any request URL (H14) | now |
 | T15 lazy-map | loading `/phuong-an` does not download the `/ban-do` chunk (section 12) | skipped until `/ban-do` exists |
-| T15 relief-lazy | loading `/phuong-an` never requests the relief picture; the data room requests it only after its switch is on (section 12) | event |
+| T39 relief-lazy | loading `/phuong-an` never requests the relief picture; the data room requests it only after its switch is on (section 12) | event |
 | T16 card-warnings | each card element contains, inside its own bounding box, the texts of `plans.trialNote`, `money.priceYear` (or `money.priceYearNotStated`), `common.notForecast` and `common.supportNote` (H17) | event |
 | T17 support-note | `common.supportNote` visible on `/` and `/phuong-an` (H18) | event |
 | T18 two-sources | every condition share (card number buttons and legend "?" buttons) opens a sheet with the R-A01 block (with `source.ruleText`), the R-N01 and R-N02 blocks and `conditions.computedNote`; `common.dataLine` visible on `/nam`, `/phuong-an` and in every footer (H19) | event |

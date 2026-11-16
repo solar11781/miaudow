@@ -11,6 +11,8 @@ describe('nextStep: questions Miaudow can only answer with the four-step compari
     ['Which plan is best for me? Just tell me what to plant.', 'ranking'],
     ['Nên trồng gì cho ruộng nhà tôi?', 'ranking'],
     ['Cách nào tốt nhất?', 'ranking'],
+    ['Xếp hạng các cách trồng giúp tôi', 'ranking'],
+    ['Which plan should we take?', 'ranking'],
   ])('“%s” is a request to choose, so it is a %s question', (q, kind) => {
     expect(nextStep(q, null)?.kind).toBe(kind);
   });

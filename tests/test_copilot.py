@@ -226,7 +226,10 @@ def test_every_citation_is_a_register_source(det: TestClient, question: str) -> 
     assert len({c["passage_id"] for c in out["citations"]}) == len(out["citations"])  # React keys (AssistantPage)
 
 
-@pytest.mark.parametrize("question", ["Công thức nấu phở", "Giá lúa hôm nay bao nhiêu?"])
+@pytest.mark.parametrize(
+    "question",
+    ["Công thức nấu phở", "Giá lúa hôm nay bao nhiêu?", "Giá lúa tốt nhất hôm nay?", "best price today"],
+)
 def test_an_unrelated_or_price_question_is_not_answered(det: TestClient, question: str) -> None:
     out = ask(det, question)
     assert out["status"] == "insufficient_evidence"

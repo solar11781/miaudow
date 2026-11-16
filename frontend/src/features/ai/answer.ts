@@ -32,7 +32,7 @@ export interface Answer {
 
 /** A question that asks Miaudow to choose a crop or a plan. */
 export const RANKING =
-  /\b(nen trong|trong gi|tot nhat|nen chon|chon cay|cay nao|lai nhat|best|should i grow|what to grow|which crop|recommend)\b/;
+  /\b(nen trong|trong gi|tot nhat|hay nhat|lai nhat|nen chon|chon giup|chon cay|cay nao|xep hang|best|rank|ranking|should i grow|what to grow|which crop|which plan|recommend)\b/;
 const FORECAST =
   /\b(ngay mai|tuan toi|tuan sau|thang toi|thang sau|mua toi|mua sau|nam toi|nam sau|du bao|tomorrow|next (week|month|season|year)|forecast)\b/;
 const YEAR = /\b(19\d\d|20\d\d)\b/;

@@ -247,11 +247,10 @@ STOP = frozenset(
     ]
 )
 # member B's scope guard (evidence.py GUARDS): today's prices and a "best" plan are never answered from evidence
+_PRICE = r"gia .*(hom nay|bay gio|hien nay|hien tai)|(hom nay|bay gio|hien nay).* gia|price today|current price"
 _RANKING = r"tot nhat|hay nhat|loi nhat|xep hang|nen chon|chon giup|best|rank|ranking|which plan should"
-GUARD = re.compile(
-    r"\b(gia .*(hom nay|bay gio|hien nay|hien tai)|(hom nay|bay gio|hien nay).* gia|price today|current price|"
-    rf"{_RANKING})\b"
-)
+GUARD = re.compile(rf"\b({_PRICE}|{_RANKING})\b")
+PRICE = re.compile(rf"\b({_PRICE})\b")
 # a "which is best" question gets the plan answer (no choice made, every plan in the study's order), not "no evidence"
 RANKING = re.compile(rf"\b({_RANKING})\b")
 
@@ -578,7 +577,9 @@ def deterministic(req: CopilotRequest, corpus: Corpus) -> CopilotResponse:
     kind = intent(req.question)
     if kind in ("forecast", "own_field"):  # the fixed answers of rules/copilot.yaml with the same names
         return _response("insufficient_evidence", getattr(said, kind)[lang], set())
-    if kind == "plans" or RANKING.search(normalize(req.question)):
+    plain = normalize(req.question)
+    # today's price is in no source, so a "best price today" question is left to the guard of the search below
+    if kind == "plans" or (RANKING.search(plain) and not PRICE.search(plain)):
         data = tool_plans(corpus, lang)
         lines = [said.plans_head[lang], *(f"• {p['name'][lang]}" for p in corpus.plans), said.plans_tail[lang]]
         cards = [AnswerCard(kind="plan", ref_id=pid, title=name) for pid, name in corpus.plan_names.items()]

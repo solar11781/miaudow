@@ -515,7 +515,7 @@
   flex-direction: column;
   gap: 0.4rem;
 }
-/* the fold of the plan cards (PlanCard.module.css .more): a boxed summary with a chevron that turns when open */
+/* a boxed fold heading; its arrow turns by the shared rule (global.css .fold-arrow) */
 .matrixDetails > summary {
   display: flex;
   align-items: center;

@@ -11,7 +11,7 @@ function trackRelief(page: Page): string[] {
   return seen;
 }
 
-test('T15 relief-lazy the farmer plans page never requests the relief picture', async ({ page }) => {
+test('T39 relief-lazy the farmer plans page never requests the relief picture', async ({ page }) => {
   const seen = trackRelief(page);
   await page.goto(PLANS_URL);
   await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
@@ -19,7 +19,7 @@ test('T15 relief-lazy the farmer plans page never requests the relief picture', 
   expect(seen).toEqual([]);
 });
 
-test('T15 relief-lazy the data room loads the relief picture only after the terrain toggle is switched on', async ({
+test('T39 relief-lazy the data room loads the relief picture only after the terrain toggle is switched on', async ({
   page,
 }) => {
   const seen = trackRelief(page);
