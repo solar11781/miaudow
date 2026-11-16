@@ -127,6 +127,9 @@ export const cellMet = (rule: RuleCode, cellId: string, year: number) => {
 
 export const cellMagnitude = (m: Magnitude, cellId: string, year: number) => at(hazards.magnitudes[m]?.[cellId], year);
 
+/** Decimals a measured value is written with: days and months are counts, rain is in tenths of a millimetre. */
+export const magnitudeDigits = (m: Magnitude) => (m === 'max_rain_mm' ? 1 : 0);
+
 export interface SoilReading {
   values: number[];
   normal: number;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { geo, hazards, type RuleCode } from '../../data';
 import { MAP_PLACES } from '../../data/places';
-import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
+import { cellMagnitude, cellMet, magnitudeDigits, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
 import { useCellName } from '../../hooks/useCellName';
@@ -231,7 +231,7 @@ export function Grid3D({
                       if (!drag.current?.moved) onSelect(c.id);
                     }}
                     aria-pressed={selected === c.id}
-                    aria-label={`${t.science.cell} ${cellName(c.id)}: ${f.n(v, 1)} ${RULES[rule].unit[lang]}, ${met ? t.science.met : t.science.notMet}`}
+                    aria-label={`${t.science.cell} ${cellName(c.id)}: ${f.n(v, magnitudeDigits(RULES[rule].magnitude))} ${RULES[rule].unit[lang]}, ${met ? t.science.met : t.science.notMet}`}
                   >
                     <span
                       className={s.face}

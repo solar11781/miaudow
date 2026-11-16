@@ -4,7 +4,7 @@ import { ART } from '../../data/art';
 import { PhotoHead } from '../../design-system/PhotoHead';
 import { Link, useSearchParams } from 'react-router-dom';
 import { geo, hazards, model, YEARS, type RiceSeason, type RuleCode } from '../../data';
-import { cellMagnitude, cellMet, RULES, yearShare } from '../../domain/hazards';
+import { cellMagnitude, cellMet, magnitudeDigits, RULES, yearShare } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { Reveal } from '../../design-system/Reveal';
 // three.js arrives in its own chunk after the page's text and numbers are on screen
@@ -103,7 +103,7 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
                 <dd className="mono">{f.pct(sel.weight, 1)}</dd>
                 <dt>{t.science.measured}</dt>
                 <dd className="mono">
-                  {f.n(cellMagnitude(info.magnitude, sel.id, year), 1)} {info.unit[lang]}
+                  {f.n(cellMagnitude(info.magnitude, sel.id, year), magnitudeDigits(info.magnitude))} {info.unit[lang]}
                 </dd>
                 <dt>{t.science.ruleMet}</dt>
                 <dd>{cellMet(rule, sel.id, year) ? t.science.met : t.science.notMet}</dd>
@@ -183,7 +183,9 @@ function GridSection({ year, setYear }: { year: number; setYear: (y: number) => 
                     {cellName(c.id)}
                   </th>
                   <td className="num">{f.pct(c.weight, 1)}</td>
-                  <td className="num">{f.n(cellMagnitude(info.magnitude, c.id, year), 1)}</td>
+                  <td className="num">
+                    {f.n(cellMagnitude(info.magnitude, c.id, year), magnitudeDigits(info.magnitude))}
+                  </td>
                   <td>
                     {cellMet(rule, c.id, year) ? (
                       <span className={s.yes}>{t.science.yes}</span>
