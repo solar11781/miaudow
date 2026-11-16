@@ -71,6 +71,44 @@ test.describe('on a phone in light mode', () => {
   });
 });
 
+// member A, 2026-11-16: in Vietnamese the bar ran off a 1600 px screen. The bar's column stops growing at 1280 px, so
+// every control must stay inside that column at every width, in both languages, on the site and the farmer header.
+const WIDTHS = [
+  360, 480, 600, 759, 760, 770, 800, 859, 860, 1024, 1259, 1260, 1270, 1280, 1319, 1320, 1366, 1440, 1536, 1600, 1680,
+  1920, 2560,
+];
+for (const route of ['/#/', '/#/nong-dan/ruong', '/#/home', '/#/farmer/field']) {
+  test(`the header's controls stay inside its column at every width (${route})`, async ({ page }, info) => {
+    test.skip(info.project.name !== 'desktop-1440', 'the test sets every width itself');
+    await page.goto(route);
+    await expect(page.locator('header a[class*="brand"]')).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    const over: string[] = [];
+    for (const width of WIDTHS) {
+      await page.setViewportSize({ width, height: 800 });
+      const past = await page.locator('header div[class*="bar"]').evaluate((bar) => {
+        const right = bar.getBoundingClientRect().right - parseFloat(getComputedStyle(bar).paddingRight);
+        const edges = [...bar.querySelectorAll('a, button')]
+          .filter((e) => e.getClientRects().length > 0)
+          .map((e) => e.getBoundingClientRect().right - right);
+        return Math.max(0, ...edges);
+      });
+      if (past > 0.5) over.push(`${width} px: ${Math.round(past)} px past the column`);
+    }
+    expect(over).toEqual([]);
+  });
+}
+
+// the language button showed a bare globe between 1260 and 1500 px
+test('the language button shows the other language next to its icon on a laptop', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop-1440', 'a laptop width');
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto('/#/');
+  const text = page.getByRole('banner').getByRole('button', { name: 'EN · Switch to English' }).locator('span');
+  await expect(text).toHaveText('EN');
+  expect((await text.boundingBox())?.width).toBeGreaterThan(10);
+});
+
 test.describe('in light mode', () => {
   test.use({ colorScheme: 'light' });
   // the light theme darkened the ivory wordmark on every header, so on the dark headers it could not be seen

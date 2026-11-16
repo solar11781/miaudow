@@ -228,18 +228,6 @@
   white-space: nowrap;
 }
 
-/* between 1260 and 1500 px the six links need the room: the setting chips keep their names for screen readers only */
-@media (min-width: 1260px) and (max-width: 1500px) {
-  .settings .chip span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-
 .menuBtn {
   width: 48px;
   height: 48px;
@@ -260,18 +248,17 @@
   }
 }
 
-@media (min-width: 1260px) {
+/* the links show once the bar's column has its full 1280 px (the container stops growing there), in one layout for
+   every wider screen: the Vietnamese labels need 1255 px of it */
+@media (min-width: 1320px) {
   .nav {
     display: flex;
   }
   .menuBtn {
     display: none;
   }
-}
-
-@media (min-width: 1260px) and (max-width: 1380px) {
   .link {
-    padding: 0 0.7rem;
+    padding: 0 0.55rem;
   }
   .tag {
     display: none;
@@ -410,8 +397,9 @@
   }
 }
 
-/* wide but not wide enough for every label: the switch and the tagline keep their names for screen readers only */
-@media (min-width: 1260px) and (max-width: 1599.98px) {
+/* where the bar has no room for it (beside the links, and on a narrow tablet) the switch keeps its name for screen
+   readers only; its title still names it on hover */
+@media (min-width: 760px) and (max-width: 859.98px), (min-width: 1320px) {
   .settings .switch > span:last-child {
     position: absolute;
     width: 1px;
@@ -419,11 +407,5 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
-  }
-  .tag {
-    display: none;
-  }
-  .link {
-    padding: 0 0.65rem;
   }
 }
