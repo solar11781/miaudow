@@ -535,20 +535,11 @@
   flex-direction: column;
   gap: 0.25rem;
 }
-.matrixDetails > summary svg:last-child {
-  flex: none;
-  margin-left: auto;
-  transition: transform var(--d-med) var(--ease-out);
-}
-.matrixDetails[open] > summary svg:last-child {
-  transform: rotate(180deg);
-}
 .matrixDetails[open] > summary {
   margin-bottom: var(--s-4);
 }
 @media (prefers-reduced-motion: reduce) {
-  .deskTab,
-  .matrixDetails > summary svg:last-child {
+  .deskTab {
     transition: none;
   }
 }

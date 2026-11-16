@@ -168,7 +168,7 @@ function SeasonResults({ season, res, refs }: { season: SeasonCode; res: MethodR
             </h4>
             {headline.length > 0 && <MetricsTable rows={headline} all={res.metrics} refs={refs} />}
             {breakdown.length > 0 && (
-              <details className={s.fold}>
+              <details className={`fold-arrow ${s.fold}`}>
                 <summary>
                   {t.method.breakdown}
                   <Icon name="chevronDown" size={18} />

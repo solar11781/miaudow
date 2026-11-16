@@ -437,46 +437,6 @@
   color: var(--fg-3);
 }
 
-.more {
-  border-radius: var(--r-md);
-  background: var(--bg-sunk);
-}
-
-.more > summary {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0 var(--s-4);
-  cursor: pointer;
-  list-style: none;
-  font-weight: 600;
-  color: var(--fg);
-}
-
-.more > summary::-webkit-details-marker {
-  display: none;
-}
-
-.more > summary svg:last-child {
-  margin-left: auto;
-  transition: transform var(--d-med) var(--ease-out);
-}
-
-.more[open] > summary svg:last-child {
-  transform: rotate(180deg);
-}
-
-.more > :not(summary) {
-  padding: 0 var(--s-4) var(--s-3);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .more > summary svg:last-child {
-    transition: none;
-  }
-}
-
 .wTable td {
   white-space: nowrap;
 }

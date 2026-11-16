@@ -161,7 +161,7 @@ function Years({ res }: { res: PastYearsResponse }) {
       ) : (
         <p className={s.note}>{t.farmer.noYears}</p>
       )}
-      <details className={s.limits}>
+      <details className={`fold-arrow ${s.limits}`}>
         <summary>
           {t.farmer.limitsTitle}
           <Icon name="chevronDown" size={18} />

@@ -233,7 +233,7 @@ export function OfficerPage() {
             <p className="lead">{t.officer.deskLead}</p>
           </div>
           <EvidenceDesk />
-          <details className={s.matrixDetails}>
+          <details className={`fold-arrow ${s.matrixDetails}`}>
             <summary>
               <span className={s.matrixHead}>
                 <span className="h3">{t.officer.matrixTitle}</span>

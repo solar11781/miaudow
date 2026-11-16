@@ -219,6 +219,16 @@ p {
   opacity: var(--grain-opacity);
   mix-blend-mode: overlay;
 }
+/* a fold whose heading ends in an arrow: the arrow sits at the end and turns when the fold opens */
+.fold-arrow > summary > svg:last-child {
+  flex: none;
+  margin-left: auto;
+  transition: transform var(--d-med) var(--ease-out);
+}
+.fold-arrow[open] > summary > svg:last-child {
+  transform: rotate(180deg);
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

@@ -510,15 +510,6 @@
   display: none;
 }
 
-.fold > summary svg {
-  margin-left: auto;
-  flex: none;
-}
-
-.fold[open] > summary svg {
-  transform: rotate(180deg);
-}
-
 .fold[open] > summary {
   margin-bottom: var(--s-3);
 }

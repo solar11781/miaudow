@@ -430,23 +430,6 @@
   font-weight: 500;
 }
 
-/* the chevron of the plan cards' fold (PlanCard.module.css .more) */
-.limits summary svg:last-child {
-  flex: none;
-  margin-left: auto;
-  transition: transform var(--d-med) var(--ease-out);
-}
-
-.limits[open] summary svg:last-child {
-  transform: rotate(180deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .limits summary svg:last-child {
-    transition: none;
-  }
-}
-
 .limits ul {
   padding: 0 0 var(--s-4) 1.1rem;
   display: flex;
