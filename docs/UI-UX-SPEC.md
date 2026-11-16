@@ -882,7 +882,8 @@ item 5):
 4. Data and NASA use: the line `common.dataLine`; the farmland weighting, key `method.farmland` (POWER cells weighted
    by the farmland mask: minimum MODIS cropland percent over 2001-2015, class 12 counted at 80% and class 14 at 50%,
    adapted from Dong et al. 2016, R-K12; ML-DESIGN.md §4). Bonus, built only after the core: the grid figure: the
-   image `artifacts/figures/nghe_an_grid.svg` served by the backend (Nghệ An
+   image `artifacts/figures/nghe_an_grid.svg` (the Vietnamese page uses `nghe_an_grid.vi.svg`, same drawing, served at
+   `GET /api/figures/nghe_an_grid.vi.svg`) served by the backend (Nghệ An
    boundary and its POWER cells shaded by farmland weight, from data/processed/cell_weights.csv and geoBoundaries) with
    alt text key `method.gridAlt` and caption key `method.gridCaption`. Then the satellite rain check from `rain_check`
    (DATA-DICTIONARY.md §5c): heading `method.rainCheck`; a table of the monthly values (columns month,

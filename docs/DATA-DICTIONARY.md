@@ -291,8 +291,9 @@ coefficient of the monthly totals (Roversi et al. 2024, Table 5, R-M23). `source
 served in `GET /api/method` as `rain_check` (UI-UX-SPEC §11), with values in mm rounded half up to whole mm and `cc`
 rounded to two decimals (routine).
 
-A script draws the grid figure `artifacts/figures/nghe_an_grid.svg` from §3 and the geoBoundaries boundary; the figure
-carries no new numbers.
+A script draws the grid figure `artifacts/figures/nghe_an_grid.svg` (English) and `nghe_an_grid.vi.svg` (Vietnamese,
+decimal comma) from §3 and the geoBoundaries boundary; both are served as `GET /api/figures/nghe_an_grid.svg` and
+`GET /api/figures/nghe_an_grid.vi.svg`, and the figure carries no new numbers.
 
 ## 6. Crops and water facts: `rules/crops.yaml`
 
