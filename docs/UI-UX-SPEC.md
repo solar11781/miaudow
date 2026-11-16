@@ -927,6 +927,9 @@ item 5):
   page lists SRTM). It MUST show the same source facts (section 10) and MUST NOT show any farm-level prediction
   (CLAUDE.md boundary).
 
+  Status (2026-11-16): the map lives in the data room (`#/khoa-hoc`, Grid3D flat 2D mode), so there is no `/ban-do` route and T15 stays skipped.
+  The SRTM relief layer is built there: toggle `science.reliefToggle`, note `science.reliefNote` (the spec's `map.reliefNote`; the map texts live under `science`), source R-N12 and Horn 1981 (R-M29).
+
 ---
 
 ## 12b. Footer, About page, Sources and credits page
