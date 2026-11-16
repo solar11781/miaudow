@@ -261,7 +261,7 @@
   display: grid;
   place-items: center;
   background: color-mix(in srgb, var(--c-gold-500) 16%, var(--bg-sunk));
-  color: var(--c-gold-300);
+  color: var(--accent-ink);
   margin-bottom: 0.35rem;
 }
 
@@ -795,7 +795,7 @@
 
 .helpIcon {
   background: color-mix(in srgb, var(--c-gold-500) 18%, transparent);
-  color: var(--c-gold-300);
+  color: var(--accent-ink);
 }
 
 .notIcon {
@@ -839,7 +839,7 @@
 }
 
 .startStepNum {
-  color: var(--c-gold-300);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
