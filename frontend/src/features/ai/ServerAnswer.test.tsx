@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../../app/settings';
 import type { CopilotResponse } from '../../api';
 import { ServerAnswer } from './AssistantPage';
+import { vi } from '../../i18n/vi';
 
 const yearAnswer: CopilotResponse = {
   status: 'grounded',
@@ -39,5 +40,38 @@ describe('server copilot answer', () => {
     );
     expect(screen.getByText('• Mưa lớn: 100%')).toBeTruthy();
     expect(screen.getByText('Thực nghiệm E-019 của nhóm')).toBeTruthy();
+  });
+
+  it('says what Claude did: it picked passages, it wrote none', () => {
+    render(
+      <SettingsProvider>
+        <MemoryRouter>
+          <ServerAnswer res={yearAnswer} water={null} />
+        </MemoryRouter>
+      </SettingsProvider>,
+    );
+    expect(screen.getByText(vi.copilot.engineClaude)).toBeTruthy();
+  });
+
+  it('explains a refusal to rank with the product rule, not with missing evidence', () => {
+    const refused: CopilotResponse = {
+      ...yearAnswer,
+      status: 'insufficient_evidence',
+      engine: 'deterministic',
+      model: null,
+      answer: 'Chưa đủ dữ liệu để kết luận.',
+      citations: [],
+      tool_trace: [],
+    };
+    render(
+      <SettingsProvider>
+        <MemoryRouter>
+          <ServerAnswer res={refused} water={null} noRank />
+        </MemoryRouter>
+      </SettingsProvider>,
+    );
+    expect(screen.getByText(vi.copilot.noRankingReason)).toBeTruthy();
+    expect(screen.queryByText('Chưa đủ dữ liệu để kết luận.')).toBeNull();
+    expect(screen.queryByText(vi.copilot.status.insufficient_evidence)).toBeNull();
   });
 });

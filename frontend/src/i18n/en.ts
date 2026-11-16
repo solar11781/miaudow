@@ -826,9 +826,11 @@ export const en: Messages = {
     serverOn: 'The copilot server is running',
     serverOff: 'Running in offline mode',
     claudeOn:
-      'Claude is connected on the server: it only picks which passages from Miaudow’s data answer the question. They are shown word for word with their sources; Claude writes no part of the answer. The question you type is sent to Claude (Anthropic) for this, so do not type names or phone numbers.',
+      'Claude is connected on the server. Claude only picks, from Miaudow’s data, the passages that answer the question. They are shown word for word with their sources; Claude writes no sentence of the answer.',
     claudeOff:
-      'Claude is not connected. Answers are assembled from tool results with fixed sentences; no language model is used.',
+      'Claude is not connected. Answers are assembled from tool results with Miaudow’s own ready-written sentences; no AI writes them.',
+    privacy:
+      'The question you type is sent to Claude (Anthropic) to pick the passages. Do not type names or phone numbers.',
     browserHelp:
       'The server cannot be reached, so the copilot searches the evidence library in your browser. Fewer results, still with sources.',
     honest:
@@ -856,8 +858,18 @@ export const en: Messages = {
       provider_error: 'Claude failed, data used',
       not_configured: 'Not configured',
     },
-    engineDeterministic: 'Assembled from tool results (no language model)',
-    engineBrowser: 'Searched in the browser (offline)',
+    engineClaude: 'Claude picks the passages; the wording comes from Miaudow’s data',
+    engineDeterministic: 'Ready-written wording from Miaudow’s data, no AI',
+    engineBrowser: 'Searched on your device (offline), no AI',
+    modelUsed: (model: string) => `Model that picked the passages: ${model}`,
+    rankingStatus: 'Miaudow does not rank',
+    noRankingReason:
+      'Miaudow compares plans; it does not rank them or choose for you. That is the app’s rule, not a lack of data. Look at the plans side by side, then talk to the commune’s extension officer.',
+    ownField:
+      'Miaudow does not know your field: it has only study values and regional values, so it does not choose a plan for your field. It can put the plans side by side for the field type you name. Please also ask the commune’s extension officer about your own field.',
+    nextWithLand: (land: string) => `Compare the plans for: ${land}`,
+    nextNoLand: 'Pick your field type and compare the plans',
+    nextHelp: 'Four short steps, nothing to type. You decide, together with the extension officer.',
     cardPlan: 'Tested plan',
     openPlan: 'Open the comparison card',
     cardYear: 'Past year',
@@ -870,7 +882,7 @@ export const en: Messages = {
     howFound: 'How the copilot found this',
     numbersChecked: (n: number, bad: number) =>
       bad
-        ? `${n} numbers checked; ${bad} did not match the data, so the model's answer was discarded.`
+        ? `${n} numbers checked; ${bad} did not match the tool results.`
         : `${n} numbers in the answer were checked against the tool results.`,
     speak: 'Speak',
     listening: 'Listening… press to stop',

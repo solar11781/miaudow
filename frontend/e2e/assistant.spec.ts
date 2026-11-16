@@ -14,3 +14,21 @@ test('the question box sits at the end of its panel and never covers the example
     expect(f && e && f.y >= e.y + e.height, `scrolled ${y} px`).toBe(true);
   }
 });
+
+// roleplay audit 2026-11-16: on a phone the chat is the task, so the explanation comes after it
+test('the example questions come before the explanation of how the assistant works', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) > 960, 'wide screens keep two columns, explanation on the left');
+  await page.goto('/#/tro-ly');
+  const examples = await page.getByLabel('Câu hỏi mẫu').boundingBox();
+  const explanation = await page.getByRole('heading', { name: /Hỏi bằng lời của mình/ }).boundingBox();
+  expect(examples && explanation && examples.y < explanation.y).toBe(true);
+});
+
+test('the first example question leads on to the comparison with the field type it names', async ({ page }) => {
+  await page.goto('/#/tro-ly');
+  await page.getByLabel('Câu hỏi mẫu').getByRole('button').first().click();
+  const link = page.getByRole('link', { name: /So sánh các cách trồng cho/ });
+  await expect(link).toHaveAttribute('href', '#/nong-dan/nam?ruong=canal_end');
+  await link.click();
+  await expect(page).toHaveURL(/nong-dan\/nam\?ruong=canal_end/);
+});

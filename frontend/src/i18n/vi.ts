@@ -824,9 +824,10 @@ export const vi = {
     serverOn: 'Máy chủ trợ lý đang chạy',
     serverOff: 'Đang dùng chế độ ngoại tuyến',
     claudeOn:
-      'Claude đã kết nối ở máy chủ: nó chỉ chọn những đoạn trong dữ liệu của Miaudow trả lời câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết phần nào của câu trả lời. Câu hỏi bạn gõ được gửi tới Claude (Anthropic) để làm việc này, nên đừng gõ tên hay số điện thoại.',
+      'Claude đã kết nối ở máy chủ. Claude chỉ chọn trong dữ liệu của Miaudow những đoạn trả lời đúng câu hỏi. Các đoạn này hiện nguyên văn kèm nguồn; Claude không viết câu nào của câu trả lời.',
     claudeOff:
-      'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu cố định, không dùng mô hình ngôn ngữ.',
+      'Claude chưa kết nối. Câu trả lời được ghép từ kết quả công cụ bằng các câu viết sẵn của Miaudow, không có AI viết.',
+    privacy: 'Câu hỏi bạn gõ được gửi tới Claude (Anthropic) để chọn đoạn trả lời. Đừng gõ tên hay số điện thoại.',
     browserHelp:
       'Không gọi được máy chủ, nên trợ lý tìm trong kho bằng chứng ngay trên trình duyệt. Kết quả ít hơn nhưng vẫn có nguồn.',
     honest: 'Trợ lý không dự báo, không xếp hạng cách trồng và nói rõ khi chưa đủ dữ liệu để kết luận.',
@@ -853,8 +854,18 @@ export const vi = {
       provider_error: 'Claude lỗi, đã dùng dữ liệu',
       not_configured: 'Chưa cấu hình',
     },
-    engineDeterministic: 'Ghép từ kết quả công cụ (không dùng mô hình ngôn ngữ)',
-    engineBrowser: 'Tìm trong trình duyệt (ngoại tuyến)',
+    engineClaude: 'Claude chọn đoạn phù hợp; lời văn lấy từ dữ liệu Miaudow',
+    engineDeterministic: 'Lời văn viết sẵn từ dữ liệu Miaudow, không dùng AI',
+    engineBrowser: 'Tìm ngay trên máy bạn (ngoại tuyến), không dùng AI',
+    modelUsed: (model: string) => `Mô hình chọn đoạn: ${model}`,
+    rankingStatus: 'Miaudow không xếp hạng',
+    noRankingReason:
+      'Miaudow so sánh các cách trồng, không xếp hạng và không chọn thay bạn. Đây là nguyên tắc của ứng dụng, không phải vì thiếu dữ liệu. Hãy xem các cách trồng cạnh nhau rồi bàn với cán bộ khuyến nông của xã.',
+    ownField:
+      'Miaudow không biết ruộng nhà bạn: chỉ có số của nghiên cứu và số theo vùng, nên không chọn cách trồng cho ruộng của bạn. Miaudow có thể đặt các cách trồng cạnh nhau cho loại ruộng bạn nêu. Hãy hỏi thêm cán bộ khuyến nông của xã về ruộng nhà mình.',
+    nextWithLand: (land: string) => `So sánh các cách trồng cho: ${land}`,
+    nextNoLand: 'Chọn loại ruộng và so sánh các cách trồng',
+    nextHelp: 'Bốn bước ngắn, không cần gõ chữ. Bạn tự quyết cùng cán bộ khuyến nông.',
     cardPlan: 'Cách trồng đã thử',
     openPlan: 'Xem thẻ so sánh',
     cardYear: 'Năm đã qua',
@@ -867,7 +878,7 @@ export const vi = {
     howFound: 'Trợ lý đã tìm câu trả lời thế nào',
     numbersChecked: (n: number, bad: number) =>
       bad
-        ? `${n} con số đã kiểm tra; ${bad} số không khớp dữ liệu nên câu trả lời của mô hình đã bị bỏ.`
+        ? `${n} con số đã kiểm tra; ${bad} số chưa khớp với kết quả công cụ.`
         : `${n} con số trong câu trả lời đã được đối chiếu với kết quả công cụ.`,
     speak: 'Nói',
     listening: 'Đang nghe… bấm để dừng',

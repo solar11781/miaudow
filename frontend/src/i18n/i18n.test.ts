@@ -68,8 +68,8 @@ describe('translations', () => {
     expect(ens.filter((s) => /climatology forecast/.test(s))).toEqual([]);
   });
   it('tell the user that the typed question goes to Anthropic when Claude is on (final audit 2026-11-15)', () => {
-    expect(vi.copilot.claudeOn).toMatch(/Anthropic/);
-    expect(en.copilot.claudeOn).toMatch(/Anthropic/);
+    expect(vi.copilot.privacy).toMatch(/Anthropic/);
+    expect(en.copilot.privacy).toMatch(/Anthropic/);
   });
   it('say the copilot model only picks passages, shown word for word, and never words the answer (D-172)', () => {
     expect(en.copilot.claudeOn).toMatch(/word for word/);
