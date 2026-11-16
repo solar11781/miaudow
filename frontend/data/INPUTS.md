@@ -193,6 +193,13 @@ Copernicus Sentinel-2 L2A images (R-D06): contains modified Copernicus Sentinel 
 - `frontend/public/media/sat/summer-autumn-2020-ndvi.png` bf028938917894aecd171375c30825637f85176bcb849934f3c03771a83bb801
 - `frontend/public/media/sat/summer-autumn-2024-ndvi.png` 848618e6b4e58bb9f9d5f560adab311f5c20efad18aa69f461a70b80f227165c
 
+## frontend/public/media/relief
+
+NASA SRTM shaded relief (R-N12; Horn 1981, R-M29), built by `scripts/build_relief.py` from the SRTMGL3 tiles recorded in `data/MANIFEST.csv`; the json holds the box, citations, sun angles and tile checksums.
+
+- `frontend/public/media/relief/nghe-an-relief.json` 8dbb69c3bab5d792b9ec637284bc885f55b71b68f9711ce0c953e096196d7e03
+- `frontend/public/media/relief/nghe-an-relief.webp` 520ad6a0d54e585fb76809fd920b6452516dc4989bfcd03cd3572b64f13f163e
+
 ## frontend/public/brand
 
 Member B's logo, built by `web/pipeline/build_brand.mjs` from `assets/brand/miaudow-logo-sheet.png` in member B's `lamgiang/` folder on branch feat/lamgiang-2.

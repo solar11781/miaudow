@@ -82,5 +82,7 @@ meta = {
     "earth_radius_m": relief.EARTH_RADIUS_M,
     "tiles": checksums,
 }
-(OUT / "nghe-an-relief.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+# newline="\n": the same bytes on Windows and Linux, so the sha256 in frontend/data/INPUTS.md holds everywhere
+with (OUT / "nghe-an-relief.json").open("w", encoding="utf-8", newline="\n") as out:
+    out.write(json.dumps(meta, indent=2) + "\n")
 print(f"box {box} | tiles {len(tiles)} | image {grey.shape[1]}x{grey.shape[0]} | {image.stat().st_size} bytes")

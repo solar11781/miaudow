@@ -48,6 +48,12 @@ GROUPS: list[tuple[str, str, str]] = [
         f"(`data/raw/sentinel2/MANIFEST.json` in {LAMGIANG}).",
     ),
     (
+        "frontend/public/media/relief",
+        "*",
+        "NASA SRTM shaded relief (R-N12; Horn 1981, R-M29), built by `scripts/build_relief.py` from the SRTMGL3 tiles "
+        "recorded in `data/MANIFEST.csv`; the json holds the box, citations, sun angles and tile checksums.",
+    ),
+    (
         "frontend/public/brand",
         "*",
         f"Member B's logo, built by `web/pipeline/build_brand.mjs` from `assets/brand/miaudow-logo-sheet.png` in {LAMGIANG}.",
