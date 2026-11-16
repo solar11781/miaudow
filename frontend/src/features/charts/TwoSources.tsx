@@ -3,6 +3,8 @@ import { CLIMATE } from '../../data/climate';
 import type { SourceRef } from '../../domain/provenance';
 import { SourceValue } from '../provenance/SourceValue';
 import { useFormat, useT } from '../../app/settings';
+import { lowerFirst } from '../../domain/format';
+import { useCellName } from '../../hooks/useCellName';
 import { useWidth } from './useWidth';
 import s from './charts.module.css';
 
@@ -21,6 +23,7 @@ interface PowerBlock {
 export function TwoSources({ year, cell }: { year: number; cell: string }) {
   const t = useT();
   const f = useFormat();
+  const cellName = useCellName();
   const id = useId();
   const [ref, W] = useWidth<HTMLDivElement>();
   const raw = CLIMATE as unknown as { chirps: ChirpsBlock | null; series: PowerBlock };
@@ -41,9 +44,11 @@ export function TwoSources({ year, cell }: { year: number; cell: string }) {
     sourceId: src === 'power' ? 'nasa-power' : 'chirps-v3',
     kind: 'data',
     value: `${f.n(v)} mm`,
-    label: `${src === 'power' ? 'NASA POWER' : 'CHIRPS v3'} · ${year} · ${cell}`,
+    label: `${src === 'power' ? 'NASA POWER' : 'CHIRPS v3'} · ${year} · ${lowerFirst(t.science.cell)} ${cellName(cell)}`,
     detail: src === 'power' ? t.climate.powerDetail : t.climate.chirpsDetail,
   });
+  // the files give monthly rain to one decimal
+  const rain = (v: number | null | undefined) => (v === null || v === undefined ? '—' : f.n(v, 1));
   if (!chirps.length) return <p className="muted">{t.climate.noChirps}</p>;
   return (
     <div className={s.figure} ref={ref}>
@@ -124,8 +129,8 @@ export function TwoSources({ year, cell }: { year: number; cell: string }) {
             {Array.from({ length: 12 }, (_, m) => (
               <tr key={m}>
                 <th scope="row">{m + 1}</th>
-                <td>{power[m] ?? '—'}</td>
-                <td>{chirps[m] ?? '—'}</td>
+                <td>{rain(power[m])}</td>
+                <td>{rain(chirps[m])}</td>
               </tr>
             ))}
           </tbody>

@@ -599,6 +599,7 @@ export const vi = {
     notMet: 'chưa đạt',
     zeroWeight: 'không có đất trồng',
     cell: 'Ô lưới',
+    cellAt: (lat: string, lon: string) => `${lat}°B ${lon}°Đ`,
     weight: 'Trọng số đất trồng',
     measured: 'Đo được',
     ruleMet: 'Theo quy định',

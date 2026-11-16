@@ -4,6 +4,7 @@ import { MAP_PLACES } from '../../data/places';
 import { cellMagnitude, cellMet, RULES } from '../../domain/hazards';
 import { Icon } from '../../design-system/Icon';
 import { useFormat, useSettings, useT } from '../../app/settings';
+import { useCellName } from '../../hooks/useCellName';
 import s from './Grid3D.module.css';
 
 const PX_PER_DEG = 168;
@@ -26,6 +27,7 @@ export function Grid3D({
 }) {
   const t = useT();
   const f = useFormat();
+  const cellName = useCellName();
   const { calm, lang } = useSettings();
   const [view3d, setView3d] = useState(true);
   const [rot, setRot] = useState(DEFAULT_VIEW);
@@ -213,7 +215,7 @@ export function Grid3D({
                       if (!drag.current?.moved) onSelect(c.id);
                     }}
                     aria-pressed={selected === c.id}
-                    aria-label={`${t.science.cell} ${c.lat}°N ${c.lon}°E: ${f.n(v, 1)} ${RULES[rule].unit[lang]}, ${met ? t.science.met : t.science.notMet}`}
+                    aria-label={`${t.science.cell} ${cellName(c.id)}: ${f.n(v, 1)} ${RULES[rule].unit[lang]}, ${met ? t.science.met : t.science.notMet}`}
                   >
                     <span
                       className={s.face}

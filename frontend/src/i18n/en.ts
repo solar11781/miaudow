@@ -602,6 +602,7 @@ export const en: Messages = {
     notMet: 'not met',
     zeroWeight: 'no farmland',
     cell: 'Grid cell',
+    cellAt: (lat: string, lon: string) => `${lat}°N ${lon}°E`,
     weight: 'Farmland weight',
     measured: 'Measured',
     ruleMet: 'Rule',
