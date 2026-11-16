@@ -87,11 +87,11 @@
   flex-direction: column;
   font-size: var(--t-small);
 }
+/* the crop at the left, its dates at the right edge on every line, never wrapped under the name (F-A3) */
 .dates li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
   gap: 0 var(--s-3);
 }
 .dates li + li {

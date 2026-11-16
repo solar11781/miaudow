@@ -305,41 +305,47 @@ function RiceBlock({ st, refs }: { st: Stability; refs: ApiRefs }) {
   return (
     <div className={s.riceRows}>
       <p className={s.subHead}>{label}</p>
-      {st.per_year.map((y) => (
-        <p key={y.year} className={s.riceLine}>
-          <span className={s.riceSeason}>{y.year}</span>
-          <span className={s.riceVals}>
-            <span className="muted small">{t.farmer.rice.real}</span>
-            <NumberOr v={y.real} label={`${label} · ${y.year}`} refs={refs} />
-            {y.oos_prediction && (
-              <>
-                <span className="muted small">{t.farmer.rice.prediction}</span>
-                <SourceValue {...refs.value(y.oos_prediction, `${t.farmer.rice.prediction} · ${y.year}`)} />
-              </>
-            )}
-            {y.range_80 && (
-              <>
-                <span className="muted small">{t.farmer.rice.range}</span>
-                <SourceValue {...refs.value(y.range_80.low, `${t.farmer.rice.range} · ${y.year}`)} />
-                <SourceValue {...refs.value(y.range_80.high, `${t.farmer.rice.range} · ${y.year}`)} />
-              </>
-            )}
-          </span>
-        </p>
-      ))}
-      {st.summary && (
-        <p className={s.riceLine}>
-          <span className={s.riceVals}>
-            <span className="muted small">{t.farmer.rice.min}</span>
-            <SourceValue {...refs.value(st.summary.min, `${t.farmer.rice.min} · ${label}`)} />
-            <span className="muted small">{t.farmer.rice.median}</span>
-            <SourceValue {...refs.value(st.summary.median, `${t.farmer.rice.median} · ${label}`)} />
-            <span className="muted small">{t.farmer.rice.max}</span>
-            <SourceValue {...refs.value(st.summary.max, `${t.farmer.rice.max} · ${label}`)} />
-          </span>
-          <span className="muted small">{t.farmer.rice.worstYears(st.worst_years.join(', '))}</span>
-        </p>
-      )}
+      {/* one label and value per line, like the other opened rows (F-A3) */}
+      <ul className={s.kv}>
+        {st.per_year.map((y) => (
+          <li key={y.year}>
+            <span>{y.year}</span>
+            <span className={s.kvVals}>
+              <span className="muted small">{t.farmer.rice.real}</span>
+              <NumberOr v={y.real} label={`${label} · ${y.year}`} refs={refs} />
+              {y.oos_prediction && (
+                <>
+                  <span className="muted small">{t.farmer.rice.prediction}</span>
+                  <SourceValue {...refs.value(y.oos_prediction, `${t.farmer.rice.prediction} · ${y.year}`)} />
+                </>
+              )}
+              {y.range_80 && (
+                <>
+                  <span className="muted small">{t.farmer.rice.range}</span>
+                  <SourceValue {...refs.value(y.range_80.low, `${t.farmer.rice.range} · ${y.year}`)} />
+                  <SourceValue {...refs.value(y.range_80.high, `${t.farmer.rice.range} · ${y.year}`)} />
+                </>
+              )}
+            </span>
+          </li>
+        ))}
+        {st.summary &&
+          (
+            [
+              [t.farmer.rice.min, st.summary.min],
+              [t.farmer.rice.median, st.summary.median],
+              [t.farmer.rice.max, st.summary.max],
+            ] as const
+          ).map(([name, v]) => (
+            <li key={name}>
+              <span>{name}</span>
+              <span className={s.kvVals}>
+                <SourceValue {...refs.value(v, `${name} · ${label}`)} />
+              </span>
+            </li>
+          ))}
+      </ul>
+      {st.summary && <p className="muted small">{t.farmer.rice.worstYears(st.worst_years.join(', '))}</p>}
       <p className={s.rowNote}>
         {t.farmer.rice.yearsCount(st.years_count)} · {pick(st.scope)}
       </p>
@@ -452,15 +458,16 @@ function WaterRow({ plan, res, refs, highlight, line }: Ctx & Hl) {
                       refs={refs}
                       note={t.farmer.rows.soilSheetNote}
                     />
-                    <span className={s.kvPair}>
-                      <span className="muted small">{t.farmer.soilNormal}</span>
-                      <NumberOr
-                        v={y.soil_wetness.normal}
-                        label={`${t.farmer.soilNormal} · ${pick(c.crop)}`}
-                        refs={refs}
-                        note={t.farmer.rows.soilSheetNote}
-                      />
-                    </span>
+                  </span>
+                  {/* the normal is a second label and value line of its own, so each number stands by its label */}
+                  <span className="muted small">{t.farmer.soilNormal}</span>
+                  <span className={s.kvVals}>
+                    <NumberOr
+                      v={y.soil_wetness.normal}
+                      label={`${t.farmer.soilNormal} · ${pick(c.crop)}`}
+                      refs={refs}
+                      note={t.farmer.rows.soilSheetNote}
+                    />
                   </span>
                 </li>
               )),
@@ -487,25 +494,33 @@ function LandRow({ plan, refs, highlight, line }: Omit<Ctx, 'res'> & Hl) {
       highlight={highlight}
       line={line}
     >
-      <ul className={s.checks}>
+      <ul className={s.kv}>
         <li>
-          {t.farmer.cropsInYear}: <NumberOr v={crops.value} label={t.farmer.cropsInYear} refs={refs} />
-          {why(crops.principle_source_ids, t.farmer.cropsInYear)}
+          <span>{t.farmer.cropsInYear}</span>
+          <span className={s.kvVals}>
+            <NumberOr v={crops.value} label={t.farmer.cropsInYear} refs={refs} />
+            {why(crops.principle_source_ids, t.farmer.cropsInYear)}
+          </span>
         </li>
         <li>
-          {t.farmer.livingDays}: <NumberOr v={days.value} label={t.farmer.livingDays} refs={refs} />
-          {why(days.principle_source_ids, t.farmer.livingDays)}
+          <span>{t.farmer.livingDays}</span>
+          <span className={s.kvVals}>
+            <NumberOr v={days.value} label={t.farmer.livingDays} refs={refs} />
+            {why(days.principle_source_ids, t.farmer.livingDays)}
+          </span>
         </li>
-        <li className={s.legume}>
-          {legume.present ? (
-            <>
-              <Icon name="check" size={16} strokeWidth={2.4} />
-              {t.farmer.legumeYes}: {legume.crops.map(pick).join(', ')}
-            </>
-          ) : (
-            t.farmer.legumeNo
-          )}
-          {why(legume.principle_source_ids, t.farmer.legumeYes)}
+        <li>
+          <span className={s.legume}>
+            {legume.present ? (
+              <>
+                <Icon name="check" size={16} strokeWidth={2.4} />
+                {t.farmer.legumeYes}: {legume.crops.map(pick).join(', ')}
+              </>
+            ) : (
+              t.farmer.legumeNo
+            )}
+          </span>
+          <span className={s.kvVals}>{why(legume.principle_source_ids, t.farmer.legumeYes)}</span>
         </li>
       </ul>
     </Row>

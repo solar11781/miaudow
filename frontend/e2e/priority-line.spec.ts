@@ -50,7 +50,7 @@ test('T37 priority-line the line is on cc1..cc4 only, inside the highlighted row
   await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
   // the first source button of the crops line and of the living-days line; the rest open the land-care principles
   const landValues = async (id: string) =>
-    await values(page, `[data-testid="card-${id}-row-land"] ul > li:nth-child(-n+2) [data-value]:first-of-type`);
+    await values(page, `[id="card-${id}-row-land-body"] ul > li:nth-child(-n+2) [data-value]:first-of-type`);
   const usualLand = await landValues('usual');
   expect(usualLand).toHaveLength(2);
   for (const id of TESTED) {

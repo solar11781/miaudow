@@ -40,7 +40,7 @@ test('D-187 a note that left the card opens in the source sheet of its number', 
   await expect(money).not.toContainText('Bảng 13');
   await expect(money).not.toContainText('RVAC');
   await openRow(page, 'cc1', 'money');
-  await money.locator('ul [data-value]').first().click();
+  await money.locator('[id$="-row-money-body"] ul [data-value]').first().click();
   const sheet = page.getByTestId('source-sheet');
   await expect(sheet).toBeVisible();
   await expect(sheet).toContainText(vi.farmer.profitTable);
@@ -94,7 +94,7 @@ test('D-190 each plan has one name and its money is in million dong per hectare'
   await expect(page.getByTestId('card-usual-row-header').locator('p').first()).toHaveText(vi.farmer.current);
   await openRow(page, 'cc1', 'money');
   const money = page.getByTestId('card-cc1-row-money');
-  const button = money.locator('ul [data-value]').first();
+  const button = money.locator('[id$="-row-money-body"] ul [data-value]').first();
   await expect(button).toContainText(vi.common.millionPerHa);
   const exact = await button.getAttribute('data-value');
   expect(exact).toMatch(/^[\d.]+ nghìn đồng\/ha$/);
@@ -153,7 +153,7 @@ for (const [lang, path] of [
   test(`the source sheet's stamp holds its word (${lang})`, async ({ page }) => {
     await page.goto(`${path}?ruong=water_short&nam=2010&uutien=income`);
     await openRow(page, 'cc1', 'money');
-    await page.getByTestId('card-cc1-row-money').locator('ul [data-value]').first().click();
+    await page.locator('#card-cc1-row-money-body ul [data-value]').first().click();
     const stamp = page.getByTestId('source-sheet').locator('header > span[aria-hidden="true"]');
     await expect(stamp).toBeVisible();
     const fits = await stamp.evaluate((el) => ({ word: el.scrollWidth, box: el.clientWidth }));
@@ -271,4 +271,46 @@ test('the card heads keep one line height, and the cards of a row end together',
       expect(other.head).toBeCloseTo(card.head, 0);
       expect(other.bottom).toBeCloseTo(card.bottom, 0);
     }
+});
+
+// roleplay audit 2026-11-16 (F-A3): at 360 px the opened rows zig-zagged: some values sat at the right, others wrapped
+// under their label at the left, so a number could not be told to its label. Every line now reads label at the left,
+// value at the right edge, on every card.
+test('the opened rows keep each value at the right of its line, on every card', async ({ page }, info) => {
+  test.skip(info.project.name !== 'phone-360', 'the zig-zag is a phone layout');
+  await page.goto(PLANS_URL);
+  await expect(page.locator('article[id^="the-"]')).toHaveCount(6);
+  const bad: string[] = [];
+  for (const id of IDS) {
+    for (const row of ['calendar', 'weather', 'water', 'land']) await openRow(page, id, row);
+    const lines = page.locator(
+      [
+        `[data-testid="card-${id}-row-calendar"] ul > li`,
+        `[data-testid="card-${id}-row-weather"] ul > li`,
+        `[data-testid="card-${id}-row-water"] ul > li`,
+        `[data-testid="card-${id}-row-land"] ul > li`,
+        `[data-testid="card-${id}-priority-line"] li`,
+      ].join(', '),
+    );
+    bad.push(
+      ...(await lines.evaluateAll(
+        (items, card) =>
+          items.flatMap((li) => {
+            const box = li.getBoundingClientRect();
+            const buttons = [...li.querySelectorAll('button[data-value]')].map((b) => b.getBoundingClientRect());
+            if (!buttons.length) return [];
+            const name = `${card}: ${li.textContent?.slice(0, 40)}`;
+            const out: string[] = [];
+            // the last value ends at the right edge (the button reaches 0.2rem past its text, SourceValue)
+            if (Math.abs(box.right - Math.max(...buttons.map((b) => b.right))) > 4)
+              out.push(`${name} not at the right`);
+            // no value starts at the left edge, where the labels are
+            if (buttons.some((b) => b.left - box.left < 24)) out.push(`${name} at the left`);
+            return out;
+          }),
+        id,
+      )),
+    );
+  }
+  expect(bad).toEqual([]);
 });

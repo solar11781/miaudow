@@ -301,40 +301,22 @@
   gap: 0.2rem;
 }
 
-.riceLine {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2rem 0.8rem;
-  font-size: var(--t-small);
-}
-
-.riceSeason {
-  color: var(--fg-2);
-  min-width: 6.5rem;
-}
-
-.riceVals {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.1rem 0.7rem;
-}
-
 .kv {
   list-style: none;
   display: flex;
   flex-direction: column;
 }
 
+/* each line reads label at the left and its value at the right edge, the same on every line and every card (F-A3):
+   a long label wraps in its own column, so a value never drops under it to the left */
 .kv li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(45%, 1fr) minmax(0, auto);
+  align-items: baseline;
   gap: 0.2rem var(--s-3);
   font-size: var(--t-small);
   min-height: 44px;
+  padding-block: 0.15rem;
 }
 
 .kv li + li {
@@ -345,53 +327,25 @@
   color: var(--fg-2);
 }
 
-/* numbers and their notes stand on one baseline; a group that wraps under its label still ends at the right edge */
+/* a value group: numbers and their notes on one baseline, ending at the right edge even when they wrap */
 .kvVals {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.1rem 1rem;
   justify-content: flex-end;
-  margin-left: auto;
   text-align: right;
 }
 
-/* a note stays on the line of the number it names */
-.kvPair {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.1rem 1rem;
-  justify-content: flex-end;
-}
-
-.checks {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-}
-
-.checks li {
-  background: var(--bg-sunk);
-  border-radius: var(--r-sm);
-  padding: 0 0.5rem;
-  font-size: var(--t-small);
-  display: inline-flex;
-  align-items: center;
-}
-
-/* below the 360 px phone (200% zoom, H9) the 44 px value and "why" buttons go under the label */
-@media (max-width: 359px) {
-  .checks li {
-    flex-wrap: wrap;
-  }
-}
-
 .legume {
+  display: inline-flex;
+  align-items: baseline;
   gap: 0.4rem;
-  min-height: 44px;
-  padding-inline: 0.8rem !important;
+}
+
+.legume svg {
+  flex: none;
+  align-self: center;
 }
 
 .bullets {

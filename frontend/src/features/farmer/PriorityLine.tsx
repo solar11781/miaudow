@@ -31,15 +31,20 @@ export function PriorityLine({
   const l = t.farmer.priorityLine;
   // `name` labels the values in the source sheet; it is shown on the line only when the lead does not say it
   const pair = (name: string, mine: Value | null, theirs: Value | null, shown = true, money = false) => (
-    <p className={s.pair}>
-      {shown && <span className={s.name}>{name}:</span>}
-      <span className={s.side}>
-        {l.thisPlan} <NumberOr v={mine} label={`${name} · ${l.thisPlan}`} refs={refs} money={money} />
-      </span>
-      <span className={s.side}>
-        {l.usualPlan} <NumberOr v={theirs} label={`${name} · ${l.usualPlan}`} refs={refs} money={money} />
-      </span>
-    </p>
+    <div className={s.pair}>
+      {shown && <p>{name}:</p>}
+      {/* each plan on its own line, its label at the left and its value at the right (F-A3) */}
+      <ul className={s.sides}>
+        <li>
+          <span>{l.thisPlan}</span>
+          <NumberOr v={mine} label={`${name} · ${l.thisPlan}`} refs={refs} money={money} />
+        </li>
+        <li>
+          <span>{l.usualPlan}</span>
+          <NumberOr v={theirs} label={`${name} · ${l.usualPlan}`} refs={refs} money={money} />
+        </li>
+      </ul>
+    </div>
   );
   return (
     <div className={s.line} data-testid={`card-${plan.id}-priority-line`}>
