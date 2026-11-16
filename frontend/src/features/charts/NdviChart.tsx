@@ -63,6 +63,7 @@ export function NdviChart({ year }: { year: number }) {
       bands.push([...up, ...lo.reverse()].join(' '));
     }
     return { line: segs, band: bands, gaps: missing };
+    // x() and y() are rebuilt every render; the paths change only with the measured width W
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [W]);
   const years = Array.from(new Set(NDVI.dates.map((d) => Number(d.slice(0, 4)))));
