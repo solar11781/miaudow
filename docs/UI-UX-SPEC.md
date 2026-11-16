@@ -823,7 +823,11 @@ item 5):
    `method.col.nRows`, `method.col.nTestYears`. The primary row (M1 ridge, spring rice) is marked with `role.primary`;
    secondary results with `role.secondary`. Each table row ends with a source button (`data-testid`
    `metric-row-<index>`) for its `source_ids`; the numbers in the row carry `data-source-ref` to it (H5). Skill, R2,
-   RMSE and MAE are shown to 2 decimals, and coverage as a whole percent.
+   RMSE and MAE are shown to 2 decimals, and coverage as a whole percent; a value that rounds to zero is written
+   without a minus sign. Within a group, the rows of one province or one region (subset `unit:` / `region:`) fold
+   behind one disclosure (`<details>`, closed at first), so the page opens on the national and Nghe An rows
+   (roleplay audit 2026-11-16: the page was about 40,000 px tall). A table wider than its column scrolls inside its
+   own focusable region, with the line `method.scrollHint` wherever the frame is narrower than the table.
    Then the gate verdicts per season from `gates` (`gate.G1` .. `gate.G4`, `gate.passed` / `gate.failed` /
    `gate.notRun`, `detail`). The claim key `method.weatherClaim` ("NASA weather improves the prediction" in meaning)
    is shown for a season only where `weather_claims` has `made: true` for it; otherwise no claim is shown and the
